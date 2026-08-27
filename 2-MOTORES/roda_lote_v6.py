@@ -602,6 +602,21 @@ def trabalha(r):
     # deixa comprar, e a nota saia inflada.
     if not (c.get('orc') or 0):
         c['falta'] = []
+
+    # ===== O PORTAO (Luis, 27/08) =====
+    # Nenhuma carta com insumo faltando calcula. O resultado sairia com cara de
+    # certo, iria para o banco e ninguem descobriria - foi assim que 1.342 builds
+    # de 356 cartas rodaram furadas em agosto sem ninguem ver.
+    try:
+        from travas import confere_carta as _confere
+        _falta = _confere(c)
+    except ImportError:
+        _falta = []
+    if _falta:
+        return {'ERRO': '%s / %s: NAO RODOU - falta %s'
+                        % (c.get('nome'), r['funcao'], '; '.join(_falta)),
+                'n': r.get('n'), 'TRAVADA': True}
+
     try:
         b = M.build_completo2(dict(c), _W['TECS'],
                               (_W.get('FILA') or {}).get(r['funcao']))

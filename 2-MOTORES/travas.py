@@ -67,6 +67,17 @@ def confere_carta(c, n_atributos=26):
         falta.append('o orcamento de barras')
     if c.get('arows') is None:
         falta.append('o molde da funcao')
+
+    # 27/08 (Luis) — "nao e pra rodar a carta faltando o item, vai ficar errado o
+    # resultado, ai vai pro banco. Sabe que dia que a gente vai descobrir que esta
+    # errado? Nunca."
+    # A carta traz um impeto EQUIPADO cujo efeito o catalogo nao conhece (os
+    # 'Novo 2027 #NNN'). Rodar assim da uma nota mais baixa que a verdadeira, com
+    # cara de certa. Fica de fora ate o catalogo saber o que aquele impeto faz.
+    furado = c.get('impeto_furado') or []
+    if furado:
+        falta.append('o efeito do impeto equipado %s (nao esta no catalogo)'
+                     % ', '.join(str(x) for x in furado))
     return falta
 
 

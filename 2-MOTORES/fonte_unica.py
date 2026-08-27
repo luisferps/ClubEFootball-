@@ -84,41 +84,67 @@ def existe():
 _CACHE = {}
 
 def _traduz(j):
-    """Do formato do banco para o formato que o motor ja espera."""
+    """Do formato do banco para o formato que o motor ja espera.
+
+    27/08 — os quatro campos abaixo estavam errados e o motor morria em
+    "not enough values to unpack":
+      nm ..... e o IMPETO EQUIPADO em pares [atributo, grau], nao o nome da carta.
+               O motor faz expand(nm), que itera pares. Com uma string, ele
+               iterava LETRA por letra.
+      sl ..... e uma LISTA de dois: [vaga do slot 1, vaga do slot 2]. O motor le
+               sl[0] e sl[1] para saber se pode fabricar impeto em cada slot.
+      fab .... sao as habilidades NATIVAS; raras sao as RARAS. O motor soma as
+               duas para saber o que a carta ja tem.
+      impeto_condicional ... e uma LISTA de sim/nao, uma por impeto equipado, na
+               mesma ordem de impeto_nomes.
+    """
     if not j:
         return None
     cid = str(j.get('card_id'))
-    imp = []
-    for k in ('impeto_s1', 'impeto_s2_cond'):
-        v = j.get(k)
-        if v:
-            imp.append(v)
+
+    # o impeto equipado: rotulo, se e condicional, e o efeito em pares
+    equipado = j.get('impeto_equipado') or []
+    nomes, flags, soma, furado = [], [], {}, []
+    for x in equipado:
+        nomes.append(x.get('rotulo'))
+        flags.append(bool(x.get('condicional')))
+        # impeto que a carta USA e o catalogo nao conhece: a carta nao pode rodar
+        if not (x.get('efeito') or []):
+            furado.append(x.get('id'))
+        for par in (x.get('efeito') or []):
+            try:
+                a, d = int(par[0]), int(par[1])
+            except (TypeError, ValueError, IndexError):
+                continue
+            soma[a] = soma.get(a, 0) + d      # dois impetos no mesmo atributo somam
+    nm = [[a, v] for a, v in sorted(soma.items())]
+
     return {
         'id':      cid,
         'nome':    j.get('nome'),
-        'nm':      j.get('nome'),
+        'nm':      nm,
         'pos':     j.get('posicao'),
         'np':      j.get('posicao'),
         'orc':     j.get('orcamento') or 0,
         'base':    j.get('atributos'),
         'ovr':     j.get('overall'),
         'modelo':  j.get('slot1_nome'),
-        'modelo2': j.get('slot2_nome'),          # <<< o segundo slot de 2027
+        'modelo2': j.get('slot2_nome'),          # o segundo slot de 2027
         'corpo':   j.get('corpo'),
         'pe_ruim': [j.get('pe_ruim_uso'), j.get('pe_ruim_precisao')],
         'com':     j.get('estilos_ia') or [],
-        'raras':   j.get('habilidades_fixas') or [],
+        'fab':     j.get('habilidades_nativas') or [],
+        'raras':   j.get('habilidades_raras') or [],
         'falta':   j.get('habilidades_possiveis') or [],
         'pool_cheio': not (j.get('habilidades_possiveis')),
-        'impeto_nomes': imp,
-        'impeto_condicional': j.get('impeto_s2_cond'),
-        'fab':     None,
-        'sl':      (1 if j.get('vaga_s1') else 0) + (1 if j.get('vaga_s2') else 0),
+        'impeto_nomes': nomes,
+        'impeto_condicional': flags,
+        'impeto_furado': furado,
+        'sl':      [1 if j.get('vaga_s1') else 0, 1 if j.get('vaga_s2') else 0],
         'visto_na_casca': True,
         'level_cap': j.get('level_cap'),
         'cap_estimado': j.get('cap_estimado'),
     }
-
 
 def carta(card_id):
     """Uma carta, do banco. Guarda em memoria."""
