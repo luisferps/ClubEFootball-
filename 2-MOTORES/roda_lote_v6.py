@@ -334,9 +334,19 @@ def _carrega_no_processo():
             MOLDE[r['funcao']].append([r['attr'], r['peso'], r['alvo'], 0, 0, 0])
     _W['M'] = M
     _W['MOLDE'] = MOLDE
-    _W['TECS'] = carrega_tecnicos('tecnicos.json')
-    _W['RARAS'] = json.load(open(D + 'raras_por_card.json', encoding='utf-8'))
-    _W['FALTA'] = json.load(open(D + 'falta_por_card.json', encoding='utf-8'))
+    # 27/08 — tecnicos.json, raras_por_card.json e falta_por_card.json nao
+    # existem mais. Os tecnicos vem de clube.tecnico; as raras e a falta ja vem
+    # DENTRO da carta (carta_do_motor), entao os dois mapas ficam vazios e cada
+    # carta responde por si.
+    if FONTE_UNICA:
+        import fonte_unica as _FUt
+        _W['TECS'] = _FUt.carrega_tecnicos_do_banco()
+        _W['RARAS'] = {}
+        _W['FALTA'] = {}
+    else:
+        _W['TECS'] = carrega_tecnicos('tecnicos.json')
+        _W['RARAS'] = json.load(open(D + 'raras_por_card.json', encoding='utf-8'))
+        _W['FALTA'] = json.load(open(D + 'falta_por_card.json', encoding='utf-8'))
     _W['INSUMOS'] = _carimbo_dos_insumos()
     _W['REGRAS'] = _carimbo_das_regras()
     _recarrega_cards()
@@ -423,10 +433,21 @@ def _habs_so_de_linha(base):
 # fonte — para mudar uma regra, mexe no JSON, nao no codigo.
 def _bloqueio_por_funcao():
     """{funcao: set(habilidades proibidas)}"""
-    try:
-        J = (_W.get('INSUMOS_BASE') or {}).get('bloqueio') if FONTE_UNICA else None
+    # 27/08 — regua_bonus().bloqueio JA vem no formato final {funcao: [habs]},
+    # de clube.bloqueio (246 linhas, 19 funcoes). O formato antigo do JSON era
+    # {_posicoes:..., bloqueios:{hab:[grupos]}} e precisava ser expandido. Sem
+    # este desvio o bloqueio virava dicionario VAZIO e nao bloqueava nada.
+    if FONTE_UNICA:
+        J = (_W.get('INSUMOS_BASE') or {}).get('bloqueio') or {}
         if not J:
-            J = json.load(open('habilidades_por_posicao.json', encoding='utf-8'))
+            raise SystemExit('PAROU: clube.bloqueio veio vazio do banco. Sem ele '
+                             'o motor poe habilidade proibida na funcao.')
+        out = collections.defaultdict(set)
+        for f, habs in J.items():
+            out[f] = set(habs or [])
+        return out
+    try:
+        J = json.load(open('habilidades_por_posicao.json', encoding='utf-8'))
     except Exception as e:
         print('nao consegui ler habilidades_por_posicao.json (%s) — sem bloqueio' % e)
         return {}
@@ -493,7 +514,9 @@ def trabalha(r):
         return {'ERRO': 'card %s nao esta no cards.json' % bid, 'n': r.get('n')}
     c = dict(c0)
     c['arows'] = [x[:] for x in _W['MOLDE'][r['funcao']]]
-    c['raras'] = _W['RARAS'].get(bid, [])
+    # com o banco, as raras vem na propria carta. Sem este `or`, o pool ficava
+    # errado: o motor oferecia habilidade que a carta JA TEM.
+    c['raras'] = _W['RARAS'].get(bid) or c0.get('raras') or []
     c['falta'] = _pool_de(c, bid, r['funcao'])
     c['pool_cheio'] = list(c['falta'])   # guardado para a lista "De fora" da ficha
 
@@ -1051,12 +1074,17 @@ def main():
         if os.environ.get('MONSTRO_NO_FIM', '1') != '0':
             _sl = {}
             try:
-                for _c in json.load(open(D + 'cards.json', encoding='utf-8')):
-                    _b = str(_c['id']).split('@')[0]
-                    _v = sum(_c.get('sl') or [])
-                    _o = _c.get('orc') or 0
-                    if _b not in _sl or (_v, _o) > _sl[_b]:
-                        _sl[_b] = (_v, _o)
+                if FONTE_UNICA:
+                    import fonte_unica as _FUp
+                    for _b, _par in (_FUp.peso_da_ordem() or {}).items():
+                        _sl[str(_b)] = (int(_par[0]), int(_par[1]))
+                else:
+                    for _c in json.load(open(D + 'cards.json', encoding='utf-8')):
+                        _b = str(_c['id']).split('@')[0]
+                        _v = sum(_c.get('sl') or [])
+                        _o = _c.get('orc') or 0
+                        if _b not in _sl or (_v, _o) > _sl[_b]:
+                            _sl[_b] = (_v, _o)
             except Exception as _e:
                 print('nao consegui ler o sl para ordenar (%s) — fila na ordem normal' % _e)
             def _monstro(_r):

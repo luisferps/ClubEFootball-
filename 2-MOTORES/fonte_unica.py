@@ -165,7 +165,8 @@ def carrega_tudo():
 
     tecnicos = {}
     for tid, t in (rp.get('tecnico') or {}).items():
-        tecnicos[str(tid)] = {'boosts': t.get('boosts') or [],
+        tecnicos[str(tid)] = {'nome': t.get('nome'),
+                              'boosts': t.get('boosts') or [],
                               'proficiencias': t.get('proficiencias') or {}}
 
     _INSUMOS = {
@@ -273,3 +274,43 @@ def catalogo_fabricaveis():
     if not c:
         raise SystemExit('PAROU: clube.impeto_fabricavel veio vazio do banco.')
     return [[x[0], int(x[1]), [[int(a), b] for a, b in (x[2] or [])]] for x in c]
+
+
+def carrega_tecnicos_do_banco(tatica=None):
+    """A lista de tecnicos no formato que o motor espera - o que era tecnicos.json.
+
+    Vem de clube.tecnico (id, nome, boosts, extras.proficiencias). O 'hasBoost'
+    do arquivo virou o teste que ja existia: so entra quem tem pelo menos um
+    boost valido (indice de atributo entre 0 e 25). Boost [-1,-1] = sem boost.
+
+    A conta e a mesma de equacao.carrega_tecnicos: se a tatica nao for dita,
+    usa o MAIOR das proficiencias - de proposito, porque o Luis ainda nao cravou
+    a tatica.
+    """
+    import equacao as _EQ
+    cat = carrega_tudo().get('tecnicos_catalogo') or {}
+    if not cat:
+        raise SystemExit('PAROU: clube.tecnico veio vazia do banco.')
+    out = []
+    for tid, c in cat.items():
+        boosts = [int(x) for x in (c.get('boosts') or [])]
+        b = [_EQ.POS[_EQ.AM[x]] for x in boosts if 0 <= x < 26]
+        if not b:
+            continue                      # era o hasBoost do arquivo
+        sk = {k: float(v) for k, v in (c.get('proficiencias') or {}).items()}
+        if not sk:
+            continue
+        v = sk.get(tatica) if (tatica and tatica in sk) else max(sk.values())
+        out.append({'nome': c.get('nome'), 'id': int(tid), 'tat': v,
+                    'm': _EQ.mult_de(v), 'boost': b})
+    return out
+
+
+def peso_da_ordem():
+    """{card_id: [vagas_de_impeto, orcamento]} das cartas que estao na fila.
+
+    So serve para a ORDEM: carta com vaga de impeto livre + pool de habilidade
+    roda um DP inteiro por candidato e chega a levar 4.953 s. Essas vao para o
+    fim. Nao muda resultado nenhum.
+    """
+    return _rpc('peso_da_ordem') or {}
