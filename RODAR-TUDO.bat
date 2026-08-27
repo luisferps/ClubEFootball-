@@ -1,8 +1,8 @@
 @echo off
 chcp 65001 >nul
-title RODAR O MOTOR - primeiras 100, para conferir
+title RODAR O MOTOR - a fila inteira
 cd /d "%~dp02-MOTORES"
-set PARAR_EM=100
+set PARAR_EM=0
 
 if not exist "roda_lote_v6.py" (
   echo   ^>^> nao achei roda_lote_v6.py em 2-MOTORES.
@@ -20,13 +20,13 @@ if exist "PARAR.txt" del /q "PARAR.txt"
 
 echo.
 echo  ============================================================
-echo   O MOTOR - PRIMEIRAS 100 LINHAS
+echo   O MOTOR - A FILA INTEIRA
 echo  ============================================================
 echo.
-echo   Roda 100 e PARA. Sao as cartas que ja rodaram antes, para
-echo   comparar com o arquivo antes de soltar as 125 mil.
+echo   So rode isto DEPOIS que as primeiras 100 forem conferidas.
 echo.
-echo   Depois de conferido: RODAR-TUDO.bat
+echo   Para parar: crie um arquivo PARAR.txt dentro de 2-MOTORES.
+echo   O que ja rodou nao se perde - grava linha a linha no banco.
 echo.
 echo  ------------------------------------------------------------
 echo.

@@ -368,6 +368,12 @@ def _carrega_no_processo():
 # elegibilidade. Card com 9 nativas recebia 2 candidatas em vez de 35, e o motor
 # levava as 2 sem escolher nada (motor.py: `if len(cand) <= 5: combos=[cand]`).
 POOL = os.environ.get('POOL', 'regra')     # regra | uniao | atual | novo
+
+# ===== A PARADA DE CONFERENCIA (Luis, 27/08) =====
+# "roda cem, a gente para, voce compara, fala esta ok, ai a gente roda o restante
+#  tudo sem parar, senao a gente refaz."
+# PARAR_EM=100 -> roda 100 linhas e fecha. PARAR_EM=0 -> roda tudo.
+PARAR_EM = int(os.environ.get('PARAR_EM', '0') or 0)
 CORTE10 = os.environ.get('CORTE10', '1') != '0'   # dominancia entre habilidades
 
 
@@ -1023,6 +1029,15 @@ def main():
         for x in it:
             if os.path.exists(PARAR):
                 print('[%s] PARAR.txt encontrado. Fechando.' % agora(), flush=True)
+                return False
+            if PARAR_EM and (cont['ok'] + cont['erro'] - base) >= PARAR_EM:
+                print(flush=True)
+                print('=' * 70, flush=True)
+                print('  PAREI EM %d LINHAS — parada de conferencia.' % PARAR_EM, flush=True)
+                print('  As %d ja estao gravadas no banco e saíram da fila.' % cont['ok'], flush=True)
+                print('  Manda o Claude conferir contra o arquivo antes de soltar o resto.', flush=True)
+                print('  Depois de conferido: RODAR-TUDO.bat', flush=True)
+                print('=' * 70, flush=True)
                 return False
             if not x:
                 continue
