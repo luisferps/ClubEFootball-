@@ -6,6 +6,13 @@ config.txt
 .env
 .env.*
 
+# lixo que não pertence ao repositório
+_LIXO/
+_ERRO-DO-GITHUB.txt
+*.zip
+graphify-out/
+checkpoints/
+
 # arquivos de trabalho do motor — não existem mais desde 27/08,
 # mas ficam aqui para o caso de sobrar cópia velha em alguma máquina
 dados/base_unica.json
