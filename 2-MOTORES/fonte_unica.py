@@ -134,15 +134,30 @@ def carrega_base(ids=None):
     Sem `ids`, traz a fila inteira. Com `ids`, so essas (bem mais rapido).
     """
     if ids is None:
-        fila = _rpc('fila_do_motor', {'p_limite': 100000, 'p_modo': 'tudo'}) or []
-        ids = [x.get('card_id') for x in fila]
+        fila = _rpc('proxima_da_fila', {'p_limite': 1000000}) or []
+        ids = sorted({str(x.get('card_id')) for x in fila})
+
+    # 27/08 — EM LOTE. Antes era uma chamada HTTP por carta: 20.845 idas ao
+    # banco, e isso DUAS vezes (um carregamento por processo). Levava horas so
+    # para comecar. Agora vai de 500 em 500 pelo cartas_do_motor.
     base = {}
-    for i, cid in enumerate(ids):
-        c = carta(cid)
-        if c:
-            base[str(cid).split('@')[0]] = c
-        if i and i % 500 == 0:
-            print('   base: %d/%d cartas' % (i, len(ids)), flush=True)
+    ids = [str(c) for c in ids]
+    LOTE = 500
+    for i in range(0, len(ids), LOTE):
+        pedaco = ids[i:i + LOTE]
+        linhas = _rpc('cartas_do_motor', {'p_ids': pedaco})
+        if linhas is None:
+            for cid in pedaco:                    # o banco recusou o lote: uma a uma
+                c = carta(cid)
+                if c:
+                    base[str(cid).split('@')[0]] = c
+        else:
+            for j in linhas:
+                c = _traduz(j)
+                if c:
+                    base[str(c['id']).split('@')[0]] = c
+                    _CACHE[str(c['id'])] = c
+        print('   base: %d/%d cartas' % (min(i + LOTE, len(ids)), len(ids)), flush=True)
     return base
 
 

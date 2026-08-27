@@ -950,7 +950,8 @@ def main():
     #    e parar cedo se divergir), depois lancamento, depois overall desc.
     import fonte_unica as _fu
     _lote = _fu.proxima_fila(1000000)
-    fila = [{'n': i + 1, 'card_id': str(x['card_id']), 'funcao': x['funcao_codigo']}
+    fila = [{'n': i + 1, 'card_id': str(x['card_id']), 'funcao': x['funcao_codigo'],
+             'prioridade': x.get('prioridade'), 'overall': x.get('overall')}
             for i, x in enumerate(_lote)]
     feitos = set()          # quem ja rodou nao volta: ele sai da fila ao gravar
     n_proc = NUCLEOS
@@ -1062,38 +1063,45 @@ def main():
         # ---------- 1) a fila principal ----------
         pend = [r for r in fila if chave(r) not in feitos]
 
-        # ===== AS MONSTRO VAO PRO FIM DA FILA (ordem do Luis, 08/08) =====
-        # "nao tem como pular essa linha e jogar pro final? pra rodar as outras".
-        # Medido no linhas.jsonl: as linhas caras sao SEMPRE as que tem VAGA DE
-        # IMPETO LIVRE junto com pool de habilidade. Sem corte de margem, todo
-        # impeto candidato sobrevive e cada um roda um DP inteiro.
-        #    com vaga de impeto + pool: 696 s a 4.953 s
-        #    sem vaga de impeto       : mediana ~120 s, pior 304 s
-        # Isto NAO muda resultado nenhum — so a ORDEM. As monstro rodam depois,
-        # e nada e descartado. Para desligar: MONSTRO_NO_FIM=0.
-        if os.environ.get('MONSTRO_NO_FIM', '1') != '0':
+        # ===== A ORDEM DA FILA VEM DO BANCO E NAO SE MEXE (Luis, 27/08) =====
+        # "o combinado era rodar as que a gente ja tem no arquivo morto primeiro,
+        #  depois as outras de acordo com o overall. Nao tem esse de monstro."
+        #
+        # O clube.fila ja chega ordenado por PRIORIDADE e depois OVERALL desc:
+        #   prioridade 0 = par que JA RODOU antes (esta no build_arquivo_2608)
+        #   prioridade 1 = carta de lancamento
+        #   prioridade 5 = o resto
+        # As 16.381 de prioridade 0 vem primeiro DE PROPOSITO: e por elas que se
+        # confere se a conta continua batendo. Se o b1 sair diferente do arquivo,
+        # da para parar nas primeiras linhas em vez de descobrir no fim.
+        #
+        # O desempate "leve x monstro" que existia aqui vinha do motor antigo, que
+        # lia a fila de arquivo e nao tinha prioridade nenhuma. Ele reordenava tudo
+        # e jogava as ja-rodadas para o meio da fila — exatamente o que nao pode.
+        # Fica DESLIGADO no modo banco. Para reativar no modo arquivo: MONSTRO_NO_FIM=1.
+        if not FONTE_UNICA and os.environ.get('MONSTRO_NO_FIM', '0') != '0':
             _sl = {}
             try:
-                if FONTE_UNICA:
-                    import fonte_unica as _FUp
-                    for _b, _par in (_FUp.peso_da_ordem() or {}).items():
-                        _sl[str(_b)] = (int(_par[0]), int(_par[1]))
-                else:
-                    for _c in json.load(open(D + 'cards.json', encoding='utf-8')):
-                        _b = str(_c['id']).split('@')[0]
-                        _v = sum(_c.get('sl') or [])
-                        _o = _c.get('orc') or 0
-                        if _b not in _sl or (_v, _o) > _sl[_b]:
-                            _sl[_b] = (_v, _o)
+                for _c in json.load(open(D + 'cards.json', encoding='utf-8')):
+                    _b = str(_c['id']).split('@')[0]
+                    _v = sum(_c.get('sl') or [])
+                    _o = _c.get('orc') or 0
+                    if _b not in _sl or (_v, _o) > _sl[_b]:
+                        _sl[_b] = (_v, _o)
             except Exception as _e:
                 print('nao consegui ler o sl para ordenar (%s) — fila na ordem normal' % _e)
             def _monstro(_r):
                 v, o = _sl.get(str(_r['card_id']).split('@')[0], (0, 0))
                 return 1 if (v > 0 and o > 0) else 0
-            pend.sort(key=_monstro)             # estavel: nao mexe no resto da ordem
+            pend.sort(key=_monstro)
             _n = sum(1 for _r in pend if _monstro(_r))
-            print('ordem ............. %d linhas leves primeiro · %d MONSTRO no fim'
-                  % (len(pend) - _n, _n), flush=True)
+            print('ordem ............. %d leves primeiro · %d MONSTRO no fim' % (len(pend) - _n, _n), flush=True)
+        elif FONTE_UNICA:
+            _p0 = sum(1 for _r in pend if _r.get('prioridade') == 0)
+            _p1 = sum(1 for _r in pend if _r.get('prioridade') == 1)
+            print('ordem ............. a do BANCO, intacta · %d ja rodadas antes (conferencia) '
+                  '· %d lancamento · %d o resto'
+                  % (_p0, _p1, len(pend) - _p0 - _p1), flush=True)
 
         # ===== A PONTA DA FILA (ordem do Luis, 08/08) =====
         # "carta que voce consertou, coloca na ponta da fila". O fila_PRIORIDADE.json
