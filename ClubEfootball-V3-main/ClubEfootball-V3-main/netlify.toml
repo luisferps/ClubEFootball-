@@ -1,0 +1,7 @@
+[build]
+  publish = "encaixe-web"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache"

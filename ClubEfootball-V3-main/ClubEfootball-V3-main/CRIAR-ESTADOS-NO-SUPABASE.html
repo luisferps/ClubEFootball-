@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Criar a coluna dos quatro estados — 16/08</title>
+<style>
+:root{--bg:#0e1116;--pn:#151a22;--tx:#cfd6e4;--tx2:#8d97a8;--vd:#22c58b;--dr:#d8b45a;--lr:#2a3140}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.6 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:28px 20px 70px}
+h1{font-size:27px;margin:0 0 4px;color:#fff;letter-spacing:-.3px}
+h2{font-size:20px;margin:34px 0 10px;color:var(--dr);border-bottom:1px solid var(--lr);padding-bottom:6px}
+.sub{color:var(--tx2);margin:0 0 20px}
+.card{background:var(--pn);border:1px solid var(--lr);border-radius:9px;padding:15px 17px;margin:14px 0}
+table{width:100%;border-collapse:collapse;margin:10px 0 14px;font-size:14px}
+th,td{border:1px solid var(--lr);padding:7px 9px;text-align:left}
+th{background:var(--pn);color:var(--dr)}
+ol{padding-left:22px} li{margin:8px 0}
+a{color:var(--vd)}
+pre{background:#0a0d12;border:1px solid var(--lr);border-radius:8px;padding:14px;overflow:auto;
+    font:13px/1.55 Consolas,Menlo,monospace;color:#d7e2f0;max-height:420px}
+button{background:var(--vd);color:#06231a;border:0;border-radius:8px;padding:11px 20px;
+       font-size:15px;font-weight:700;cursor:pointer}
+button:active{transform:translateY(1px)}
+.ok{color:var(--vd)} .mut{color:var(--tx2)} .er{color:#e05555}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Criar a coluna dos quatro estados</h1>
+<p class="sub">A última vez que você precisa colar comando nesta reforma.</p>
+
+<div class="card">
+<b>A sua ordem, de 16/08 de madrugada:</b><br>
+<i>"quando não tem, ele vai pro motor como valor zero, porque não tem. Só que você tem que
+colocar QUE NÃO TEM — não que ele É zero. Não pode haver essa confusão."</i>
+</div>
+
+<table>
+<tr><th>estado</th><th>quer dizer</th><th>é pendência?</th></tr>
+<tr><td><b>valor</b></td><td>puxou e veio um número</td><td>não</td></tr>
+<tr><td><b>zerado</b></td><td>puxou, o campo existe, o valor é 0</td><td>não</td></tr>
+<tr><td><b>não se aplica</b></td><td>conferiu — o campo não existe para essa carta</td><td>não</td></tr>
+<tr><td><b>não sei</b></td><td>ninguém puxou ainda</td><td class="er"><b>sim, e só esta</b></td></tr>
+</table>
+
+<h2>O passo a passo</h2>
+<ol>
+<li>Abra o editor: <a href="https://supabase.com/dashboard/project/trqqpsnafpbudtvvicch/sql/new" target="_blank">supabase.com → SQL Editor</a></li>
+<li>Clique no botão verde.</li>
+<li>No editor: <b>Ctrl+A</b>, <b>Ctrl+V</b>, <b>Ctrl+Enter</b>.</li>
+<li>Se pedir confirmação, pode confirmar.</li>
+<li>Volte para a pasta e dê dois cliques no <b>ESTADOS.bat</b>.</li>
+</ol>
+
+<p style="text-align:center;margin:26px 0">
+<button onclick="copiar()">📋 Copiar o comando</button>
+<span id="msg" class="ok" style="margin-left:14px"></span>
+</p>
+
+<h2>O comando</h2>
+<pre id="sql">-- ============================================================
+--  OS QUATRO ESTADOS DE CADA DADO  ·  16/08/2026
+--  So acrescenta. Nao apaga nada, nao muda nenhum valor.
+-- ============================================================
+
+-- 1) A coluna. Ao lado da fonte_de_cada_campo, que ja existe.
+alter table cards_base add column if not exists estado_de_cada_campo jsonb;
+
+comment on column cards_base.estado_de_cada_campo is
+  'Para cada campo, uma de quatro palavras: valor | zerado | nao_se_aplica | nao_sei. Ordem do Luis 16/08: "nao pode haver essa confusao" entre zero e nao sei. So o nao_sei e pendencia de coleta.';
+
+create index if not exists cards_base_estado_gin on cards_base using gin (estado_de_cada_campo);
+
+-- 2) A visao que conta a falta DE VERDADE — so o "nao sei".
+--    Substitui a conta por campo vazio, que inflava seis vezes.
+create or replace view falta_de_verdade as
+select e.key   as campo,
+       count(*) as cards
+from cards_base c,
+     lateral jsonb_each_text(c.estado_de_cada_campo) e
+where e.value = 'nao_sei'
+group by e.key
+order by cards desc;
+
+comment on view falta_de_verdade is
+  'O que falta coletar, de verdade. Conta so o estado nao_sei. Em 16/08 a conta antiga, por campo vazio, dizia 1.727 cartas sem impeto quando o numero real era 273.';
+
+-- 3) A mesma coisa, mas carta a carta — para o motor de atualizacao consumir.
+create or replace view o_que_puxar as
+select c.card_id,
+       c.nome,
+       c.ovr,
+       e.key as campo
+from cards_base c,
+     lateral jsonb_each_text(c.estado_de_cada_campo) e
+where e.value = 'nao_sei';
+
+comment on view o_que_puxar is
+  'A lista de compras do motor de atualizacao: qual carta, qual campo. Uma linha por buraco de verdade.';
+</pre>
+
+<div class="card">
+<b class="er">A conta que motivou isto.</b><br>
+<span class="mut">Contando "campo vazio" como falta, o ímpeto dava <b>1.727</b> cartas
+faltando. O número real é <b>273</b> — as outras são 1.151 cartas velhas que o jogo não dá
+ímpeto (não é buraco, é resposta) e 303 que já têm. <b>Inflava seis vezes.</b>
+E o mesmo erro foi cometido três vezes em 24 horas: no estilo de jogo da IA, no corpo e
+no ímpeto.</span>
+</div>
+
+<script>
+function copiar(){
+  var t = document.getElementById('sql').innerText;
+  navigator.clipboard.writeText(t).then(function(){
+    document.getElementById('msg').textContent = '✅ copiado — agora cole no editor';
+  }, function(){
+    var r = document.createRange(); r.selectNode(document.getElementById('sql'));
+    window.getSelection().removeAllRanges(); window.getSelection().addRange(r);
+    document.getElementById('msg').textContent = 'selecionei — aperte Ctrl+C';
+  });
+}
+</script>
+
+</div>
+</body>
+</html>

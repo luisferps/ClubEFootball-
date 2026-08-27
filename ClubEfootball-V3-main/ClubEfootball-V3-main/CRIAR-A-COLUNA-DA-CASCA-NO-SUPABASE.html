@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Criar a coluna da casca — 16/08</title>
+<style>
+:root{--bg:#0e1116;--pn:#151a22;--tx:#cfd6e4;--tx2:#8d97a8;--vd:#22c58b;--dr:#d8b45a;--lr:#2a3140}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.6 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:28px 20px 70px}
+h1{font-size:27px;margin:0 0 4px;color:#fff;letter-spacing:-.3px}
+h2{font-size:20px;margin:34px 0 10px;color:var(--dr);border-bottom:1px solid var(--lr);padding-bottom:6px}
+.sub{color:var(--tx2);margin:0 0 20px}
+.card{background:var(--pn);border:1px solid var(--lr);border-radius:9px;padding:15px 17px;margin:14px 0}
+table{width:100%;border-collapse:collapse;margin:10px 0 14px;font-size:14px}
+th,td{border:1px solid var(--lr);padding:7px 9px;text-align:left}
+th{background:var(--pn);color:var(--dr)}
+ol{padding-left:22px} li{margin:8px 0}
+a{color:var(--vd)}
+code{background:#0a0d12;border:1px solid var(--lr);border-radius:4px;padding:1px 5px;font-size:13px}
+pre{background:#0a0d12;border:1px solid var(--lr);border-radius:8px;padding:14px;overflow:auto;
+    font:13px/1.55 Consolas,Menlo,monospace;color:#d7e2f0;max-height:420px}
+button{background:var(--vd);color:#06231a;border:0;border-radius:8px;padding:11px 20px;
+       font-size:15px;font-weight:700;cursor:pointer}
+button:active{transform:translateY(1px)}
+.ok{color:var(--vd)} .mut{color:var(--tx2)} .er{color:#e05555} .al{color:var(--dr)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Criar a coluna da casca</h1>
+<p class="sub">Um comando. É a última coisa que falta para o banco virar a fonte única.</p>
+
+<div class="card">
+<b class="al">POR QUE ISTO EXISTE</b><br>
+O conferir das 15h16 deu <b class="ok">bloco 3 vazio</b> — o banco e a pasta concordam em
+tudo que os dois têm. Sobrou <b>um campo só</b> no bloco 2:
+<br><br>
+<pre>2) SO A PASTA TEM - o que voce PERDE ao baixar
+   maxOvr    2.785 cartas</pre>
+O <code>maxOvr</code> é a pontuação máxima resgatada das <b>22 cascas de HTML</b>.
+<b>Não existe coluna para ele no banco</b> — então baixar apagaria os 2.785.
+</div>
+
+<h2>E por que não pode ir na coluna que já existe</h2>
+
+<p>A tabela já tem <code>nota_maxima_tela</code>. O nome engana: <b>ela guarda outra
+coisa.</b></p>
+
+<table>
+<tr><th>coluna</th><th>quem escreve</th><th>o que é</th></tr>
+<tr><td><code>nota_maxima_tela</code></td><td><code>entrar_com_o_efhub.py</code></td>
+    <td>o <code>overallRating</code> que o <b>efHub</b> devolve</td></tr>
+<tr><td><b>a nova</b></td><td><code>subir_base.py</code></td>
+    <td>o <code>maxOvr</code> que a <b>casca</b> mostrava</td></tr>
+</table>
+
+<div class="card">
+<b class="er">Medido em 16/08 15h13, carta por carta:</b>
+<pre>cartas com os DOIS numeros ..... 2.785
+   DISCORDAM ................... 2.444    <- 88%
+
+33185   a pasta diz 82,51   o banco diz 81,0</pre>
+<b>São duas medidas diferentes, não uma repetida.</b> Juntar as duas numa coluna só
+apagaria 2.444 números sem ninguém ver. Por isso ficam lado a lado até você decidir qual
+vale — é o <b>item 22</b> do <code>CONSERTOS-PENDENTES.html</code>.
+</div>
+
+<h2>O comando</h2>
+
+<p><button onclick="copiar()">📋 Copiar o comando</button>
+<span id="msg" class="mut" style="margin-left:12px"></span></p>
+
+<pre id="sql">-- ============================================================
+--  A COLUNA DA CASCA  -  16/08/2026
+--  So ACRESCENTA. Nao apaga, nao renomeia, nao toca em nenhuma
+--  linha de pontuacao. Rodar duas vezes nao faz mal.
+-- ============================================================
+
+alter table public.cards_base
+  add column if not exists pontuacao_maxima_da_casca numeric;
+
+comment on column public.cards_base.pontuacao_maxima_da_casca is
+  'O maxOvr resgatado das 22 cascas de HTML pelo RESGATAR-DA-TELA. NAO e a mesma coisa que nota_maxima_tela, que guarda o overallRating do efHub: medido em 16/08, os dois discordam em 2.444 de 2.785 cartas. As duas convivem ate o Luis decidir qual e a pontuacao maxima de verdade.';
+
+-- confere: tem que voltar uma linha
+select column_name, data_type
+  from information_schema.columns
+ where table_name = 'cards_base'
+   and column_name = 'pontuacao_maxima_da_casca';
+</pre>
+
+<h2>O passo a passo</h2>
+
+<ol>
+<li>Abra o editor de SQL do Supabase:
+    <a href="https://supabase.com/dashboard/project/_/sql/new" target="_blank">supabase.com/dashboard → SQL Editor</a></li>
+<li>Clique no botão verde aí em cima e <b>cole</b> no editor.</li>
+<li><b>Run</b>. A última consulta tem que devolver <b>uma linha</b>:
+    <code>pontuacao_maxima_da_casca | numeric</code></li>
+<li>Volte na pasta e rode o <code>FECHAR-O-CICLO.bat</code> de novo.</li>
+<li>Se os blocos <b>2 e 3</b> vierem vazios, rode o <code>BAIXAR-BASE.bat</code>
+    — e o banco passa a mandar.</li>
+</ol>
+
+<div class="card">
+<b class="ok">✅ O NOME NOVO SEGUE A PALAVRA NOVA</b><br>
+<span class="mut">A coluna nasce como <code>pontuacao_maxima_da_casca</code>, não
+"nota". As colunas antigas continuam com o nome que têm — trocar nome de coluna é trocar
+chave, e chave não se troca por causa de rótulo. <b>Mas o que nasce hoje já nasce
+certo.</b></span>
+</div>
+
+<script>
+function copiar(){
+  var t = document.getElementById('sql').innerText;
+  navigator.clipboard.writeText(t).then(function(){
+    document.getElementById('msg').textContent = '✅ copiado — agora cole no editor';
+  }, function(){
+    var r = document.createRange(); r.selectNode(document.getElementById('sql'));
+    window.getSelection().removeAllRanges(); window.getSelection().addRange(r);
+    document.getElementById('msg').textContent = 'selecionei — aperte Ctrl+C';
+  });
+}
+</script>
+
+</div>
+</body>
+</html>

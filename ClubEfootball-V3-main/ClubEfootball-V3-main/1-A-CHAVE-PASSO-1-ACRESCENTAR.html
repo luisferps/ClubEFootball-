@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A troca da chave — passo 1 de 3: acrescentar</title>
+<style>
+:root{--bg:#0e1116;--pn:#151a22;--tx:#cfd6e4;--tx2:#8d97a8;--vd:#22c58b;--dr:#d8b45a;--lr:#2a3140;--vm:#e05555}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.6 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:28px 20px 70px}
+h1{font-size:28px;margin:0 0 4px;color:#fff;letter-spacing:-.3px}
+h2{font-size:20px;margin:34px 0 10px;color:var(--dr);border-bottom:1px solid var(--lr);padding-bottom:6px}
+.sub{color:var(--tx2);margin:0 0 20px}
+.card{background:var(--pn);border:1px solid var(--lr);border-radius:9px;padding:15px 17px;margin:14px 0}
+table{width:100%;border-collapse:collapse;margin:10px 0 14px;font-size:14px}
+th,td{border:1px solid var(--lr);padding:7px 9px;text-align:left}
+th{background:var(--pn);color:var(--dr)}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+ol{padding-left:22px} li{margin:9px 0}
+a{color:var(--vd)}
+pre{background:#0a0d12;border:1px solid var(--lr);border-radius:8px;padding:14px;overflow:auto;
+    font:13px/1.55 Consolas,Menlo,monospace;color:#d7e2f0;max-height:420px}
+button{background:var(--vd);color:#06231a;border:0;border-radius:8px;padding:12px 22px;
+       font-size:16px;font-weight:700;cursor:pointer}
+button:active{transform:translateY(1px)}
+.ok{color:var(--vd)} .mut{color:var(--tx2)} .er{color:var(--vm)} .al{color:var(--dr)}
+.passo{display:flex;gap:10px;margin:16px 0}
+.p{flex:1;background:var(--pn);border:1px solid var(--lr);border-radius:8px;padding:11px 13px;font-size:13px}
+.p b{display:block;color:#fff;font-size:15px;margin-bottom:3px}
+.agora{border-color:var(--vd)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>A troca da chave — passo 1 de 3</h1>
+<p class="sub">Este é o único passo perigoso da reforma. Por isso ele foi partido em três,
+e <b>este primeiro não tira nada.</b></p>
+
+<div class="passo">
+  <div class="p agora"><b>1. ACRESCENTAR</b>
+    Cria a coluna do código do lado do nome e enche. <b class="ok">Você está aqui.</b>
+    Nada é apagado, nada muda de valor. Se der errado, apaga a coluna e acabou.</div>
+  <div class="p"><b>2. PROVAR</b>
+    Rodar dias com as duas juntas e conferir que dizem a mesma coisa, sempre.</div>
+  <div class="p"><b>3. TROCAR</b>
+    Só então a chave estrangeira passa a apontar para o código.
+    <b class="er">Aí sim tem risco</b> — e só com você olhando.</div>
+</div>
+
+<div class="card">
+<b class="er">⛔ Por que tanta cerimônia para trocar uma chave</b><br>
+As três tabelas apontam para <code>funcoes.nome</code> <b>com apagamento em cascata</b>.
+Se o nome sumir da tabela <code>funcoes</code>, o banco apaga sozinho, sem perguntar:
+<pre style="margin:8px 0">builds        11.133 linhas de resultado   (horas de motor)
+molde          1.430 linhas               (o alvo de cada atributo)
+estilo_valor     144 linhas</pre>
+E o nome <b>muda</b>: mudou oito vezes só nesta semana. <i>Ponta finalizadora</i> virou
+<i>Atacante finalizador</i>. Enquanto a chave for o nome, renomear uma função é apagar
+resultado.
+</div>
+
+<h2>O que este comando faz — e o que ele não faz</h2>
+<table>
+<tr><th>faz</th><th>não faz</th></tr>
+<tr>
+<td>
+cria a coluna <code>funcao_codigo</code> nas 3 tabelas<br>
+enche ela a partir da tabela <code>funcoes</code><br>
+cria a visão <code>chave_a_trocar</code> para conferir
+</td>
+<td class="mut">
+não apaga coluna<br>
+não apaga linha<br>
+não mexe em nenhuma pontuação<br>
+não toca em chave estrangeira nenhuma<br>
+não muda o que o motor lê hoje
+</td>
+</tr>
+</table>
+<p class="mut">Se rodar duas vezes, a segunda não faz nada de novo.</p>
+
+<h2>O passo a passo</h2>
+<ol>
+<li>Abra o editor: <a href="https://supabase.com/dashboard/project/trqqpsnafpbudtvvicch/sql/new" target="_blank">supabase.com → SQL Editor</a></li>
+<li>Clique no botão verde.</li>
+<li>No editor: <b>Ctrl+A</b>, <b>Ctrl+V</b>, <b>Ctrl+Enter</b>.</li>
+<li><b>Ele termina mostrando uma tabela de conferência.</b> Me mande a foto dela.</li>
+</ol>
+
+<div class="card">
+<b class="al">O que a tabela de conferência tem de dizer</b>
+<pre style="margin:8px 0">tabela          linhas   com codigo   SEM codigo
+builds          11.133       11.133            0
+molde            1.430        1.430            0
+estilo_valor       144          144            0</pre>
+<b>A coluna da direita tem de ser zero nas três.</b> Se não for, tem nome na tabela que não
+existe mais em <code>funcoes</code> — e aí a lista aparece logo abaixo, com o nome e quantas
+linhas. <b>Nesse caso não siga para o passo 2. Me mande a lista.</b>
+</div>
+
+<p style="text-align:center;margin:26px 0">
+<button onclick="copiar()">📋 Copiar o comando</button>
+<span id="msg" class="ok" style="margin-left:14px"></span>
+</p>
+
+<pre id="sql">-- ============================================================
+--  A TROCA DA CHAVE — PASSO 1 de 3: ACRESCENTAR
+--  16/08/2026
+--
+--  ⛔ Este comando NAO apaga nada, NAO muda valor nenhum e NAO
+--     toca em chave estrangeira. So acrescenta uma coluna e
+--     enche ela. Rodar duas vezes nao faz mal.
+-- ============================================================
+
+-- 1) A coluna do codigo, ao lado do nome, nas tres tabelas.
+do $$
+declare
+  t text;
+  col text;
+begin
+  foreach t in array array['builds','molde','estilo_valor'] loop
+    -- descobre como a tabela chama a coluna da funcao (funcao ou funcao_nome)
+    select column_name into col
+      from information_schema.columns
+     where table_schema = 'public' and table_name = t
+       and column_name in ('funcao','funcao_nome','nome_funcao')
+     limit 1;
+
+    if col is null then
+      raise notice 'tabela % nao tem coluna de funcao — pulei', t;
+      continue;
+    end if;
+
+    execute format('alter table %I add column if not exists funcao_codigo text', t);
+
+    execute format(
+      'update %I x set funcao_codigo = f.codigo
+         from funcoes f
+        where f.nome = x.%I
+          and f.codigo is not null
+          and x.funcao_codigo is distinct from f.codigo', t, col);
+
+    raise notice 'tabela % : coluna % -> funcao_codigo preenchida', t, col;
+  end loop;
+end $$;
+
+comment on column builds.funcao_codigo is
+  'O codigo fixo da funcao, ao lado do nome. 16/08: PASSO 1 da troca da chave — a coluna existe e esta cheia, mas a chave estrangeira AINDA aponta para o nome. Nada depende desta coluna ainda.';
+
+-- 2) A visao de conferencia. E ela que diz se pode seguir.
+create or replace view chave_a_trocar as
+select 'builds'       as tabela, count(*) as linhas,
+       count(funcao_codigo) as com_codigo,
+       count(*) - count(funcao_codigo) as sem_codigo from builds
+union all
+select 'molde',        count(*), count(funcao_codigo), count(*) - count(funcao_codigo) from molde
+union all
+select 'estilo_valor', count(*), count(funcao_codigo), count(*) - count(funcao_codigo) from estilo_valor;
+
+comment on view chave_a_trocar is
+  'Quantas linhas de cada tabela ja tem o codigo da funcao ao lado do nome. Enquanto sem_codigo nao for ZERO nas tres, a troca da chave NAO PODE acontecer.';
+
+-- 3) A visao dos nomes que nao casaram — a lista do que impede seguir.
+create or replace view chave_sem_par as
+select 'builds' as tabela, funcao as nome_que_nao_casou, count(*) as linhas
+  from builds where funcao_codigo is null group by 1,2
+union all
+select 'molde', funcao, count(*) from molde where funcao_codigo is null group by 1,2
+union all
+select 'estilo_valor', funcao, count(*) from estilo_valor where funcao_codigo is null group by 1,2
+order by linhas desc;
+
+comment on view chave_sem_par is
+  'Os nomes de funcao que existem nas tabelas de resultado mas NAO existem mais na tabela funcoes. Cada um destes e um nome que ficou para tras num renomeio. Enquanto houver linha aqui, a chave nao se troca.';
+
+-- ============================================================
+--  A CONFERENCIA — e isto que tem de aparecer na tela
+-- ============================================================
+select * from chave_a_trocar;
+</pre>
+
+<div class="card">
+<b>Depois que a conferência der zero nos três</b><br>
+Não faça mais nada hoje. O passo 2 é <b>deixar rodando</b> — o motor continua escrevendo
+pelo nome, a coluna do código continua sendo preenchida, e a gente confere de tempos em
+tempos que as duas dizem a mesma coisa. <b>Só depois disso a chave muda.</b>
+<br><br><span class="mut">Enquanto isso, nada no sistema depende da coluna nova. Ela é só
+uma testemunha.</span>
+</div>
+
+<script>
+function copiar(){
+  var t = document.getElementById('sql').innerText;
+  navigator.clipboard.writeText(t).then(function(){
+    document.getElementById('msg').textContent = '✅ copiado — agora cole no editor';
+  }, function(){
+    var r = document.createRange(); r.selectNode(document.getElementById('sql'));
+    window.getSelection().removeAllRanges(); window.getSelection().addRange(r);
+    document.getElementById('msg').textContent = 'selecionei — aperte Ctrl+C';
+  });
+}
+</script>
+
+</div>
+</body>
+</html>

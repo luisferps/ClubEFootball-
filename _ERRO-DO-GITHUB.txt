@@ -1,0 +1,17 @@
+============================================ 
+ LOG DO SUBIR-PRO-GITHUB 
+ 26/08/2026 22:49:11,19 
+============================================ 
+ 
+---- o git esta instalado? 
+C:\Program Files\Git\cmd\git.exe
+git version 2.55.0.windows.5
+ 
+---- o .gitignore protege a chave? 
+config.txt
+ 
+---- estado do repositorio local 
+REPOSITORIO JA EXISTE 
+error: No such remote: 'origin'
+ 
+---- git add 

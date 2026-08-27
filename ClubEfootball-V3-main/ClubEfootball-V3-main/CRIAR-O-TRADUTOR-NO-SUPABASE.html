@@ -1,0 +1,159 @@
+<!doctype html><meta charset="utf-8"><title>CRIAR O TRADUTOR NO SUPABASE</title>
+<style>body{font:15px system-ui;margin:0;padding:28px;background:#0f1115;color:#e6e8ee;max-width:980px}
+h1{font-size:22px;margin:0 0 6px}p{color:#9aa3b2;line-height:1.55}
+ol{line-height:2}a{color:#8ab4ff}
+pre{background:#151926;border:1px solid #232838;border-radius:10px;padding:16px;overflow:auto;
+    font:12px ui-monospace,Consolas,monospace;color:#cfd6e4;max-height:460px}
+button{background:#ff4d6a;color:#fff;border:0;padding:12px 20px;border-radius:9px;font-size:15px;
+       font-weight:600;cursor:pointer}
+.av{background:#1b2130;border-left:3px solid #ffb86b;padding:12px 15px;border-radius:0 8px 8px 0;margin:16px 0}
+.ok{border-left-color:#7dd3a0}
+code{background:#1b2130;padding:2px 6px;border-radius:4px;font-size:13px}</style>
+<h1>Criar o tradutor no Supabase</h1>
+<p>Uma tabela que diz <b>o que e cada coluna</b> da <code>cards_base</code>: o nome, o que
+significa em portugues, de qual campo da pasta ela vem e <b>qual programa escreve nela</b>.</p>
+
+<div class="av ok"><b>Como isto foi montado.</b> Lendo os programas que gravam no banco —
+<code>subir_base.py</code>, <code>entrar_com_o_efhub.py</code>, <code>subir_metadados_da_tela.py</code>
+e <code>estados.py</code>. Cada linha saiu do codigo que grava, nao do que eu acho que a coluna e.</p>
+
+<div class="av"><b>O que ele ja resolve.</b> Duas colunas nasceram duplicadas porque dois
+programas gravam a mesma coisa com nome diferente:<br><br>
+<code>pe_ruim_precisao</code> (entrar_com_o_efhub) &nbsp;x&nbsp; <code>pe_ruim_prec</code> (subir_base)<br>
+<code>lesao</code> (entrar_com_o_efhub) &nbsp;x&nbsp; <code>resist_lesao</code> (subir_base)<br><br>
+As duas curtas tem so <b>136 cartas</b>. Ficam marcadas como DUPLICATA no tradutor —
+<b>nao apague ainda</b>, primeiro a gente unifica na origem.</div>
+
+<div class="av"><b>E o que NAO e duplicata, embora pareca:</b><br><br>
+<code>estilo_de_jogo</code> = o estilo do JOGADOR (Pivo, Artilheiro)<br>
+<code>estilo_ia</code> = o estilo da IA, como ela controla ele<br><br>
+<code>max_ovr</code> = a nota maxima da carta NO JOGO<br>
+<code>nota_maxima_tela</code> = a nota maxima que a NOSSA tela calculou<br><br>
+Sao campos diferentes. Escolher um e apagar o outro perderia dado.</div>
+
+<ol>
+<li>Abra o <a href="https://supabase.com/dashboard" target="_blank">Supabase</a> e entre no projeto.</li>
+<li>Menu da esquerda, <b>SQL Editor</b>.</li>
+<li>Clique no botao abaixo para copiar o comando.</li>
+<li>Cole no editor (<b>Ctrl+V</b>) e clique em <b>Run</b>.</li>
+<li>Me mande o que apareceu.</li>
+</ol>
+<p><button onclick="copiar()">Copiar o comando</button> <span id="msg" style="color:#7dd3a0"></span></p>
+<pre id="sql">-- ============================================================
+--  O TRADUTOR — o que e cada coluna da cards_base
+--  Montado em 16/08/2026 LENDO os programas que escrevem no banco.
+--  Nada aqui foi suposto: cada linha saiu do codigo que grava.
+-- ============================================================
+
+create table if not exists tradutor (
+  coluna          text primary key,
+  o_que_e         text,
+  campo_na_pasta  text,
+  quem_escreve    text,
+  observacao      text,
+  atualizado_em   timestamptz default now()
+);
+
+insert into tradutor (coluna, o_que_e, campo_na_pasta, quem_escreve, observacao) values
+  (&#x27;altura&#x27;, &#x27;altura em cm&#x27;, &#x27;altura&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;atr_aceleracao&#x27;, &#x27;o atributo 11 dos 26: aceleracao&#x27;, &#x27;base[11]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_agressividade&#x27;, &#x27;o atributo 20 dos 26: agressividade&#x27;, &#x27;base[20]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_alcance&#x27;, &#x27;o atributo 25 dos 26: alcance&#x27;, &#x27;base[25]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_cabeceio&#x27;, &#x27;o atributo 7 dos 26: cabeceio&#x27;, &#x27;base[7]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_cobranca_de_falta&#x27;, &#x27;o atributo 8 dos 26: cobranca de falta&#x27;, &#x27;base[8]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_contato_fisico&#x27;, &#x27;o atributo 14 dos 26: contato fisico&#x27;, &#x27;base[14]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_controle_de_bola&#x27;, &#x27;o atributo 1 dos 26: controle de bola&#x27;, &#x27;base[1]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_defesa_go&#x27;, &#x27;o atributo 22 dos 26: defesa go&#x27;, &#x27;base[22]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_desarme&#x27;, &#x27;o atributo 18 dos 26: desarme&#x27;, &#x27;base[18]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_drible&#x27;, &#x27;o atributo 2 dos 26: drible&#x27;, &#x27;base[2]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_efeito&#x27;, &#x27;o atributo 9 dos 26: efeito&#x27;, &#x27;base[9]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_encaixe&#x27;, &#x27;o atributo 23 dos 26: encaixe&#x27;, &#x27;base[23]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_envolvimento_defensivo&#x27;, &#x27;o atributo 19 dos 26: envolvimento defensivo&#x27;, &#x27;base[19]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_equilibrio&#x27;, &#x27;o atributo 15 dos 26: equilibrio&#x27;, &#x27;base[15]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_finalizacao&#x27;, &#x27;o atributo 6 dos 26: finalizacao&#x27;, &#x27;base[6]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_ofensividade&#x27;, &#x27;o atributo 0 dos 26: ofensividade&#x27;, &#x27;base[0]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_passe_alto&#x27;, &#x27;o atributo 5 dos 26: passe alto&#x27;, &#x27;base[5]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_passe_rasteiro&#x27;, &#x27;o atributo 4 dos 26: passe rasteiro&#x27;, &#x27;base[4]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_posse_de_bola&#x27;, &#x27;o atributo 3 dos 26: posse de bola&#x27;, &#x27;base[3]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_potencia_de_chute&#x27;, &#x27;o atributo 12 dos 26: potencia de chute&#x27;, &#x27;base[12]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_reflexos&#x27;, &#x27;o atributo 24 dos 26: reflexos&#x27;, &#x27;base[24]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_resistencia&#x27;, &#x27;o atributo 16 dos 26: resistencia&#x27;, &#x27;base[16]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_salto&#x27;, &#x27;o atributo 13 dos 26: salto&#x27;, &#x27;base[13]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_talento_de_goleiro&#x27;, &#x27;o atributo 21 dos 26: talento de goleiro&#x27;, &#x27;base[21]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_talento_defensivo&#x27;, &#x27;o atributo 17 dos 26: talento defensivo&#x27;, &#x27;base[17]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atr_velocidade&#x27;, &#x27;o atributo 10 dos 26: velocidade&#x27;, &#x27;base[10]&#x27;, &#x27;subir_base&#x27;, &#x27;o mesmo dado do atributos_base, em coluna separada&#x27;),
+  (&#x27;atributos_base&#x27;, &#x27;os 26 atributos, na ordem do const ATTRS&#x27;, &#x27;base&#x27;, &#x27;subir_base&#x27;, &#x27;o MESMO dado das 26 colunas atr_*, guardado duas vezes&#x27;),
+  (&#x27;atualizado_em&#x27;, &#x27;a hora em que o banco recebeu esta linha&#x27;, &#x27;&#x27;, &#x27;subir_base&#x27;, &#x27;carimbo. E ele que o A-VOLTA-AUTOMATICA compara&#x27;),
+  (&#x27;boost_id&#x27;, &#x27;o codigo do 1o impeto, no numero do efHub&#x27;, &#x27;boostId&#x27;, &#x27;subir_base&#x27;, &#x27;NAO casa com o id do catalogo do efScout: numeracoes diferentes&#x27;),
+  (&#x27;boost_id2&#x27;, &#x27;o codigo do 2o impeto&#x27;, &#x27;boostId2&#x27;, &#x27;subir_base&#x27;, &#x27;idem&#x27;),
+  (&#x27;box&#x27;, &#x27;o nome da campanha, INTEIRO&#x27;, &#x27;box&#x27;, &#x27;subir_base&#x27;, &#x27;cada POTW e uma box diferente. O nome inteiro e a chave dela&#x27;),
+  (&#x27;cap_desbloq&#x27;, &#x27;se o teto de nivel esta desbloqueado&#x27;, &#x27;capdesc&#x27;, &#x27;subir_base&#x27;, &#x27;so 136 cartas&#x27;),
+  (&#x27;card_id&#x27;, &#x27;a chave da carta — o id de 14 digitos da Konami&#x27;, &#x27;id&#x27;, &#x27;subir_base&#x27;, &#x27;a mesma chave no efHub, no efootballdb e no efScout&#x27;),
+  (&#x27;condicao&#x27;, &#x27;a condicao fisica&#x27;, &#x27;cond&#x27;, &#x27;subir_base + entrar_com_o_efhub&#x27;, &#x27;&#x27;),
+  (&#x27;corpo&#x27;, &#x27;as 12 medidas do corpo&#x27;, &#x27;corpo&#x27;, &#x27;subir_base + entrar_com_o_efhub&#x27;, &#x27;so o efHub (playerModel) e o efootbase respondem. O efootballdb NAO tem&#x27;),
+  (&#x27;data_lancamento&#x27;, &#x27;a data em que a carta saiu&#x27;, &#x27;dt&#x27;, &#x27;subir_base&#x27;, &#x27;A 1a TRAVA DO IMPETO: antes de 12/09/2024 a carta NAO tem vaga&#x27;),
+  (&#x27;estado_de_cada_campo&#x27;, &#x27;valor / zerado / nao se aplica / nao sei, por campo&#x27;, &#x27;&#x27;, &#x27;estados&#x27;, &#x27;so `nao sei` e pendencia. Zerado e nao se aplica sao RESPOSTA&#x27;),
+  (&#x27;estilo_de_jogo&#x27;, &#x27;o estilo do JOGADOR (Pivo, Artilheiro, Ala produtivo)&#x27;, &#x27;modelo&#x27;, &#x27;subir_base&#x27;, &#x27;NAO e o estilo da IA. Sao coisas diferentes&#x27;),
+  (&#x27;estilo_ia&#x27;, &#x27;o estilo da IA — como ela controla o jogador&#x27;, &#x27;com&#x27;, &#x27;entrar_com_o_efhub&#x27;, &#x27;na pasta a chave e `com`, nao `estilo_ia`. So o efHub e o efootbase respondem&#x27;),
+  (&#x27;fonte_de_cada_campo&#x27;, &#x27;de qual fonte veio cada campo desta carta&#x27;, &#x27;fonte_de_cada_campo&#x27;, &#x27;subir_base&#x27;, &#x27;o carimbo de origem — nao entra na nota&#x27;),
+  (&#x27;forma&#x27;, &#x27;a constancia — a setinha da ficha&#x27;, &#x27;forma&#x27;, &#x27;subir_base + entrar_com_o_efhub&#x27;, &#x27;&#x27;),
+  (&#x27;hab_faltantes&#x27;, &#x27;o pool: as que a carta PODE adicionar&#x27;, &#x27;falta&#x27;, &#x27;subir_base&#x27;, &#x27;e o ESPACO DE BUSCA do motor, nao um dado do card&#x27;),
+  (&#x27;hab_nativas&#x27;, &#x27;as habilidades de fabrica&#x27;, &#x27;fab&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;hab_raras&#x27;, &#x27;as habilidades raras&#x27;, &#x27;raras&#x27;, &#x27;subir_base&#x27;, &#x27;vazio e o caso normal de 71% da base — nao e falta&#x27;),
+  (&#x27;idade&#x27;, &#x27;a idade do jogador&#x27;, &#x27;age&#x27;, &#x27;subir_base + entrar_com_o_efhub&#x27;, &#x27;&#x27;),
+  (&#x27;impeto_condicional&#x27;, &#x27;se o impeto exige condicao de esquadra&#x27;, &#x27;impeto_condicional&#x27;, &#x27;subir_base&#x27;, &#x27;o ranking usa SEMPRE o degrau 1, valendo +1 (regra do Luis, 05/08)&#x27;),
+  (&#x27;impeto_de_onde&#x27;, &#x27;de qual fonte veio o impeto desta carta&#x27;, &#x27;impeto_de_onde&#x27;, &#x27;subir_base&#x27;, &#x27;procedencia — conta nossa, nao entra na nota&#x27;),
+  (&#x27;impeto_delta_condicional&#x27;, &#x27;o teto do condicional&#x27;, &#x27;nx&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;impeto_efeito&#x27;, &#x27;o vetor esparso [indice, quanto] do impeto de fabrica&#x27;, &#x27;nm&#x27;, &#x27;subir_base&#x27;, &#x27;o numero e a SOMA no atributo, nao o nivel do impeto&#x27;),
+  (&#x27;impeto_efeito_legivel&#x27;, &#x27;o mesmo efeito, escrito para ler&#x27;, &#x27;impeto_efeito&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;impeto_nativo&#x27;, &#x27;o impeto de fabrica&#x27;, &#x27;impeto_nativo&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;impeto_nomes&#x27;, &#x27;os nomes do impeto, como vieram da fonte&#x27;, &#x27;nmn&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;impeto_nomes_decompostos&#x27;, &#x27;os nomes achados decompondo o efeito&#x27;, &#x27;impeto_nomes&#x27;, &#x27;subir_base&#x27;, &#x27;sai do catalogo do efScout por assinatura: fecha em 98%&#x27;),
+  (&#x27;impeto_orfao&#x27;, &#x27;os codigos de impeto que o catalogo nao conhece&#x27;, &#x27;impeto_orfao&#x27;, &#x27;subir_base&#x27;, &#x27;17 cartas em 16/08: Messi, Yamal, Hazard, Diego Costa&#x27;),
+  (&#x27;impeto_quantos&#x27;, &#x27;quantos impetos a carta tem&#x27;, &#x27;impeto_quantos&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;impeto_situacao&#x27;, &#x27;tem impeto / sem impeto e sem vaga / vaga a coletar&#x27;, &#x27;impeto_situacao&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;impeto_soma&#x27;, &#x27;a soma total do impeto&#x27;, &#x27;impeto_soma&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;impeto_tem&#x27;, &#x27;se a carta tem impeto&#x27;, &#x27;impeto_tem&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;lesao&#x27;, &#x27;resistencia a lesao&#x27;, &#x27;inj&#x27;, &#x27;entrar_com_o_efhub&#x27;, &#x27;ESTA E A BOA. A resist_lesao e a mesma coisa com outro nome&#x27;),
+  (&#x27;lesao_bruto&#x27;, &#x27;a lesao como o HTML antigo mostrava&#x27;, &#x27;&#x27;, &#x27;subir_metadados_da_tela&#x27;, &#x27;valor cru, antes de traduzir&#x27;),
+  (&#x27;level_cap&#x27;, &#x27;ate que nivel a carta sobe&#x27;, &#x27;levelCap&#x27;, &#x27;subir_base + entrar_com_o_efhub&#x27;, &#x27;level_cap 1 NAO e ficha incompleta: sao os Standard, que nao evoluem&#x27;),
+  (&#x27;max_ovr&#x27;, &#x27;a nota maxima da carta NO JOGO&#x27;, &#x27;max_ovr&#x27;, &#x27;subir_base&#x27;, &#x27;NAO confundir com nota_maxima_tela, que e conta nossa&#x27;),
+  (&#x27;maximo&#x27;, &#x27;o maximo de cada atributo&#x27;, &#x27;mx&#x27;, &#x27;subir_metadados_da_tela&#x27;, &#x27;a regua do calculo&#x27;),
+  (&#x27;mestre&#x27;, &#x27;mestre / familiaridade&#x27;, &#x27;mst&#x27;, &#x27;subir_metadados_da_tela&#x27;, &#x27;&#x27;),
+  (&#x27;metadado_tela_de_onde&#x27;, &#x27;de onde o resgate da tela tirou o dado&#x27;, &#x27;&#x27;, &#x27;subir_metadados_da_tela&#x27;, &#x27;procedencia — nao entra na nota&#x27;),
+  (&#x27;nome&#x27;, &#x27;o nome do jogador&#x27;, &#x27;nome&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;nota_maxima_tela&#x27;, &#x27;a nota maxima que a NOSSA tela calculou&#x27;, &#x27;maxOvr&#x27;, &#x27;entrar_com_o_efhub&#x27;, &#x27;conta nossa. NAO confundir com max_ovr, que e do jogo&#x27;),
+  (&#x27;orcamento&#x27;, &#x27;o orcamento de barras da carta&#x27;, &#x27;orc&#x27;, &#x27;subir_base&#x27;, &#x27;medido 16/08: orc = 2 x (level_cap - 1) em 2.665 de 2.700&#x27;),
+  (&#x27;origem_ficha&#x27;, &#x27;de qual coleta a ficha veio&#x27;, &#x27;origem_ficha&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;ovr&#x27;, &#x27;o geral da carta, no nivel 1&#x27;, &#x27;ovr&#x27;, &#x27;subir_base&#x27;, &#x27;NAO usar para filtrar carta boa — o indicador e o max_ovr&#x27;),
+  (&#x27;pe&#x27;, &#x27;o pe bom&#x27;, &#x27;pe&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;pe_ruim&#x27;, &#x27;o par [uso, precisao] do pe ruim&#x27;, &#x27;pe_ruim&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;pe_ruim_prec&#x27;, &#x27;DUPLICATA de pe_ruim_precisao&#x27;, &#x27;wfa&#x27;, &#x27;subir_base&#x27;, &#x27;so 136 cartas. Nasceu de subir_base usar o nome curto. APAGAR depois de unificar&#x27;),
+  (&#x27;pe_ruim_precisao&#x27;, &#x27;a precisao do pe ruim, 0 a 3&#x27;, &#x27;wfa&#x27;, &#x27;entrar_com_o_efhub&#x27;, &#x27;ESTA E A BOA. A pe_ruim_prec e a mesma coisa com outro nome&#x27;),
+  (&#x27;pe_ruim_precisao_bruto&#x27;, &#x27;a precisao do pe ruim, crua do HTML antigo&#x27;, &#x27;&#x27;, &#x27;subir_metadados_da_tela&#x27;, &#x27;valor cru&#x27;),
+  (&#x27;pe_ruim_uso&#x27;, &#x27;quanto a carta usa o pe ruim, 0 a 3&#x27;, &#x27;wfu&#x27;, &#x27;subir_base + entrar_com_o_efhub&#x27;, &#x27;&#x27;),
+  (&#x27;pe_ruim_uso_bruto&#x27;, &#x27;o uso do pe ruim, cru do HTML antigo&#x27;, &#x27;&#x27;, &#x27;subir_metadados_da_tela&#x27;, &#x27;valor cru&#x27;),
+  (&#x27;peso&#x27;, &#x27;peso em kg&#x27;, &#x27;peso&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;posicao&#x27;, &#x27;a posicao mostrada&#x27;, &#x27;pos&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;posicao_nativa&#x27;, &#x27;a posicao nativa — a que o motor usa&#x27;, &#x27;np&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;posicoes_sec&#x27;, &#x27;as posicoes secundarias, separadas por barra&#x27;, &#x27;sec&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;),
+  (&#x27;resist_lesao&#x27;, &#x27;DUPLICATA de lesao&#x27;, &#x27;inj&#x27;, &#x27;subir_base&#x27;, &#x27;so 136 cartas. APAGAR depois de unificar&#x27;),
+  (&#x27;tier&#x27;, &#x27;S ou S+ — a classificacao da comunidade&#x27;, &#x27;tier&#x27;, &#x27;subir_base&#x27;, &#x27;nao sai do ovr: Neuer 82 = S, Bellingham 82 = S+&#x27;),
+  (&#x27;vaga_detalhe&#x27;, &#x27;os tres slots do efootballdb: NATIVO, VAGA ou vazio&#x27;, &#x27;vaga&#x27;, &#x27;subir_base&#x27;, &#x27;a UNICA fonte que separa nativo de vaga livre. Provado 8 de 8 no videogame&#x27;),
+  (&#x27;vagas_impeto&#x27;, &#x27;o par sl — quantas vagas ainda cabem&#x27;, &#x27;sl&#x27;, &#x27;subir_base&#x27;, &#x27;[1,1] NAO EXISTE. [0,0] e ao mesmo tempo &quot;nenhuma vaga&quot; e &quot;duas cheias&quot;: so cruzando com o impeto se sabe&#x27;),
+  (&#x27;vagas_livres&#x27;, &#x27;quantas vagas estao livres&#x27;, &#x27;vagas_livres&#x27;, &#x27;subir_base&#x27;, &#x27;derivado do sl&#x27;),
+  (&#x27;visto_na_casca&#x27;, &#x27;se o dado foi visto no HTML antigo&#x27;, &#x27;&#x27;, &#x27;subir_metadados_da_tela&#x27;, &#x27;procedencia — nao entra na nota&#x27;),
+  (&#x27;votos&#x27;, &#x27;quantos votos a carta tem na comunidade&#x27;, &#x27;votos&#x27;, &#x27;subir_base&#x27;, &#x27;&#x27;)
+on conflict (coluna) do update set
+  o_que_e        = excluded.o_que_e,
+  campo_na_pasta = excluded.campo_na_pasta,
+  quem_escreve   = excluded.quem_escreve,
+  observacao     = excluded.observacao,
+  atualizado_em  = now();
+</pre>
+<script>
+function copiar(){
+  const t=document.getElementById('sql').textContent;
+  navigator.clipboard.writeText(t).then(()=>{document.getElementById('msg').textContent='copiado';});
+}
+</script>

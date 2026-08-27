@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Alimentador — ClubEfootball</title>
+<style>
+  :root{
+    --fundo:#0f1419; --caixa:#161c24; --borda:#232c38; --linha:#1c242e;
+    --texto:#e6edf3; --fraco:#8b98a8; --verde:#22c58b; --ambar:#f0a531;
+    --vermelho:#e0533d; --azul:#5b9dd9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--fundo);color:var(--texto);
+       font:15px/1.5 -apple-system,Segoe UI,Roboto,system-ui,sans-serif}
+  header{padding:22px 28px;border-bottom:1px solid var(--borda);
+         display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  h1{margin:0;font-size:19px;letter-spacing:-.2px}
+  .sub{color:var(--fraco);font-size:13px}
+  main{max-width:980px;margin:0 auto;padding:26px 28px 60px}
+  .cartao{background:var(--caixa);border:1px solid var(--borda);border-radius:10px;
+          padding:20px 22px;margin-bottom:18px}
+  .cartao h2{margin:0 0 4px;font-size:14px;text-transform:uppercase;
+             letter-spacing:.7px;color:var(--fraco);font-weight:700}
+  .cartao p.ajuda{margin:0 0 16px;color:var(--fraco);font-size:13.5px}
+  button{font:inherit;font-weight:600;padding:10px 18px;border-radius:8px;
+         border:1px solid var(--borda);background:#1e2833;color:var(--texto);cursor:pointer}
+  button:hover:not(:disabled){border-color:#31404f}
+  button.principal{background:var(--verde);border-color:var(--verde);color:#06231a}
+  button.principal:hover:not(:disabled){filter:brightness(1.08)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .botoes{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .numeros{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:4px}
+  .n{background:#121820;border:1px solid var(--borda);border-radius:8px;padding:13px 15px}
+  .n b{display:block;font-size:23px;font-variant-numeric:tabular-nums;letter-spacing:-.5px}
+  .n span{color:var(--fraco);font-size:12px}
+  table{width:100%;border-collapse:collapse;margin-top:6px;font-size:14px}
+  th{text-align:left;color:var(--fraco);font-weight:600;font-size:12px;
+     text-transform:uppercase;letter-spacing:.5px;padding:8px 10px;border-bottom:1px solid var(--borda)}
+  td{padding:9px 10px;border-bottom:1px solid var(--linha);font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+  .tag{font-size:11.5px;padding:2px 9px;border-radius:20px;font-weight:600;white-space:nowrap}
+  .ok{background:#0e2d22;color:var(--verde)}
+  .esperando{background:#2b2413;color:var(--ambar)}
+  .erro{background:#2d1512;color:var(--vermelho)}
+  .barra{height:7px;background:#101820;border-radius:20px;overflow:hidden;margin-top:14px}
+  .barra i{display:block;height:100%;width:0;background:var(--verde);transition:width .25s}
+  #diario{font:12.5px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--fraco);
+          max-height:260px;overflow:auto;white-space:pre-wrap;margin-top:12px}
+  .aviso{border-left:3px solid var(--ambar);padding:10px 14px;background:#1a1710;
+         border-radius:0 8px 8px 0;font-size:13.5px;margin-top:14px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Alimentador</h1>
+  <span class="sub">o que a coleta traz entra na casa por aqui</span>
+</header>
+
+<main>
+  <div class="cartao">
+    <h2>1 · A pasta da coleta</h2>
+    <p class="ajuda">Escolha a pasta <b>Resultado da Coleta</b>. O Alimentador lê os
+      lotes já fechados — pode rodar com a coleta ligada.</p>
+    <div class="botoes">
+      <button class="principal" id="btPasta">Escolher a pasta</button>
+      <span id="nomePasta" class="sub"></span>
+    </div>
+  </div>
+
+  <div class="cartao" id="cxLotes" style="display:none">
+    <h2>2 · O que tem na pasta</h2>
+    <div class="numeros">
+      <div class="n"><b id="qLotes">0</b><span>lotes fechados</span></div>
+      <div class="n"><b id="qCards">0</b><span>cards nos arquivos</span></div>
+      <div class="n"><b id="qFotos">0</b><span>com foto validada</span></div>
+    </div>
+    <table id="tbLotes"><thead><tr><th>lote</th><th>cards</th><th>estado</th></tr></thead><tbody></tbody></table>
+    <div class="botoes" style="margin-top:18px">
+      <button class="principal" id="btSubir" disabled>Levar para o banco</button>
+      <button id="btConferir">Ver o que já está no banco</button>
+    </div>
+    <div class="barra"><i id="prog"></i></div>
+  </div>
+
+  <div class="cartao" id="cxBanco" style="display:none">
+    <h2>3 · A caixa de entrada do banco</h2>
+    <p class="ajuda">Tudo que chega fica aqui até ser conferido e entrar na casa.
+      A porta só aceita — ninguém lê o banco por ela.</p>
+    <div class="numeros">
+      <div class="n"><b id="bTotal">—</b><span>na caixa</span></div>
+      <div class="n"><b id="bConferido">—</b><span>conferidos</span></div>
+      <div class="n"><b id="bCasa">—</b><span>já na casa</span></div>
+      <div class="n"><b id="bProblema">—</b><span>com problema</span></div>
+    </div>
+  </div>
+
+  <div class="cartao">
+    <h2>Diário</h2>
+    <div id="diario">esperando você escolher a pasta.</div>
+  </div>
+</main>
+
+<script>
+const BANCO = 'https://trqqpsnafpbudtvvicch.supabase.co';
+const CHAVE = 'sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj';
+const POR_VEZ = 400;
+
+let raiz = null, lotes = [];
+
+const $ = s => document.querySelector(s);
+function diz(t, cor){
+  const d = $('#diario');
+  d.textContent += '\n' + t;
+  d.scrollTop = d.scrollHeight;
+  if (cor) console.log('%c'+t, 'color:'+cor);
+}
+function num(id, v){ $(id).textContent = v; }
+
+async function rpc(nome, corpo){
+  const r = await fetch(BANCO + '/rest/v1/rpc/' + nome, {
+    method:'POST',
+    headers:{ apikey:CHAVE, Authorization:'Bearer '+CHAVE, 'Content-Type':'application/json' },
+    body: JSON.stringify(corpo || {})
+  });
+  const t = await r.text();
+  if(!r.ok) throw new Error('HTTP '+r.status+' — '+t.slice(0,200));
+  return t ? JSON.parse(t) : null;
+}
+
+$('#btPasta').onclick = async () => {
+  try{
+    raiz = await window.showDirectoryPicker({ mode:'read' });
+  }catch(e){ return; }
+  $('#nomePasta').textContent = raiz.name;
+  $('#diario').textContent = 'pasta: ' + raiz.name;
+  await lerPasta();
+};
+
+async function lerPasta(){
+  lotes = [];
+  let cards = 0, fotos = 0;
+  for await (const e of raiz.values()){
+    if (e.kind !== 'directory' || !/^LOTE-\d+/.test(e.name)) continue;
+    let arq = null;
+    try{
+      const dados = await e.getDirectoryHandle('dados');
+      arq = await dados.getFileHandle('05-dados-estruturados.jsonl');
+    }catch(err){ lotes.push({nome:e.name, n:0, estado:'ainda coletando'}); continue; }
+    const txt = await (await arq.getFile()).text();
+    const linhas = txt.split('\n').filter(l => l.trim());
+    let comFoto = 0;
+    const itens = [];
+    for(const l of linhas){
+      try{
+        const o = JSON.parse(l);
+        itens.push(o);
+        if(o.image_validation_status === 'validated_exact_card_id') comFoto++;
+      }catch(e2){}
+    }
+    cards += itens.length; fotos += comFoto;
+    lotes.push({ nome:e.name, n:itens.length, itens, estado:'pronto' });
+  }
+  lotes.sort((a,b)=>a.nome.localeCompare(b.nome));
+
+  num('#qLotes', lotes.filter(l=>l.estado==='pronto').length);
+  num('#qCards', cards.toLocaleString('pt-BR'));
+  num('#qFotos', fotos.toLocaleString('pt-BR'));
+  const tb = $('#tbLotes tbody'); tb.innerHTML = '';
+  for(const l of lotes){
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>'+l.nome+'</td><td>'+(l.n||'—')+'</td>'
+      + '<td><span class="tag '+(l.estado==='pronto'?'ok':'esperando')+'">'+l.estado+'</span></td>';
+    tb.appendChild(tr);
+  }
+  $('#cxLotes').style.display = '';
+  $('#btSubir').disabled = !lotes.some(l=>l.estado==='pronto');
+  diz(lotes.length+' lotes · '+cards+' cards · '+fotos+' com foto validada');
+  await verBanco();
+}
+
+$('#btSubir').onclick = async () => {
+  $('#btSubir').disabled = true;
+  const prontos = lotes.filter(l => l.estado === 'pronto');
+  const total = prontos.reduce((a,l)=>a+l.n, 0);
+  let feitos = 0, novos = 0, repetidos = 0;
+  try{
+    for(const l of prontos){
+      for(let i=0;i<l.itens.length;i+=POR_VEZ){
+        const parte = l.itens.slice(i, i+POR_VEZ);
+        const r = await rpc('receber_lote', { p_lote:l.nome, p_fonte:'efhub', p_itens:parte });
+        novos += r.gravados; repetidos += r.ja_tinha; feitos += parte.length;
+        $('#prog').style.width = (feitos/total*100).toFixed(1)+'%';
+      }
+      diz(l.nome + ' — entregue');
+    }
+    diz('PRONTO. '+novos+' entraram · '+repetidos+' o banco já tinha', '#22c58b');
+  }catch(e){
+    diz('PAROU: '+e.message+'  (nada do que já entrou se perde; pode rodar de novo)', '#e0533d');
+  }
+  await verBanco();
+  $('#btSubir').disabled = false;
+};
+
+$('#btConferir').onclick = verBanco;
+
+async function verBanco(){
+  try{
+    const r = await rpc('estado_da_caixa');
+    num('#bTotal', (r.total||0).toLocaleString('pt-BR'));
+    num('#bConferido', (r.conferidos||0).toLocaleString('pt-BR'));
+    num('#bCasa', (r.na_casa||0).toLocaleString('pt-BR'));
+    num('#bProblema', (r.com_problema||0).toLocaleString('pt-BR'));
+    $('#cxBanco').style.display = '';
+  }catch(e){ diz('não consegui ler o estado da caixa: '+e.message, '#f0a531'); }
+}
+</script>
+</body>
+</html>

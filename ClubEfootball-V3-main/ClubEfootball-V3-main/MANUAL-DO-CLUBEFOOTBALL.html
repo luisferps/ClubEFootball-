@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ClubEfootball — o manual do sistema</title>
+<style>
+:root{--bg:#0e1116;--pn:#151a22;--pn2:#1b212b;--tx:#cfd6e4;--tx2:#8d97a8;
+      --vd:#22c58b;--dr:#d8b45a;--vm:#e05555;--az:#5aa9e0;--lr:#2a3140}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.65 -apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:30px 20px 100px}
+h1{font-size:31px;margin:0 0 6px;color:#fff;letter-spacing:-.4px}
+h1 em{font-style:normal;color:var(--vd)}
+h2{font-size:22px;margin:52px 0 12px;color:var(--dr);border-bottom:1px solid var(--lr);padding-bottom:8px}
+h3{font-size:17px;margin:30px 0 6px;color:#fff}
+h4{font-size:15px;margin:20px 0 4px;color:var(--az)}
+.sub{color:var(--tx2);margin:0 0 24px}
+table{width:100%;border-collapse:collapse;margin:12px 0 18px;font-size:14px}
+th,td{border:1px solid var(--lr);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--pn);color:var(--dr);font-weight:600}
+td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.card{background:var(--pn);border:1px solid var(--lr);border-radius:9px;padding:15px 17px;margin:14px 0}
+.ok{color:var(--vd)} .al{color:var(--dr)} .er{color:var(--vm)} .mut{color:var(--tx2)} .az{color:var(--az)}
+code{background:#0a0d12;border:1px solid var(--lr);border-radius:4px;padding:1px 5px;font-size:13px}
+pre{background:#0a0d12;border:1px solid var(--lr);border-radius:8px;padding:14px;overflow:auto;
+    font:13px/1.6 Consolas,Menlo,monospace;color:#d7e2f0}
+ul{margin:6px 0 12px;padding-left:22px} li{margin:5px 0}
+ol{margin:6px 0 12px;padding-left:22px} ol li{margin:6px 0}
+hr{border:0;border-top:1px solid var(--lr);margin:36px 0}
+.idx{background:var(--pn);border:1px solid var(--lr);border-radius:9px;padding:16px 20px;margin:18px 0 30px;
+     column-count:2;column-gap:34px}
+.idx a{color:var(--tx);text-decoration:none;display:block;padding:3px 0;font-size:14px;break-inside:avoid}
+.idx a:hover{color:var(--vd)}
+.idx a b{color:var(--dr);display:inline-block;width:26px}
+.prov{background:#101c24;border:1px solid #24455a;border-radius:8px;padding:11px 14px;margin:10px 0;font-size:14px}
+.prov b{color:var(--az)}
+.lay{background:var(--pn);border:1px solid var(--lr);border-radius:8px;padding:13px 16px}
+.lay h4{margin:0 0 5px;font-size:15px;color:#fff}
+.lay h4::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;
+                background:var(--az);margin-right:9px;vertical-align:middle}
+.lay.n h4::before{background:var(--dr)}
+.lay.p h4::before{background:var(--vd)}
+.arw{text-align:center;color:var(--tx2);font-size:19px;line-height:1;margin:6px 0}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle}
+.b-tem{background:#123326;border:1px solid #1f6d4c;color:#9ff0cd}
+.b-meio{background:#3a3212;border:1px solid #7a6a2a;color:#ffe2a0}
+.b-novo{background:#3a1a1a;border:1px solid #7a2a2a;color:#ffb3b3}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1><em>ClubEfootball</em> — o manual do sistema</h1>
+<p class="sub">16/08/2026 · documento definitivo. Aqui está <b>o que o sistema faz, como
+ele calcula, e de onde saiu cada número.</b> Toda vez que alguém perguntar "de onde veio
+isso?", a resposta está neste documento — e onde não estiver, está escrito que não está.</p>
+
+<div class="card">
+<b>Como ler.</b> Cada regra vem com uma caixa azul de <b class="az">PROVENIÊNCIA</b>:
+de onde ela saiu, como foi medida e quando foi fechada. Regra sem proveniência é regra
+que ninguém pode defender — e no fim tem a lista das que ainda estão assim.
+</div>
+
+<div class="idx">
+<a href="#c1"><b>1</b> O que o sistema faz</a>
+<a href="#c2"><b>2</b> O vocabulário do jogo</a>
+<a href="#c3"><b>3</b> As 19 funções</a>
+<a href="#c4"><b>4</b> O molde — de onde sai o alvo</a>
+<a href="#c5"><b>5</b> O peso — como o alvo vira importância</a>
+<a href="#c6"><b>6</b> A régua — como o valor vira ponto</a>
+<a href="#c7"><b>7</b> A pontuação</a>
+<a href="#c8"><b>8</b> A equação do jogo</a>
+<a href="#c9"><b>9</b> As habilidades</a>
+<a href="#c10"><b>10</b> O ímpeto</a>
+<a href="#c11"><b>11</b> O técnico</a>
+<a href="#c12"><b>12</b> O corpo e o pé ruim</a>
+<a href="#c13"><b>13</b> O motor — como ele acha o ótimo</a>
+<a href="#c14"><b>14</b> A esteira — o caminho do dado</a>
+<a href="#c15"><b>15</b> O banco</a>
+<a href="#c16"><b>16</b> As regras de ouro</a>
+<a href="#c17"><b>17</b> Como a gente chegou até aqui</a>
+</div>
+
+<h2 id="c1">1. O que o sistema faz</h2>
+<p>O eFootball tem <b>44.862 cartas</b>. Cada uma pode ser treinada de muitas maneiras:
+onde gastar os pontos de barra, qual ímpeto fabricar, qual técnico usar, quais cinco
+habilidades acrescentar. E cada carta pode jogar em várias funções de campo, com
+resultados completamente diferentes em cada uma.</p>
+<p><b>O sistema responde uma pergunta:</b> <i>o que esta carta consegue ser, no seu melhor,
+em cada função?</i> — e devolve um número comparável.</p>
+<p>Para isso ele faz três coisas que ninguém mais faz:</p>
+<ol>
+<li><b>Mede o que é ser bom em cada função</b>, a partir do que a comunidade de fato
+monta nas cartas de elite. É o <b>molde</b>.</li>
+<li><b>Acha o melhor treino possível</b> de cada carta para cada função, por busca exata —
+não por aproximação, não por regra de bolso.</li>
+<li><b>Reproduz a conta do jogo</b> atributo por atributo, com as travas e os furos de
+trava que o jogo tem de verdade.</li>
+</ol>
+
+<h2 id="c2">2. O vocabulário do jogo</h2>
+<table>
+<tr><th>o que é</th><th>o que quer dizer aqui</th></tr>
+<tr><td><b>Carta</b></td><td>uma versão de um jogador. O mesmo jogador tem muitas cartas
+diferentes. <b>Existem 7 van Basten</b> — por isso o sistema nunca junta por nome, só por id.</td></tr>
+<tr><td><b>Os 26 atributos</b></td><td>de Ofensividade (0) a Alcance (25). A chave é o
+<b>índice</b>, não o nome — o nome é rótulo.</td></tr>
+<tr><td><b>As 10 barras</b></td><td>os grupos onde se gastam os pontos de treino. Cada
+atributo sobe por <b>uma barra só</b> — a única exceção é a Agressividade, que sobe por duas.</td></tr>
+<tr><td><b>Progressão / nível máximo</b></td><td>até onde a carta pode ser treinada.
+Define o orçamento.</td></tr>
+<tr><td><b>Orçamento</b></td><td><code>orçamento = 2 × nível máximo − 2</code>.
+Carta que não evolui tem orçamento zero: sem barra, sem habilidade, sem ímpeto — só o técnico.</td></tr>
+<tr><td><b>Habilidade</b></td><td>44 comuns que se pode <b>acrescentar</b> (até 5) e
+18 raras que a carta já tem ou não tem.</td></tr>
+<tr><td><b>Ímpeto</b> (booster)</td><td>um bônus fixo em alguns atributos. A carta pode
+vir com um de fábrica e pode ter vaga livre para fabricar outro.</td></tr>
+<tr><td><b>Técnico</b></td><td>multiplica todos os atributos por um fator, e dá +1 em alguns.</td></tr>
+<tr><td><b>Estilo de jogo</b></td><td>o papel que a carta tem (Artilheiro, Jogador de
+infiltração…). Junto com a posição, é ele que decide a <b>função nativa</b>.</td></tr>
+<tr><td><b>Estilo de jogo da IA</b></td><td>os comportamentos que a carta tem quando o
+computador a controla. Rende bônus.</td></tr>
+<tr><td><b>Corpo</b></td><td>12 medidas físicas — altura, coxa, panturrilha, cintura,
+peito, braço, pescoço, perna…</td></tr>
+</table>
+
+<h2 id="c3">3. As 19 funções</h2>
+<p>Função não é posição. <b>Posição + estilo de jogo = função nativa.</b> Um centroavante
+com estilo Artilheiro é um Centroavante fixo; com Atacante Pivô, é um Falso nove.</p>
+<table>
+<tr><th>grupo · sigla</th><th>a chave (banco e resultado)</th><th>o código fixo</th><th>o rótulo de hoje</th></tr>
+<tr><td rowspan="2">GOLEIRO · GO</td><td>Goleiro ofensivo</td><td><code>goleiro_ofensivo</code></td><td>Goleiro ofensivo</td></tr>
+<tr><td>Goleiro defensivo</td><td><code>goleiro_defensivo</code></td><td>Goleiro defensivo</td></tr>
+<tr><td rowspan="2">ZAGUEIRO · ZC</td><td>Zagueiro de saída</td><td><code>zagueiro_de_saida</code></td><td>Zagueiro de saída</td></tr>
+<tr><td>Zagueiro de combate</td><td><code>zagueiro_de_combate</code></td><td>Zagueiro de combate</td></tr>
+<tr><td rowspan="2">LATERAL · LE-LD</td><td>Lateral ofensivo</td><td><code>lateral_ofensivo</code></td><td>Lateral ofensivo</td></tr>
+<tr><td>Lateral defensivo</td><td><code>lateral_defensivo</code></td><td>Lateral defensivo</td></tr>
+<tr><td rowspan="2">VOLANTE · VOL</td><td>Volante de contenção</td><td><code>volante_de_contencao</code></td><td>Volante de contenção</td></tr>
+<tr><td>Volante de construção</td><td><code>volante_de_construcao</code></td><td>Volante de construção</td></tr>
+<tr><td rowspan="2">MEIA DE LIGAÇÃO · MLG</td><td>Meia central armador</td><td><code>meia_central_armador</code></td><td><b>Meia armador</b></td></tr>
+<tr><td>Meia central de chegada</td><td><code>meia_central_de_chegada</code></td><td><b>Meia de arranque</b></td></tr>
+<tr><td rowspan="2">MEIA LATERAL · MLE-MLD</td><td>Meia de lado por dentro</td><td><code>meia_de_lado_por_dentro</code></td><td><b>Ala finalizador</b></td></tr>
+<tr><td>Meia de lado por fora</td><td><code>meia_de_lado_por_fora</code></td><td><b>Ala cruzador</b></td></tr>
+<tr><td rowspan="2">MEIA ATACANTE · MAT</td><td>Meia ofensivo armador</td><td><code>meia_ofensivo_armador</code></td><td><b>Meia ofensivo</b></td></tr>
+<tr><td>Segundo atacante</td><td><code>segundo_atacante</code></td><td><b>Atacante infiltrador</b></td></tr>
+<tr><td rowspan="2">PONTA · PTE-PTD</td><td>Ponta criadora</td><td><code>ponta_criadora</code></td><td><b>Atacante criador</b></td></tr>
+<tr><td>Ponta finalizadora</td><td><code>ponta_finalizadora</code></td><td><b>Atacante finalizador</b></td></tr>
+<tr><td rowspan="3">CENTROAVANTE · CA</td><td>Centroavante fixo</td><td><code>centroavante_fixo</code></td><td>Centroavante fixo</td></tr>
+<tr><td>Centroavante móvel</td><td><code>centroavante_movel</code></td><td>Centroavante móvel</td></tr>
+<tr><td>Falso nove</td><td><code>falso_nove</code></td><td>Falso nove</td></tr>
+</table>
+
+<div class="prov"><b>PROVENIÊNCIA.</b> As 18 primeiras foram fechadas em 04/08/2026, dos
+ofícios reais do jogo. O <b>Falso nove</b> é a 19ª, criada em 12/08 a partir de CA/SA com
+estilo Atacante Pivô, com 64 representantes — e o Centroavante móvel foi refeito sem eles
+(335 → 271 representantes). Os <b>códigos fixos</b> foram congelados em 14/08 e conferidos
+em 16/08: batem 19 de 19 com a tabela do banco. Os <b>rótulos</b> foram decididos pelo
+Luis em 15 e 16/08. As duas do meia lateral foram provadas pelo molde, não pela ordem da
+fala: "por fora" tem Passe alto com alvo 100,0 e peso 12 — é quem cruza.</div>
+
+<div class="card"><b class="er">⛔ A chave nunca é o rótulo.</b> No banco, no molde e no
+resultado, a chave continua sendo o nome da segunda coluna. O rótulo é só o que aparece
+na tela. Escrever rótulo onde se espera chave quebra o sistema <b>em silêncio</b>.</div>
+
+<h2 id="c4">4. O molde — de onde sai o alvo</h2>
+<p>O molde é o coração do sistema. Ele responde: <b>o que é ser bom nesta função?</b> —
+em 26 números, um por atributo.</p>
+
+<h3>Como ele é montado</h3>
+<ol>
+<li><b>Elite da função.</b> Só entram cartas tier S ou S+, <b>nativas</b> daquela função
+(não migradas), com progressão, ordenadas por votos da comunidade. Corte em <b>⌈n/3⌉</b>,
+mínimo 3. São os <b>representantes</b>.</li>
+<li><b>Uma build por carta</b> — a mais votada, e ela <b>inteira</b>. Nunca se mistura a
+barra de uma build com o técnico de outra.</li>
+<li><b>Técnico, ímpeto e habilidades entram pela soma do mapa</b> daquela carta, não por
+suposição. Em 73 a 86% das builds idênticas as pessoas usam técnico diferente — por isso
+não se pode "escolher o mais comum".</li>
+<li>O alvo de cada atributo sai da medição desses representantes, com a carta no seu
+melhor. <b>Por isso alvo passa de 99</b> — o Drible do Ala finalizador tem alvo 107, e
+está certo: ímpeto e habilidade furam o teto de 99 (ver §8).</li>
+</ol>
+
+<div class="prov"><b>PROVENIÊNCIA.</b> Método fechado em 02/08 e nunca mais mudado
+(<code>NAO-MEXER-formula-do-molde-e-do-motor</code>). O molde vigente é a <b>versão 5</b>,
+de 12/08 — 494 itens, 19 funções, impressão digital <code>1575341961641efd13f090639145ee6f</code>.
+Ele saiu de uma coleta de <b>388.125 construções</b> da comunidade sobre <b>9.719 cartas</b>.
+A versão 4 trouxe a exceção do goleiro; a 5 criou o Falso nove.
+⚠️ <b>O banco ainda guarda só as versões 2 e 3</b> — subir a 5 é item do plano de reforma.</div>
+
+<h2 id="c5">5. O peso — como o alvo vira importância</h2>
+<p>Ter alvo alto não basta: é preciso dizer <b>quanto cada atributo importa</b>. A regra é
+mecânica, não é opinião:</p>
+<pre>Ordena os 26 atributos pelo alvo, do maior para o menor.
+Só entram os que têm alvo 80 ou mais.
+
+   os 5 primeiros ....... peso 12    indispensável
+   os 4 seguintes ....... peso  7    desejável
+   os 4 seguintes ....... peso  3    útil
+   o resto (alvo ≥80) ... peso  1    acessório
+
+   alvo 79 exatamente ... peso  1    acessório
+   alvo abaixo de 79 .... peso  0    não conta</pre>
+<p><b>Cobrança de falta é sempre peso 1</b>, em qualquer função — é acessório universal.</p>
+
+<div class="prov"><b>PROVENIÊNCIA.</b> A escada 12/7/3/1 e a trava dos 80 estão fechadas
+desde 02/08 e constam do documento de pedra. O acessório universal da Cobrança de falta
+foi decidido em 05/08. Medido: a mudança de molde de 05/08 moveu <b>10 pesos e 41 alvos</b>.</div>
+
+<h2 id="c6">6. A régua — como o valor vira ponto</h2>
+<p>A régua compara o que a carta tem com o alvo do molde, atributo por atributo.</p>
+
+<h4>Acima do alvo: nove degraus, depois nada</h4>
+<pre>1º ponto acima .... 1,00     6º ... 0,40
+2º ................ 0,88     7º ... 0,28
+3º ................ 0,76     8º ... 0,16
+4º ................ 0,64     9º ... 0,04
+5º ................ 0,52     10º em diante ... zero</pre>
+<p class="mut">Cada ponto acima do alvo vale menos que o anterior, e do décimo em diante
+não vale nada. É isso que impede o motor de empilhar tudo num atributo só.</p>
+
+<h4>Abaixo do alvo: o castigo acelera, mas tem teto</h4>
+<pre>castigo do k-ésimo ponto abaixo = ( 1 + (k−1) × 0,25 × peso/12 ) × peso
+
+   e ele PARA DE CRESCER no 9º ponto abaixo.
+   peso 1 premia e nunca pune.</pre>
+
+<div class="prov"><b>PROVENIÊNCIA.</b> Os nove degraus com queda de 0,12 e o agravo de
+0,25 estão na tabela de parâmetros desde 02/08. O <b>teto no 9º ponto</b> foi conferido no
+código em 15/08 — a tela estava punindo sem teto e o motor não, e era essa a divergência.
+O K=12 vem de o primeiro ponto acima do alvo valer o peso, e o peso máximo ser 12.</div>
+
+<h2 id="c7">7. A pontuação</h2>
+<pre>pontuação = Σ(peso × valor do card)  ÷  Σ(peso × alvo do molde)  × 100
+       + corpo             de −1,5 a +1,5
+       + estilo da IA      0,25 por comportamento, teto 4 → +1,00
+       + pé ruim           frequência × precisão, teto +1,00
+       + estilo ligado     +1,00 fixo
+       + ímpeto condicional</pre>
+<p><b>100% = a carta bate o molde exatamente.</b> Acima de 100 ela supera o molde da função.</p>
+<p class="mut">Os acréscimos são <b>ponto fixo</b>, nunca percentual — somam depois da
+divisão. E a punição por jogar fora da função foi <b>abolida</b>: vale o bônus de quem é
+da função, e só.</p>
+
+<div class="prov"><b>PROVENIÊNCIA.</b> A pontuação virou percentual do molde em 06/08
+(<code>DECISAO-0608-A-NOTA-E-O-PERCENTUAL-DO-MOLDE</code>), medida em 7.716 linhas:
+mínimo 79,2 · mediana 100,3 · máximo 111,7, com <b>zero inversão e zero empate</b>.
+Antes disso havia âncoras e achatamento — tudo morreu ali. A punição de estilo foi
+abolida em 05/08 e o cálculo dela foi <b>apagado do código</b> em 15/08.
+O teto do estilo da IA caiu de 5 para 4 em 15/08, medido: o máximo que existe nas
+12.161 linhas é 4 comportamentos.</div>
+
+<h2 id="c8">8. A equação do jogo</h2>
+<p>Esta é a conta que o próprio eFootball faz. O sistema a reproduz exatamente, com as
+travas <b>e os furos de trava</b>:</p>
+<pre>base
+  → soma as barras                trava em 99
+  → multiplicador do técnico      trava em 99, piso 40
+  → +1 do técnico                 PASSA de 99
+  → soma os ímpetos               PASSA de 99
+  → habilidade                    SEM TRAVA nenhuma</pre>
+<p class="mut">A ordem importa: se a habilidade entrasse antes do técnico, o resultado
+mudaria. E é o fato de ímpeto e habilidade furarem o 99 que faz um alvo de molde poder
+ser 107.</p>
+
+<h4>O custo do treino</h4>
+<pre>orçamento .................. 2 × nível máximo − 2
+custo do nível n da barra .. arredonda pra cima (n ÷ 4)
+teto ....................... 25 níveis por barra
+nível máximo útil .......... 99 − o menor atributo daquela barra</pre>
+
+<div class="prov"><b>PROVENIÊNCIA.</b> Medida <b>dentro do videogame</b>, não deduzida:
+265 medições, zero erro. A fórmula do orçamento foi conferida em 4.214 cartas, sem uma
+exceção. O teto de 99 travando a barra afeta <b>1.311 de 7.716 cartas (17%)</b>, com
+déficit médio de 3,4 pontos.</div>
+
+<h2 id="c9">9. As habilidades</h2>
+<p><b>44 comuns</b> podem ser acrescentadas — até 5 por carta. <b>18 raras</b> a carta tem
+ou não tem, e não se acrescenta.</p>
+
+<h4>A regra da metade</h4>
+<pre>percentual = a maior comum
+           + a metade de cada uma das outras comuns
+           + as raras inteiras
+
+ganho = arredonda pra cima ( referência × percentual/100 + fixo )</pre>
+<p class="mut">Duas comuns de 10% e 5% dão <b>12,5%</b>, não 15%. Não há cascata: toda
+perdedora vale meio, não 50/25/12. E o arredondamento é <b>sobre o total</b>, nunca por parcela.</p>
+
+<h4>Quanto vale cada habilidade</h4>
+<p>A régua de tamanho, ditada pelo Luis em 05/08:</p>
+<table>
+<tr><th>tamanho</th><th>o que é</th></tr>
+<tr><td><b>5%</b></td><td>o ofício da carta o jogo inteiro</td></tr>
+<tr><td><b>3%</b></td><td>um ofício menor</td></tr>
+<tr><td><b>2%</b></td><td>um gesto de situação</td></tr>
+<tr><td><b>1%</b></td><td>um toque leve</td></tr>
+</table>
+<p class="mut">Quem escolhe a habilidade é <b>o motor</b>, pelo que dá mais ponto.
+A comunidade só desempata.</p>
+
+<div class="prov"><b>PROVENIÊNCIA.</b> A regra da metade foi fechada em 05/08. A tabela
+de valor das 62 habilidades foi ditada pelo Luis no mesmo dia e conferida contra o
+arquivo do motor: <b>62 de 62 idênticas</b>. A divisão 44 comuns / 18 raras foi provada
+lendo a própria tela de "adicionar habilidade" do jogo, que oferece exatamente 44.
+⚠️ <b>A decisão de a perdedora valer metade é decisão, não medição</b> — está registrado
+assim desde 05/08.</div>
+
+<h2 id="c10">10. O ímpeto</h2>
+<table>
+<tr><th>estado das vagas</th><th>quer dizer</th></tr>
+<tr><td><code>[0,0]</code></td><td>nenhuma vaga — carta velha, o jogo não dá</td></tr>
+<tr><td><code>[0,1]</code></td><td>um ímpeto de fábrica + uma vaga livre para fabricar</td></tr>
+<tr><td><code>[1,1]</code></td><td><b class="er">não existe.</b> Onde aparecer, é defeito de dado</td></tr>
+</table>
+<h4>O ímpeto condicional</h4>
+<pre>1 a 7 jogadores da mesma condição .... +1
+8 a 10 ............................... +2
+11 a 23 .............................. +3
+
+O ranking usa sempre o +1 — o mínimo garantido.</pre>
+<h4>A trava da data</h4>
+<p>Carta lançada <b>antes de 12/09/2024</b> não tem vaga de ímpeto: a versão do jogo que
+trouxe as vagas craftáveis é dessa data. É a primeira trava de tudo que envolve ímpeto.</p>
+
+<div class="prov"><b>PROVENIÊNCIA.</b> O formato das vagas foi decodificado em 09/08 do
+arquivo do efscout: 39.524 registros de 92 bytes, com o ímpeto nos bits 552 e 720.
+Validado em 9 cartas conferidas <b>dentro do jogo</b>. O teto +3 do condicional foi
+corrigido em 14/08. A trava da data está registrada desde 07/08.
+⚠️ Ainda há <b>15 códigos de ímpeto órfãos</b> que as cartas citam e o catálogo não traduz.</div>
+
+<h2 id="c11">11. O técnico</h2>
+<pre>pontuação do técnico ≥ 72 .... ajuda    (81 → ×1,02725 · 89 → ×1,036)
+de 65 a 71 .............. neutro   (×1,000)
+abaixo de 65 ............ atrapalha (46 → ×0,9315 · 20 → ×0,800)</pre>
+<p>E o <b>+1 do técnico fura o teto de 99</b>.</p>
+<div class="prov"><b>PROVENIÊNCIA.</b> Curva medida no jogo e fechada no documento de
+pedra de 02/08. São 1.664 técnicos no catálogo, e a chave é o <b>id</b>, nunca o nome —
+1.664 técnicos têm só 1.528 nomes distintos.</div>
+
+<h2 id="c12">12. O corpo e o pé ruim</h2>
+<h4>O corpo</h4>
+<p>São <b>12 medidas</b>. Cada função tem uma direção para cada medida: quanto maior
+melhor, quanto menor melhor, ou não conta. <b>A altura pesa 5 votos; as outras, 1 cada.</b>
+O bônus final vai de <b>−1,5 a +1,5</b>.</p>
+<h4>O pé ruim</h4>
+<pre>bônus = frequência × precisão, com teto +1,00
+
+frequência  0 → 0,00   1 → 0,35   2 → 0,70   3 → 1,00
+precisão    0 → 0,00   1 → 0,40   2 → 0,75   3 → 1,00</pre>
+
+<div class="prov"><b>PROVENIÊNCIA.</b> As 12 medidas foram casadas com os campos do efHub
+<b>por valor, não por nome</b>: para cada posição do vetor, qual campo tem o mesmo valor em
+todas as cartas da amostra — casamento único em 12 de 12. A direção de cada medida por
+função foi corrigida em 15/08: <b>9 direções estavam contra o dado e 12 medidas apagadas
+deviam contar</b>. O caso que abriu tudo: Patrick Vieira, 1,92 m, volante de contenção,
+levava −10 pontos por ser alto, quando o próprio documento do molde do físico o lista
+como um dos melhores corpos da função. Corrigido: 5.911 de 12.161 linhas mudaram.
+⚠️ <b>O peso 5 da altura não tem conta escrita em lugar nenhum</b> — ver §17.</div>
+
+<h2 id="c13">13. O motor — como ele acha o ótimo</h2>
+<p>Para cada carta em cada função, o motor escolhe <b>quatro coisas ao mesmo tempo</b>:
+a distribuição das barras, o ímpeto a fabricar, o técnico e as cinco habilidades.
+Ele acha o <b>ótimo exato</b>, não uma aproximação.</p>
+<p>O espaço é grande demais para força bruta pura — só de habilidade, escolher 5 entre 35
+dá <b>324.632</b> combinações. Por isso existem podas, e cada uma é <b>provada</b> antes
+de entrar: elas cortam tempo sem mudar o resultado.</p>
+<table>
+<tr><th>poda</th><th>o que faz</th></tr>
+<tr><td><b>Corte 8</b></td><td>junta habilidades de efeito idêntico</td></tr>
+<tr><td><b>Corte 9</b></td><td>poda por dominância na distribuição das barras</td></tr>
+<tr><td><b>Corte 10</b></td><td>dominância entre habilidades, fora do motor</td></tr>
+<tr><td><b>Corte 11</b></td><td>grupos de efeito idêntico, dentro do motor</td></tr>
+</table>
+<div class="card"><b class="er">⛔ A margem tem de ficar desligada.</b> Medido em 08/08 no
+Paul Scholes / Volante de construção: com a margem ligada o motor entrega
+<b>69,40</b> em 51 segundos; sem ela, <b>124,90</b> em 4.953 segundos. A margem é
+97× mais rápida e <b>perde 55,50 pontos</b>. Velocidade que muda o resultado não é otimização.</div>
+<p class="mut">Custo real: <b>17 a 21 segundos por linha</b>. As linhas caras são sempre as
+que têm vaga de ímpeto livre <b>junto com</b> pool de habilidade — e elas vão para o fim
+da fila de propósito, para as baratas saírem antes.</p>
+
+<div class="prov"><b>PROVENIÊNCIA.</b> Cada corte foi provado contra a busca completa:
+o Corte 9 em 291 cartas com e sem, zero divergência; o Corte 11 em 320 pares.
+O motor está <b>congelado por ordem do Luis</b> desde 06/08.</div>
+
+<h2 id="c14">14. A esteira — o caminho do dado</h2>
+<div class="lay"><h4>AS FONTES</h4>
+<p>efHub · efscout · efootballdb · efootbase · pesmaster · <b>o Luis conferindo no jogo</b>.
+Cada uma sabe umas coisas. A ordem de quem responde primeiro é <b>por campo</b>, não por fonte.</p></div>
+<div class="arw">↓</div>
+<div class="lay n"><h4>O MOTOR DE ATUALIZAÇÃO → OS RECIBOS → OS INSUMOS</h4>
+<p>A fonte não escreve: ela <b>deposita recibo</b>. Um único lugar decide o valor que vale,
+e grava com <b>quatro carimbos</b>: de onde veio, em que estado está, quando foi puxado,
+e se foi conferido no jogo (e aí ninguém sobrescreve).</p></div>
+<div class="arw">↓</div>
+<div class="lay"><h4>OS DOIS MOTORES → O PRODUTO</h4>
+<p>Otimização e bônus. O resultado sai com o <b>carimbo da receita</b>: qual molde, qual
+tabela de bônus, qual versão de cada motor.</p></div>
+<div class="arw">↓</div>
+<div class="lay p"><h4>A TELA</h4>
+<p>Só lê. São duas: a <b>bancada</b> e o <b>produto</b>.</p></div>
+<div class="card" style="background:#12261f;border-color:#2f7d5c">
+<b class="ok">A volta.</b> Se o insumo é mais novo que o produto, a linha volta para a fila
+sozinha. Se a receita mudou, todas as linhas feitas com a receita velha voltam.
+É o que faz o sistema se manter em pé sem ninguém lembrar.</div>
+
+<h2 id="c15">15. O banco</h2>
+<table>
+<tr><th>papel</th><th>tabelas</th></tr>
+<tr><td><b>INSUMO</b></td><td><code>cards_base</code> · <code>cards_efhub</code> · <code>cards_lancamento</code></td></tr>
+<tr><td><b>RECEITA</b></td><td><code>molde</code> · <code>molde_versao</code> · <code>funcoes</code> · <code>estilo_valor</code> · <code>traducao</code> · <code>insumo_*</code></td></tr>
+<tr><td><b>PRODUTO</b></td><td><code>builds</code> · <code>bonus</code></td></tr>
+<tr><td><b>CONTROLE</b></td><td><code>faltas</code> · <code>coletas</code> · <code>pacotes</code> · <code>vigia_log</code></td></tr>
+</table>
+<p><b>A regra de ouro:</b> todo dado de carta se lê da <code>cards_base</code>; todo
+resultado, da visão <code>builds_vigente</code>. <b>Nenhum programa lê fonte solta</b> —
+arquivo na pasta só serve para alimentar o banco.</p>
+
+<h2 id="c16">16. As regras de ouro</h2>
+<ol>
+<li><b>Nunca supor. Conferir na fonte viva</b>, nunca em cópia.</li>
+<li><b>Nome é rótulo, nunca chave.</b></li>
+<li><b>Zero não é "não sei".</b> São quatro estados: tem valor · é zero de verdade ·
+não se aplica · não sei. Só o último é pendência.</li>
+<li><b>Lista escrita à mão é defeito.</b> Quem precisa saber o que existe, <b>pergunta à
+fonte</b>. Um backup com lista congelada deixou 12.173 linhas de fora sem avisar.</li>
+<li><b>Não anunciar o que não foi provado.</b> Backup que não foi conferido número a
+número não é backup.</li>
+<li><b>Defeito: para, limpa, corrige, começa do zero.</b> Não existe "deixa rodar, só 1,7%
+está errado".</li>
+<li><b>Antes de desligar uma otimização, ler por que ela foi criada.</b></li>
+<li><b>Documento marcado "fechado" não significa vigente</b> — significa fechado
+<i>naquele dia</i>. Procurar adendo posterior.</li>
+</ol>
+
+<h2 id="c17">17. Como a gente chegou até aqui</h2>
+<p>O sistema não foi desenhado num papel e depois construído. Ele foi <b>descoberto</b>,
+medição por medição, em dezoito dias. Esta é a linha do tempo — e ela explica por que as
+coisas são do jeito que são.</p>
+
+<table>
+<tr><th>quando</th><th>o que aconteceu</th></tr>
+<tr><td><b>29 a 31/07</b></td><td>Nasce o sistema. A ideia de ranquear carta <b>por função</b>,
+e não por pontuação geral, se separa de tudo que existia.</td></tr>
+<tr><td><b>01/08</b></td><td>As habilidades são decodificadas: o que cada uma faz, em qual
+atributo, e quanto. A coleta fecha em 2.517 registros.</td></tr>
+<tr><td><b>02/08</b></td><td><b>O molde é fechado em pedra.</b> Elite da função, representantes,
+a escada de peso 12/7/3/1, a régua de nove degraus. São <b>18 funções</b>.</td></tr>
+<tr><td><b>03/08</b></td><td>A coleta do efHub descobre o tamanho real do mundo:
+<b>44.862 cartas</b>.</td></tr>
+<tr><td><b>04/08</b></td><td>As 18 funções são <b>provadas</b>. E a equação do jogo é medida
+<b>dentro do videogame</b> — a ordem base → barras → técnico → ímpeto → habilidade.</td></tr>
+<tr><td><b>05/08</b></td><td>O Luis dita a régua de tamanho das habilidades (5% é ofício,
+1% é toque leve). Nasce a <b>regra da metade</b>. Molde v3.</td></tr>
+<tr><td><b>06/08</b></td><td>🔴 <b>A pontuação vira o percentual do molde.</b> Morrem as âncoras,
+o achatamento e as faixas. Medida em 7.716 linhas: zero inversão.
+E o motor é <b>congelado</b> por ordem do Luis.</td></tr>
+<tr><td><b>07/08</b></td><td>Descobre-se que <b>a data manda no ímpeto</b>: carta anterior a
+12/09/2024 não tem vaga. A rodada anterior inteira vai fora por causa disso.</td></tr>
+<tr><td><b>08/08</b></td><td>Os cortes 10 e 11. E a medição que salvou o sistema: a margem
+do motor era 97× mais rápida e <b>perdia 55,5 pontos</b>. Nasce a regra
+<i>"defeito: para, limpa, corrige, começa do zero"</i>.</td></tr>
+<tr><td><b>09/08</b></td><td>O ímpeto ganha fonte de verdade: o arquivo binário do efscout,
+decodificado bit a bit e conferido em 9 cartas dentro do jogo.</td></tr>
+<tr><td><b>10/08</b></td><td>O molde do físico. O pé ruim entra na pontuação. E o Luis cadastra
+<b>o time dele</b>: 114 cartas.</td></tr>
+<tr><td><b>12/08</b></td><td>O molde do goleiro ganha exceção. E nasce a <b>19ª função:
+o Falso nove</b>.</td></tr>
+<tr><td><b>13/08</b></td><td>O eFootball 2027 entra no ar e muda coisa embaixo do sistema.</td></tr>
+<tr><td><b>14/08</b></td><td>🔴 <b>A base única.</b> 22 arquivos que brigavam viram um só,
+com a fonte de cada campo registrada. Nasce o <b>tradutor</b> (as nove entidades) e o
+<b>código fixo das funções</b>. O banco é mapeado inteiro pela primeira vez.</td></tr>
+<tr><td><b>15/08</b></td><td>Nasce o <b>motor de bônus</b> — a conta sai da tela e vira
+programa. A direção do corpo é corrigida (9 direções estavam contra o dado). A punição de
+estilo é apagada de vez. O efootbase vira fonte. E o Luis dá a ordem dos
+<b>quatro estados</b>: <i>"zero é zero; não sei é não sei; não pode haver essa confusão"</i>.</td></tr>
+<tr><td><b>16/08</b></td><td>🔴 Descobre-se que <b>o "refazer" nunca refez nada</b>: 325 linhas
+estavam com pontuação velha havia dias. Descobre-se que o <b>backup deixava 12.173 linhas de
+fora</b> por causa de uma lista escrita à mão. E o sistema ganha nome:
+<b>ClubEfootball</b>.</td></tr>
+</table>
+
+<div class="card">
+<b>O padrão que se repete — e é a razão da reforma de 16/08.</b><br>
+Olhe a linha do tempo de perto e o mesmo defeito aparece cinco vezes, com roupas
+diferentes: <b>uma coisa é feita, fica guardada num lugar, e o resto do sistema não fica
+sabendo.</b> A margem que ninguém sabia que custava 55 pontos. O tradutor feito em 14/08
+que nenhum programa lia. O aviso escrito dentro de um programa que o programa seguinte
+não seguiu. A lista de tabelas congelada num arquivo. As constantes velhas no banco
+convivendo com as novas.<br><br>
+<b>Não é falta de cuidado. É falta de lugar único.</b> Por isso a reforma não está
+inventando funcionalidade nova — ela está fazendo cada coisa ter um dono só.
+</div>
+
+<hr>
+<p class="mut">Este manual é o documento definitivo do <b>ClubEfootball</b>: o que existe e
+como funciona. <b>O que ainda falta fazer está no documento ao lado,
+<code>TAREFAS-QUE-FALTAM.html</code>, na mesma pasta.</b> O plano detalhado da reforma,
+com o porquê medido de cada passo, está no projeto do Claude em
+<b>PLANO-1608-A-TRANSFORMACAO-DA-ARQUITETURA</b>. Antes de 16/08/2026 o sistema se
+chamava TrueFootball / Encaixe.</p>
+
+</div>
+</body>
+</html>

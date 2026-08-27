@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<title>Subir a ficha do jogo</title>
+<style>
+:root{--fundo:#0d1117;--caixa:#161b22;--linha:#30363d;--texto:#e6edf3;--fraco:#8b949e;
+      --verde:#2ea043;--verde2:#3fb950;--vermelho:#f85149;--azul:#58a6ff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--texto);font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;padding:28px}
+.folha{max-width:840px;margin:0 auto}
+h1{font-size:21px;margin:0 0 4px}
+.sub{color:var(--fraco);font-size:13px;margin-bottom:22px}
+.caixa{background:var(--caixa);border:1px solid var(--linha);border-radius:11px;padding:18px;margin-bottom:14px}
+label.arq{display:block;border:2px dashed var(--linha);border-radius:10px;padding:26px;text-align:center;cursor:pointer;transition:.15s}
+label.arq:hover{border-color:var(--azul);background:#0f1620}
+input[type=file]{display:none}
+button{background:var(--verde);color:#fff;border:0;border-radius:8px;padding:11px 20px;font:600 15px system-ui;cursor:pointer}
+button:disabled{background:#30363d;color:var(--fraco);cursor:not-allowed}
+.barra{height:9px;background:#0d1117;border:1px solid var(--linha);border-radius:99px;overflow:hidden;margin:12px 0 6px}
+.barra i{display:block;height:100%;width:0;background:var(--verde2);transition:width .2s}
+.num{display:flex;gap:26px;flex-wrap:wrap;margin-top:10px}
+.num div{font-size:13px;color:var(--fraco)}
+.num b{display:block;font-size:20px;color:var(--texto);font-weight:700}
+#log{font:12px/1.5 ui-monospace,Consolas,monospace;background:#0a0e14;border:1px solid var(--linha);
+     border-radius:8px;padding:11px;max-height:230px;overflow:auto;white-space:pre-wrap;margin-top:12px;display:none}
+.erro{color:var(--vermelho)} .ok{color:var(--verde2)} .aviso{color:#d29922}
+</style></head><body><div class="folha">
+
+<h1>Subir a ficha do jogo</h1>
+<div class="sub">O <b>fichacompleta.csv</b> extraído do <b>Player.bin</b> — a fonte oficial.
+Vai para <code>clube.jogo_ficha</code>, que é matéria-prima: <b>nada entra na carta sozinho.</b></div>
+
+<div class="caixa">
+  <label class="arq" for="csv">
+    <div style="font-size:30px">📄</div>
+    <div id="nomeArq"><b>Escolha o fichacompleta.csv</b></div>
+    <div style="color:var(--fraco);font-size:12.5px;margin-top:5px">ou arraste o arquivo aqui</div>
+  </label>
+  <input type="file" id="csv" accept=".csv">
+  <div class="num" id="resumo" style="display:none">
+    <div>jogadores no arquivo<b id="nLinhas">—</b></div>
+    <div>colunas<b id="nCols">—</b></div>
+  </div>
+</div>
+
+<div class="caixa">
+  <button id="ir" disabled>Levar para o banco</button>
+  <div class="barra"><i id="prog"></i></div>
+  <div class="num">
+    <div>enviados<b id="nEnv">0</b></div>
+    <div>gravados<b id="nGrav">0</b></div>
+    <div>na fonte<b id="nFonte">—</b></div>
+    <div>erros<b id="nErr">0</b></div>
+  </div>
+  <div id="log"></div>
+</div>
+
+<script>
+/* ===========================================================================
+   A ordem dos 26 atributos NÃO é a mesma no jogo e na nossa casa.
+   Descoberta medindo 74 cartas que existem nos dois lados: para cada atributo
+   nosso, qual coluna do CSV dá o menor erro. O resultado foi inequívoco —
+   os 10 primeiros batem na ordem, os defensivos vêm antes dos físicos no jogo,
+   e os 5 de goleiro ficam no meio, não no fim.
+   MAPA[posição nossa] = coluna do CSV (contando do 1º atributo do arquivo).
+   =========================================================================== */
+var MAPA=[0,1,2,3,4,5,6,7,8,9, 19,20,21,22,23,24,25, 10,11,13,12, 14,15,16,17,18];
+var RAIZ='https://trqqpsnafpbudtvvicch.supabase.co/rest/v1/rpc/receber_ficha_do_jogo';
+var CHAVE='sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj';
+var LOTE=500;
+var linhas=null;
+
+function log(t,c){var d=document.getElementById('log');d.style.display='block';
+  d.innerHTML+='<div class="'+(c||'')+'">'+t+'</div>';d.scrollTop=d.scrollHeight;}
+
+/* CSV com aspas — o campo Aptitudes tem barras e vírgulas dentro */
+function partirCSV(txt){
+  var fora=[],campo='',linha=[],dentro=false,i,c;
+  for(i=0;i<txt.length;i++){
+    c=txt[i];
+    if(dentro){ if(c==='"'){ if(txt[i+1]==='"'){campo+='"';i++;} else dentro=false; } else campo+=c; }
+    else if(c==='"') dentro=true;
+    else if(c===','){ linha.push(campo); campo=''; }
+    else if(c==='\n'){ linha.push(campo); fora.push(linha); linha=[]; campo=''; }
+    else if(c!=='\r') campo+=c;
+  }
+  if(campo!==''||linha.length){ linha.push(campo); fora.push(linha); }
+  return fora;
+}
+
+document.getElementById('csv').addEventListener('change',function(e){
+  var f=e.target.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(){
+    var t=partirCSV(r.result.replace(/^﻿/,''));
+    var cab=t[0], corpo=t.slice(1).filter(function(l){return l.length>10 && l[0];});
+    linhas=corpo.map(function(l){
+      var o={}; cab.forEach(function(k,i){o[k.replace(/^﻿/,'')]=l[i];});
+      return o;
+    });
+    document.getElementById('nomeArq').innerHTML='<b>'+f.name+'</b>';
+    document.getElementById('resumo').style.display='flex';
+    document.getElementById('nLinhas').textContent=linhas.length.toLocaleString('pt-BR');
+    document.getElementById('nCols').textContent=cab.length;
+    document.getElementById('ir').disabled=false;
+    if(cab.length!==43) log('⚠ o arquivo tem '+cab.length+' colunas; o conferido tinha 43. Confira antes de subir.','aviso');
+  };
+  r.readAsText(f,'utf-8');
+});
+
+document.getElementById('ir').addEventListener('click',async function(){
+  if(!linhas) return;
+  this.disabled=true;
+  var cab=Object.keys(linhas[0]), ATR=cab.slice(15,41);
+  var env=0,grav=0,err=0,fonte='—';
+  for(var i=0;i<linhas.length;i+=LOTE){
+    var parte=linhas.slice(i,i+LOTE).map(function(x){
+      var a=[]; for(var b=0;b<26;b++) a.push(parseInt(x[ATR[MAPA[b]]],10)||0);
+      return {pid:x.PID,nome:x.Name,posicao:x.Position,altura:x.Height,peso:x.Weight,
+        idade:x.Age,pe:x.Foot,pe_ruim_uso:x.WeakFootUsage,pe_ruim_precisao:x.WeakFootAccuracy,
+        forma:x.Form,resistencia_lesao:x.InjuryResistance,nacionalidade:x.Nationality,
+        att_style:x.AttStyle,def_style:x.DefStyle,aptidoes:x.Aptitudes,
+        atributos:a,skills:x.Skills,ai_styles:x.AIStyles};
+    });
+    try{
+      var resp=await fetch(RAIZ,{method:'POST',
+        headers:{'apikey':CHAVE,'Authorization':'Bearer '+CHAVE,'Content-Type':'application/json'},
+        body:JSON.stringify({p_itens:parte})});
+      var j=await resp.json();
+      if(!resp.ok||j.ok!==true){ err++; log('✗ lote '+(i/LOTE+1)+': '+(j.message||j.hint||resp.status),'erro'); }
+      else { grav+=j.gravados; fonte=j.total_na_fonte;
+             log('✓ lote '+(i/LOTE+1)+' — '+j.gravados+' gravados','ok'); }
+    }catch(ex){ err++; log('✗ lote '+(i/LOTE+1)+': '+ex.message,'erro'); }
+    env+=parte.length;
+    document.getElementById('nEnv').textContent=env.toLocaleString('pt-BR');
+    document.getElementById('nGrav').textContent=grav.toLocaleString('pt-BR');
+    document.getElementById('nFonte').textContent=(''+fonte).toLocaleString?fonte:fonte;
+    document.getElementById('nErr').textContent=err;
+    document.getElementById('prog').style.width=(100*env/linhas.length)+'%';
+  }
+  log(err? '— terminou com '+err+' lote(s) com erro. Pode rodar de novo: quem já entrou é atualizado, não duplicado.'
+         : '— terminou sem erro.', err?'aviso':'ok');
+  this.disabled=false;
+});
+
+['dragover','drop'].forEach(function(ev){
+  document.addEventListener(ev,function(e){e.preventDefault();
+    if(ev==='drop'&&e.dataTransfer.files[0]){
+      document.getElementById('csv').files=e.dataTransfer.files;
+      document.getElementById('csv').dispatchEvent(new Event('change'));}});
+});
+</script>
+</div></body></html>

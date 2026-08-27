@@ -1,0 +1,30 @@
+node_modules
+
+# ⛔ A CHAVE NUNCA SOBE. Regra do Luis, em toda sessão.
+config.txt
+*.key
+.env
+.env.*
+
+# arquivos de trabalho do motor — não existem mais desde 27/08,
+# mas ficam aqui para o caso de sobrar cópia velha em alguma máquina
+dados/base_unica.json
+dados/cards.json
+cards_efhub.json
+fila_v6.json
+fila_EXTRA.json
+fila_PRIORIDADE.json
+fila_ADIADA_pool_vazio.json
+fila_EXCLUIDOS.csv
+saida_v6/
+log_v6.txt
+feitos.txt
+NAO-SEI.txt
+PARAR.txt
+LIGAR-MOTOR-AUTOMATICO.txt
+FONTE-UNICA.txt
+GRAVA-DIRETO.txt
+
+# lixo do Python
+__pycache__/
+*.pyc

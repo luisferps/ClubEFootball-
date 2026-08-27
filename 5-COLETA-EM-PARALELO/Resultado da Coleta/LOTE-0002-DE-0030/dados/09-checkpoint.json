@@ -1,0 +1,59 @@
+{
+  "schema_version": "t7-efhub-structured-data-and-photos-two-phase-folder-v6",
+  "dataset_sha256": "2291fd8eef7519afccd40b6fec54df1bcdfb0a15960e8b681fd53a65eb777191",
+  "batch": 2,
+  "batch_label": "LOTE-0002-DE-0030",
+  "exported_at": "2026-08-25T12:57:14.779Z",
+  "resume_one_line": "await ClubEFT7.retomar()",
+  "last_terminal_card_id": null,
+  "last_terminal_source_url": null,
+  "next_pending_card_id": "105703440166235",
+  "next_pending_source_url": "https://efhub.com/api/public/players/105703440166235",
+  "batch_counts": {
+    "expected": 1000,
+    "collected": 0,
+    "failed": 0,
+    "pending": 1000,
+    "ambiguous_excluded": 0,
+    "inactive_excluded": 0,
+    "data_payloads_saved": 1000,
+    "photos": {
+      "downloaded": 0,
+      "download_triggered_unverified": 0,
+      "unavailable": 0,
+      "pending": 1000
+    }
+  },
+  "cooldown": {
+    "key": "cooldown-data:2291fd8eef7519afccd40b6fec54df1bcdfb0a15960e8b681fd53a65eb777191",
+    "datasetSha256": "2291fd8eef7519afccd40b6fec54df1bcdfb0a15960e8b681fd53a65eb777191",
+    "status": "clear",
+    "kind": "http_429",
+    "channel": "data",
+    "reason": "HTTP 429",
+    "card_id": "105801687639790",
+    "batch": 2,
+    "retry_after_observed": "60",
+    "consecutive_throttles": 0,
+    "created_at": "2026-08-25T12:53:54.424Z",
+    "until_ms": 0,
+    "until": null,
+    "delay_ms": 64124,
+    "cleared_at": "2026-08-25T12:56:00.579Z"
+  },
+  "checkpoint_repair": {
+    "v3_false_http_200": 0,
+    "legacy_http_429": 0,
+    "transient_network_or_json": 0,
+    "total": 0
+  },
+  "checkpoint_storage": "IndexedDB do perfil atual do navegador",
+  "output_folder": "Resultado da Coleta",
+  "restarted_from_zero_by_user_request": true,
+  "prior_checkpoint_used_as_progress": false,
+  "phase_counts": {
+    "data_saved": 1000,
+    "photos_completed": 0,
+    "photos_pending": 1000
+  }
+}
