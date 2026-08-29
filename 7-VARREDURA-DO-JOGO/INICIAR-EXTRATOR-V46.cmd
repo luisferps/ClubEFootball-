@@ -4,30 +4,34 @@ cd /d "%~dp0"
 
 if not exist "logs" mkdir "logs" >nul 2>nul
 set "BOOTLOG=%~dp0logs\inicializacao-v46.log"
+set "CFG_RAIZ=%~dp0..\config.txt"
+set "CFG_MOTOR=%~dp0..\2-MOTORES\config.txt"
 
 echo.>>"%BOOTLOG%"
 echo ============================================================>>"%BOOTLOG%"
 echo [%date% %time%] INICIO - Extrator eFootball V4.6.6>>"%BOOTLOG%"
 
-if not exist "%~dp0configuracao.local.json" (
-  echo.
-  echo ============================================================
-  echo  EXTRATOR EFOOTBALL - CONFIGURACAO AUSENTE
-  echo ============================================================
-  echo.
-  echo O arquivo configuracao.local.json nao esta nesta pasta.
-  echo Coloque o seu arquivo de configuracao do Supabase aqui e tente de novo.
-  echo.
-  echo Pasta esperada:
-  echo %~dp0
-  echo.
-  echo [%date% %time%] ERRO - configuracao.local.json ausente>>"%BOOTLOG%"
-  start "" "%~dp0"
-  pause
-  exit /b 2
-)
+if exist "%CFG_RAIZ%" goto CONFIG_OK
+if exist "%CFG_MOTOR%" goto CONFIG_OK
 
-echo [%date% %time%] OK - configuracao.local.json encontrado>>"%BOOTLOG%"
+echo.
+echo ============================================================
+echo  EXTRATOR EFOOTBALL - CONFIG.TXT AUSENTE
+echo ============================================================
+echo.
+echo Coloque o seu config.txt na pasta principal do ClubEfootball
+echo e execute novamente ABRIR-EXTRATOR.cmd.
+echo.
+echo Pasta esperada:
+echo %~dp0..
+echo.
+echo [%date% %time%] ERRO - config.txt ausente>>"%BOOTLOG%"
+start "" "%~dp0.."
+pause
+exit /b 2
+
+:CONFIG_OK
+echo [%date% %time%] OK - config.txt encontrado>>"%BOOTLOG%"
 
 echo Preparando o Extrator eFootball V4.6.6...
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0windows-app\COMPILAR-APLICATIVO.ps1" >>"%BOOTLOG%" 2>&1
