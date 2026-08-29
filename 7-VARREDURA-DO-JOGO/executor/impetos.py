@@ -1,8 +1,8 @@
 """Validação read-only, integral e com proveniência dos Ímpetos.
 
-O validador não conhece endereços físicos próprios. Tamanho de registro, bits e
-larguras são consumidos da fotografia/field_contract produzida pelo Extrator a
-partir das referências canônicas de clube_novo.
+O validador não conhece endereços físicos próprios. Tamanho de registro, bits,
+larguras e arquivos são consumidos da fotografia/field_contract produzida pelo
+Extrator a partir das referências canônicas de clube_novo.
 """
 from __future__ import annotations
 
@@ -55,6 +55,12 @@ def _int(value: Any, label: str) -> int:
     return value
 
 
+def _text(value: Any, label: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"{label} ausente na fotografia física")
+    return value
+
+
 def _field(snapshot: dict[str, Any], name: str) -> dict[str, Any]:
     row = (snapshot.get("field_contract") or {}).get(name)
     if not isinstance(row, dict):
@@ -74,8 +80,10 @@ def validate_impetos(snapshot: dict[str, Any], connection: Any) -> dict[str, Any
         raise ValueError(f"a fonte atual contém {len(current)} condições reais; esperado 407")
 
     record_size = _int(snapshot.get("record_size"), "tamanho de registro de PlayerBooster")
+    source_file = _text(snapshot.get("file"), "arquivo do catálogo de Ímpetos")
     code_contract = _field(snapshot, "codigo")
     type_contract = _field(snapshot, "tipo")
+    type_mirror_contract = _field(snapshot, "tipo_espelho")
     nationality_contract = _field(snapshot, "nacionalidade")
     league_contract = _field(snapshot, "liga")
     candidate_contract = _field(snapshot, "classe_candidato")
@@ -83,6 +91,7 @@ def validate_impetos(snapshot: dict[str, Any], connection: Any) -> dict[str, Any
     cutoff_contract = _field(snapshot, "corte")
     max_contract = _field(snapshot, "efeito_maximo")
     league_members_contract = _field(snapshot, "liga_membros")
+    member_source_file = _text(league_members_contract.get("arquivo"), "arquivo de membros de liga")
 
     source_union = {
         (
@@ -103,8 +112,8 @@ def validate_impetos(snapshot: dict[str, Any], connection: Any) -> dict[str, Any
             int(record["id"]), effect["codigo_atributo"], int(effect["delta"]),
             _int(effect.get("bit_delta"), "bit_delta do efeito"), _int(effect.get("largura_delta"), "largura_delta do efeito"),
             int(_detail(record, "dt870_updated")["record_index"]),
-            str(effect.get("arquivo_origem") or snapshot.get("file") or "PlayerBooster.bin"),
-            str(effect.get("fonte_origem") or "dt870_atualizacao:PlayerBooster.bin"),
+            _text(effect.get("arquivo_origem"), "arquivo de origem do efeito"),
+            _text(effect.get("fonte_origem"), "fonte de origem do efeito"),
         )
         for record in current for effect in record.get("efeitos") or []
     }
@@ -112,11 +121,10 @@ def validate_impetos(snapshot: dict[str, Any], connection: Any) -> dict[str, Any
     source_conditions = {
         (
             int(record["id"]), record.get("criterio_codigo"), int(record["tipo_condicao_raw"]),
-            str(record.get("arquivo_origem") or snapshot.get("file") or "PlayerBooster.bin"), record_size,
+            source_file, record_size,
             int(_detail(record, "dt870_updated")["record_index"]), _detail(record, "dt870_updated").get("record_sha256"),
             _int(type_contract.get("bit"), "bit do tipo de condição"), _int(type_contract.get("largura"), "largura do tipo de condição"),
-            _int(record.get("tipo_espelho_bit") if record.get("tipo_espelho_bit") is not None else 64, "bit espelho do tipo"),
-            _int(record.get("tipo_espelho_largura") if record.get("tipo_espelho_largura") is not None else 32, "largura espelho do tipo"),
+            _int(type_mirror_contract.get("bit"), "bit espelho do tipo"), _int(type_mirror_contract.get("largura"), "largura espelho do tipo"),
         )
         for record in current
     }
@@ -136,7 +144,7 @@ def validate_impetos(snapshot: dict[str, Any], connection: Any) -> dict[str, Any
     }
     source_nationality_targets = {
         (
-            int(record["id"]), int(record["alvo_codigo"]), str(snapshot.get("file") or "PlayerBooster.bin"), record_size,
+            int(record["id"]), int(record["alvo_codigo"]), source_file, record_size,
             int(_detail(record, "dt870_updated")["record_index"]), _int(nationality_contract.get("bit"), "bit do alvo nacionalidade"),
             _int(nationality_contract.get("largura"), "largura do alvo nacionalidade"), _detail(record, "dt870_updated").get("record_sha256"),
         )
@@ -144,7 +152,7 @@ def validate_impetos(snapshot: dict[str, Any], connection: Any) -> dict[str, Any
     }
     source_league_targets = {
         (
-            int(record["id"]), int(record["alvo_codigo"]), str(snapshot.get("file") or "PlayerBooster.bin"), record_size,
+            int(record["id"]), int(record["alvo_codigo"]), source_file, record_size,
             int(_detail(record, "dt870_updated")["record_index"]), _int(league_contract.get("bit"), "bit do alvo liga"),
             _int(league_contract.get("largura"), "largura do alvo liga"), _detail(record, "dt870_updated").get("record_sha256"),
         )
@@ -171,12 +179,12 @@ def validate_impetos(snapshot: dict[str, Any], connection: Any) -> dict[str, Any
                 continue
             if member["papel_fisico"] == "alvo_base":
                 provenance = (
-                    str(snapshot.get("file") or "PlayerBooster.bin"), record_size, int(booster_detail["record_index"]),
+                    source_file, record_size, int(booster_detail["record_index"]),
                     _int(league_contract.get("bit"), "bit do alvo liga"), _int(league_contract.get("largura"), "largura do alvo liga"), booster_detail.get("record_sha256"),
                 )
             else:
                 provenance = (
-                    str(league_members_contract.get("arquivo") or "CompetitionUnit.bin"), member_record_size, int(member["record_index"]),
+                    member_source_file, member_record_size, int(member["record_index"]),
                     int(member["bit_inicial"]), int(member["largura"]), member.get("record_sha256"),
                 )
             source_members.add((code, int(member["codigo_liga_membro"]), int(member["ordem_fisica"]), int(member["codigo_liga_alvo_base"]), member["papel_fisico"], *provenance))
