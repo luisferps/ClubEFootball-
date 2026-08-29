@@ -14,7 +14,7 @@ from http import HTTPStatus
 from http.server import ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 import executor_local as base
 from card_dimensions_apply import apply_card_dimensions, readback_card_dimensions
@@ -102,6 +102,10 @@ class Handler(base.Handler):
         runtime_marker = '<script src="app/contrato-v46-runtime.js"></script>'
         if runtime_marker not in html:
             html = html.replace(core_marker, f"{core_marker}\n  {runtime_marker}")
+        bridge_marker = '<script src="/app/source-local-bridge.js"></script>'
+        ui_marker = '<script src="app/extrator-ui.js"></script>'
+        if bridge_marker not in html:
+            html = html.replace(ui_marker, f"{bridge_marker}\n  {ui_marker}")
         metadata_marker = '<script src="/app/metadados-v46.js" defer></script>'
         if metadata_marker not in html:
             html = html.replace("</body>", f"  {metadata_marker}\n</body>")
@@ -112,11 +116,37 @@ class Handler(base.Handler):
         self.end_headers()
         self.wfile.write(data)
 
+    def _serve_local_source_file(self, role: str) -> None:
+        try:
+            source_path = base.discovered_source_path(role)
+            size = source_path.stat().st_size
+            self.send_response(HTTPStatus.OK)
+            self.send_header("Content-Type", "application/octet-stream")
+            self.send_header("Content-Length", str(size))
+            self.send_header("Content-Disposition", f'attachment; filename="{source_path.name}"')
+            self.end_headers()
+            with source_path.open("rb") as handle:
+                while chunk := handle.read(1024 * 1024):
+                    self.wfile.write(chunk)
+        except (ValueError, FileNotFoundError, OSError) as error:
+            self.send_json(HTTPStatus.NOT_FOUND, {"error": str(error), "database_write": False})
+
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         if parsed.path in {"/", "/Extrator-ClubEfootball.html"}:
             self._serve_injected_ui()
             return
+
+        # Descoberta física é local: primeiro acha o arquivo no Windows, sem
+        # consultar Supabase/contrato. A validação contratual ocorre depois.
+        if parsed.path == "/local-sources/status":
+            self.send_json(HTTPStatus.OK, base.discover_sources())
+            return
+        if parsed.path == "/local-sources/file":
+            role = (parse_qs(parsed.query).get("role") or [""])[0]
+            self._serve_local_source_file(role)
+            return
+
         if parsed.path == "/api/card-dimensions/cached-status":
             config = base.load_config()
             snapshot = LAST_DIMENSIONS
