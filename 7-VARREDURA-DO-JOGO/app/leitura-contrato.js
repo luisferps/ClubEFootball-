@@ -3,9 +3,9 @@
 /**
  * Decodificador neutro do pedido versionado de leitura.
  *
- * Ele conhece somente primitivas de arquivo (inteiro LE, bitfield e UTF-8).
- * Endereço, largura, tamanho de registro, transformação e fingerprint chegam
- * exclusivamente do contrato retornado por clube_novo.
+ * Ele conhece somente primitivas de arquivo (inteiro LE, bitfield, associação
+ * por ID e UTF-8). Endereço, largura, tamanho de registro, transformação e
+ * fingerprint chegam exclusivamente do contrato retornado por clube_novo.
  */
 (function installContractReader(global) {
   const decoder = new TextDecoder('utf-8');
@@ -61,6 +61,12 @@
     while (end < start + width && bytes[end] !== 0) end += 1;
     return decoder.decode(bytes.subarray(start, end));
   }
+  function sourceValue(values, origin) {
+    if (Object.prototype.hasOwnProperty.call(values, origin)) return values[origin];
+    // Alias histórico do contrato: alguns id_mask antigos chamavam carta.id de card_id.
+    if (origin === 'card_id' && Object.prototype.hasOwnProperty.call(values, 'carta.id')) return values['carta.id'];
+    return undefined;
+  }
   function rawValue(bytes, base, field, values) {
     switch (field.tipo_leitura) {
       case 'bitfield_le': return readBitsLE(bytes, base, field.bit_inicio, field.largura_bits);
@@ -68,11 +74,16 @@
       case 'fixed_utf8_nul': return readFixedUtf8(bytes, base + field.byte_offset, field.largura_bytes);
       case 'id_mask': {
         const transform = field.transformacao || {};
-        const source = values[transform.origem];
+        const source = sourceValue(values, transform.origem);
         if (source == null || !Number.isInteger(transform.bit_inicio) || !Number.isInteger(transform.largura_bits)) throw new Error(`máscara sem origem tipada: ${field.chave_campo}`);
         return Number((BigInt(source) >> BigInt(transform.bit_inicio)) & ((1n << BigInt(transform.largura_bits)) - 1n));
       }
-      case 'membership': return readBitsLE(bytes, base, field.bit_inicio, field.largura_bits);
+      case 'membership': {
+        // Membership identifica a chave física que depois será testada contra um
+        // conjunto (ex.: PlayerDeleteList). O leitor não inventa a associação.
+        if (Number.isInteger(field.byte_offset) && Number.isInteger(field.largura_bytes)) return readByteLE(bytes, base + field.byte_offset, field.largura_bytes);
+        return readBitsLE(bytes, base, field.bit_inicio, field.largura_bits);
+      }
       default: throw new Error(`tipo de leitura não implementado: ${field.tipo_leitura}`);
     }
   }
@@ -84,6 +95,7 @@
     if (transform.operacao === 'raw+10') return Number(raw) + 10;
     if (transform.operacao === 'floor(raw/2)') return Math.floor(Number(raw) / 2);
     if (transform.operacao === 'floor(raw/4)*4') return Math.floor(Number(raw) / 4) * 4;
+    if (transform.operacao === 'high16') return (Number(raw) >>> 16) & 0xffff;
     if (transform.enum && typeof transform.enum === 'object') return transform.enum[String(raw)] ?? raw;
     return raw;
   }
@@ -103,6 +115,7 @@
   async function decodeFile(plan, fileName, bytes, fieldKeys = null) {
     const { index, file, actualHash } = await verifyFile(plan, fileName, bytes);
     if (file.decodificador !== 'wesys_raw') throw new Error(`decodificador não genérico: ${file.decodificador}`);
+    if (!Number.isInteger(file.tamanho_registro) || file.tamanho_registro <= 0) throw new Error(`tamanho de registro ausente no contrato: ${fileName}`);
     const selected = fieldKeys == null ? null : new Set(fieldKeys);
     const fields = [...index.fields.values()].filter((field) => field.arquivo_id === file.arquivo_id && (selected == null || selected.has(field.chave_campo))).sort((left, right) => left.chave_campo.localeCompare(right.chave_campo));
     if (!fields.length) throw new Error(`nenhum campo solicitado para ${fileName}`);
@@ -116,5 +129,5 @@
     return { selo: Object.fromEntries(SEAL_KEYS.map((key) => [key, plan[key]])), arquivo: fileName, sha256_arquivo: actualHash, tamanho_registro: file.tamanho_registro, records };
   }
 
-  global.CLUBEF_CONTRACT_READER = Object.freeze({ SEAL_KEYS, requirePlan, readBitsLE, verifyFile, decodeFile, sha256 });
+  global.CLUBEF_CONTRACT_READER = Object.freeze({ SEAL_KEYS, requirePlan, readBitsLE, readByteLE, verifyFile, decodeFile, sha256 });
 })(globalThis);
