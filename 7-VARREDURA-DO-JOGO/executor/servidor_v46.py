@@ -1,8 +1,8 @@
 """Servidor operacional do Extrator eFootball V4.6.
 
-Extende o servidor V4.5 sem duplicar sua lógica: reabilita a escrita manual já
-autorizada e acrescenta a aplicação segura de Dimensões (catálogos primeiro,
-vínculos das cartas depois).
+Estende o servidor V4.5 sem duplicar sua lógica: preserva o fluxo existente e
+faz o runtime V4.6 receber diretamente as tabelas/catálogos canônicos que já
+contêm as referências físicas usadas na extração.
 """
 
 from __future__ import annotations
@@ -13,12 +13,65 @@ import webbrowser
 from http import HTTPStatus
 from http.server import ThreadingHTTPServer
 from pathlib import Path
+from typing import Any
 from urllib.parse import urlparse
 
 import executor_local as base
 from card_dimensions_apply import apply_card_dimensions, readback_card_dimensions
 
 
+# O executor base já envia os catálogos referidos diretamente pelos campos do
+# contrato. Algumas tabelas físicas são consumidas por módulos acessórios sem
+# aparecer como catálogo de tradução em um campo específico. Na V4.6 elas são
+# acrescentadas ao mesmo payload, diretamente do clube_novo. Não há cópia de
+# bit/offset/tamanho neste servidor: somente nomes de tabelas e suas chaves de
+# ordenação determinística.
+_BASE_CONTRACT_CATALOGS = base.contract_catalogs
+_V46_CANONICAL_CATALOGS: dict[str, tuple[str, ...]] = {
+    "afinidade_tecnico_jogo": ("codigo_jogo",),
+    "atributo_ordem_otimizador": ("indice_otimizador",),
+    "estilo_jogo_tecnico": ("ordem",),
+    "impeto_jogo": ("codigo_jogo",),
+    "impeto_atributo_jogo": ("codigo_impeto", "ordem"),
+    "tipo_impeto_jogo": ("codigo_raw",),
+    "impeto_condicao_jogo": ("codigo_impeto",),
+    "impeto_condicao_nacionalidade_jogo": ("codigo_impeto", "codigo_nacionalidade"),
+    "impeto_condicao_liga_jogo": ("codigo_impeto", "codigo_liga_categoria"),
+    "impeto_condicao_classe_jogo": ("codigo_impeto",),
+    "impeto_condicao_parametro_faixa_jogo": ("codigo_impeto",),
+    "impeto_condicao_liga_membro_jogo": ("codigo_impeto", "ordem_fisica"),
+    "posicao_jogo": ("id",),
+}
+
+
+def contract_catalogs_v46(connection: Any, contract: dict[str, Any], sql: Any) -> list[dict[str, Any]]:
+    """Entrega ao Extrator as próprias linhas canônicas usadas pelos acessórios.
+
+    A lógica da extração não muda. O objetivo é somente garantir que, quando um
+    módulo pergunta onde está um dado, a resposta venha da tabela correspondente
+    do clube_novo em vez de uma constante local ou de uma projeção inventada.
+    """
+    catalogs = _BASE_CONTRACT_CATALOGS(connection, contract, sql)
+    existing = {(str(item.get("schema")), str(item.get("table"))) for item in catalogs}
+    with connection.cursor() as cursor:
+        for table, keys in sorted(_V46_CANONICAL_CATALOGS.items()):
+            identity = ("clube_novo", table)
+            if identity in existing:
+                continue
+            query = sql.SQL("select row_to_json(source) from clube_novo.{} source order by {}") .format(
+                sql.Identifier(table),
+                sql.SQL(",").join(sql.Identifier(key) for key in keys),
+            )
+            cursor.execute(query)
+            rows = [item[0] for item in cursor.fetchall()]
+            if not rows or any(not isinstance(row, dict) for row in rows):
+                raise RuntimeError(f"catálogo canônico clube_novo.{table} não retornou linhas utilizáveis")
+            catalogs.append({"schema": "clube_novo", "table": table, "keys": list(keys), "rows": rows})
+            existing.add(identity)
+    return sorted(catalogs, key=lambda item: (str(item.get("schema")), str(item.get("table"))))
+
+
+base.contract_catalogs = contract_catalogs_v46
 base.PRODUCTIVE_WRITES_LOCKED = False
 
 LAST_DIMENSIONS: dict | None = None
