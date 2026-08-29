@@ -9,7 +9,7 @@ set "CFG_MOTOR=%~dp0..\2-MOTORES\config.txt"
 
 echo.>>"%BOOTLOG%"
 echo ============================================================>>"%BOOTLOG%"
-echo [%date% %time%] INICIO - Extrator eFootball V4.6.7>>"%BOOTLOG%"
+echo [%date% %time%] INICIO - Extrator eFootball V4.6.8>>"%BOOTLOG%"
 
 if exist "%CFG_RAIZ%" goto CONFIG_OK
 if exist "%CFG_MOTOR%" goto CONFIG_OK
@@ -33,7 +33,7 @@ exit /b 2
 :CONFIG_OK
 echo [%date% %time%] OK - config.txt encontrado>>"%BOOTLOG%"
 
-echo Preparando o Extrator eFootball V4.6.7...
+echo Preparando o Extrator eFootball V4.6.8...
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0windows-app\COMPILAR-APLICATIVO.ps1" >>"%BOOTLOG%" 2>&1
 if errorlevel 1 (
   echo [%date% %time%] ERRO - falha ao reconstruir o EXE>>"%BOOTLOG%"
@@ -56,6 +56,6 @@ if not exist "%~dp0Extrator eFootball.exe" (
   exit /b 4
 )
 
-echo [%date% %time%] OK - EXE V4.6.7 reconstruido; abrindo na porta exclusiva 8771>>"%BOOTLOG%"
+echo [%date% %time%] OK - EXE V4.6.8 reconstruido; abrindo na porta exclusiva 8772>>"%BOOTLOG%"
 start "" "%~dp0Extrator eFootball.exe"
 exit /b 0
