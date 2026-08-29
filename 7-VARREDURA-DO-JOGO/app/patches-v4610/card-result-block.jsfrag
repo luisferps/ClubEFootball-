@@ -1,0 +1,59 @@
+      state.incremental = { baseline, cards, currentRows, relationsReadback, relationsExact, relationDivergences, diff, manifest, selection: defaultCardSelection(diff), allItems: applicableItems };
+      setStats('stats-incremental', [
+        ['atuais', currentRows.length],
+        ['novas', diff.new_cards.length],
+        ['alteradas', diff.changed_cards.length],
+        ['possíveis inativas', diff.possibly_inactive.length],
+        ['relações divergentes', relationDivergences.reduce((total, item) => total + item.mismatch_count, 0)]
+      ]);
+      const changes = diff.new_cards.length + diff.changed_cards.length + diff.possibly_inactive.length;
+      const relationIssueCount = relationDivergences.reduce((total, item) => total + item.mismatch_count, 0);
+      $('incremental-result-status').textContent = !relationsExact
+        ? `LEITURA CONCLUÍDA COM DIVERGÊNCIAS — ${relationIssueCount.toLocaleString('pt-BR')} diferença(s) nas relações normalizadas. O diff das cartas foi preservado para conferência e nenhum pacote foi liberado para envio.`
+        : changes
+          ? `NOVA CARGA IDENTIFICADA — ${diff.new_cards.length} novas, ${diff.changed_cards.length} atualizadas e ${diff.possibly_inactive.length} possíveis inativas.`
+          : 'SEM MUDANÇAS — o estado atual do jogo já corresponde à base de clube_novo.';
+      renderCardReview();
+      if (!relationsExact) {
+        const relationHtml = relationDivergences.map((item) => {
+          const samples = item.samples.slice(0, 5).map((sample) => {
+            const key = (sample.expected || sample.database || [])[0] || 'sem card';
+            return `${key}: esperado ${JSON.stringify(sample.expected)} · banco ${JSON.stringify(sample.database)}`;
+          }).join('<br>');
+          return `<details style="margin-top:8px"><summary><b>${escapeHtml(item.name)}</b> · ${item.mismatch_count.toLocaleString('pt-BR')} divergência(s)</summary><div style="margin-top:6px;font-size:12px;line-height:1.5">${escapeHtml(samples || 'Sem amostra disponível.').replace(/&lt;br&gt;/g, '<br>')}</div></details>`;
+        }).join('');
+        $('table-incremental').insertAdjacentHTML('afterbegin', `<div class="callout"><b>Conferência das relações de cartas</b><p>A leitura terminou, mas estas relações divergem do banco. Confira antes de qualquer carga. A aplicação de cartas permanece bloqueada.</p>${relationHtml}</div>`);
+      }
+      $('result-incremental').hidden = false;
+      if (relationsExact) {
+        await activateCardPackage('incremental', manifest, { items: applicableItems, counts: { insert: diff.new_cards.length, update: diff.changed_cards.length, inactive: diff.possibly_inactive.length } });
+        setOperationStatus('incremental-status', 'success', changes ? 'Comparação concluída — atualização disponível' : 'Comparação concluída — nada para atualizar', changes ? 'Confira os números e use o botão de preparar envio quando desejar.' : 'clube_novo já corresponde ao estado atual do jogo.');
+        state.automatic.cards = { state: 'ready', pending: Boolean(changes), message: changes ? `${diff.new_cards.length} novas · ${diff.changed_cards.length} alteradas · ${diff.possibly_inactive.length} possíveis inativas.` : `Nada para atualizar: ${currentRows.length.toLocaleString('pt-BR')} cartas conferidas e nenhuma diferença pendente.` };
+      } else {
+        state.cardPackage = null;
+        $('apply-card-package').hidden = true;
+        setOperationStatus('incremental-status', 'error', 'Leitura de cartas concluída com divergências', `${relationIssueCount.toLocaleString('pt-BR')} diferença(s) nas relações normalizadas. O relatório foi preservado e a aplicação ficou bloqueada.`);
+        state.automatic.cards = { state: 'ready', pending: true, message: `Cartas lidas; ${relationIssueCount.toLocaleString('pt-BR')} divergência(s) nas relações. Confira o relatório antes de qualquer envio.` };
+      }
+      const cardScanDetail = {
+        scan_completed: true,
+        relations_exact: relationsExact,
+        relation_divergences: relationDivergences,
+        counts: {
+          current: currentRows.length,
+          new: diff.new_cards.length,
+          changed: diff.changed_cards.length,
+          possibly_inactive: diff.possibly_inactive.length,
+          relation_mismatches: relationIssueCount
+        },
+        manifest_sha256: manifest.manifest_sha256 || null,
+        database_write: false
+      };
+      global.CLUBEF_LAST_CARD_SCAN = cardScanDetail;
+      try {
+        global.dispatchEvent(new CustomEvent('clubef:card-scan-ready', { detail: cardScanDetail }));
+      } catch (eventError) {
+        log('log-incremental', `Aviso: não foi possível atualizar o painel de conferência (${eventError.message}).`);
+      }
+      renderAutomaticSummary();
+      log('log-incremental', `Concluído: leitura e conferência preparadas; relações exatas=${relationsExact}; nenhum dado foi aplicado.`);
