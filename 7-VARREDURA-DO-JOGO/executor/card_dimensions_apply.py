@@ -31,13 +31,84 @@ def _assert_snapshot(snapshot: dict[str, Any]) -> None:
     if not isinstance(snapshot, dict) or snapshot.get("contract") != CONTRACT:
         raise ValueError("fotografia física de Dimensões ausente ou incompatível")
     if snapshot.get("database_write") is not False:
-        raise ValueError("a fotografia de Dimensões não está selada como somente leitura")
+        raise ValueError("a fotografia física de Dimensões não está selada como somente leitura")
     if not isinstance(snapshot.get("cards"), list) or not snapshot["cards"]:
         raise ValueError("a fotografia física de Dimensões não contém cartas")
     catalogs = snapshot.get("catalogs") or {}
     for name in ("nationalities", "clubs", "leagues", "types"):
         if not isinstance(catalogs.get(name), list) or not catalogs[name]:
             raise ValueError(f"catálogo físico ausente: {name}")
+
+
+def _fetch_reference_map(cursor: Any, query: Any, key: str, label: str) -> dict[str, dict[str, Any]]:
+    """Carrega a proveniência canônica antes de qualquer escrita da transação."""
+    cursor.execute(query)
+    names = [column.name for column in cursor.description]
+    references: dict[str, dict[str, Any]] = {}
+    for values in cursor.fetchall():
+        row = dict(zip(names, values, strict=True))
+        if row.get(key) is None:
+            raise ValueError(f"{label} sem chave canônica no clube_novo")
+        reference_id = str(row[key])
+        if reference_id in references:
+            raise ValueError(f"referência canônica duplicada em {label}: {reference_id}")
+        references[reference_id] = row
+    if not references:
+        raise ValueError(f"referências canônicas ausentes em {label}")
+    return references
+
+
+def _load_reference_maps(cursor: Any, sql: Any, schema: str) -> dict[str, dict[str, dict[str, Any]]]:
+    return {
+        "cards": _fetch_reference_map(
+            cursor,
+            sql.SQL(
+                "select card_id,fonte_vinculos_jogo,cpk_vinculos_jogo,"
+                "arquivo_vinculos_jogo,contrato_vinculos_jogo from {}.{}"
+            ).format(sql.Identifier(schema), sql.Identifier("carta_jogo")),
+            "card_id",
+            "carta_jogo",
+        ),
+        "nationalities": _fetch_reference_map(
+            cursor,
+            sql.SQL(
+                "select codigo_jogo,arquivo,cpk_origem,fonte_autoritativa,tamanho_registro,"
+                "bit_codigo,largura_codigo,offset_nome_pt_br,largura_nome_pt_br,"
+                "codificacao_nome_pt_br,offset_sigla,largura_sigla from {}.{}"
+            ).format(sql.Identifier(schema), sql.Identifier("nacionalidade_jogo")),
+            "codigo_jogo",
+            "nacionalidade_jogo",
+        ),
+        "clubs": _fetch_reference_map(
+            cursor,
+            sql.SQL(
+                "select codigo_jogo,arquivo,tamanho_registro,offset_codigo,largura_codigo,"
+                "offset_nome_pt_br,largura_nome_pt_br,offset_nome_en,largura_nome_en,"
+                "offset_sigla,largura_sigla from {}.{}"
+            ).format(sql.Identifier(schema), sql.Identifier("clube_jogo")),
+            "codigo_jogo",
+            "clube_jogo",
+        ),
+        "leagues": _fetch_reference_map(
+            cursor,
+            sql.SQL(
+                "select codigo_jogo,arquivo,tamanho_registro,offset_codigo,largura_codigo,"
+                "offset_codigo_pai,largura_codigo_pai,offset_nome_pt_br,largura_nome_pt_br,"
+                "offset_nome_en,largura_nome_en from {}.{}"
+            ).format(sql.Identifier(schema), sql.Identifier("liga_jogo")),
+            "codigo_jogo",
+            "liga_jogo",
+        ),
+        "types": _fetch_reference_map(
+            cursor,
+            sql.SQL(
+                "select tipo_carta_id,arquivo_tipo,campo_tipo,bit_subtipo,"
+                "contrato_extracao from {}.{}"
+            ).format(sql.Identifier(schema), sql.Identifier("tipo_carta_jogo")),
+            "tipo_carta_id",
+            "tipo_carta_jogo",
+        ),
+    }
 
 
 def _upsert_rows(cursor: Any, sql: Any, schema: str, table: str, key: str, rows: list[dict[str, Any]]) -> int:
@@ -128,24 +199,6 @@ def apply_card_dimensions(snapshot: dict[str, Any], connection: Any, schema: str
         raise ValueError("aplicação de Dimensões bloqueada fora de clube_novo")
     _assert_snapshot(snapshot)
 
-    clubs = _source_clubs(snapshot)
-    leagues = _source_leagues(snapshot)
-    nationalities = _source_nationalities(snapshot)
-    types = _source_types(snapshot)
-    cards = _source_cards(snapshot)
-
-    for row in clubs:
-        row["hash_pacote"] = _stable_hash(row)
-        row["contrato_extracao"] = DATABASE_CONTRACT
-        row["carregado_em"] = None
-    for row in leagues:
-        row["hash_pacote"] = _stable_hash(row)
-        row["contrato_extracao"] = DATABASE_CONTRACT
-        row["carregado_em"] = None
-    for row in nationalities:
-        row["contrato_extracao"] = DATABASE_CONTRACT
-        row["carregado_em"] = None
-
     with connection.cursor() as cursor:
         cursor.execute("show transaction_read_only")
         if cursor.fetchone()[0] == "on":
@@ -153,9 +206,21 @@ def apply_card_dimensions(snapshot: dict[str, Any], connection: Any, schema: str
         cursor.execute("set local statement_timeout = '10min'")
         cursor.execute("select pg_advisory_xact_lock(hashtext(%s))", ("clubef_extractor:clube_novo.card_dimensions",))
 
-        for rows in (clubs, leagues, nationalities):
-            for row in rows:
-                row.pop("carregado_em", None)
+        references = _load_reference_maps(cursor, sql, schema)
+        clubs = _source_clubs(snapshot, references["clubs"])
+        leagues = _source_leagues(snapshot, references["leagues"])
+        nationalities = _source_nationalities(snapshot, references["nationalities"])
+        types = _source_types(snapshot, references["types"])
+        cards = _source_cards(snapshot, references["cards"])
+
+        for row in clubs:
+            row["hash_pacote"] = _stable_hash(row)
+            row["contrato_extracao"] = DATABASE_CONTRACT
+        for row in leagues:
+            row["hash_pacote"] = _stable_hash(row)
+            row["contrato_extracao"] = DATABASE_CONTRACT
+        for row in nationalities:
+            row["contrato_extracao"] = DATABASE_CONTRACT
 
         catalog_counts = {
             "nationalities": _upsert_rows(cursor, sql, schema, "nacionalidade_jogo", "codigo_jogo", nationalities),
