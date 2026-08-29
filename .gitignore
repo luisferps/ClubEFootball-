@@ -5,6 +5,8 @@ config.txt
 *.key
 .env
 .env.*
+7-VARREDURA-DO-JOGO/configuracao.local.json
+configuracao.local.json
 
 # lixo que não pertence ao repositório
 _LIXO/
