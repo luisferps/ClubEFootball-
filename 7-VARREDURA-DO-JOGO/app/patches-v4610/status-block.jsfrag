@@ -1,0 +1,18 @@
+
+const blockedRoles = [...changedRoles].filter((role) => role !== 'dt261_bra');
+const applicationBlocked = blockedRoles.length > 0 || !baseline.schema_ready || familyWarnings.length > 0;
+const changes = totals.new + totals.changed + totals.absent;
+if (applicationBlocked) {
+  const details = [];
+  if (!baseline.schema_ready) details.push('Textos sem contrato estrutural pronto para aplicação');
+  if (blockedRoles.length) details.push(`fontes alteradas: ${blockedRoles.join(', ')}`);
+  if (familyWarnings.length) details.push(`${familyWarnings.length} família(s) com aviso`);
+  const reason = `${details.join(' · ')}. A varredura terminou e somente as aplicações afetadas ficaram bloqueadas.`;
+  setOperationStatus('metadata-status', 'error', 'Varredura concluída com avisos', reason);
+  state.automatic.metadata = { state: 'ready', pending: true, message: reason };
+} else {
+  setOperationStatus('metadata-status', 'success', changes ? 'Atualização de metadados disponível' : 'Metadados conferidos — nada para atualizar', changes ? `${totals.new} novas · ${totals.changed} alteradas · ${totals.absent} ausentes.` : 'As fontes são as mesmas da referência interna vigente.');
+  state.automatic.metadata = { state: 'ready', pending: Boolean(changes), message: changes ? `${totals.new} novas · ${totals.changed} alteradas · ${totals.absent} ausentes.` : 'Nada para atualizar nas famílias suportadas; as demais continuam identificadas como não suportadas.' };
+}
+renderAutomaticSummary();
+log('log-metadata', `Concluído: ${Number(textDiff.current || 0).toLocaleString('pt-BR')} chaves de texto · ${Number((physical.catalogs.tecnicos.records || []).length).toLocaleString('pt-BR')} técnicos · ${Number(impetusReadback.extracted?.unique_codes ?? (physical.catalogs.impetos.records || []).length).toLocaleString('pt-BR')} códigos de ímpeto · ${Number(dimensionStructure.cards || 0).toLocaleString('pt-BR')} cartas em Dimensões. Avisos: ${familyWarnings.length}. Nenhuma escrita foi feita.`);
