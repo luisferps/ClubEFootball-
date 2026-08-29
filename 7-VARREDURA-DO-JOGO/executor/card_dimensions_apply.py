@@ -64,17 +64,27 @@ def _upsert_rows(cursor: Any, sql: Any, schema: str, table: str, key: str, rows:
 
 
 def _apply_types(cursor: Any, sql: Any, schema: str, rows: list[dict[str, Any]]) -> int:
-    """Tipos novos exigem prova nominal/procedência antes de inserção automática."""
-    cursor.execute(sql.SQL("select tipo_carta_id from {}.tipo_carta_jogo").format(sql.Identifier(schema)))
-    existing = {str(row[0]) for row in cursor.fetchall()}
+    """Tipos novos ou mudança de chave canônica exigem revisão explícita."""
+    cursor.execute(sql.SQL("select tipo_carta_id,chave_texto from {}.tipo_carta_jogo").format(sql.Identifier(schema)))
+    existing = {str(row[0]): row[1] for row in cursor.fetchall()}
     missing = [str(row["tipo_carta_id"]) for row in rows if str(row["tipo_carta_id"]) not in existing]
     if missing:
         raise ValueError(
             "tipo de carta físico novo sem registro canônico prévio: " + ", ".join(missing[:20])
         )
+    key_changes = [
+        str(row["tipo_carta_id"])
+        for row in rows
+        if existing[str(row["tipo_carta_id"])] != row.get("chave_texto")
+    ]
+    if key_changes:
+        raise ValueError(
+            "mudança de chave canônica de tipo exige migração própria antes dos cards: "
+            + ", ".join(key_changes[:20])
+        )
     changed = 0
     for row in rows:
-        columns = [column for column in row if column != "tipo_carta_id"]
+        columns = [column for column in row if column not in {"tipo_carta_id", "chave_texto"}]
         query = sql.SQL("update {}.tipo_carta_jogo set {} where tipo_carta_id=%s").format(
             sql.Identifier(schema),
             sql.SQL(",").join(
@@ -143,7 +153,6 @@ def apply_card_dimensions(snapshot: dict[str, Any], connection: Any, schema: str
         cursor.execute("set local statement_timeout = '10min'")
         cursor.execute("select pg_advisory_xact_lock(hashtext(%s))", ("clubef_extractor:clube_novo.card_dimensions",))
 
-        # clock_timestamp() é usado no banco para não depender do relógio do cliente.
         for rows in (clubs, leagues, nationalities):
             for row in rows:
                 row.pop("carregado_em", None)
@@ -155,7 +164,6 @@ def apply_card_dimensions(snapshot: dict[str, Any], connection: Any, schema: str
             "types": _apply_types(cursor, sql, schema, types),
         }
 
-        # Marca a data da aplicação depois dos upserts, sem alterar a prova física.
         cursor.execute(sql.SQL("update {}.nacionalidade_jogo set carregado_em=clock_timestamp() where codigo_jogo = any(%s)").format(sql.Identifier(schema)), ([row["codigo_jogo"] for row in nationalities],))
         cursor.execute(sql.SQL("update {}.clube_jogo set carregado_em=clock_timestamp() where codigo_jogo = any(%s)").format(sql.Identifier(schema)), ([row["codigo_jogo"] for row in clubs],))
         cursor.execute(sql.SQL("update {}.liga_jogo set carregado_em=clock_timestamp() where codigo_jogo = any(%s)").format(sql.Identifier(schema)), ([row["codigo_jogo"] for row in leagues],))
