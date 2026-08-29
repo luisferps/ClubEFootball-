@@ -2,6 +2,7 @@
   "write_enabled": false,
   "allow_manual_card_apply": true,
   "allow_manual_text_apply": true,
+  "allow_manual_dimensions_apply": true,
   "require_database_on_prepare": true,
   "max_manifest_age_minutes": 60,
   "approval_ttl_minutes": 10,
