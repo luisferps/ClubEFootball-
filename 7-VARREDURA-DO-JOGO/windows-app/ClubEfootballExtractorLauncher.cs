@@ -11,15 +11,19 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Busca e extração local de dados de futebol")]
 [assembly: AssemblyProduct("Extrator eFootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("4.6.0.0")]
-[assembly: AssemblyFileVersion("4.6.0.0")]
+[assembly: AssemblyVersion("4.6.1.0")]
+[assembly: AssemblyFileVersion("4.6.1.0")]
 
 namespace ClubEfootballWindowsApp
 {
     internal static class Program
     {
-        private const string AppUrl = "http://127.0.0.1:8765/Extrator-ClubEfootball.html";
-        private const string StatusUrl = "http://127.0.0.1:8765/api/status";
+        // Porta nova do runtime 4.6.1. A versão anterior usava 8765 e podia
+        // reaproveitar silenciosamente um servidor Python antigo que continuava
+        // vivo em segundo plano, fazendo a interface executar código obsoleto.
+        private const int AppPort = 8766;
+        private const string AppUrl = "http://127.0.0.1:8766/Extrator-ClubEfootball.html";
+        private const string StatusUrl = "http://127.0.0.1:8766/api/status";
 
         [STAThread]
         private static void Main()
@@ -85,7 +89,7 @@ namespace ClubEfootballWindowsApp
                 if (ServerReady()) return;
                 Thread.Sleep(200);
             }
-            throw new InvalidOperationException("O executor local não respondeu. A instalação pode estar incompleta.");
+            throw new InvalidOperationException("O executor local V4.6.1 não respondeu. A instalação pode estar incompleta.");
         }
 
         private static void StartHiddenExecutor(string root)
@@ -111,7 +115,7 @@ namespace ClubEfootballWindowsApp
             server.CreateNoWindow = true;
             server.WindowStyle = ProcessWindowStyle.Hidden;
             server.EnvironmentVariables["PYTHONPATH"] = vendor;
-            server.EnvironmentVariables["CLUBEF_EXTRACTOR_PORT"] = "8765";
+            server.EnvironmentVariables["CLUBEF_EXTRACTOR_PORT"] = AppPort.ToString();
             server.EnvironmentVariables.Remove("CLUBEF_SUPABASE_DB_URL");
             server.EnvironmentVariables.Remove("CLUBEF_ENABLE_REAL_WRITE");
             Process.Start(server);
