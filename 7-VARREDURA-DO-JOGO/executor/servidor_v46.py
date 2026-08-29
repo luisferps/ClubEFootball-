@@ -1,13 +1,14 @@
-"""Servidor operacional do Extrator eFootball V4.6.
+"""Servidor operacional do Extrator eFootball V4.6.7.
 
-Estende o servidor V4.5 sem duplicar sua lógica: preserva o fluxo existente e
-faz o runtime V4.6 receber diretamente as tabelas/catálogos canônicos que já
-contêm as referências físicas usadas na extração.
+Estende o servidor base sem duplicar sua lógica. Esta versão usa uma porta
+exclusiva, valida a própria versão de runtime e registra falhas de transporte,
+exceções HTTP e erros do navegador em um log persistente.
 """
 
 from __future__ import annotations
 
 import json
+import os
 import threading
 import traceback
 import webbrowser
@@ -21,10 +22,14 @@ import executor_local as base
 from card_dimensions_apply import apply_card_dimensions, readback_card_dimensions
 
 
+RUNTIME_VERSION = "4.6.7"
+DEFAULT_PORT = 8771
+
+
 def runtime_log(message: str) -> None:
-    """Vai para stderr; o launcher Windows persiste a saída no log único."""
+    """Escreve em stderr; o launcher Windows persiste a saída no log único."""
     try:
-        print(f"[V4.6.6] {message}", file=base.sys.stderr, flush=True)
+        print(f"[V{RUNTIME_VERSION}] {message}", file=base.sys.stderr, flush=True)
     except Exception:
         pass
 
@@ -44,12 +49,17 @@ def _thread_exception_hook(args: threading.ExceptHookArgs) -> None:
 threading.excepthook = _thread_exception_hook
 
 
-# O executor base já envia os catálogos referidos diretamente pelos campos do
-# contrato. Algumas tabelas físicas são consumidas por módulos acessórios sem
-# aparecer como catálogo de tradução em um campo específico. Na V4.6 elas são
-# acrescentadas ao mesmo payload, diretamente do clube_novo. Não há cópia de
-# bit/offset/tamanho neste servidor: somente nomes de tabelas e suas chaves de
-# ordenação determinística.
+class LoggedThreadingHTTPServer(ThreadingHTTPServer):
+    """Registra exceções que o socketserver captura fora do Handler."""
+
+    daemon_threads = True
+
+    def handle_error(self, request: Any, client_address: Any) -> None:
+        detail = traceback.format_exc().strip()
+        runtime_log(f"EXCECAO-REQUISICAO | cliente={client_address} | {detail}")
+        super().handle_error(request, client_address)
+
+
 _BASE_CONTRACT_CATALOGS = base.contract_catalogs
 _V46_CANONICAL_CATALOGS: dict[str, tuple[str, ...]] = {
     "afinidade_tecnico_jogo": ("codigo_jogo",),
@@ -69,12 +79,7 @@ _V46_CANONICAL_CATALOGS: dict[str, tuple[str, ...]] = {
 
 
 def contract_catalogs_v46(connection: Any, contract: dict[str, Any], sql: Any) -> list[dict[str, Any]]:
-    """Entrega ao Extrator as próprias linhas canônicas usadas pelos acessórios.
-
-    A lógica da extração não muda. O objetivo é somente garantir que, quando um
-    módulo pergunta onde está um dado, a resposta venha da tabela correspondente
-    do clube_novo em vez de uma constante local ou de uma projeção inventada.
-    """
+    """Entrega ao Extrator as próprias linhas canônicas usadas pelos acessórios."""
     catalogs = _BASE_CONTRACT_CATALOGS(connection, contract, sql)
     existing = {(str(item.get("schema")), str(item.get("table"))) for item in catalogs}
     with connection.cursor() as cursor:
@@ -82,7 +87,7 @@ def contract_catalogs_v46(connection: Any, contract: dict[str, Any], sql: Any) -
             identity = ("clube_novo", table)
             if identity in existing:
                 continue
-            query = sql.SQL("select row_to_json(source) from clube_novo.{} source order by {}") .format(
+            query = sql.SQL("select row_to_json(source) from clube_novo.{} source order by {}").format(
                 sql.Identifier(table),
                 sql.SQL(",").join(sql.Identifier(key) for key in keys),
             )
@@ -116,8 +121,28 @@ def dimensions_apply_allowed(config: dict) -> bool:
     )
 
 
+def diagnostic_log_path() -> Path:
+    configured = os.environ.get("CLUBEF_EXTRACTOR_LOG")
+    if configured:
+        return Path(configured)
+    return Path(base.ROOT) / "logs" / "extrator-v46.log"
+
+
+def read_log_tail(max_lines: int = 350, max_chars: int = 80_000) -> str:
+    path = diagnostic_log_path()
+    try:
+        if not path.is_file():
+            return f"Log ainda não existe: {path}"
+        text = path.read_text(encoding="utf-8", errors="replace")
+        lines = text.splitlines()[-max_lines:]
+        tail = "\n".join(lines)
+        return tail[-max_chars:]
+    except Exception as error:
+        return f"Não foi possível ler o log {path}: {type(error).__name__}: {error}"
+
+
 class Handler(base.Handler):
-    server_version = "ClubEfootballLocal/4.6.6"
+    server_version = f"ClubEfootballLocal/{RUNTIME_VERSION}"
 
     def log_message(self, format: str, *args: Any) -> None:
         try:
@@ -130,7 +155,7 @@ class Handler(base.Handler):
             code = int(status)
             if code >= 400:
                 detail = json.dumps(payload, ensure_ascii=False, default=str, separators=(",", ":"))
-                runtime_log(f"HTTP-ERRO | {self.command} {self.path} | status={code} | {detail}")
+                runtime_log(f"HTTP-ERRO | {self.command} {self.path} | status={code} | {detail[:12000]}")
         except Exception as error:
             runtime_log(f"FALHA-AO-REGISTRAR-HTTP | {error}")
         super().send_json(status, payload)
@@ -142,16 +167,23 @@ class Handler(base.Handler):
         runtime_marker = '<script src="app/contrato-v46-runtime.js"></script>'
         if runtime_marker not in html:
             html = html.replace(core_marker, f"{core_marker}\n  {runtime_marker}")
+
         bridge_marker = '<script src="/app/source-local-bridge.js"></script>'
         ui_marker = '<script src="app/extrator-ui.js"></script>'
         if bridge_marker not in html:
             html = html.replace(ui_marker, f"{bridge_marker}\n  {ui_marker}")
+
+        diagnostic_marker = '<script src="/app/diagnostico-v467.js"></script>'
+        if diagnostic_marker not in html:
+            html = html.replace(ui_marker, f"{diagnostic_marker}\n  {ui_marker}")
+
         metadata_marker = '<script src="/app/metadados-v46.js" defer></script>'
         if metadata_marker not in html:
             html = html.replace("</body>", f"  {metadata_marker}\n</body>")
         data = html.encode("utf-8")
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Cache-Control", "no-store")
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()
         self.wfile.write(data)
@@ -160,21 +192,62 @@ class Handler(base.Handler):
         try:
             source_path = base.discovered_source_path(role)
             size = source_path.stat().st_size
+            runtime_log(f"ARQUIVO-INICIO | role={role} | arquivo={source_path} | bytes={size}")
             self.send_response(HTTPStatus.OK)
             self.send_header("Content-Type", "application/octet-stream")
             self.send_header("Content-Length", str(size))
             self.send_header("Content-Disposition", f'attachment; filename="{source_path.name}"')
             self.end_headers()
+            total = 0
             with source_path.open("rb") as handle:
                 while chunk := handle.read(1024 * 1024):
                     self.wfile.write(chunk)
+                    total += len(chunk)
+            runtime_log(f"ARQUIVO-FIM | role={role} | bytes_enviados={total}")
         except (ValueError, FileNotFoundError, OSError) as error:
+            runtime_log(f"ARQUIVO-ERRO | role={role} | {type(error).__name__}: {error}")
             self.send_json(HTTPStatus.NOT_FOUND, {"error": str(error), "database_write": False})
 
     def do_GET(self) -> None:
         parsed = urlparse(self.path)
         if parsed.path in {"/", "/Extrator-ClubEfootball.html"}:
             self._serve_injected_ui()
+            return
+
+        if parsed.path == "/api/runtime-version":
+            try:
+                config_source = base.load_config().get("_source")
+            except Exception as error:
+                config_source = f"erro: {type(error).__name__}: {error}"
+            self.send_json(HTTPStatus.OK, {
+                "online": True,
+                "version": RUNTIME_VERSION,
+                "port": self.server.server_address[1],
+                "config_source": config_source,
+                "database_write": False,
+            })
+            return
+
+        if parsed.path == "/api/diagnostico":
+            try:
+                config_source = base.load_config().get("_source")
+            except Exception as error:
+                config_source = f"erro: {type(error).__name__}: {error}"
+            try:
+                connection_source = base.connection_source()
+            except Exception as error:
+                connection_source = f"erro: {type(error).__name__}: {error}"
+            self.send_json(HTTPStatus.OK, {
+                "runtime_version": RUNTIME_VERSION,
+                "pid": os.getpid(),
+                "port": self.server.server_address[1],
+                "root": str(base.ROOT),
+                "config_source": config_source,
+                "connection_source": connection_source,
+                "log_path": str(diagnostic_log_path()),
+                "log_tail": read_log_tail(),
+                "database_write": False,
+            })
             return
 
         if parsed.path == "/local-sources/status":
@@ -201,6 +274,18 @@ class Handler(base.Handler):
     def do_POST(self) -> None:
         global LAST_DIMENSIONS
         path = urlparse(self.path).path
+
+        if path == "/api/client-log":
+            try:
+                payload = self.read_json()
+                detail = json.dumps(payload, ensure_ascii=False, default=str, separators=(",", ":"))
+                runtime_log(f"CLIENTE | {detail[:12000]}")
+                self.send_json(HTTPStatus.OK, {"logged": True, "database_write": False})
+            except Exception as error:
+                runtime_log(f"CLIENTE-LOG-ERRO | {type(error).__name__}: {error}")
+                self.send_json(HTTPStatus.BAD_REQUEST, {"logged": False, "error": str(error), "database_write": False})
+            return
+
         if path == "/api/card-dimensions/validate":
             try:
                 config = base.load_config()
@@ -273,12 +358,18 @@ class Handler(base.Handler):
 
 def main() -> None:
     host = "127.0.0.1"
-    port = int(base.os.environ.get("CLUBEF_EXTRACTOR_PORT", "8765"))
-    server = ThreadingHTTPServer((host, port), Handler)
+    port = int(base.os.environ.get("CLUBEF_EXTRACTOR_PORT", str(DEFAULT_PORT)))
+    server = LoggedThreadingHTTPServer((host, port), Handler)
     url = f"http://{host}:{port}/Extrator-ClubEfootball.html"
-    runtime_log(f"Servidor iniciado em {url}; raiz={base.ROOT}; config={base.load_config().get('_source')}")
+    try:
+        config_source = base.load_config().get("_source")
+    except Exception as error:
+        config_source = f"erro: {type(error).__name__}: {error}"
+    runtime_log(
+        f"Servidor iniciado em {url}; pid={os.getpid()}; raiz={base.ROOT}; config={config_source}; log={diagnostic_log_path()}"
+    )
     if base.sys.stdout is not None:
-        print(f"Extrator eFootball V4.6.6 disponível em {url}")
+        print(f"Extrator eFootball V{RUNTIME_VERSION} disponível em {url}")
         print("Fluxo produtivo: Metadados/Dimensões -> Cartas. Escrita continua manual e confirmada.")
     if "--no-browser" not in base.sys.argv:
         threading.Timer(0.8, lambda: webbrowser.open(url)).start()
