@@ -12,17 +12,17 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Busca e extração local de dados de futebol")]
 [assembly: AssemblyProduct("Extrator eFootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("4.6.7.0")]
-[assembly: AssemblyFileVersion("4.6.7.0")]
+[assembly: AssemblyVersion("4.6.8.0")]
+[assembly: AssemblyFileVersion("4.6.8.0")]
 
 namespace ClubEfootballWindowsApp
 {
     internal static class Program
     {
-        private const int AppPort = 8771;
-        private const string RuntimeVersion = "4.6.7";
-        private const string AppUrl = "http://127.0.0.1:8771/Extrator-ClubEfootball.html?v=4.6.7";
-        private const string StatusUrl = "http://127.0.0.1:8771/api/runtime-version";
+        private const int AppPort = 8772;
+        private const string RuntimeVersion = "4.6.8";
+        private const string AppUrl = "http://127.0.0.1:8772/Extrator-ClubEfootball.html?v=4.6.8";
+        private const string StatusUrl = "http://127.0.0.1:8772/api/runtime-version";
 
         private static readonly object LogLock = new object();
         private static string LogPath = null;
@@ -104,7 +104,7 @@ namespace ClubEfootballWindowsApp
             {
                 lock (LogLock)
                 {
-                    string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + " | " + message + Environment.NewLine;
+                    string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + " | LAUNCHER | " + message + Environment.NewLine;
                     File.AppendAllText(LogPath, line, new UTF8Encoding(false));
                 }
             }
