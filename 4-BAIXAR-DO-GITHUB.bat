@@ -22,6 +22,7 @@ set "EXTRATOR_EXE=%PASTA%\7-VARREDURA-DO-JOGO\Extrator eFootball.exe"
 set "CFG_MOTOR=%TEMP%\clubef-config-motor-%RANDOM%-%RANDOM%.tmp"
 set "CFG_RAIZ=%TEMP%\clubef-config-raiz-%RANDOM%-%RANDOM%.tmp"
 set "BOOTSTRAP=0"
+set "EXTRATOR_VERSAO=versao nao identificada"
 title 4 - BAIXAR DO GITHUB
 
 > "%LOG_TEMP%" echo ============================================
@@ -33,12 +34,13 @@ title 4 - BAIXAR DO GITHUB
 echo.
 echo  ============================================================
 echo   BAIXAR DO GITHUB
- echo  ============================================================
+echo  ============================================================
 echo.
 echo   Pasta: %PASTA%
 echo   Repositorio: %REPO%
 echo.
-echo   Baixa o codigo atual, confere o commit e recompila o Extrator V4.6.5.
+echo   Baixa o codigo atual, confere o commit e recompila o Extrator
+echo   a partir da versao atual do codigo-fonte.
 echo   Funciona tambem quando a pasta foi baixada como ZIP do GitHub.
 echo   O config.txt NAO e tocado.
 echo   Esta janela NAO fecha automaticamente.
@@ -127,7 +129,7 @@ if exist "%CFG_RAIZ%" (
   del /f /q "%CFG_RAIZ%" >nul 2>&1
 )
 
-echo   ---- recompilando o Extrator V4.6.5 a partir do codigo baixado...
+echo   ---- recompilando o Extrator a partir do codigo baixado...
 if not exist "%BUILD_SCRIPT%" goto ERRO_BUILD
 where powershell >nul 2>&1
 if errorlevel 1 goto ERRO_BUILD
@@ -135,18 +137,21 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_SCRIPT%" >> "%LOG_TE
 if errorlevel 1 goto ERRO_BUILD
 if not exist "%EXTRATOR_EXE%" goto ERRO_BUILD
 
+for /f "usebackq delims=" %%V in (`powershell -NoProfile -Command "(Get-Item -LiteralPath $env:EXTRATOR_EXE).VersionInfo.FileVersion"`) do set "EXTRATOR_VERSAO=%%V"
+
 for %%F in ("%EXTRATOR_EXE%") do (
-  echo        Extrator recompilado: %%~tF - %%~zF bytes
-  >>"%LOG_TEMP%" echo executavel recompilado: %%~fF ^| %%~tF ^| %%~zF bytes
+  echo        Extrator V%EXTRATOR_VERSAO% recompilado: %%~tF - %%~zF bytes
+  >>"%LOG_TEMP%" echo executavel recompilado: %%~fF ^| versao %EXTRATOR_VERSAO% ^| %%~tF ^| %%~zF bytes
 )
 
 >>"%LOG_TEMP%" echo RESULTADO: SUCESSO
 >>"%LOG_TEMP%" echo commit: %LOCAL_SHA%
+>>"%LOG_TEMP%" echo versao do Extrator: %EXTRATOR_VERSAO%
 copy /Y "%LOG_TEMP%" "%LOG_FINAL%" >nul
 
 echo.
 echo  ============================================================
-echo   BAIXOU, CONFERIU E RECOMPILOU O EXTRATOR V4.6.5.
+echo   BAIXOU, CONFERIU E RECOMPILOU O EXTRATOR V%EXTRATOR_VERSAO%.
 echo   Commit local = GitHub:
 echo   %LOCAL_SHA%
 echo  ============================================================
