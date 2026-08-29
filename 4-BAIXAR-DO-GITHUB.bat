@@ -35,7 +35,7 @@ echo.
 echo   Pasta: %PASTA%
 echo   Repositorio: %REPO%
 echo.
-echo   Baixa o codigo atual, confere o commit e recompila o Extrator V4.6.
+echo   Baixa o codigo atual, confere o commit e recompila o Extrator V4.6.2.
 echo   Funciona tambem quando a pasta foi baixada como ZIP do GitHub.
 echo   O config.txt NAO e tocado.
 echo   Esta janela NAO fecha automaticamente.
@@ -48,9 +48,6 @@ if not exist "%PASTA%" goto ERRO_PASTA
 
 cd /d "%PASTA%"
 
-rem Uma pasta baixada pelo botao "Download ZIP" nao possui .git.
-rem Tambem tratamos como primeiro uso uma tentativa anterior que criou .git,
-rem mas falhou antes de estabelecer um HEAD local.
 if not exist ".git" (
   echo   ---- primeiro uso: inicializando repositorio local
   >>"%LOG%" echo modo: bootstrap de pasta ZIP sem .git
@@ -91,18 +88,16 @@ if not defined REMOTO_SHA goto ERRO_OPERACAO
 echo   ---- aplicando commit %REMOTO_SHA%...
 if "%BOOTSTRAP%"=="1" goto APLICAR_BOOTSTRAP
 
-git checkout -B main FETCH_HEAD >> "%LOG%" 2>&1
-if errorlevel 1 goto ERRO_OPERACAO
+rem Em uma copia de trabalho normal o EXE pode estar diferente porque foi
+rem recompilado localmente. Reset hard e intencional aqui: primeiro traz
+rem exatamente o codigo do GitHub e depois recompila o EXE de novo.
 git reset --hard FETCH_HEAD >> "%LOG%" 2>&1
+if errorlevel 1 goto ERRO_OPERACAO
+git branch -M main >> "%LOG%" 2>&1
 if errorlevel 1 goto ERRO_OPERACAO
 goto APLICADO
 
 :APLICAR_BOOTSTRAP
-rem No primeiro uso os arquivos do ZIP ainda sao "nao rastreados". Um checkout
-rem comum se recusa a sobrescreve-los. Primeiro adotamos o indice do commit
-rem remoto sem apagar a arvore local; depois materializamos exatamente os
-rem arquivos rastreados por cima da copia do ZIP. Arquivos locais ignorados,
-rem como config.txt, permanecem preservados.
 echo   ---- adotando a pasta ZIP como copia de trabalho do GitHub...
 >>"%LOG%" echo bootstrap: git reset --mixed FETCH_HEAD
 git reset --mixed FETCH_HEAD >> "%LOG%" 2>&1
@@ -130,7 +125,7 @@ if exist "%TEMP%\cf-config-raiz.txt" (
   del /f /q "%TEMP%\cf-config-raiz.txt" >nul 2>&1
 )
 
-echo   ---- recompilando o Extrator V4.6 a partir do codigo baixado...
+echo   ---- recompilando o Extrator V4.6.2 a partir do codigo baixado...
 if not exist "%BUILD_SCRIPT%" goto ERRO_BUILD
 where powershell >nul 2>&1
 if errorlevel 1 goto ERRO_BUILD
@@ -149,7 +144,7 @@ for %%F in ("%EXTRATOR_EXE%") do (
 >>"%LOG%" echo commit: %LOCAL_SHA%
 echo.
 echo  ============================================================
-echo   BAIXOU, CONFERIU E RECOMPILOU O EXTRATOR.
+echo   BAIXOU, CONFERIU E RECOMPILOU O EXTRATOR V4.6.2.
 echo   Commit local = GitHub:
 echo   %LOCAL_SHA%
 echo  ============================================================
