@@ -2,10 +2,8 @@
 
 /**
  * Decodificador neutro do pedido versionado de leitura.
- *
- * Ele conhece somente primitivas de arquivo (inteiro LE, bitfield, associação
- * por ID e UTF-8). Endereço, largura, tamanho de registro, transformação e
- * fingerprint chegam exclusivamente do contrato retornado por clube_novo.
+ * Endereço, largura, tamanho de registro, transformação e fingerprint chegam
+ * exclusivamente do contrato retornado por clube_novo.
  */
 (function installContractReader(global) {
   const decoder = new TextDecoder('utf-8');
@@ -13,7 +11,7 @@
     'contrato_id', 'versao_jogo', 'versao_contrato',
     'fingerprint_contrato_sha256', 'fingerprint_fontes_sha256', 'fingerprint_catalogos_sha256'
   ]);
-  const SUPPORTED_READERS = new Set(['bitfield_le', 'byte_le', 'fixed_utf8_nul', 'id_mask', 'membership']);
+  const SUPPORTED_READERS = new Set(['bitfield_le', 'byte_le', 'fixed_utf8_nul', 'id_mask', 'membership', 'all_str_parser']);
   const SUPPORTED_FILE_DECODERS = new Set(['wesys_raw', 'all_str_v1']);
 
   function requirePlan(plan) {
@@ -63,7 +61,6 @@
   }
   function sourceValue(values, origin) {
     if (Object.prototype.hasOwnProperty.call(values, origin)) return values[origin];
-    // Alias histórico do contrato: alguns id_mask antigos chamavam carta.id de card_id.
     if (origin === 'card_id' && Object.prototype.hasOwnProperty.call(values, 'carta.id')) return values['carta.id'];
     return undefined;
   }
@@ -79,11 +76,10 @@
         return Number((BigInt(source) >> BigInt(transform.bit_inicio)) & ((1n << BigInt(transform.largura_bits)) - 1n));
       }
       case 'membership': {
-        // Membership identifica a chave física que depois será testada contra um
-        // conjunto (ex.: PlayerDeleteList). O leitor não inventa a associação.
         if (Number.isInteger(field.byte_offset) && Number.isInteger(field.largura_bytes)) return readByteLE(bytes, base + field.byte_offset, field.largura_bytes);
         return readBitsLE(bytes, base, field.bit_inicio, field.largura_bits);
       }
+      case 'all_str_parser': throw new Error(`campo textual exige parser all.str: ${field.chave_campo}`);
       default: throw new Error(`tipo de leitura não implementado: ${field.tipo_leitura}`);
     }
   }
@@ -117,8 +113,8 @@
     if (file.decodificador !== 'wesys_raw') throw new Error(`decodificador não genérico: ${file.decodificador}`);
     if (!Number.isInteger(file.tamanho_registro) || file.tamanho_registro <= 0) throw new Error(`tamanho de registro ausente no contrato: ${fileName}`);
     const selected = fieldKeys == null ? null : new Set(fieldKeys);
-    const fields = [...index.fields.values()].filter((field) => field.arquivo_id === file.arquivo_id && (selected == null || selected.has(field.chave_campo))).sort((left, right) => left.chave_campo.localeCompare(right.chave_campo));
-    if (!fields.length) throw new Error(`nenhum campo solicitado para ${fileName}`);
+    const fields = [...index.fields.values()].filter((field) => field.arquivo_id === file.arquivo_id && field.tipo_leitura !== 'all_str_parser' && (selected == null || selected.has(field.chave_campo))).sort((left, right) => left.chave_campo.localeCompare(right.chave_campo));
+    if (!fields.length) throw new Error(`nenhum campo binário solicitado para ${fileName}`);
     const records = [];
     for (let base = 0, recordIndex = 0; base < bytes.length; base += file.tamanho_registro, recordIndex += 1) {
       const values = {};
@@ -129,5 +125,5 @@
     return { selo: Object.fromEntries(SEAL_KEYS.map((key) => [key, plan[key]])), arquivo: fileName, sha256_arquivo: actualHash, tamanho_registro: file.tamanho_registro, records };
   }
 
-  global.CLUBEF_CONTRACT_READER = Object.freeze({ SEAL_KEYS, requirePlan, readBitsLE, readByteLE, verifyFile, decodeFile, sha256 });
+  global.CLUBEF_CONTRACT_READER = Object.freeze({ SEAL_KEYS, requirePlan, readBitsLE, readByteLE, readFixedUtf8, verifyFile, decodeFile, sha256 });
 })(globalThis);
