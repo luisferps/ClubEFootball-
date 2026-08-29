@@ -12,17 +12,17 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Busca e extração local de dados de futebol")]
 [assembly: AssemblyProduct("Extrator eFootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("4.6.10.0")]
-[assembly: AssemblyFileVersion("4.6.10.0")]
+[assembly: AssemblyVersion("4.6.11.0")]
+[assembly: AssemblyFileVersion("4.6.11.0")]
 
 namespace ClubEfootballWindowsApp
 {
     internal static class Program
     {
-        private const int AppPort = 8774;
-        private const string RuntimeVersion = "4.6.10";
-        private const string AppUrl = "http://127.0.0.1:8774/Extrator-ClubEfootball.html?v=4.6.10";
-        private const string StatusUrl = "http://127.0.0.1:8774/api/runtime-version";
+        private const int AppPort = 8775;
+        private const string RuntimeVersion = "4.6.11";
+        private const string AppUrl = "http://127.0.0.1:8775/Extrator-ClubEfootball.html?v=4.6.11";
+        private const string StatusUrl = "http://127.0.0.1:8775/api/runtime-version";
 
         private static readonly object LogLock = new object();
         private static string LogPath = null;
