@@ -2,21 +2,19 @@
 setlocal
 cd /d "%~dp0"
 
-echo Extrator eFootball V4.6.1
+echo Extrator eFootball V4.6.2
 echo Ordem produtiva: METADADOS ^> CARDS
 
-rem Porta 8766 evita reaproveitar silenciosamente um servidor V4.6 antigo
-rem que possa ter ficado vivo em segundo plano na porta 8765.
-set "CLUBEF_EXTRACTOR_PORT=8766"
+rem Porta exclusiva desta versao para nao reaproveitar runtime antigo.
+set "CLUBEF_EXTRACTOR_PORT=8767"
 
-rem Fontes oficiais conhecidas do eFootball no Windows.
-rem O fluxo normal e automatico. Se alguma fonte realmente nao existir,
-rem a interface continua oferecendo a selecao manual como recuperacao.
+rem Fontes confirmadas na instalacao Windows. O fluxo normal e automatico.
 set "CLUBEF_SOURCE_DT870_UPDATED="
 set "CLUBEF_SOURCE_DT200="
 set "CLUBEF_SOURCE_DT870_ORIGINAL="
 set "CLUBEF_SOURCE_DT261_BRA="
 
+rem Steam: primeiro local direto confirmado, depois variante Program Files.
 if exist "C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt200_console_all.cpk" set "CLUBEF_SOURCE_DT200=C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt200_console_all.cpk"
 if exist "C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt870_console_win.cpk" set "CLUBEF_SOURCE_DT870_ORIGINAL=C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt870_console_win.cpk"
 if exist "C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt261_bra_console_win.cpk" set "CLUBEF_SOURCE_DT261_BRA=C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt261_bra_console_win.cpk"
@@ -25,6 +23,7 @@ if not defined CLUBEF_SOURCE_DT200 if exist "C:\Program Files\Steam\steamapps\co
 if not defined CLUBEF_SOURCE_DT870_ORIGINAL if exist "C:\Program Files\Steam\steamapps\common\eFootball\cpk\dt870_console_win.cpk" set "CLUBEF_SOURCE_DT870_ORIGINAL=C:\Program Files\Steam\steamapps\common\eFootball\cpk\dt870_console_win.cpk"
 if not defined CLUBEF_SOURCE_DT261_BRA if exist "C:\Program Files\Steam\steamapps\common\eFootball\cpk\dt261_bra_console_win.cpk" set "CLUBEF_SOURCE_DT261_BRA=C:\Program Files\Steam\steamapps\common\eFootball\cpk\dt261_bra_console_win.cpk"
 
+rem Atualizacao: procura automaticamente na raiz Download e em subpastas.
 if exist "C:\ProgramData\KONAMI\eFootball\ST\Download\dt870_console_win.cpk" set "CLUBEF_SOURCE_DT870_UPDATED=C:\ProgramData\KONAMI\eFootball\ST\Download\dt870_console_win.cpk"
 if not defined CLUBEF_SOURCE_DT870_UPDATED (
   for /f "delims=" %%F in ('dir /b /s /a-d "C:\ProgramData\KONAMI\eFootball\ST\Download\dt870_console_win.cpk" 2^>nul') do set "CLUBEF_SOURCE_DT870_UPDATED=%%F"
