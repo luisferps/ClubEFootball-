@@ -51,19 +51,20 @@ Após a ativação, `clube_novo.obter_pedido_leitura_contrato_ativo()` passou a 
 
 ## Descoberta automática das fontes físicas
 
-O fluxo normal não exige que o usuário procure CPKs manualmente. Ao abrir o Extrator V4.6, o executor tenta localizar e validar as fontes automaticamente.
+O fluxo normal não exige que o usuário procure CPKs manualmente. Ao abrir o Extrator V4.6 pelo `INICIAR-EXTRATOR-V46.cmd`, o launcher informa automaticamente ao executor os caminhos padrão da instalação oficial no Windows quando os arquivos existem.
 
-Raízes conhecidas no Windows:
+Fontes padrão atuais:
 
-- atualização atual: `C:\ProgramData\KONAMI\eFootball\ST\Download`;
-- instalação Steam principal: `C:\Program Files (x86)\Steam\steamapps\common\eFootball`;
-- a variante em `C:\Program Files\Steam\steamapps\common\eFootball` também é aceita automaticamente.
+- DT870 da atualização: `C:\ProgramData\KONAMI\eFootball\ST\Download\dt870_console_win.cpk`;
+- DT200 base: `C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt200_console_all.cpk`;
+- DT870 original: `C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt870_console_win.cpk`;
+- textos em português: `C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt261_bra_console_win.cpk`.
 
-Para a instalação Steam, os arquivos esperados continuam sendo encontrados diretamente em `cpk` quando presentes: `dt200_console_all.cpk`, `dt870_console_win.cpk` e `dt261_bra_console_win.cpk`.
+O `all.str` **não é um arquivo que o usuário precisa localizar solto no Windows**. Ele fica dentro do `dt261_bra_console_win.cpk`; o Extrator abre esse CPK e extrai/consulta `all.str` conforme a lógica já existente.
 
-Para o `DT870 da atualização`, `ST\Download` pode conter subpastas numéricas/identificadoras criadas pelo jogo. A V4.6 pesquisa essa raiz recursivamente por `dt870_console_win.cpk`, valida a assinatura CPK e, se houver mais de uma cópia, escolhe a candidata mais recentemente modificada. O contrato e o fingerprint continuam sendo a validação autoritativa antes de qualquer leitura.
+Se as variáveis padrão do Windows não estiverem disponíveis ao processo, o launcher também tenta diretamente os mesmos caminhos absolutos em `C:`. Somente se a fonte realmente não existir nesses locais o fluxo deve oferecer recuperação manual.
 
-A seleção manual permanece apenas como recuperação: ela deve ser oferecida quando a busca automática realmente não encontrar uma fonte válida.
+A descoberta automática é parte do comportamento normal do Extrator e não deve ser removida por mudanças futuras. O botão de seleção manual é fallback, não fluxo principal.
 
 ## Caminhos ativos V4.6
 
@@ -105,7 +106,7 @@ A verificação feita em 29/08/2026 encontrou referências físicas preenchidas 
 
 ## Textos e Boxes
 
-Textos oficiais vêm de `all.str` em `dt261_bra`, com chave seção + ID. Boxes continuam bloqueadas enquanto sua referência física canônica completa não estiver no fluxo ativo.
+Textos oficiais vêm de `all.str` dentro de `dt261_bra_console_win.cpk`, com chave seção + ID. O usuário não precisa localizar `all.str` manualmente; o parser textual existente é responsável por abrir a fonte e encontrar o conteúdo interno. Boxes continuam bloqueadas enquanto sua referência física canônica completa não estiver no fluxo ativo.
 
 ## Segurança e liberação
 
@@ -135,6 +136,7 @@ Ativar o contrato não significa aceitar automaticamente uma nova carga. O prime
 - `executor/card_dimensions_apply.py`
 - `executor/executor_local.py`
 - `executor/servidor_v46.py`
+- `INICIAR-EXTRATOR-V46.cmd`
 - `Extrator-ClubEfootball.html`
 
 ## Critério de conclusão
