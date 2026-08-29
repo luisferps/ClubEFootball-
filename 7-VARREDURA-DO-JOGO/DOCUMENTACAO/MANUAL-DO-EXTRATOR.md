@@ -55,7 +55,7 @@ A rotina ativa de Dimensões usa as referências de `nacionalidade_jogo`, `clube
 
 - `executor/tecnicos.py`: sem `STYLE_BITS`; proficiências e boosts exigem evidência física recebida da fotografia canônica;
 - `executor/card_dimensions.py`: referências de nacionalidade, clube, liga, tipo e vínculo vêm das tabelas canônicas;
-- `executor/impetos.py`: a maior parte dos bits/tamanhos já vem do `field_contract`; qualquer fallback numérico semântico residual deve ser eliminado antes da liberação produtiva;
+- `executor/impetos.py`: bit/largura do tipo, espelho, alvos, classes, corte, efeito máximo, arquivos e tamanhos são obrigatórios no `field_contract`/fotografia; foram removidos os fallbacks físicos locais de `64/32`, `PlayerBooster.bin` e `CompetitionUnit.bin`;
 - `executor/card_impetus.py`: endereços dos slots vêm do contrato ativo;
 - `executor/card_relations.py`: resolve chaves pelos catálogos sem decidir endereço de extração.
 
