@@ -105,7 +105,7 @@ if /I "!ANTES_SHA!"=="SEM_HEAD" (
   echo ---- nenhum arquivo novo existia para baixar.
 ) else (
   for /f %%C in ('git diff --name-only "!ANTES_SHA!" "!REMOTO_SHA!" ^| find /c /v ""') do set "QTD_ALTERADOS=%%C"
-  echo ---- !QTD_ALTERADOS! arquivo(s) novo(s), alterado(s) ou removido(s):
+  echo ---- !QTD_ALTERADOS! arquivos novos, alterados ou removidos:
   echo ------------------------------------------------------------
   git diff --name-status "!ANTES_SHA!" "!REMOTO_SHA!"
   echo ------------------------------------------------------------
