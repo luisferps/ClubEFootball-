@@ -3,10 +3,10 @@
 /**
  * Compatibilidade transitória do runtime V4.6.
  *
- * Não contém endereço físico próprio. Quando uma dependência antiga do runtime
- * exige uma tabela que não faz parte da lista enviada pelo contrato atual, esta
- * camada cria somente uma projeção temporária a partir da referência canônica
- * já presente no pedido (catálogo ou campo contratado).
+ * Não contém endereço físico e não fabrica catálogos. O servidor V4.6 entrega
+ * diretamente as linhas das tabelas canônicas do clube_novo. Esta camada só
+ * mantém a compatibilidade de descoberta das duas fontes históricas que ainda
+ * não possuem fingerprint próprio no contrato ativo.
  */
 (function installMetadataV46Compat(global) {
   const core = global.CLUBEF_CORE;
@@ -17,44 +17,49 @@
   const previousExtractMetadata = core.extractMetadataByFamily;
   let currentPlan = null;
 
-  function catalog(plan, table) {
-    return (plan.catalogos || []).find((item) => item.schema === 'clube_novo' && item.table === table) || null;
+  function requireCatalog(plan, table) {
+    const catalog = (plan.catalogos || []).find((item) => item.schema === 'clube_novo' && item.table === table);
+    if (!catalog || !Array.isArray(catalog.rows) || !catalog.rows.length) {
+      throw new Error(`catálogo canônico ausente no pedido: clube_novo.${table}`);
+    }
+    return catalog.rows;
   }
-  function contractField(plan, key) {
-    const found = reader.requirePlan(plan).fields.get(key);
-    if (!found) throw new Error(`campo canônico ausente: ${key}`);
-    return found;
-  }
-  function rowsRequired(table) {
-    const found = catalog(currentPlan, table);
-    if (!found || !Array.isArray(found.rows) || !found.rows.length) throw new Error(`catálogo canônico ausente: clube_novo.${table}`);
-    return found.rows;
-  }
-  function requireColumns(table, columns) {
-    const values = rowsRequired(table);
-    for (const [index, row] of values.entries()) {
+
+  function requireColumns(plan, table, columns) {
+    const rows = requireCatalog(plan, table);
+    for (const [index, row] of rows.entries()) {
       for (const column of columns) {
         if (row[column] === null || row[column] === undefined || row[column] === '') {
           throw new Error(`${table}[${index}] sem referência canônica ${column}`);
         }
       }
     }
-    return values;
+    return rows;
   }
-  function addProjection(table, row, source) {
-    if (catalog(currentPlan, table)) return null;
-    const projected = {
-      schema: 'clube_novo',
-      table,
-      keys: ['compat_v46'],
-      rows: [{ ...row, origem_referencia: source }]
-    };
-    currentPlan.catalogos.push(projected);
-    return projected;
+
+  function validateCanonicalPayload(plan) {
+    requireColumns(plan, 'impeto_jogo', ['arquivo_catalogo', 'tamanho_registro', 'bit_codigo', 'largura_codigo']);
+    requireColumns(plan, 'impeto_atributo_jogo', ['arquivo_origem', 'fonte_origem', 'bit_delta', 'largura_delta']);
+    requireColumns(plan, 'estilo_jogo_tecnico', ['bit', 'largura']);
+    requireColumns(plan, 'afinidade_tecnico_jogo', ['bit', 'largura']);
+    requireColumns(plan, 'atributo_ordem_otimizador', ['codigo_atributo', 'indice_otimizador']);
+    requireColumns(plan, 'impeto_condicao_nacionalidade_jogo', ['bit_alvo', 'largura_alvo']);
+    requireColumns(plan, 'impeto_condicao_liga_jogo', ['bit_alvo', 'largura_alvo']);
+    requireColumns(plan, 'impeto_condicao_liga_membro_jogo', ['arquivo_origem', 'tamanho_registro', 'bit_inicial', 'largura']);
+    requireCatalog(plan, 'impeto_condicao_jogo');
+    requireCatalog(plan, 'impeto_condicao_classe_jogo');
+    requireCatalog(plan, 'impeto_condicao_parametro_faixa_jogo');
+    requireCatalog(plan, 'posicao_jogo');
+
+    const typeRows = requireCatalog(plan, 'tipo_impeto_jogo');
+    if (!typeRows.some((row) => Number.isInteger(row.bit_tipo_espelho) && Number.isInteger(row.largura_tipo_espelho))) {
+      throw new Error('tipo_impeto_jogo não fornece o endereço físico do espelho de condição');
+    }
   }
 
   async function validateSourceWithoutInventingAddress(bytes, plan, role) {
     reader.requirePlan(plan);
+    validateCanonicalPayload(plan);
     currentPlan = plan;
     const requested = (plan.arquivos || []).filter((file) => file.papel_fonte === role && file.obrigatorio);
     if (requested.length) return previousValidate(bytes, plan, role);
@@ -63,9 +68,6 @@
       throw new Error(`fonte ${role} não é descrita pelo contrato ativo`);
     }
 
-    // O contrato atual não publica fingerprint autoritativo para as duas fontes
-    // históricas. Nenhum tamanho/bit/offset é inventado aqui. A validação de cada
-    // arquivo ocorre no consumo, pela rotina canônica de metadados.
     return {
       contract: Object.fromEntries(reader.SEAL_KEYS.map((key) => [key, plan[key]])),
       role,
@@ -78,55 +80,8 @@
 
   async function extractMetadataWithCanonicalDependencies(sourceBytes, sourceDescriptors, log) {
     if (!currentPlan) throw new Error('contrato ativo não foi recebido antes dos metadados');
-
-    // Falha fechada antes da extração. Assim nenhum fallback textual do runtime
-    // pode virar autoridade se uma linha canônica perder o seu endereço.
-    requireColumns('impeto_jogo', ['arquivo_catalogo', 'tamanho_registro', 'bit_codigo', 'largura_codigo']);
-    requireColumns('impeto_atributo_jogo', ['arquivo_origem', 'fonte_origem', 'bit_delta', 'largura_delta']);
-    requireColumns('estilo_jogo_tecnico', ['bit', 'largura']);
-    requireColumns('afinidade_tecnico_jogo', ['bit', 'largura']);
-    requireColumns('atributo_ordem_otimizador', ['codigo_atributo', 'indice_otimizador']);
-
-    const injected = [];
-    const typeCatalog = catalog(currentPlan, 'tipo_impeto_jogo');
-    const typeSource = typeCatalog && Array.isArray(typeCatalog.rows)
-      ? typeCatalog.rows.find((row) => Number.isInteger(row.bit_tipo_espelho) && Number.isInteger(row.largura_tipo_espelho))
-      : null;
-    if (!catalog(currentPlan, 'impeto_condicao_jogo')) {
-      if (!typeSource) throw new Error('tipo_impeto_jogo não fornece o endereço do espelho da condição');
-      const projection = addProjection('impeto_condicao_jogo', {
-        bit_tipo_espelho: typeSource.bit_tipo_espelho,
-        largura_tipo_espelho: typeSource.largura_tipo_espelho
-      }, 'clube_novo.tipo_impeto_jogo');
-      if (projection) injected.push(projection);
-    }
-
-    if (!catalog(currentPlan, 'impeto_condicao_nacionalidade_jogo')) {
-      const source = contractField(currentPlan, 'impeto.condicao.nacionalidade');
-      const projection = addProjection('impeto_condicao_nacionalidade_jogo', {
-        bit_alvo: source.bit_inicio,
-        largura_alvo: source.largura_bits
-      }, 'contrato:impeto.condicao.nacionalidade');
-      if (projection) injected.push(projection);
-    }
-
-    if (!catalog(currentPlan, 'impeto_condicao_liga_jogo')) {
-      const source = contractField(currentPlan, 'impeto.condicao.liga');
-      const projection = addProjection('impeto_condicao_liga_jogo', {
-        bit_alvo: source.bit_inicio,
-        largura_alvo: source.largura_bits
-      }, 'contrato:impeto.condicao.liga');
-      if (projection) injected.push(projection);
-    }
-
-    try {
-      return await previousExtractMetadata(sourceBytes, sourceDescriptors, log);
-    } finally {
-      for (const projection of injected) {
-        const index = currentPlan.catalogos.indexOf(projection);
-        if (index >= 0) currentPlan.catalogos.splice(index, 1);
-      }
-    }
+    validateCanonicalPayload(currentPlan);
+    return previousExtractMetadata(sourceBytes, sourceDescriptors, log);
   }
 
   global.CLUBEF_CORE = Object.freeze({
