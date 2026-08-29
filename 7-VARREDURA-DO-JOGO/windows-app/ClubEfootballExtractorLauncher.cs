@@ -11,8 +11,8 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Busca e extração local de dados de futebol")]
 [assembly: AssemblyProduct("Extrator eFootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("4.4.0.0")]
-[assembly: AssemblyFileVersion("4.4.0.0")]
+[assembly: AssemblyVersion("4.6.0.0")]
+[assembly: AssemblyFileVersion("4.6.0.0")]
 
 namespace ClubEfootballWindowsApp
 {
@@ -96,11 +96,11 @@ namespace ClubEfootballWindowsApp
                 throw new InvalidOperationException("O componente interno Python não foi encontrado.");
             }
 
-            string script = Path.Combine(root, "executor", "executor_local.py");
+            string script = Path.Combine(root, "executor", "servidor_v46.py");
             string vendor = Path.Combine(root, "executor", "vendor");
             if (!File.Exists(script))
             {
-                throw new InvalidOperationException("executor\\executor_local.py não foi encontrado.");
+                throw new InvalidOperationException("executor\\servidor_v46.py não foi encontrado.");
             }
 
             ProcessStartInfo server = new ProcessStartInfo();
