@@ -11,19 +11,18 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Busca e extração local de dados de futebol")]
 [assembly: AssemblyProduct("Extrator eFootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("4.6.3.0")]
-[assembly: AssemblyFileVersion("4.6.3.0")]
+[assembly: AssemblyVersion("4.6.4.0")]
+[assembly: AssemblyFileVersion("4.6.4.0")]
 
 namespace ClubEfootballWindowsApp
 {
     internal static class Program
     {
-        // Porta própria desta compilação para impedir que um processo antigo
-        // ainda vivo seja reutilizado. O launcher NÃO decide fontes físicas:
-        // a descoberta automática pertence ao núcleo do Extrator.
-        private const int AppPort = 8768;
-        private const string AppUrl = "http://127.0.0.1:8768/Extrator-ClubEfootball.html";
-        private const string StatusUrl = "http://127.0.0.1:8768/api/status";
+        // Porta própria desta compilação para impedir reaproveitamento de runtime antigo.
+        // O launcher só abre o servidor; a busca de CPK pertence ao Extrator.
+        private const int AppPort = 8769;
+        private const string AppUrl = "http://127.0.0.1:8769/Extrator-ClubEfootball.html";
+        private const string StatusUrl = "http://127.0.0.1:8769/api/status";
 
         [STAThread]
         private static void Main()
@@ -89,7 +88,7 @@ namespace ClubEfootballWindowsApp
                 if (ServerReady()) return;
                 Thread.Sleep(200);
             }
-            throw new InvalidOperationException("O executor local V4.6.3 não respondeu. A instalação pode estar incompleta.");
+            throw new InvalidOperationException("O executor local V4.6.4 não respondeu. A instalação pode estar incompleta.");
         }
 
         private static void StartHiddenExecutor(string root)
@@ -116,8 +115,6 @@ namespace ClubEfootballWindowsApp
             server.WindowStyle = ProcessWindowStyle.Hidden;
             server.EnvironmentVariables["PYTHONPATH"] = vendor;
             server.EnvironmentVariables["CLUBEF_EXTRACTOR_PORT"] = AppPort.ToString();
-            // O launcher não aponta DT870/DT200/textos. O executor original
-            // usa ProgramData/Steam e só cai no seletor manual se a fonte não existir.
             server.EnvironmentVariables.Remove("CLUBEF_SOURCE_DT870_UPDATED");
             server.EnvironmentVariables.Remove("CLUBEF_SOURCE_DT200");
             server.EnvironmentVariables.Remove("CLUBEF_SOURCE_DT870_ORIGINAL");
