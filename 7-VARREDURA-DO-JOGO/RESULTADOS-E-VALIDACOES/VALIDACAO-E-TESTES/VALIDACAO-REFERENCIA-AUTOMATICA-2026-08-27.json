@@ -1,0 +1,38 @@
+{
+  "contract": "clubef-automatic-reference-validation-v1",
+  "generated_at": "2026-08-27T21:30:00.773294+00:00",
+  "passed": true,
+  "same_source": {
+    "passed": true,
+    "source_matches_reference": true,
+    "records": 43072,
+    "unique_card_ids": 43072,
+    "behavior": "referencia interna reutilizada; nenhuma promocao necessaria"
+  },
+  "changed_source_controlled_simulation": {
+    "passed": true,
+    "comparison": {
+      "previous": 42803,
+      "current": 43072,
+      "new": 269,
+      "changed": 34,
+      "possibly_inactive": 0,
+      "unchanged": 42769
+    },
+    "new_reference_promoted": true,
+    "previous_reference_retained": true,
+    "current_reference_matches_physical_source": true
+  },
+  "invalid_structure": {
+    "passed": true,
+    "blocked": true,
+    "reason": "a carga extraída contém card_id duplicado: 84",
+    "pointer_unchanged": true
+  },
+  "database_safety": {
+    "write_enabled": false,
+    "database_write": false,
+    "database_functions_called": 0,
+    "note": "os testes usam somente a pasta isolada de referencias; nenhuma conexao de banco e aberta"
+  }
+}

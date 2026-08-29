@@ -1,0 +1,54 @@
+{
+  "contract": "clubef-otimizador-overload-read-v1",
+  "generated_at": "2026-08-28T04:27:34.344003+00:00",
+  "database_read": true,
+  "database_write": false,
+  "transaction_read_only": "on",
+  "conte": {
+    "nome": "Antonio Conte",
+    "boosts": [
+      15,
+      19
+    ],
+    "proficiencias": {
+      "outWide": 89,
+      "longBall": 68,
+      "overload": 96,
+      "quickCounter": 90,
+      "possessionGame": 68,
+      "longBallCounter": 73
+    },
+    "estilos_gemeos": [],
+    "boosts_canonicos": [
+      10,
+      13
+    ],
+    "estilo_principal": "overload",
+    "proficiencia_maxima": 96
+  },
+  "capello": {
+    "nome": "Fabio Capello",
+    "boosts": [
+      6,
+      15
+    ],
+    "proficiencias": {
+      "outWide": 64,
+      "longBall": 89,
+      "quickCounter": 57,
+      "possessionGame": 46,
+      "longBallCounter": 89
+    },
+    "estilos_gemeos": [
+      "longBall"
+    ],
+    "boosts_canonicos": [
+      6,
+      10
+    ],
+    "estilo_principal": "longBallCounter",
+    "proficiencia_maxima": 89
+  },
+  "passed": true,
+  "errors": []
+}

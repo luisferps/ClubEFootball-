@@ -1,0 +1,24 @@
+{
+  "contract": "clubef-executor-safety-tests-v1",
+  "results": {
+    "manifesto_valido": true,
+    "manifesto_adulterado_bloqueado": true,
+    "manifesto_obsoleto_bloqueado": true,
+    "resumo_selecao": {
+      "insert": 1,
+      "update": 1,
+      "inactive": 0
+    },
+    "contagens_selecao_seladas": true,
+    "itens_selecao_selados": true,
+    "item_adulterado_bloqueado": true,
+    "selecao_acima_do_manifesto_bloqueada": true,
+    "normalizacao_booleano_false": true,
+    "normalizacao_json": true,
+    "escrita_bloqueada_por_padrao": true,
+    "token_consumido_uma_vez": true,
+    "reuso_token_bloqueado": true,
+    "reuso_execucao_bloqueado": true,
+    "passed": true
+  }
+}

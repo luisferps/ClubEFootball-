@@ -1,0 +1,7 @@
+{
+  "created_at": "2026-08-27T22:35:15.3665782+00:00",
+  "purpose": "recuperacao antes da versao 4.4 com abertura automatica",
+  "previous_exe_sha256": "050920a93c963ee0a0ec1fd4cee6f7514a3ca320616c290fd3ae32eed02d478c",
+  "database_state": "clube 42803; clube_novo 43072; carga aplicada integralmente",
+  "restore": "fechar o Extrator e copiar os componentes desta pasta de volta para a raiz operacional"
+}

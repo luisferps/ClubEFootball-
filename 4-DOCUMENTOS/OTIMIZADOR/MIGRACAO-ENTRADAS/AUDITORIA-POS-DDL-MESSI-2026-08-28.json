@@ -1,0 +1,74 @@
+{
+  "aprovado_para_troca": false,
+  "cards": [
+    {
+      "campos_compatibilidade_divergentes": [],
+      "card_id": "89138556575063",
+      "cardinalidades_novas": {
+        "atributos": 26,
+        "corpo": 12,
+        "estilos_ia": 5,
+        "habilidades": 10,
+        "impetos": 2,
+        "pes": 3,
+        "playstyles": 2,
+        "posicao_principal": 1,
+        "posicoes": 12
+      },
+      "fingerprint_calculo_por_ids": "f35f739290aea7fca4075d279843ab48eb888c73192b71318111825a8b1b4755",
+      "fingerprints_colecoes": {
+        "atributos": "29ae816e592ce989a62a874fcbff11469457ddda6087668ef07a5686221e8793",
+        "corpo": "3cf5182cba1d3f398ee317a024207af2f9a1297854a1cc4f091f87a0c6f30220",
+        "estilos_ia": "5b96e231957148296fac1559e14af07e7a47587d6a5ab4f3e94139c6155e95d9",
+        "habilidades": "7099035d3e3ad8f221432d928681ee3df1ec5f9c87923d2a1f43c58b965a8fe5",
+        "impetos": "1c4b336320dc38b3f969a1686ad672c372fe8234156fbcc5dd4aafc07e586a7a",
+        "pes": "4e565af5e3e42cfec1006878d6997f840b10ccca0d41b464ac793a9652ec7984",
+        "playstyles": "2fadfff67ee2b48af9a1e28c5d7eac2d724936a1f2a539b7beef02a4bd8b5bd8",
+        "posicoes": "836eb5ee8ab768f7f52d0f0e11f1ee644fa525d7d85d1e278a7b82b9ce999bb7"
+      },
+      "gate_novo": {
+        "impetos_consumidor_ligado": false,
+        "motivos": [
+          "impetos_consumidor_desligado"
+        ],
+        "pode_rodar": false
+      }
+    }
+  ],
+  "contrato_auditado": "otimizador_entradas_v1",
+  "diferencas": [
+    {
+      "campo": "$gate",
+      "card_id": "89138556575063",
+      "origem_antiga": "public.cartas_do_motor -> clube.carta_jogo e catalogos legados",
+      "origem_nova": "public.otimizador_cartas_v1 -> clube_novo normalizado por IDs",
+      "status": "bloqueado_gate_novo",
+      "valor_antigo": {
+        "roda_motor": true
+      },
+      "valor_novo": {
+        "impetos_consumidor_ligado": false,
+        "motivos": [
+          "impetos_consumidor_desligado"
+        ],
+        "pode_rodar": false
+      }
+    }
+  ],
+  "fingerprints_lotes": {
+    "antigo_compatibilidade": "2c74885f506e894faa7fb58e174cc1225bb88ba77234c9e5433ff46a6c1d6074",
+    "novo_por_ids": "73d3d103790c5b7f3e7b316d0cd297bf9d0b868e73f01a62436767897e266717"
+  },
+  "origem_antiga": "public.cartas_do_motor -> clube.carta_jogo e catalogos legados",
+  "origem_nova": "public.otimizador_cartas_v1 -> clube_novo normalizado por IDs",
+  "prova_renomeacao": false,
+  "quantidades": {
+    "antigos": 1,
+    "diferencas": 1,
+    "falhas_de_paridade": 0,
+    "novos": 1,
+    "pedidos": 1
+  },
+  "regra_identidade": "IDs/codigos fisicos; rotulos excluidos da assinatura",
+  "somente_leitura": true
+}

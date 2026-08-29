@@ -1,0 +1,42 @@
+{
+  "contract": "clubef-extractor-recovery-hashes-v1",
+  "preserved_at": "2026-08-27",
+  "purpose": "versão imediatamente anterior à referência automática e à conexão operacional",
+  "files": [
+    {
+      "path": "Extrator-ClubEfootball.html",
+      "sha256": "5f2f4516a6beec3aa47c428f5864e04660c8af292dd7c07c6f6f398d2142832b",
+      "bytes": 11621
+    },
+    {
+      "path": "app\\extrator-core.js",
+      "sha256": "f9f5a819813a70d2a547182a150d27d6be4f1755942a008e6caaf8e7677b6bb0",
+      "bytes": 40545
+    },
+    {
+      "path": "app\\extrator-ui.js",
+      "sha256": "bb16498be67a5033e79aaec57e147436b1b8b77dbc1ce4b48f4b71b7172a091d",
+      "bytes": 32388
+    },
+    {
+      "path": "app\\extrator.css",
+      "sha256": "2d3e6d16fe96d0a0bb5c4768bc0cc839b67e21c4640fa1eaaa507be6e14471ce",
+      "bytes": 8348
+    },
+    {
+      "path": "documentacao\\COMO-USAR.md",
+      "sha256": "fab2f6237854a377197c9de5c3bb42f10f3480f2791d977857a23891af11dff3",
+      "bytes": 399
+    },
+    {
+      "path": "documentacao\\MANUAL-DO-EXTRATOR.md",
+      "sha256": "b7cd149a64263052998261448eae338d2a3c51b65b403b710d5708b23af4897c",
+      "bytes": 22456
+    },
+    {
+      "path": "executor\\executor_local.py",
+      "sha256": "8fb0ca1538157fde04acd16df3641c6ad5d92476492dd62768b9161e88330eb8",
+      "bytes": 33919
+    }
+  ]
+}

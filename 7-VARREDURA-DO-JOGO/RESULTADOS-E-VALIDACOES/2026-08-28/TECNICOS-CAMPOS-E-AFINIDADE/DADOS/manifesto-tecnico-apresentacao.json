@@ -1,0 +1,58 @@
+{
+  "contract": "clubef-coach-display-fields-extraction-v2",
+  "database_write": false,
+  "physical_source": "C:/Users/Luis Fernando/Downloads/Clubefootball V4/7-VARREDURA-DO-JOGO/RESULTADOS-E-VALIDACOES/2026-08-27/FONTES-E-BASE/dt870_console_win-2026-08-27.cpk",
+  "source_cpk_sha256": "44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5",
+  "coach_bin_sha256": "092a07c62d1df0f19da6ad0e4e1252de07e5e1df8e9090760734829044c0d42a",
+  "country_bin_sha256": "6dcb876a1922281cc5bf513f8ee117846fbeed42e48936f40af2007232c1b0a7",
+  "records": 1478,
+  "unique_full_u64_ids": 1478,
+  "age": {
+    "bit": 231,
+    "width": 7,
+    "transform": "idade = valor_fisico + 14",
+    "min": 28,
+    "max": 80
+  },
+  "nationality": {
+    "coach_bit": 170,
+    "coach_width": 8,
+    "country_bin_record_size": 1488,
+    "country_bin_code_bit": 10,
+    "country_bin_code_width": 9,
+    "country_catalog_records": 214,
+    "country_name_encoding": "utf-8",
+    "resolved": 1478,
+    "unresolved": 0,
+    "distinct_codes_used": 100
+  },
+  "affinity": {
+    "bit": 187,
+    "width": 3,
+    "distribution": {
+      "0": 1456,
+      "1": 2,
+      "5": 3,
+      "6": 2,
+      "3": 4,
+      "2": 3,
+      "4": 4,
+      "7": 4
+    },
+    "nonzero": 22,
+    "code_to_label_status": "somente código 5 -> Jogadores de AT comprovado por Capello; demais rótulos não promovidos sem ligação física"
+  },
+  "output": {
+    "csv": "C:\\Users\\Luis Fernando\\Documents\\Codex\\2026-08-27\\atualizar-extrator-carga-atual\\outputs\\02-carga-atual\\tecnicos-2026-08-28\\campos-apresentacao-v1\\tecnico-apresentacao-fisico.csv",
+    "csv_sha256": "9507ce897cc9a29d0048bd9a692ba8c77ddffa2306c2abedb0ba7df248a273c1",
+    "nationality_csv": "C:\\Users\\Luis Fernando\\Documents\\Codex\\2026-08-27\\atualizar-extrator-carga-atual\\outputs\\02-carga-atual\\tecnicos-2026-08-28\\campos-apresentacao-v1\\nacionalidade_jogo.csv",
+    "nationality_csv_sha256": "30c01459f0472b05a227d9585e666ce2325ff78eba2eafaaa5ec0df7a0e04b7e",
+    "affinity_csv": "C:\\Users\\Luis Fernando\\Documents\\Codex\\2026-08-27\\atualizar-extrator-carga-atual\\outputs\\02-carga-atual\\tecnicos-2026-08-28\\campos-apresentacao-v1\\afinidade_tecnico_jogo.csv",
+    "affinity_csv_sha256": "942b8cfe1519b6c71b51f14b5b4da708d0198daa84839fa65e727ee652872e24"
+  },
+  "validation": {
+    "duplicates": 0,
+    "country_orphans": 0,
+    "database_write": false
+  }
+}

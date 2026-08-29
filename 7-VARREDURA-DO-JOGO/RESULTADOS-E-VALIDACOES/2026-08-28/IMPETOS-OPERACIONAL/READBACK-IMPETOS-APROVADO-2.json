@@ -1,0 +1,44 @@
+{
+  "contract": "clubef-impetos-physical-v1",
+  "transaction_read_only": true,
+  "database_write": false,
+  "preserved_schema": "clube",
+  "checks": {
+    "effects": {
+      "source": 2072,
+      "database": 2072,
+      "missing_in_database": 0,
+      "extra_in_database": 0,
+      "changed": 0,
+      "samples": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      }
+    },
+    "conditions": {
+      "source": 407,
+      "database": 407,
+      "changed": 0,
+      "samples": []
+    },
+    "ranges": {
+      "source": 696,
+      "database": 696,
+      "symmetric_difference": 0
+    },
+    "league_members": {
+      "source": 35,
+      "database": 35,
+      "symmetric_difference": 0
+    },
+    "slots": {
+      "total": 3748,
+      "preenchidos": 2381,
+      "vagas": 1367
+    },
+    "consumer_apt": 0
+  },
+  "passed": true,
+  "result": "aprovado"
+}

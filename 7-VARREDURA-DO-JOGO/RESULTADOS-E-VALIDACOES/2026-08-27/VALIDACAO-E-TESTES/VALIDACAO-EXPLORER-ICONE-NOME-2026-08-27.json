@@ -1,0 +1,18 @@
+{
+  "contract": "clubef-explorer-identity-validation-v1",
+  "validated_at": "2026-08-27T20:51:20.2538217+00:00",
+  "shell_display_name": "Extrator eFootball",
+  "shell_hides_known_extension": true,
+  "shell_file_type": "Aplicativo",
+  "filesystem_name": "Extrator eFootball.exe",
+  "product_name": "Extrator eFootball",
+  "file_description": "Extrator eFootball",
+  "visible_launchers": [
+    "Extrator eFootball.exe"
+  ],
+  "embedded_icon_preview_sha256": "407F2AD4EE1E8AD02C53B3E37DFFA871AEB0A01B5E7FE7DBAC01EA721AE0D4D0",
+  "embedded_icon_bytes": 2048,
+  "previous_launcher_preserved": true,
+  "database_write": false,
+  "passed": true
+}

@@ -1,0 +1,229 @@
+{
+  "aprovado_para_troca": true,
+  "cards": [
+    {
+      "campos_compatibilidade_divergentes": [],
+      "card_id": "123236838841410",
+      "cardinalidades_novas": {
+        "atributos": 26,
+        "corpo": 12,
+        "estilos_ia": 1,
+        "habilidades": 10,
+        "impetos": 0,
+        "pes": 3,
+        "playstyles": 2,
+        "posicao_principal": 1,
+        "posicoes": 12
+      },
+      "fingerprint_calculo_por_ids": "45d1650b99aa1b10529018df99037a80d7a9be98ca15cabf91cf40c4aba7ce37",
+      "fingerprints_colecoes": {
+        "atributos": "67f395483b487ec2b6e875b5ee7958a144fc3c094dc232adca15326150f63690",
+        "corpo": "ae678ff68562a577ce8857dbc055b1827d32232a4f455bcdd22ebb8a054ecaed",
+        "estilos_ia": "f14458b672a6ede948fa0d14429b601b8bbda6f0234c66c0bd4df6ac8b8ff080",
+        "habilidades": "8615c77f1bad04af9999f215ee0fbe45d2034c617a793e750fa6dc02d0b5cdcd",
+        "impetos": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "pes": "24bb518b1a137c9f05e4cb0da985335bf453f1bc2d03b6fa5436a4e35284b80d",
+        "playstyles": "f5cfc7598c081570fd5ea4c93397de43b944ec5d7a25ab88ce6444973a9751a6",
+        "posicoes": "691bf2935ec5c6b44995e97478d0e3e1a1905cc27a8e78af2931b7e0039cf2a2"
+      },
+      "gate_novo": {
+        "impetos_consumidor_ligado": false,
+        "motivos": [],
+        "pode_rodar": true
+      }
+    },
+    {
+      "campos_compatibilidade_divergentes": [],
+      "card_id": "123236838963522",
+      "cardinalidades_novas": {
+        "atributos": 26,
+        "corpo": 12,
+        "estilos_ia": 5,
+        "habilidades": 10,
+        "impetos": 0,
+        "pes": 3,
+        "playstyles": 2,
+        "posicao_principal": 1,
+        "posicoes": 12
+      },
+      "fingerprint_calculo_por_ids": "d4b4aeade028ca4dea72a14a8f85a91b303a71082fca4e0f9473add48288ff6c",
+      "fingerprints_colecoes": {
+        "atributos": "981801d9a3eea565fe935793fa17d5a15fcf436521f6c93ff17907d5aba88968",
+        "corpo": "6af9c15d7149a36e41c232dc81bc752edc33adaa298d5885f237c9a4f2648227",
+        "estilos_ia": "5b96e231957148296fac1559e14af07e7a47587d6a5ab4f3e94139c6155e95d9",
+        "habilidades": "4bd39c24598f5f10b37bb2c9a59119ebfa7a4897968d2974916e5cf52eca17b5",
+        "impetos": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "pes": "29755fd9b4a2904d3a957f94f8597594b32fd6ddf9fbc3dfa1af605d7fe9e897",
+        "playstyles": "43aa3ecb9443f751ae32a9b0d10d774079a8f46c4faf7ae181e5339c365ec849",
+        "posicoes": "9d93b5b082b6045a4bb8b998133305a39a7c4540a32a469e0a1cdbbe18c141d5"
+      },
+      "gate_novo": {
+        "impetos_consumidor_ligado": false,
+        "motivos": [],
+        "pode_rodar": true
+      }
+    },
+    {
+      "campos_compatibilidade_divergentes": [],
+      "card_id": "52776826679422",
+      "cardinalidades_novas": {
+        "atributos": 26,
+        "corpo": 12,
+        "estilos_ia": 4,
+        "habilidades": 10,
+        "impetos": 0,
+        "pes": 3,
+        "playstyles": 2,
+        "posicao_principal": 1,
+        "posicoes": 12
+      },
+      "fingerprint_calculo_por_ids": "bc9385d9d601f9b50173db9fc52d74d0d9b74f3cfcda2011142d98fc8bcee5cc",
+      "fingerprints_colecoes": {
+        "atributos": "4f69df5e98f80b3e4e2ccc8da706fc352041926be66fab94f73cadf1d0cc6c1a",
+        "corpo": "c645aa437a843aaca345a51c6e5b973724108141e4576df71af48b6bace7cbc3",
+        "estilos_ia": "41dc9a4d50f82858a167ad37920b42575a71001c4ee2040031da42646d06cf5f",
+        "habilidades": "c07554ab9f775a7e6e4a3d4ccf2e14e20de3ab192b514fdbb71fcb961345a5e7",
+        "impetos": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "pes": "24bb518b1a137c9f05e4cb0da985335bf453f1bc2d03b6fa5436a4e35284b80d",
+        "playstyles": "f5cfc7598c081570fd5ea4c93397de43b944ec5d7a25ab88ce6444973a9751a6",
+        "posicoes": "cde10b062afb9250d1a13ea4539364ec84c882981b1fa872f7f72ff093351b5b"
+      },
+      "gate_novo": {
+        "impetos_consumidor_ligado": false,
+        "motivos": [],
+        "pode_rodar": true
+      }
+    },
+    {
+      "campos_compatibilidade_divergentes": [],
+      "card_id": "52783537565822",
+      "cardinalidades_novas": {
+        "atributos": 26,
+        "corpo": 12,
+        "estilos_ia": 4,
+        "habilidades": 10,
+        "impetos": 0,
+        "pes": 3,
+        "playstyles": 2,
+        "posicao_principal": 1,
+        "posicoes": 12
+      },
+      "fingerprint_calculo_por_ids": "8a14f3877311804141d28ed8ac925679c91f1c00b4cc8f6c0f6588cd5a20f76b",
+      "fingerprints_colecoes": {
+        "atributos": "9ebc8ddb4ca13043026d02b50bd92dbce0d64e82d3df24283572105d764b61d9",
+        "corpo": "c645aa437a843aaca345a51c6e5b973724108141e4576df71af48b6bace7cbc3",
+        "estilos_ia": "41dc9a4d50f82858a167ad37920b42575a71001c4ee2040031da42646d06cf5f",
+        "habilidades": "876884120654e6ec8a81681b8bba448c7e9ea04084aed0e37bc8d4511f8cc5a3",
+        "impetos": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "pes": "24bb518b1a137c9f05e4cb0da985335bf453f1bc2d03b6fa5436a4e35284b80d",
+        "playstyles": "f5cfc7598c081570fd5ea4c93397de43b944ec5d7a25ab88ce6444973a9751a6",
+        "posicoes": "cde10b062afb9250d1a13ea4539364ec84c882981b1fa872f7f72ff093351b5b"
+      },
+      "gate_novo": {
+        "impetos_consumidor_ligado": false,
+        "motivos": [],
+        "pode_rodar": true
+      }
+    },
+    {
+      "campos_compatibilidade_divergentes": [],
+      "card_id": "52849035817086",
+      "cardinalidades_novas": {
+        "atributos": 26,
+        "corpo": 12,
+        "estilos_ia": 4,
+        "habilidades": 10,
+        "impetos": 0,
+        "pes": 3,
+        "playstyles": 2,
+        "posicao_principal": 1,
+        "posicoes": 12
+      },
+      "fingerprint_calculo_por_ids": "3cc6b84deabc13e2f280789804782e82dfac082cee7464cb37ba147ce1b8d306",
+      "fingerprints_colecoes": {
+        "atributos": "7b39e9b45338bd79ee61833497d7d97bcfff3dfa036aa4eeafa78c51fb81fe11",
+        "corpo": "c645aa437a843aaca345a51c6e5b973724108141e4576df71af48b6bace7cbc3",
+        "estilos_ia": "41dc9a4d50f82858a167ad37920b42575a71001c4ee2040031da42646d06cf5f",
+        "habilidades": "196dc79823ee7c80452adbfbdfc3130597ddd896872e9d0feda95bc039205c8f",
+        "impetos": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "pes": "912ddb9bf670d168ebecebb6387aa14e431260bb4de8461b59953d242fc386d3",
+        "playstyles": "7a1be1e2b0ea5ce69403c72d284a6e2b2825d6b6352e7319bb53ab3afb8d4264",
+        "posicoes": "0b998eccad4cecb0360e081ee4a81b08f18bbb8ecb88952e2c62971e6e525921"
+      },
+      "gate_novo": {
+        "impetos_consumidor_ligado": false,
+        "motivos": [],
+        "pode_rodar": true
+      }
+    },
+    {
+      "campos_compatibilidade_divergentes": [],
+      "card_id": "89138556575063",
+      "cardinalidades_novas": {
+        "atributos": 26,
+        "corpo": 12,
+        "estilos_ia": 5,
+        "habilidades": 10,
+        "impetos": 2,
+        "pes": 3,
+        "playstyles": 2,
+        "posicao_principal": 1,
+        "posicoes": 12
+      },
+      "fingerprint_calculo_por_ids": "75c6c0c4533277279a23f6249223f2717ca4cf3c9d689485bd3af09de44f6636",
+      "fingerprints_colecoes": {
+        "atributos": "1d737f1cfc695682b0db3a4ffb40c7bba2cf4d75f29708cd41166ac2cd12484e",
+        "corpo": "2bad8343da8c29e70a15046b6c73b52f41ce07a9a5cfba2e5e19629e62475fa4",
+        "estilos_ia": "5b96e231957148296fac1559e14af07e7a47587d6a5ab4f3e94139c6155e95d9",
+        "habilidades": "7099035d3e3ad8f221432d928681ee3df1ec5f9c87923d2a1f43c58b965a8fe5",
+        "impetos": "1c4b336320dc38b3f969a1686ad672c372fe8234156fbcc5dd4aafc07e586a7a",
+        "pes": "4e565af5e3e42cfec1006878d6997f840b10ccca0d41b464ac793a9652ec7984",
+        "playstyles": "2fadfff67ee2b48af9a1e28c5d7eac2d724936a1f2a539b7beef02a4bd8b5bd8",
+        "posicoes": "67f8d4a0c74c4d83d4b689133f984ff07ae076d09fbb8595e848e88c0a524ac1"
+      },
+      "gate_novo": {
+        "impetos_consumidor_ligado": false,
+        "motivos": [
+          "impetos_consumidor_desligado"
+        ],
+        "pode_rodar": false
+      }
+    }
+  ],
+  "contrato_auditado": "otimizador_entradas_v1",
+  "diferencas": [
+    {
+      "campo": "$gate",
+      "card_id": "89138556575063",
+      "origem_antiga": "public.cartas_do_motor -> clube.carta_jogo e catalogos legados",
+      "origem_nova": "public.otimizador_cartas_v1 -> clube_novo normalizado por IDs",
+      "status": "bloqueado_gate_novo",
+      "valor_antigo": {
+        "roda_motor": true
+      },
+      "valor_novo": {
+        "impetos_consumidor_ligado": false,
+        "motivos": [
+          "impetos_consumidor_desligado"
+        ],
+        "pode_rodar": false
+      }
+    }
+  ],
+  "fingerprints_lotes": {
+    "antigo_compatibilidade": "a49e227cc9cfcb40a022b14eb7d3a66ca7c7e9463bcf074706c7670958d6cff1",
+    "novo_por_ids": "c7880acd2bbf6fb633fd9b3ede90a1c2a186b1c9589fd7d052baa1be3cbd1bc9"
+  },
+  "origem_antiga": "public.cartas_do_motor -> clube.carta_jogo e catalogos legados",
+  "origem_nova": "public.otimizador_cartas_v1 -> clube_novo normalizado por IDs",
+  "prova_renomeacao": true,
+  "quantidades": {
+    "antigos": 6,
+    "diferencas": 1,
+    "falhas_de_paridade": 0,
+    "novos": 6,
+    "pedidos": 6
+  },
+  "regra_identidade": "IDs/codigos fisicos; rotulos excluidos da assinatura",
+  "somente_leitura": true
+}

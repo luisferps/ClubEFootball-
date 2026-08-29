@@ -1,0 +1,83 @@
+{
+  "contract": "clubef-family-source-validation-v1",
+  "validated_at": "2026-08-27T20:52:27.230Z",
+  "database_write": false,
+  "checks": {
+    "updated_is_400": true,
+    "original_is_392": true,
+    "dt200_has_playstyle": true,
+    "dt261_has_all_str": true,
+    "policy_is_family_scoped": true,
+    "skill_count": true,
+    "booster_union_count": true,
+    "playstyle_base_count": true,
+    "playstyles_semantic_base_dt200": true,
+    "playstyle_overlay_only_is_review_only": true,
+    "boosters_outside_update": true,
+    "boosters_only_dt200": true,
+    "boosters_only_original": true,
+    "boosters_in_both_legacies": true,
+    "unsupported_families_are_explicit": true,
+    "unsupported_have_no_records": true,
+    "no_generic_cpk_inputs": true,
+    "folder_fallback_present": true,
+    "cards_require_only_updated": true,
+    "metadata_requires_four_roles": true
+  },
+  "passed": true,
+  "source_validation": {
+    "dt870_updated": {
+      "player_record_size": 400,
+      "player_records": 43075,
+      "required_entry": "common/etc/pesdb/Player.bin",
+      "bytes": 9415400,
+      "sha256": "44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5"
+    },
+    "dt200": {
+      "player_record_size": 400,
+      "player_records": 23519,
+      "required_entries": [
+        "common/etc/pesdb/Player.bin",
+        "common/etc/pesdb/Playstyle.bin",
+        "common/etc/pesdb/PlayerBooster.bin"
+      ],
+      "bytes": 9910363,
+      "sha256": "fd920cd8e7f3f1089892ef4051c68c1c5c56c49000ecf6f751025a0ae2c94a50"
+    },
+    "dt870_original": {
+      "player_record_size": 392,
+      "player_records": 34303,
+      "required_entry": "common/etc/pesdb/Player.bin",
+      "bytes": 5007376,
+      "sha256": "ae0d8cef26804439e9930ef8959f8d9425754d0e290d056b3e4d1f7b999edd5c"
+    },
+    "dt261_bra": {
+      "text_sections": 188,
+      "required_entry": "common/string/all.str",
+      "bytes": 258498,
+      "sha256": "2419045a081a151f8a0cdcc70a9ca0c4ca1ca265b8467b9c182623baa05338db"
+    }
+  },
+  "catalog_counts": {
+    "habilidades": 72,
+    "impetos_union": 440,
+    "playstyles_base": 36,
+    "playstyles_overlay_without_base": 2,
+    "unsupported_families": [
+      "efeitos_de_impeto",
+      "estilos_ia",
+      "habilidade_extra_de_variacao",
+      "nacionalidades",
+      "potw",
+      "tecnicos",
+      "textos",
+      "times_e_vinculos"
+    ]
+  },
+  "booster_provenance": {
+    "outside_updated": 32,
+    "only_dt200": 3,
+    "only_original": 28,
+    "both_legacies": 1
+  }
+}

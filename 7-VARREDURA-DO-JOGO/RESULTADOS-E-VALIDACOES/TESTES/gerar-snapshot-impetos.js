@@ -1,0 +1,6 @@
+'use strict';
+const fs=require('fs'),path=require('path'),vm=require('vm');
+const root=path.resolve(__dirname,'..','..');
+for(const file of ['mapeamento-fisico.js','catalog-source-map.js','extrator-core.js']) vm.runInThisContext(fs.readFileSync(path.join(root,'app',file),'utf8'),{filename:file});
+const paths={dt870_updated:path.join(process.env.ProgramData||'C:\\ProgramData','KONAMI','eFootball','ST','Download','dt870_console_win.cpk'),dt200:path.join(process.env['ProgramFiles(x86)']||'C:\\Program Files (x86)','Steam','steamapps','common','eFootball','cpk','dt200_console_all.cpk'),dt870_original:path.join(process.env['ProgramFiles(x86)']||'C:\\Program Files (x86)','Steam','steamapps','common','eFootball','cpk','dt870_console_win.cpk'),dt261_bra:path.join(process.env['ProgramFiles(x86)']||'C:\\Program Files (x86)','Steam','steamapps','common','eFootball','cpk','dt261_bra_console_win.cpk')};
+(async()=>{const bytes=Object.fromEntries(Object.entries(paths).map(([k,p])=>[k,new Uint8Array(fs.readFileSync(p))]));const desc={};for(const[k,b]of Object.entries(bytes))desc[k]={sha256:await CLUBEF_CORE.sha256(b)};const result=await CLUBEF_CORE.extractMetadataByFamily(bytes,desc);process.stdout.write(JSON.stringify(result.catalogs.impetos));})().catch(e=>{console.error(e.stack||e.message);process.exitCode=1});

@@ -1,0 +1,9 @@
+Não grave senha, service_role, anon key ou URL com senha nesta pasta.
+
+O executor lê somente variáveis do processo:
+  CLUBEF_SUPABASE_DB_URL       conexão PostgreSQL/Supabase
+  CLUBEF_ENABLE_REAL_WRITE     selo adicional; para escrita futura deve valer exatamente EU_AUTORIZO_ESCRITA_REAL
+
+A configuração distribuída mantém write_enabled=false. A escrita real exige também
+uma cópia local de configuracao.exemplo.json chamada configuracao.local.json com
+write_enabled=true, além da confirmação final na tela.

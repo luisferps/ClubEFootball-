@@ -1,0 +1,49 @@
+{
+  "contract": "clubef-coach-display-fields-db-preflight-v1",
+  "database_write": false,
+  "transaction_read_only": "on",
+  "passed": true,
+  "errors": [],
+  "package": {
+    "technicians": 1478,
+    "unique_technician_ids": 1478,
+    "nationalities": 214,
+    "affinities": 8,
+    "age_min": 28,
+    "age_max": 80,
+    "affinity_distribution": {
+      "0": 1456,
+      "1": 2,
+      "5": 3,
+      "6": 2,
+      "3": 4,
+      "2": 3,
+      "4": 4,
+      "7": 4
+    },
+    "hashes": {
+      "technicians": "9507ce897cc9a29d0048bd9a692ba8c77ddffa2306c2abedb0ba7df248a273c1",
+      "nationalities": "30c01459f0472b05a227d9585e666ce2325ff78eba2eafaaa5ec0df7a0e04b7e",
+      "affinities": "942b8cfe1519b6c71b51f14b5b4da708d0198daa84839fa65e727ee652872e24"
+    }
+  },
+  "database_before": {
+    "tecnico_jogo": 1594,
+    "distinct_ids": 1594,
+    "current_dt870_updated": 1478,
+    "current_with_record": 1478,
+    "missing_package_ids": [],
+    "unexpected_current_ids": [],
+    "wrong_record_indices": [],
+    "wrong_source_hashes": [],
+    "preexisting_target_tables": [],
+    "preexisting_target_columns": [],
+    "mapa_do_jogo": 21
+  },
+  "sample_capello": {
+    "id": 17601312850052,
+    "idade": 44,
+    "nacionalidade_codigo": 215,
+    "afinidade_codigo": 5
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "write_enabled": false,
+  "require_database_on_prepare": true,
+  "max_manifest_age_minutes": 60,
+  "approval_ttl_minutes": 10,
+  "max_selected_items": 50000,
+  "database": {
+    "schema": "clube_novo",
+    "cards_table": "carta_jogo",
+    "canonical_key": "card_id"
+  },
+  "catalog_adapters": {
+    "habilidades": { "enabled": false },
+    "impetos": { "enabled": false },
+    "playstyles": { "enabled": false },
+    "tecnicos": { "enabled": false },
+    "posicoes": { "enabled": false },
+    "estilos_ia": { "enabled": false }
+  }
+}

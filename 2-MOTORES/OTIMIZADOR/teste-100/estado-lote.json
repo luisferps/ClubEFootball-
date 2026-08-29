@@ -1,0 +1,44 @@
+{
+  "contrato": "otimizador_teste_100_v3",
+  "lote_id": "912c518e-091c-4583-ae91-97b3e717517e",
+  "semente": "teste-100-f672a909ae20441a90de7322a569501d",
+  "criado_local_em": "2026-08-28T16:12:41.991207+00:00",
+  "fingerprint": "026fbb294092b6f618b2122ea126b3afa2314da6363cf303674459ca1f85a0dc",
+  "cards": 100,
+  "linhas": 896,
+  "formula_fingerprint": "7aaa3cccb536ae8fbe77a3fd91a447738132d6f1b89706bc375314e8028a80ad",
+  "contrato_fingerprint": "5429c7445a9eebb07571097c280321e9f0f4b9098c50a8c0c3c75468df2294aa",
+  "ultimo_status": {
+    "modo": "teste_nao_publicado",
+    "acoes": {
+      "criar": false,
+      "parar": true,
+      "pausar": false,
+      "console": true,
+      "iniciar": true,
+      "retomar": true
+    },
+    "cards": 100,
+    "estado": "pausado",
+    "linhas": 896,
+    "lote_id": "912c518e-091c-4583-ae91-97b3e717517e",
+    "motivos": [],
+    "contrato": "otimizador_teste_100_v8",
+    "corrente": [],
+    "pendentes": 30,
+    "bloqueadas": 0,
+    "concluidas": 866,
+    "falha_lote": null,
+    "confirmacao": {
+      "parar_exige_confirmacao": true
+    },
+    "estado_lote": "pausado",
+    "fingerprint": "026fbb294092b6f618b2122ea126b3afa2314da6363cf303674459ca1f85a0dc",
+    "processando": 0,
+    "sorteada_em": "2026-08-28T16:12:59.400533+00:00",
+    "interrompidas": 0,
+    "pode_publicar": false,
+    "estado_atualizado_em": "2026-08-28T18:39:11.285962+00:00"
+  },
+  "finalizado_local_em": "2026-08-28T18:39:11.179353+00:00"
+}

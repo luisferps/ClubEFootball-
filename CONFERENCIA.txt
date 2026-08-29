@@ -1,0 +1,69 @@
+==============================================================================
+  Lamine Yamal  ·  centroavante_movel
+  card_id 123236838963522
+==============================================================================
+orcamento ....... 0   (level_cap 1 ESTIMADO)
+nm (impeto) ..... []
+sl (vagas) ...... [0, 0]
+raras ........... []
+fab (nativas) ... []
+falta (pool) .... []
+tecnicos na lista 64
+
+BASE — os 26 na ordem da casa
+  #   atributo                  base   alvo  peso
+  0   Ofensividade                70     92    12
+  1   Controle de bola            96     84     7
+  2   Drible                      99     89     7
+  3   Posse de bola               90     81     3
+  4   Passe rasteiro              88             
+  5   Passe alto                  89             
+  6   Finalização                 93    103    12
+  7   Cabeceio                    54             
+  8   Cobrança de falta           64   79.0     1
+  9   Efeito                      91             
+  10  Velocidade                  86     91    12
+  11  Aceleração                  88     93    12
+  12  Potência de chute           82     91    12
+  13  Salto                       63             
+  14  Contato físico              66             
+  15  Equilíbrio                  74     83     7
+  16  Resistência                 73     84     7
+  17  Talento defensivo           41             
+  18  Desarme                     46             
+  19  Envolv. defensivo           50             
+  20  Agressividade               48             
+  21  Talento de goleiro          40             
+  22  Encaixe                     40             
+  23  Defesa (GO)                 40             
+  24  Reflexos                    40             
+  25  Alcance                     40             
+
+MOLDE: 11 atributos com peso · soma dos pesos 92
+
+==============================================================================
+  RESULTADO
+==============================================================================
+b1 .............. -594.60
+tecnico ......... F. Beckenbauer  (id 17599970775443 · tatica 89.0 · m 1.03600)
+boost do tecnico  ['finishing', 'kickingPower']
+impeto fabricado  []
+barras .......... {'shooting': 0, 'passing': 0, 'dribbling': 0, 'dexterity': 0, 'lowerBodyStrength': 0, 'aerialStrength': 0, 'defending': 0, 'gk1': 0, 'gk2': 0, 'gk3': 0}
+habilidades ..... []
+sobra ........... None
+
+VALS FINAIS x ALVO (so os que tem peso)
+  #   atributo                    val   alvo  delta  peso
+  0   Ofensividade                 72     92  -20.0    12
+  1   Controle de bola             99     84   15.0     7
+  2   Drible                       99     89   10.0     7
+  3   Posse de bola                93     81   12.0     3
+  6   Finalização                  97    103   -6.0    12
+  8   Cobrança de falta            66   79.0  -13.0     1
+  10  Velocidade                   89     91   -2.0    12
+  11  Aceleração                   91     93   -2.0    12
+  12  Potência de chute            85     91   -6.0    12
+  15  Equilíbrio                   76     83   -7.0     7
+  16  Resistência                  75     84   -9.0     7
+
+==============================================================================

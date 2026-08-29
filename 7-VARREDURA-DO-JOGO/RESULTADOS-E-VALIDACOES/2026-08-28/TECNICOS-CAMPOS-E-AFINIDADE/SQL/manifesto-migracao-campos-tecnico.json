@@ -1,0 +1,39 @@
+{
+  "contract": "clubef-coach-display-fields-migration-package-v1",
+  "target_schema": "clube_novo",
+  "database_write_authorized": true,
+  "legacy_write": false,
+  "source_contract": "clubef-coach-display-fields-extraction-v2",
+  "counts": {
+    "technicians": 1478,
+    "nationalities": 214,
+    "affinities": 8,
+    "map_rows": 7
+  },
+  "files": {
+    "20260828_tecnico_idade_nacionalidade_afinidade.sql": {
+      "bytes": 293864,
+      "sha256": "9aec0fe80639c1114f2bd11c002ea8382b4993b4eb5fc181d68a1f29260986e0"
+    },
+    "ROLLBACK-20260828_tecnico_idade_nacionalidade_afinidade.sql": {
+      "bytes": 1625,
+      "sha256": "2b1b9d5abe34a2eec00e2a56e9148579310ccbb28f4dedae21431558d1cf5c11"
+    },
+    "VALIDAR-20260828_tecnico_idade_nacionalidade_afinidade.sql": {
+      "bytes": 1677,
+      "sha256": "a34aefed462bd6121acba3689b77a419534291367e7f3750caf89371e40cd59c"
+    },
+    "tecnico-apresentacao-fisico.csv": {
+      "bytes": 263361,
+      "sha256": "9507ce897cc9a29d0048bd9a692ba8c77ddffa2306c2abedb0ba7df248a273c1"
+    },
+    "nacionalidade_jogo.csv": {
+      "bytes": 47652,
+      "sha256": "30c01459f0472b05a227d9585e666ce2325ff78eba2eafaaa5ec0df7a0e04b7e"
+    },
+    "afinidade_tecnico_jogo.csv": {
+      "bytes": 1507,
+      "sha256": "942b8cfe1519b6c71b51f14b5b4da708d0198daa84839fa65e727ee652872e24"
+    }
+  }
+}

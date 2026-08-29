@@ -1,0 +1,29 @@
+{
+  "contract": "clubef-read-only-database-snapshot-v1",
+  "captured_at": "2026-08-27T19:42:38.143464+00:00",
+  "transaction_read_only": true,
+  "database": "postgres",
+  "user_sha256": "a942b37ccfaf5a813b1432caa209a43b9d144e47ad0de1549c289c253e556cd5",
+  "tables": [
+    {
+      "schema": "clube",
+      "table": "carta_jogo",
+      "count": 42803,
+      "unique_card_ids": 42803,
+      "min_card_id": "100012",
+      "max_card_id": "9534",
+      "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821"
+    },
+    {
+      "schema": "clube_novo",
+      "table": "carta_jogo",
+      "count": 42803,
+      "unique_card_ids": 42803,
+      "min_card_id": "100012",
+      "max_card_id": "9534",
+      "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821"
+    }
+  ],
+  "database_write": false,
+  "snapshot_sha256": "03a2d95cbcb8369c95df9d8f3745ff471db7b3f943054e2633f667fc2193e058"
+}

@@ -1,0 +1,50 @@
+{
+  "contract": "clubef-operational-installation-reference-connection-v1",
+  "generated_at": "2026-08-27T18:35:00-03:00",
+  "passed": true,
+  "operational_directory": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO",
+  "visible_root": [
+    "Extrator eFootball.exe",
+    "DOCUMENTACAO",
+    "RECUPERACAO",
+    "RESULTADOS-E-VALIDACOES"
+  ],
+  "only_visible_root_file": "Extrator eFootball.exe",
+  "installed_files_match_validated_source": true,
+  "installed_hashes": {
+    "Extrator eFootball.exe": "960d26739783d5d1d0cfeb315b44ad0b9ad189ea21063ebda21a38da5ef21a63",
+    "Extrator-ClubEfootball.html": "f1f63703190cb83be6263f28defd58dc77831b98a1ab047f22f490410807746a",
+    "app\\extrator-ui.js": "50194ba4e7be198590a81f90f4c08ddb3734f4201f4ba9cdbb4cc193f6149b02",
+    "executor\\executor_local.py": "074fe60ade213968ef4184c9c81ee88a20fb2c3c8c0a76f7ac0c982f6074c81b",
+    "artefatos\\referencias-cartas\\referencia-vigente.json": "612300485014516d68f11e207bd02fdee43b445eaba30d0f4f5a51810d35a8a9"
+  },
+  "operational_runtime": {
+    "online": true,
+    "connection_configured": true,
+    "connection_source": "existing_project_config_and_user_environment",
+    "target": "clube_novo.carta_jogo",
+    "automatic_write": false,
+    "manual_apply_available": true,
+    "reference_ready": true,
+    "reference_records": 43072,
+    "source_matches_reference": true,
+    "bundled_psycopg_version": "3.3.4"
+  },
+  "database_readonly_preflight": {
+    "authenticated": true,
+    "transaction_read_only": true,
+    "insert": 269,
+    "update": 34,
+    "inactive": 0,
+    "clube_before_after": 42803,
+    "clube_novo_before_after": 42803,
+    "fingerprint_before_after": "ff67b8a2e544570dae42ed71d8428821",
+    "apply_endpoint_called": false,
+    "database_write": false
+  },
+  "recovery": {
+    "directory": "RECUPERACAO\\2026-08-27-ANTES-REFERENCIA-AUTOMATICA-E-CONEXAO",
+    "hashed_files": 7,
+    "all_hashes_match": true
+  }
+}

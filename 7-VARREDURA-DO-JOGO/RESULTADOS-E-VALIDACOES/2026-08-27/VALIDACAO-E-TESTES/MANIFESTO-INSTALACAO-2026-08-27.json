@@ -1,0 +1,115 @@
+{
+  "contract": "clubef-installation-manifest-v2",
+  "installed_at": "2026-08-27T22:36:20.8142864+00:00",
+  "target": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO",
+  "previous_version_preserved": true,
+  "family_search_previous_version_preserved": true,
+  "technical_components_hidden_from_normal_view": true,
+  "final_visible_launcher": "Extrator eFootball.exe",
+  "previous_sha256": "5102D165952C9B29050D105B4D31DE5DE1073540811D371C2562ED8BFC0805F5",
+  "real_database_write_enabled": false,
+  "target_database_schema_if_future_write_is_explicitly_enabled": "clube_novo",
+  "local_write_config_present": false,
+  "files": [
+    {
+      "path": "Extrator-ClubEfootball.html",
+      "bytes": 14723,
+      "sha256": "81C849B5D361D989CCC0A667F46A7E892469A0609D55B4EA749D73F1BFD19A6F"
+    },
+    {
+      "path": "app\\mapeamento-fisico.js",
+      "bytes": 76035,
+      "sha256": "3AF3B7F05122E409C1629509BFD211B38410FA7754BAC42291E312C743B74103"
+    },
+    {
+      "path": "app\\catalog-source-map.js",
+      "bytes": 1456,
+      "sha256": "843A075D2AC208CB4CDEAB16BCC6A716763FE52075D22EB7F33210C2E439877E"
+    },
+    {
+      "path": "app\\extrator-core.js",
+      "bytes": 40911,
+      "sha256": "B93987842B644F1121A11DF9BA64BB79905F718802013AC4DE96E612ADB3FD00"
+    },
+    {
+      "path": "app\\extrator-ui.js",
+      "bytes": 62177,
+      "sha256": "8E3C4FF89005C478ACE8D39021ABBB4452EF8AA1B07C987329E98C365AC6F9FB"
+    },
+    {
+      "path": "app\\extrator.css",
+      "bytes": 10422,
+      "sha256": "CD703D0086324B460FE87C5EE08A0DE07B75821D6986E2FE24B5E792457622BF"
+    },
+    {
+      "path": "executor\\executor_local.py",
+      "bytes": 69531,
+      "sha256": "B3197E0760CE02E7E09EFFA9C5AD54B6AC0430CD70263EAFCAA556CD376FC5AF"
+    },
+    {
+      "path": "Extrator eFootball.exe",
+      "bytes": 103936,
+      "sha256": "EC8473443B8163268131F2B3B4A64166F5D29EC2BFC7465D275458AA38D858BE"
+    },
+    {
+      "path": "configuracao.exemplo.json",
+      "bytes": 573,
+      "sha256": "5C792ACA0689DF56BB027B2AF7948531D95441C1897730EABD982B956DE298FB"
+    },
+    {
+      "path": "DOCUMENTACAO\\MANUAL-DO-EXTRATOR.md",
+      "bytes": 27976,
+      "sha256": "805AF82282AB5E13F56A8EA5A35C3889BA4333ABFE0CF294D179F4339D9E2DA7"
+    },
+    {
+      "path": "DOCUMENTACAO\\IDENTIDADE-VISUAL-E-ORGANIZACAO.md",
+      "bytes": 3136,
+      "sha256": "EDE16C1D501A1105E2FE4140B7E00B3D3E22E241A030BEE3810754F7A51797E3"
+    },
+    {
+      "path": "DOCUMENTACAO\\RELATORIO-FINAL-EXTRATOR-2026-08-27.md",
+      "bytes": 6041,
+      "sha256": "98D4B4B68A0437C3C8A7638312EF51F2B61D7948C5571214312DB2E9A6FA8575"
+    },
+    {
+      "path": "DOCUMENTACAO\\COMO-USAR.md",
+      "bytes": 1650,
+      "sha256": "58E4D882787C143F427A40846804EF9CD658B7065BEA9B702192380A36AFA75F"
+    },
+    {
+      "path": "RESULTADOS-E-VALIDACOES\\2026-08-27\\GABARITO-TESTE\\CPK-2026-08-27\\carta_jogo_GABARITO-INTEGRAL.csv",
+      "bytes": 19908897,
+      "sha256": "07C9B8CF9690B1F177CD724ADA4329351424B71FB8C6D09E4CD35D3875389C38"
+    },
+    {
+      "path": "RESULTADOS-E-VALIDACOES\\2026-08-27\\GABARITO-TESTE\\CPK-2026-08-27\\MANIFESTO-GABARITO-INTEGRAL.json",
+      "bytes": 3719,
+      "sha256": "CE9D0AD981B91127178CAD5C19474E530119AD99A0D8876735623BB712550E86"
+    },
+    {
+      "path": "RECUPERACAO\\2026-08-26\\Extrator-ClubEfootball.html",
+      "bytes": 108292,
+      "sha256": "5102D165952C9B29050D105B4D31DE5DE1073540811D371C2562ED8BFC0805F5"
+    },
+    {
+      "path": "RECUPERACAO\\2026-08-27-ANTES-BUSCA-POR-FAMILIA\\Extrator-ClubEfootball.html",
+      "bytes": 10692,
+      "sha256": "1E0DFF2EF4DEBEDBE5D60069DE2A85268DB09138029298381658DA6F854B20C0"
+    },
+    {
+      "path": "RECUPERACAO\\2026-08-27-ANTES-BUSCA-POR-FAMILIA\\MANIFESTO-RECUPERACAO.json",
+      "bytes": 1157,
+      "sha256": "3460DD36BF31011720F540329FC49110E3E8A1DC838F53ABB068F982A97AFB26"
+    },
+    {
+      "path": "RECUPERACAO\\2026-08-27-ANTES-ICONE-E-NOME\\ABRIR-EXTRATOR-CLUBEFOOTBALL.exe",
+      "bytes": 8192,
+      "sha256": "0A15F7C00DADDED8D04BCF23B44C212C44A41A8E20101634061534C171ADC60E"
+    },
+    {
+      "path": "RECUPERACAO\\2026-08-27-ANTES-ICONE-E-NOME\\MANIFESTO-RECUPERACAO.json",
+      "bytes": 167840,
+      "sha256": "4AFEA01472634BBC30804A38D2455A45BE1D0D249760848FCDB9F4DBDAD58255"
+    }
+  ]
+}

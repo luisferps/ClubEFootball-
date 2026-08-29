@@ -1,0 +1,23 @@
+{
+  "write_enabled": false,
+  "allow_manual_card_apply": true,
+  "allow_manual_text_apply": true,
+  "require_database_on_prepare": true,
+  "max_manifest_age_minutes": 60,
+  "approval_ttl_minutes": 10,
+  "max_selected_items": 50000,
+  "database": {
+    "schema": "clube_novo",
+    "cards_table": "carta_jogo",
+    "canonical_key": "card_id"
+  },
+  "catalog_adapters": {
+    "habilidades": { "enabled": false },
+    "impetos": { "enabled": false },
+    "playstyles": { "enabled": false },
+    "tecnicos": { "enabled": false },
+    "posicoes": { "enabled": false },
+    "estilos_ia": { "enabled": false },
+    "textos": { "enabled": true, "target": "clube_novo.texto_do_jogo", "canonical_key": ["secao", "id_texto"] }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "contract": "clubef-automatic-incremental-validation-v1",
+  "generated_at": "2026-08-27T21:50:32.362239+00:00",
+  "passed": true,
+  "cause": "o fluxo anterior exigia um CSV manual e mantinha o botão de comparação desabilitado",
+  "automatic_baseline": {
+    "source": "clube_novo.carta_jogo",
+    "records": 42803,
+    "unique_card_ids": 42803,
+    "sha256": "647fe9019d952ac900ec02d3037089a19bd43a82ed2c1924113245e29d091eb2",
+    "transaction_read_only": true,
+    "database_write": false,
+    "preserved_schema": "clube"
+  },
+  "physical_reference": {
+    "reference_id": "ref-44df868c2613-07c9b8cf9690",
+    "records": 43072,
+    "source_sha256": "44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5"
+  },
+  "visible_package_expected": {
+    "insert": 269,
+    "update": 34,
+    "inactive": 0
+  },
+  "target": "clube_novo.carta_jogo",
+  "preserved_schema": "clube",
+  "before": {
+    "clube": {
+      "count": 42803,
+      "unique_card_ids": 42803,
+      "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821"
+    },
+    "clube_novo": {
+      "count": 42803,
+      "unique_card_ids": 42803,
+      "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821"
+    }
+  },
+  "after": {
+    "clube": {
+      "count": 42803,
+      "unique_card_ids": 42803,
+      "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821"
+    },
+    "clube_novo": {
+      "count": 42803,
+      "unique_card_ids": 42803,
+      "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821"
+    }
+  },
+  "zero_write_proof": true,
+  "apply_endpoint_called": false,
+  "database_write": false
+}

@@ -1,0 +1,9 @@
+﻿codigo_jogo,nome_pt,nome_tela,ausencia_legitima,rotulo_confirmado,secao_texto,id_texto,arquivo_fonte,cpk_fonte,bit,largura,arquivo_texto,cpk_texto,presente_dt870_atualizacao,pode_rodar,falta_o_que,contrato_extracao
+0,,,True,False,,,Coach.bin,dt870_console_win.cpk,187,3,,,True,True,,clubef-coach-display-fields-extraction-v2
+1,,,False,False,,,Coach.bin,dt870_console_win.cpk,187,3,,,True,False,vínculo físico código-rótulo ainda não comprovado,clubef-coach-display-fields-extraction-v2
+2,,,False,False,,,Coach.bin,dt870_console_win.cpk,187,3,,,True,False,vínculo físico código-rótulo ainda não comprovado,clubef-coach-display-fields-extraction-v2
+3,,,False,False,,,Coach.bin,dt870_console_win.cpk,187,3,,,True,False,vínculo físico código-rótulo ainda não comprovado,clubef-coach-display-fields-extraction-v2
+4,,,False,False,,,Coach.bin,dt870_console_win.cpk,187,3,,,True,False,vínculo físico código-rótulo ainda não comprovado,clubef-coach-display-fields-extraction-v2
+5,Jogadores de AT,Atacantes,False,True,Any1W,495,Coach.bin,dt870_console_win.cpk,187,3,all.str,dt261_bra_console_win.cpk,True,True,,clubef-coach-display-fields-extraction-v2
+6,,,False,False,,,Coach.bin,dt870_console_win.cpk,187,3,,,True,False,vínculo físico código-rótulo ainda não comprovado,clubef-coach-display-fields-extraction-v2
+7,,,False,False,,,Coach.bin,dt870_console_win.cpk,187,3,,,True,False,vínculo físico código-rótulo ainda não comprovado,clubef-coach-display-fields-extraction-v2

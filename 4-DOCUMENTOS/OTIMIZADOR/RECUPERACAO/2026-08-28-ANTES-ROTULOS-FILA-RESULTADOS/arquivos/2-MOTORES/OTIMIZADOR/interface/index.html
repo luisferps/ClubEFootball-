@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Otimizador ClubEfootball</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<header><div><h1>Otimizador</h1><p>Fila de teste e avaliação local — sem publicação</p></div><span id="estado" class="selo">Verificando contrato…</span></header>
+<main>
+<nav class="abas" aria-label="Módulos do Otimizador"><button class="aba-ativa" data-aba="fila">Fila automatizada</button><button data-aba="individual">Teste unitário</button><button data-aba="resultados">Resultados</button></nav>
+<section id="aba-fila" class="aba">
+<div class="cabecalho-secao"><div><h2>Fila automatizada</h2><p>Linhas de teste: pendente → em processamento → concluída, bloqueada ou falha.</p></div><span class="tag-teste">TESTE / NÃO PUBLICADO</span></div>
+<div class="acoes fila-acoes"><button id="preparar-fila" type="button" disabled>Preparar fila de 100</button><button id="iniciar-fila" type="button" disabled>Iniciar</button><button id="pausar-fila" type="button" class="secundario" disabled>Pausar</button><button id="parar-fila" type="button" class="perigo" disabled>Parar</button><button id="abrir-console" type="button" class="secundario" disabled>Abrir console do lote</button><button id="atualizar-fila" type="button" class="secundario">Atualizar status</button></div>
+<p class="nota">Execução: <strong id="estado-execucao">Aguardando contrato da Integração</strong>. **Pausar** preserva pendências após a linha atômica. **Parar** só será habilitado quando o contrato entregar um encerramento selado que marque as pendências como interrompidas/canceladas, sem publicação.</p>
+<p id="fila-aviso" class="aviso">Consultando disponibilidade da fila…</p>
+<div id="totais-fila" class="totais"></div>
+<section class="painel"><h3>Próxima linha / linha em processamento</h3><dl id="linha-atual"><div><dt>Estado</dt><dd>Nenhuma linha disponível.</dd></div></dl></section>
+<section class="painel"><h3>Linhas da fila</h3><div class="rolagem"><table><thead><tr><th>Carta</th><th>Função</th><th>Posição</th><th>Estado</th><th>Motivo</th></tr></thead><tbody id="linhas-fila"><tr><td colspan="5">Aguardando o contrato real da fila.</td></tr></tbody></table></div></section>
+<section class="painel"><h3>Console do teste</h3><pre id="eventos-fila">Sem eventos: o worker de teste ainda não foi liberado.</pre></section>
+</section>
+<section id="aba-individual" class="aba" hidden>
+<div class="cabecalho-secao"><div><h2>Teste unitário</h2><p>Consulta uma carta por ID, sem fila, gravação ou publicação.</p></div><span class="tag-teste">SOMENTE LEITURA</span></div>
+<section class="painel consulta"><label>Identificador da carta<input id="card-id" autocomplete="off" placeholder="Ex.: 89138556575063"></label><label>Função<select id="funcao"><option>Carregando…</option></select></label><label>Técnico<select id="tecnico"><option>Carregando…</option></select></label><div class="acoes"><button id="simular" type="button">Simular</button><button id="validar" type="button" class="secundario">Validar paridade</button></div></section>
+<section class="painel resultado" id="resumo" aria-live="polite"><h3>Resultado</h3><p>Informe a carta, escolha a função e o técnico.</p></section>
+<section class="grade" id="detalhes" hidden><article class="painel"><h3>Entradas da carta</h3><dl id="carta"></dl></article><article class="painel"><h3>Resultado da avaliação</h3><dl id="resultado"></dl></article><article class="painel"><h3>Gates e travas</h3><ul id="gates" class="lista"></ul></article><article class="painel"><h3>Validação</h3><dl id="validacao"></dl></article></section>
+</section>
+<section id="aba-resultados" class="aba" hidden>
+<div class="cabecalho-secao"><div><h2>Resultados</h2><p>Linhas já processadas: resultado do Otimizador ou estado final de bloqueio/falha.</p></div><span class="tag-teste">TESTE / NÃO PUBLICADO</span></div>
+<p id="resultados-aviso" class="aviso">Aguardando o contrato real da fila.</p>
+<section class="painel"><div class="rolagem"><table><thead><tr><th>Carta</th><th>Função</th><th>Posição</th><th>Estado final</th><th>Resultado / motivo</th></tr></thead><tbody id="linhas-resultados"><tr><td colspan="5">Nenhum resultado disponível.</td></tr></tbody></table></div></section>
+</section>
+</main><template id="linha"><div><dt></dt><dd></dd></div></template><script src="/app.js"></script></body></html>

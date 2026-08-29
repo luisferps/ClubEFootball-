@@ -1,0 +1,154 @@
+{
+  "contract": "clubef-gabarito-integral-v1",
+  "execution_id": "77fbc864-e0e9-45e9-8131-2c76805c9246",
+  "generated_at": "2026-08-27T19:40:17.858Z",
+  "extraction_started_at": "2026-08-27T19:40:03.878Z",
+  "source_of_truth": "CPK físico atual + mapeamento físico comprovado",
+  "previous_diff_used_as_input": false,
+  "database_write": false,
+  "extraction_inputs": {
+    "cpk": {
+      "file": "dt870_console_win-2026-08-27.cpk",
+      "bytes": 9415400,
+      "sha256": "44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5"
+    },
+    "physical_mapping": {
+      "file": "mapeamento-fisico.js",
+      "bytes": 76035,
+      "sha256": "3af3b7f05122e409c1629509bfd211b38410fa7754bac42291e312c743b74103"
+    },
+    "extractor_core": {
+      "file": "extrator-core.js",
+      "bytes": 28894,
+      "sha256": "0fcb14c6288474a7e8feb6188df80d3046c001e772befff822ad6fd73452e2ef"
+    }
+  },
+  "validation_references_only": {
+    "previous_full_load": {
+      "records": 42803,
+      "sha256": "0c1c71a1a331772f753fc33143bc51446196420799a3a25004beaf5d03d1bc12"
+    },
+    "legacy_new_cards": {
+      "records": 269,
+      "sha256": "f3ffb708940ccc6685752b8fff9c89e8890870039036bd8fdbec266a15897361"
+    },
+    "read_only_database_golden": {
+      "sample_size": 54,
+      "exact_matches": 54,
+      "sha256": "75b2e907eb25091ecec872b8ca5bad78c94fc0377b8c9086f714729af6415c0b"
+    }
+  },
+  "output": {
+    "file": "carta_jogo_GABARITO-INTEGRAL.csv",
+    "bytes": 19908897,
+    "records": 43072,
+    "unique_card_ids": 43072,
+    "sha256": "07c9b8cf9690b1f177cd724ada4329351424b71fb8c6d09e4cd35d3875389c38"
+  },
+  "schema": [
+    "card_id",
+    "tipo",
+    "overall",
+    "roda_motor",
+    "nome",
+    "posicao",
+    "slot_ofensivo_id",
+    "slot_ofensivo_confirmado",
+    "slot_defensivo_id",
+    "slot_defensivo_confirmado",
+    "pe",
+    "altura",
+    "peso",
+    "idade",
+    "nacionalidade",
+    "pe_ruim_uso",
+    "pe_ruim_precisao",
+    "resistencia_lesao",
+    "forma",
+    "impeto_s1",
+    "impeto_s2_cond",
+    "vaga_s1",
+    "vaga_s2",
+    "box",
+    "atributos",
+    "habilidades",
+    "aptidoes",
+    "estilos_ia",
+    "corpo"
+  ],
+  "types": {
+    "base": 22184,
+    "colecionavel": 20886,
+    "teste": 2
+  },
+  "positions": {
+    "AMF": 3179,
+    "CB": 7085,
+    "CF": 6144,
+    "CMF": 4937,
+    "DMF": 3397,
+    "GK": 4502,
+    "LB": 2772,
+    "LMF": 1185,
+    "LWF": 2628,
+    "RB": 3024,
+    "RMF": 1267,
+    "RWF": 2375,
+    "SS": 577
+  },
+  "missing_by_field": {
+    "card_id": 0,
+    "tipo": 0,
+    "overall": 0,
+    "roda_motor": 0,
+    "nome": 0,
+    "posicao": 0,
+    "slot_ofensivo_id": 0,
+    "slot_ofensivo_confirmado": 0,
+    "slot_defensivo_id": 0,
+    "slot_defensivo_confirmado": 0,
+    "pe": 0,
+    "altura": 0,
+    "peso": 0,
+    "idade": 0,
+    "nacionalidade": 19,
+    "pe_ruim_uso": 0,
+    "pe_ruim_precisao": 0,
+    "resistencia_lesao": 0,
+    "forma": 0,
+    "impeto_s1": 40750,
+    "impeto_s2_cond": 43016,
+    "vaga_s1": 0,
+    "vaga_s2": 0,
+    "box": 29709,
+    "atributos": 0,
+    "habilidades": 0,
+    "aptidoes": 0,
+    "estilos_ia": 0,
+    "corpo": 0
+  },
+  "expected_id_proof": {
+    "expected": 43072,
+    "unexpected": [],
+    "missing": []
+  },
+  "comparison_to_previous_reference": {
+    "previous": 42803,
+    "current": 43072,
+    "new": 269,
+    "changed": 34,
+    "possibly_inactive": 0,
+    "unchanged": 42769
+  },
+  "checks": {
+    "records_43072": true,
+    "unique_ids_43072": true,
+    "no_duplicate_ids": true,
+    "schema_exact": true,
+    "expected_id_set_exact": true,
+    "reference_diff_exact": true,
+    "database_sample_exact": true
+  },
+  "passed": true,
+  "manifest_sha256": "3a7fb52de0da12e7a35b1b3b765b811bb67a3610b0259505eb72dce309d1d812"
+}

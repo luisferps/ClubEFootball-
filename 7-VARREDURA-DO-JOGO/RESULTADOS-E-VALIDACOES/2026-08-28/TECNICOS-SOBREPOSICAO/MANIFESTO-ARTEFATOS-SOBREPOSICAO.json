@@ -1,0 +1,45 @@
+{
+  "contract": "clubef-sobreposicao-delivery-v1",
+  "date": "2026-08-28",
+  "database_write": true,
+  "write_scope": [
+    "clube_novo.estilo_jogo_tecnico",
+    "clube_novo.tecnico_estilo_jogo",
+    "clube_novo.mapa_do_jogo"
+  ],
+  "legacy_write": false,
+  "executable_used": false,
+  "physical_source": {
+    "dt870_sha256": "44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5",
+    "coach_bin_sha256": "092a07c62d1df0f19da6ad0e4e1252de07e5e1df8e9090760734829044c0d42a",
+    "record_size": 176,
+    "bit": 135,
+    "width": 7,
+    "distribution": {"0": 1477, "96": 1}
+  },
+  "reference": {
+    "reference_id": "meta-ref-eba124d25472-9db3bc3ebba1",
+    "manifest_sha256": "0d011072d3b03e6eb582cd49655cae68ac6c83247022b0b1618927a39ffa977a"
+  },
+  "files": {
+    "20260828_tecnico_sobreposicao.sql": {"bytes": 5868, "sha256": "d5a9261fd293786cc9254a56ab86cb95790182e5b4e5eb77cc4e2bcabf11baae"},
+    "ROLLBACK-20260828_tecnico_sobreposicao.sql": {"bytes": 1361, "sha256": "b4dd09d31038876f0192d3c41889042e30f4e43eceebc69b5033ef6fb6ef12e8"},
+    "EVIDENCIA-FISICA-SOBREPOSICAO-CONTE.json": {"bytes": 8108, "sha256": "2c5451cb63b984327eb8345c3b153509cc0001c550a36fea7b5cd0f22dff4a21"},
+    "PRE-FLIGHT-SOBREPOSICAO.json": {"bytes": 3997, "sha256": "bca61684a58575563bbf4da99ccac1f875d3477b4a091a0eb7c40c34fec0178f"},
+    "READBACK-IDEMPOTENCIA-SOBREPOSICAO.json": {"bytes": 12533, "sha256": "65773ef353876bc205d0c5fa51c73790300be69535d2442109e738e2363f1309"},
+    "VALIDACAO-EXTRATOR-TECNICOS-SOBREPOSICAO.json": {"bytes": 8123, "sha256": "99453ab3d93f81925f8af8d3adf88c8b44b704451baefc3ca90fe2a34352579e"},
+    "VALIDACAO-LEITURA-OTIMIZADOR-SOBREPOSICAO.json": {"bytes": 1109, "sha256": "96214d2ef630367d703553a96245ef8a03405064b3748ec4d52fb7af45ba6efa"},
+    "operational_app/extrator-core.js": {"bytes": 59350, "sha256": "98c21d5d62747b9165dcc4a793cce8b7076cc4135415178d0ab626e95cf92bab"},
+    "recovery_app/extrator-core.js": {"bytes": 59075, "sha256": "f1a5255da12f9c5f174350d0054547913ac57000a76ced693320d4ad67fc8e90"}
+  },
+  "validation": {
+    "passed": true,
+    "idempotent": true,
+    "historic_relations_preserved": true,
+    "style_relations": 7391,
+    "overload_relations": 1,
+    "foreign_key_orphans": 0,
+    "extractor_comparison_changes": 0,
+    "optimizer_readback_passed": true
+  }
+}

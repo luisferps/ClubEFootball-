@@ -9,7 +9,8 @@ A conta e a mesma do motor (equacao.py + regua.py), com TODOS os numeros vindos
 do banco. Divergir vira impossivel por construcao, e a regua nunca vai ao navegador.
 
 REGRAS
-  1. Nenhum literal que mude a nota (fora as leis do jogo: teto 99, piso 40).
+  1. Nenhum literal que mude a nota (fora as leis comprovadas: teto 99 em
+     base+barras e proficiencia; piso 40 quando a proficiencia age).
   2. Nenhum default silencioso: falta insumo -> InsumoFaltando com o nome.
 """
 import math
@@ -18,7 +19,7 @@ from regua_do_banco import Regua, ReguaIncompleta
 class InsumoFaltando(Exception):
     pass
 
-TETO = 99      # lei do jogo: o atributo da tela nao passa de 99
+TETO = 99      # teto de base+barras e da etapa de proficiencia
 PISO = 40      # lei do jogo: com multiplicador agindo, nao cai abaixo de 40
 
 
@@ -91,7 +92,7 @@ def buff_de(habs, regua):
         ef = d.get('efeito') or {}
         if not ef:
             continue
-        rara = (d.get('tipo') == 'rara')
+        rara = not bool(d.get('fabricavel'))
         for i, dd in ef.items():
             i = int(i)
             if 'pct' in dd:  (pc_rar if rara else pc_com).setdefault(i, []).append(dd['pct'])
@@ -108,7 +109,7 @@ def buff_de(habs, regua):
 
 
 def cadeia(estado, carta, regua):
-    """base -> barras -> multiplicador -> +1 do tecnico -> impeto -> habilidade.
+    """base -> barras -> proficiencia -> boosts -> impetos -> habilidade.
     A habilidade le a REFERENCIA (base+barras) e soma no fim, sem trava de 99."""
     base = carta.get('atributos')
     if not base:
@@ -150,7 +151,7 @@ def cadeia(estado, carta, regua):
         if m is None:
             raise InsumoFaltando('proficiencia %r fora da tabela de multiplicador' % prof)
         v = [_mult(x, m) for x in v]
-        etapas['multiplicador'] = list(v)
+        etapas['proficiencia'] = list(v)
         for i in (t.get('boosts') or []):
             if i is None: continue
             i = int(i)
@@ -163,7 +164,7 @@ def cadeia(estado, carta, regua):
         if efeito is None:
             raise InsumoFaltando('impeto %r nao esta no catalogo' % imp)
         for i, d in efeito.items():
-            v[int(i)] = v[int(i)] + int(d)    # o impeto passa de 99
+            v[int(i)] = v[int(i)] + int(d)
     etapas['impeto'] = list(v)
 
     buff = estado.get('buff')
@@ -177,11 +178,12 @@ def cadeia(estado, carta, regua):
 
 
 # ------------------------------------------------------------------- a porta
-def avalia(estado, carta, funcao_codigo, regua):
+def avalia(estado, carta, funcao_id, regua):
     """A unica funcao que o servico expoe. Devolve nota e etapas —
     NUNCA o alvo, NUNCA o peso, NUNCA a regua."""
-    regua.molde_completo(funcao_codigo)
-    m = regua.molde[funcao_codigo]
+    funcao_id = int(funcao_id)
+    regua.molde_completo(funcao_id)
+    m = regua.molde[funcao_id]
     arows = [(i, m[i][0], m[i][1]) for i in sorted(m)]
     vals, etapas = cadeia(estado, carta, regua)
     return {

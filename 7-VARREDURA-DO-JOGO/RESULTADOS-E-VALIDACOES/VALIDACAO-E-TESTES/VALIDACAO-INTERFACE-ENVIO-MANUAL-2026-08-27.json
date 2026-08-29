@@ -1,0 +1,39 @@
+{
+  "contract": "clubef-manual-apply-ui-validation-v1",
+  "validated_at": "2026-08-27T21:24:04Z",
+  "passed": true,
+  "executor": {
+    "title": "Banco conectado · envio manual",
+    "detail": "destino único: clube_novo; nenhuma escrita automática",
+    "credential_exposed": false
+  },
+  "package": {
+    "type": "recarga completa validada",
+    "records": 43072,
+    "arbitrary_csv_input_count": 0,
+    "only_current_sealed_package": true
+  },
+  "preflight": {
+    "database_checked": true,
+    "transaction_read_only": true,
+    "destination": "clube_novo.carta_jogo",
+    "preserved_schema": "clube",
+    "insert": 269,
+    "update": 34,
+    "inactive": 0
+  },
+  "confirmation": {
+    "phrase_present": true,
+    "final_button_label": "Aplicar esta carga no clube_novo",
+    "disabled_before_confirmation": true,
+    "enabled_after_checkbox_and_exact_phrase": true,
+    "apply_clicked": false
+  },
+  "after_readonly_snapshot": {
+    "clube_count": 42803,
+    "clube_novo_count": 42803,
+    "same_fingerprint": true,
+    "database_write": false
+  },
+  "browser_console_errors": []
+}

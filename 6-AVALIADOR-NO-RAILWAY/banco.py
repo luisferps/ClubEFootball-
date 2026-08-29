@@ -2,7 +2,7 @@
 """
 BANCO — a unica porta do servico para o Supabase.
 
-Le a regua por UMA chamada: public.regua_pacote(), que so o service_role pode
+Le a regua por UMA chamada: public.otimizador_regua_v1(), que so o service_role pode
 executar. Nenhuma tabela de segredo fica exposta: quem nao tem a chave secreta
 (que mora so nas variaveis do Railway) nao le nada.
 
@@ -34,15 +34,30 @@ def _post(caminho, corpo=None, timeout=30):
 
 
 def pacote_da_regua():
-    return _post('/rest/v1/rpc/regua_pacote')
+    return _post('/rest/v1/rpc/otimizador_regua_v1')
 
 
 def carta_para_simular(card_id):
     """O que a ficha precisa da carta — e SO isso. Sem alvo, sem peso, sem molde."""
-    return _post('/rest/v1/rpc/carta_para_simular', {'p_card_id': str(card_id)})
+    j = _post('/rest/v1/rpc/otimizador_carta_v1', {'p_card_id': str(card_id)})
+    if not j:
+        return None
+    atributos = sorted(j.get('atributos') or [], key=lambda x: int(x['indice_otimizador']))
+    habilidades = j.get('habilidades') or []
+    impetos = j.get('impetos') or []
+    gate = j.get('gate') or {}
+    return {
+        'card_id': str(j.get('card_id')),
+        'atributos': [x.get('valor') for x in atributos],
+        'orcamento': (j.get('escalares') or {}).get('orcamento'),
+        'habilidades_fixas': [int(x['skill_id']) for x in habilidades],
+        'vagas_livres': sum(1 for x in impetos if x.get('vaga')),
+        'gate': gate,
+        'pronto_motor_otimizacao': bool(gate.get('pode_rodar')),
+    }
 
 
-def pool_da_funcao(card_id, funcao):
+def pool_da_funcao(card_id, funcao_id):
     """As habilidades que a carta pode receber NAQUELA funcao.
 
     ⛔ 25/08 — POR QUE ESTA FUNCAO EXISTE.
@@ -63,6 +78,8 @@ def pool_da_funcao(card_id, funcao):
     clube.build.falta_pool), nao uma formula deduzida. Se a build daquela funcao
     ainda nao existir, volta None e quem chamou cai na lista da carta.
     """
-    r = _post('/rest/v1/rpc/pool_da_funcao',
-              {'p_card_id': str(card_id), 'p_funcao': str(funcao)})
-    return r or None
+    r = _post('/rest/v1/rpc/otimizador_pool_habilidades_v1',
+              {'p_card_id': str(card_id), 'p_funcao_id': int(funcao_id)})
+    if not r or not (r.get('gate') or {}).get('pode_rodar'):
+        return None
+    return [int(x) for x in (r.get('skill_ids') or [])]

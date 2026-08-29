@@ -1,0 +1,14 @@
+begin;
+drop trigger if exists build_publicacao_gate_v1 on clube_novo.build_publicacao;
+drop function if exists clube_novo.validar_publicacao_build_v1();
+drop table if exists clube_novo.build_publicacao;
+drop table if exists clube_novo.build_resultado_bonificador;
+drop table if exists clube_novo.build_resultado_otimizador;
+drop table if exists clube_novo.build_carta_atributo_snapshot;
+drop table if exists clube_novo.build_carta;
+drop table if exists clube_novo.build_impeto;
+drop table if exists clube_novo.build_habilidade;
+drop table if exists clube_novo.build_tecnico;
+drop table if exists clube_novo.build_barra;
+drop table if exists clube_novo.build;
+commit;

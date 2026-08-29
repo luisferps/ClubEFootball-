@@ -1,0 +1,43 @@
+{
+  "contract": "clubef-ui-validation-v1",
+  "date": "2026-08-27",
+  "browser": "Codex in-app Chromium",
+  "server": "http://127.0.0.1:8765",
+  "results": {
+    "incremental": {
+      "passed": true,
+      "current": 43072,
+      "new": 269,
+      "changed": 34,
+      "possibly_inactive": 0,
+      "duplicates": 0,
+      "review_selection": "new and changed selected; inactive unselected",
+      "dry_run_summary": { "insert": 269, "update": 34, "inactive": 0 },
+      "real_apply_button_disabled": true
+    },
+    "metadata": {
+      "passed": true,
+      "catalogs": 6,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "items_selected_by_default": 0,
+      "apply_prepare_disabled_without_selection": true
+    },
+    "full_reload": {
+      "passed": true,
+      "wrong_phrase_kept_button_disabled": true,
+      "checkbox_and_exact_phrase_required": true,
+      "records": 43072,
+      "unique_card_ids": 43072,
+      "duplicates": 0,
+      "columns": 29
+    },
+    "visual": {
+      "passed": true,
+      "desktop_layout": "no overlap or clipped primary controls observed",
+      "responsive_css_present": true
+    }
+  },
+  "console_blocking_errors_observed": false
+}

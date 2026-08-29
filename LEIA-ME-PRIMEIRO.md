@@ -58,6 +58,17 @@ Clubefootball 2026-08-25\TELA-CLUBEFOOTBALL-UNICA.html
 | **`6-AVALIADOR-NO-RAILWAY\`** | O serviço que faz a conta no servidor. ⚠️ **não é o que está no ar** — ver abaixo |
 | **`7-VARREDURA-DO-JOGO\`** | O contexto para varrer os arquivos do jogo na outra máquina |
 
+### Manuais principais
+
+- `4-DOCUMENTOS\MANUAL-DO-OTIMIZADOR.md` — entradas, fórmula, nota, técnicos,
+  evidências, limites e testes do **Otimizador**;
+- `4-DOCUMENTOS\MANUAL-TECNICO.md` — arquitetura geral do ClubEfootball;
+- `4-DOCUMENTOS\MANUAL-DAS-TABELAS.md` — contrato do banco;
+- `7-VARREDURA-DO-JOGO\DOCUMENTACAO\MANUAL-DO-EXTRATOR.md` — Extrator eFootball.
+
+`motor`, `2-MOTORES` e RPCs com `_motor` são nomes técnicos históricos mantidos por
+compatibilidade. O nome do componente para uso e documentação é **Otimizador**.
+
 ---
 
 ## ⛔ Três coisas quebradas que você precisa saber

@@ -1,0 +1,22 @@
+{
+  "contract": "clubef-automatic-reference-ui-validation-v1",
+  "validated_at": "2026-08-27T21:09:12Z",
+  "passed": true,
+  "surface": "http://127.0.0.1:8876/Extrator-ClubEfootball.html",
+  "title": "Extrator eFootball",
+  "full_reload": {
+    "action_label": "Validar carga completa",
+    "full_reload_file_inputs": 0,
+    "legacy_golden_picker_present": false,
+    "legacy_technical_text_present": false,
+    "reference_label": "Referência validada · 43.072 cartas · versões anteriores preservadas",
+    "result": "VALIDAÇÃO CONCLUÍDA — a fonte do jogo é a mesma da referência interna vigente (43.072 cartas)."
+  },
+  "database_safety": {
+    "executor": "Executor local · dry-run",
+    "detail": "banco protegido; sem escrita real",
+    "database_write": false
+  },
+  "browser_console_errors": [],
+  "note": "A interface foi aberta em navegador real, a aba Recarga completa foi acionada e o caminho de fonte igual foi concluído sem seletor de CSV."
+}

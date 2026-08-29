@@ -1,0 +1,183 @@
+{
+  "aprovado_para_troca": true,
+  "contrato_auditado": "otimizador_entradas_v1",
+  "diferencas_tecnicas": [],
+  "fingerprints_lotes": {
+    "antigo_compatibilidade": "aa11f1a80820c2baf12152ab06eea7e1061480273584952c910ee9a61b8baec8",
+    "novo_por_ids": "e8d579175a9727d2e6b7f2bcf7c0c4a470d358848bc736540e65b2ee2ea9bc4c"
+  },
+  "gates": {
+    "amostras_bloqueadas": [
+      {
+        "card_id": "105553116301513",
+        "motivos": [
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116303042",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116305447",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116307125",
+        "motivos": [
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116307843",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116308474",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116313107",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116314105",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116314414",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116325761",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116326804",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116327621",
+        "motivos": [
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116376103",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116382614",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116385407",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116385423",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116385541",
+        "motivos": [
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553116396752",
+        "motivos": [
+          "carta.pode_rodar_vinculos=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553921606966",
+        "motivos": [
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "105553921613529",
+        "motivos": [
+          "liga_bloqueada"
+        ]
+      }
+    ],
+    "motivos": {
+      "carta.pode_rodar_vinculos=false": 354,
+      "clube_bloqueado": 4387,
+      "impetos_consumidor_desligado": 2234,
+      "liga_bloqueada": 5717
+    }
+  },
+  "linhas_fila": 125445,
+  "origem_antiga": "public.cartas_do_motor -> clube.carta_jogo e catalogos legados",
+  "origem_nova": "public.otimizador_cartas_v1 -> clube_novo normalizado por IDs",
+  "prova_renomeacao": true,
+  "quantidades": {
+    "antigos": 20773,
+    "aptos": 13064,
+    "bloqueados": 7709,
+    "falhas_de_paridade": 0,
+    "novos": 20773,
+    "pedidos": 20773
+  },
+  "regra_identidade": "IDs/codigos fisicos; rotulos excluidos da assinatura",
+  "somente_leitura": true,
+  "tamanho_lote": 200,
+  "universo": "cards distintos referenciados pela fila canônica"
+}

@@ -1,0 +1,192 @@
+{
+  "contract": "clubef-metadata-reference-v1",
+  "reference_id": "meta-ref-eba124d25472-8a7735bee1b6",
+  "previous_reference_id": "meta-ref-eba124d25472-b64fc205c8b2",
+  "created_at": "2026-08-28T03:39:43.186255+00:00",
+  "source_identity": {
+    "dt870_updated": {
+      "filename": "dt870_console_win.cpk",
+      "bytes": 9415400,
+      "modified_at": "2026-08-27T07:08:04.613712+00:00",
+      "valid_container": true
+    },
+    "dt200": {
+      "filename": "dt200_console_all.cpk",
+      "bytes": 9910363,
+      "modified_at": "2026-08-13T00:59:44.855004+00:00",
+      "valid_container": true
+    },
+    "dt870_original": {
+      "filename": "dt870_console_win.cpk",
+      "bytes": 5007376,
+      "modified_at": "2026-08-13T00:59:44.859027+00:00",
+      "valid_container": true
+    },
+    "dt261_bra": {
+      "filename": "dt261_bra_console_win.cpk",
+      "bytes": 258498,
+      "modified_at": "2026-08-13T01:09:38.778789+00:00",
+      "valid_container": true
+    }
+  },
+  "source_identity_sha256": "eba124d25472013b458df31381b1b354b70eb9c276c226055dedeb767e2d634b",
+  "snapshot": {
+    "file": "snapshot.json",
+    "bytes": 3933925,
+    "sha256": "8a7735bee1b6d1c96bfc3471f68ad81b3f750af6d6ceb26ac77dae0bd1a22e99"
+  },
+  "summary": {
+    "estilos_ia": {
+      "status": "comparado",
+      "reason": null,
+      "current": 7,
+      "baseline_active": 7,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 0,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt870_updated"
+      ]
+    },
+    "habilidades": {
+      "status": "comparado",
+      "reason": null,
+      "current": 72,
+      "baseline_active": 72,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 72,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt870_updated"
+      ]
+    },
+    "impetos": {
+      "status": "comparado",
+      "reason": null,
+      "current": 408,
+      "baseline_active": 408,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 408,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt870_updated",
+        "dt200",
+        "dt870_original"
+      ]
+    },
+    "playstyles": {
+      "status": "comparado",
+      "reason": null,
+      "current": 36,
+      "baseline_active": 36,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 36,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt200",
+        "dt870_updated"
+      ]
+    },
+    "posicoes": {
+      "status": "comparado",
+      "reason": null,
+      "current": 13,
+      "baseline_active": 13,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 0,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt870_updated"
+      ]
+    },
+    "tecnicos": {
+      "status": "comparado",
+      "reason": null,
+      "current": 1478,
+      "baseline_active": 1478,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 0,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt870_updated"
+      ],
+      "contract": "identidade + idade + nacionalidade + afinidade física + cinco proficiências + até dois boosts; Link-up/Sobreposição bloqueados"
+    },
+    "textos": {
+      "status": "nao_suportado_nesta_atualizacao",
+      "reason": "all.str localizado; recorte canônico por entrada ainda não comprovado",
+      "current": 0,
+      "baseline_active": 0,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 0,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt261_bra"
+      ]
+    },
+    "nacionalidades": {
+      "status": "comparado",
+      "reason": null,
+      "current": 214,
+      "baseline_active": 214,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 0,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt870_updated"
+      ],
+      "contract": "Country.bin físico com 214 códigos"
+    },
+    "afinidades_tecnico": {
+      "status": "comparado",
+      "reason": null,
+      "current": 8,
+      "baseline_active": 8,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 0,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt870_updated",
+        "dt261_bra"
+      ],
+      "contract": "códigos 0..7; somente código 5 possui rótulo comprovado"
+    }
+  },
+  "source_policy": "por familia; identidade fisica reutiliza referencia somente quando todas as fontes conferem",
+  "database_write": false,
+  "technical_database_readback": {
+    "tecnico_jogo": 1594,
+    "tecnicos_aptos": 1478,
+    "tecnico_estilo_jogo": 7390,
+    "tecnico_atributo_jogo": 104,
+    "nacionalidade_jogo": 214,
+    "afinidade_tecnico_jogo": 8,
+    "campos_apresentacao_completos": 1478,
+    "historicos_sem_preenchimento": 116,
+    "semantic_fingerprints": {
+      "technicians": "509273e2eee7e97bf1c6767de4e7bb6668c8211bceec9c0ba506b9cb3ffb07a0",
+      "nationalities": "5dae7a63b49cb914d7b6d4793a0e0438c5ba3a84bf327d6ad89a20e0cb633933",
+      "affinities": "98cb27f2edad4384cd2743b9f6de9982ea99223cb074dba7d7af1b7db0397f4d",
+      "map_rows": "1b8c90033c257ce11c23d72cb477a776a66a4e7fc93f46c30435b8ce7a0b1dbe"
+    }
+  },
+  "manifest_sha256": "edfd200de5a585d8743770a9e85416f9556b0ae53b740ac04468db588ef00939"
+}

@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Otimizador ClubEfootball</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<header><div><h1>Otimizador</h1><p>Consulta e simulação local segura</p></div><span id="estado" class="selo">Verificando contrato…</span></header>
+<main>
+<section class="painel consulta"><h2>Simular carta</h2><label>Identificador da carta<input id="card-id" autocomplete="off" placeholder="Ex.: 89138556575063"></label><label>Função<select id="funcao"><option>Carregando…</option></select></label><label>Técnico<select id="tecnico"><option>Carregando…</option></select></label><div class="acoes"><button id="simular" type="button">Simular</button><button id="validar" type="button" class="secundario">Validar paridade</button></div><p class="ajuda">Somente IDs e contratos v1. Não grava, não roda lote e mantém Ímpetos condicionais desligados.</p></section>
+<section class="painel resultado" id="resumo" aria-live="polite"><h2>Resultado</h2><p>Informe a carta, escolha a função e o técnico.</p></section>
+<section class="grade" id="detalhes" hidden><article class="painel"><h2>Entradas da carta</h2><dl id="carta"></dl></article><article class="painel"><h2>Resultado da avaliação</h2><dl id="resultado"></dl></article><article class="painel"><h2>Gates e travas</h2><ul id="gates" class="lista"></ul></article><article class="painel"><h2>Validação</h2><dl id="validacao"></dl></article></section>
+</main><template id="linha"><div><dt></dt><dd></dd></div></template><script src="/app.js"></script></body></html>

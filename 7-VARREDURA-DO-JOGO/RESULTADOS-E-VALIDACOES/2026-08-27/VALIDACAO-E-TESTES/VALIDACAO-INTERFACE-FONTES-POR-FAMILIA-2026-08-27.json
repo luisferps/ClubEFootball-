@@ -1,0 +1,29 @@
+{
+  "contract": "clubef-family-source-ui-validation-v1",
+  "validated_at": "2026-08-27T20:33:40Z",
+  "target": "aplicativo Windows instalado",
+  "database_write": false,
+  "normal_discovery": {
+    "dt870_updated": "encontrado automaticamente; cartas e catalogos",
+    "dt200": "encontrado automaticamente; somente catalogos",
+    "dt870_original": "encontrado automaticamente; somente catalogos",
+    "dt261_bra": "encontrado automaticamente; somente catalogos"
+  },
+  "missing_source_scenario": {
+    "simulated_missing_role": "dt200",
+    "cards_status": "DT870 da atualizacao encontrado e validado",
+    "metadata_status": "Faltam 1 fonte(s): DT200 base",
+    "manual_choice_buttons": ["dt200"],
+    "result": "somente a fonte ausente foi solicitada; cartas permaneceram liberadas"
+  },
+  "checks": {
+    "window_title_is_new_system": true,
+    "four_sources_are_shown_separately": true,
+    "normal_paths_require_no_picker": true,
+    "missing_source_gets_one_picker": true,
+    "missing_catalog_source_does_not_block_cards": true,
+    "dry_run_visible": true,
+    "database_write_disabled_visible": true
+  },
+  "passed": true
+}

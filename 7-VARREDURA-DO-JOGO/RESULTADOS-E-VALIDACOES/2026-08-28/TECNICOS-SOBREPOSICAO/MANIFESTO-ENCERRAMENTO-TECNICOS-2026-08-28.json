@@ -1,0 +1,63 @@
+{
+  "contract": "clubef-technicians-final-closure-manifest-v1",
+  "generated_at": "2026-08-28T04:43:12.433918+00:00",
+  "database_write": false,
+  "transaction_read_only": "on",
+  "passed": true,
+  "reference_id": "meta-ref-eba124d25472-9db3bc3ebba1",
+  "files": {
+    "reference_pointer": {
+      "path": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO\\artefatos\\referencias-metadados\\referencia-vigente.json",
+      "sha256": "66f563a1a7cc1fd25ede8c32ff225f18e62e85166b7dfb7dc712ad6a46f6e8fe"
+    },
+    "reference_manifest": {
+      "path": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO\\artefatos\\referencias-metadados\\versoes\\meta-ref-eba124d25472-9db3bc3ebba1\\manifesto.json",
+      "sha256": "bbbff6a4495fb23ea1824eb75bafa9302b72ba0df741fc94ffe183242d14dcde"
+    },
+    "reference_snapshot": {
+      "path": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO\\artefatos\\referencias-metadados\\versoes\\meta-ref-eba124d25472-9db3bc3ebba1\\snapshot.json",
+      "sha256": "9db3bc3ebba11958f8dc55947b8c584320f6614c649618b5f25123cdd241aa16"
+    },
+    "operational_core": {
+      "path": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO\\app\\extrator-core.js",
+      "sha256": "2f015f6ac4e9715197034d8f583e7cca18bf953737d8b5c763666f70dee4744e"
+    },
+    "workspace_core": {
+      "path": "C:\\Users\\Luis Fernando\\Documents\\Codex\\2026-08-27\\atualizar-extrator-carga-atual\\outputs\\SISTEMA-EXTRATOR\\app\\extrator-core.js",
+      "sha256": "98c21d5d62747b9165dcc4a793cce8b7076cc4135415178d0ab626e95cf92bab"
+    },
+    "final_readback": {
+      "path": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO\\RESULTADOS-E-VALIDACOES\\2026-08-28\\TECNICOS-SOBREPOSICAO\\VALIDACAO-FINAL-ENCERRAMENTO-TECNICOS-2026-08-28.json",
+      "sha256": "7048649dfae97de34c30fe76113fbe0a34acb8c03b81f8968609119620387fe0"
+    },
+    "physical_delivery_manifest": {
+      "path": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO\\RESULTADOS-E-VALIDACOES\\2026-08-28\\TECNICOS-SOBREPOSICAO\\MANIFESTO-ARTEFATOS-SOBREPOSICAO.json",
+      "sha256": "1ffcb624c0d57449edfd2f04f996df1322e10a72a87654193be15e8701dc19fe"
+    },
+    "manual_das_tabelas": {
+      "path": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\4-DOCUMENTOS\\MANUAL-DAS-TABELAS.md",
+      "sha256": "4fe234c185bc77c1e83f9f5bf618a7f8e8a40c2b1251247ac7961dcde3395da6"
+    },
+    "manual_do_otimizador": {
+      "path": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\4-DOCUMENTOS\\MANUAL-DO-OTIMIZADOR.md",
+      "sha256": "6a295c330c2eeafad6aada75a61d4661966f4e3bdafdaf271750f2a7a8f9331c"
+    },
+    "mapa_do_codigo_do_jogo": {
+      "path": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\4-DOCUMENTOS\\MAPA-DO-CODIGO-DO-JOGO.md",
+      "sha256": "faae7397a901ce30208922c40ea125c04124910f771882927c786e0b4f1d57ab"
+    },
+    "manual_do_extrator": {
+      "path": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO\\DOCUMENTACAO\\MANUAL-DO-EXTRATOR.md",
+      "sha256": "258b6fe2c2ab40b7b69e599b61471112247ce69d8eaa0954f6d7aa49cf0b4bd9"
+    }
+  },
+  "technician_extractor_block": {
+    "workspace_sha256": "8b8d22bee2c4bd7eca16436e46135634972d7d7d5ad7121dd527fb012d049ed1",
+    "operational_sha256": "8b8d22bee2c4bd7eca16436e46135634972d7d7d5ad7121dd527fb012d049ed1",
+    "identical": true
+  },
+  "scope_closed": true,
+  "deferred": {
+    "link_up": "frente futura separada"
+  }
+}

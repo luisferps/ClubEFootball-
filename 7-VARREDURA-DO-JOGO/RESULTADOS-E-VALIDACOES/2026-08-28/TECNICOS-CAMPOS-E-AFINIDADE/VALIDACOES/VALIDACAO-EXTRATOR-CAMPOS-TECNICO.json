@@ -1,0 +1,134 @@
+{
+  "contract": "clubef-extractor-coach-display-validation-v1",
+  "generated_at": "2026-08-28T03:40:54.344Z",
+  "database_write": false,
+  "executable_used": false,
+  "app_source_directory": "C:/Users/Luis Fernando/Downloads/Clubefootball V4/7-VARREDURA-DO-JOGO/app",
+  "reference_id": "meta-ref-eba124d25472-8a7735bee1b6",
+  "sources": {
+    "dt870_updated": {
+      "role": "dt870_updated",
+      "path": "C:/ProgramData/KONAMI/eFootball/ST/Download/dt870_console_win.cpk",
+      "bytes": 9415400,
+      "sha256": "44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5"
+    },
+    "dt200": {
+      "role": "dt200",
+      "path": "C:/Program Files (x86)/Steam/steamapps/common/eFootball/cpk/dt200_console_all.cpk",
+      "bytes": 9910363,
+      "sha256": "fd920cd8e7f3f1089892ef4051c68c1c5c56c49000ecf6f751025a0ae2c94a50"
+    },
+    "dt870_original": {
+      "role": "dt870_original",
+      "path": "C:/Program Files (x86)/Steam/steamapps/common/eFootball/cpk/dt870_console_win.cpk",
+      "bytes": 5007376,
+      "sha256": "ae0d8cef26804439e9930ef8959f8d9425754d0e290d056b3e4d1f7b999edd5c"
+    },
+    "dt261_bra": {
+      "role": "dt261_bra",
+      "path": "C:/Program Files (x86)/Steam/steamapps/common/eFootball/cpk/dt261_bra_console_win.cpk",
+      "bytes": 258498,
+      "sha256": "2419045a081a151f8a0cdcc70a9ca0c4ca1ca265b8467b9c182623baa05338db"
+    }
+  },
+  "counts": {
+    "technicians": 1478,
+    "technician_unique_ids": 1478,
+    "nationalities": 214,
+    "affinities": 8
+  },
+  "sample_capello": {
+    "id": "17601312850052",
+    "nome_jp": "ファビオ カペッロ",
+    "nome_en": "Fabio Capello",
+    "nome_cn": "法比奥·卡佩罗",
+    "proficiencias": {
+      "possessionGame": 46,
+      "longBallCounter": 89,
+      "quickCounter": 57,
+      "longBall": 89,
+      "outWide": 64
+    },
+    "boosts": [
+      {
+        "ordem": 1,
+        "atributo_idx_canonico": 6,
+        "delta": 1,
+        "bit": 160,
+        "largura": 5
+      },
+      {
+        "ordem": 2,
+        "atributo_idx_canonico": 10,
+        "delta": 1,
+        "bit": 148,
+        "largura": 5
+      }
+    ],
+    "idade": 44,
+    "idade_valor_fisico": 30,
+    "nacionalidade_codigo": 215,
+    "nacionalidade_nome_pt_br": "Itália",
+    "nacionalidade_sigla": "ITA",
+    "afinidade_codigo": 5,
+    "source_role": "dt870_updated",
+    "arquivo": "Coach.bin",
+    "record_index": 1453,
+    "record_size": 176,
+    "source_file_sha256": "092a07c62d1df0f19da6ad0e4e1252de07e5e1df8e9090760734829044c0d42a",
+    "field_contract": {
+      "idade": {
+        "bit": 231,
+        "largura": 7,
+        "transformacao": "valor_fisico + 14"
+      },
+      "nacionalidade": {
+        "bit": 170,
+        "largura": 8,
+        "resolve_em": "Country.bin.codigo bit 10 largura 9"
+      },
+      "afinidade": {
+        "bit": 187,
+        "largura": 3,
+        "zero": "ausencia_legitima"
+      }
+    },
+    "ativo": true,
+    "fingerprint": "{\"afinidade_codigo\":5,\"arquivo\":\"Coach.bin\",\"ativo\":true,\"boosts\":[{\"atributo_idx_canonico\":6,\"bit\":160,\"delta\":1,\"largura\":5,\"ordem\":1},{\"atributo_idx_canonico\":10,\"bit\":148,\"delta\":1,\"largura\":5,\"ordem\":2}],\"field_contract\":{\"afinidade\":{\"bit\":187,\"largura\":3,\"zero\":\"ausencia_legitima\"},\"idade\":{\"bit\":231,\"largura\":7,\"transformacao\":\"valor_fisico + 14\"},\"nacionalidade\":{\"bit\":170,\"largura\":8,\"resolve_em\":\"Country.bin.codigo bit 10 largura 9\"}},\"id\":\"17601312850052\",\"idade\":44,\"idade_valor_fisico\":30,\"nacionalidade_codigo\":215,\"nacionalidade_nome_pt_br\":\"Itália\",\"nacionalidade_sigla\":\"ITA\",\"nome_cn\":\"法比奥·卡佩罗\",\"nome_en\":\"Fabio Capello\",\"nome_jp\":\"ファビオ カペッロ\",\"proficiencias\":{\"longBall\":89,\"longBallCounter\":89,\"outWide\":64,\"possessionGame\":46,\"quickCounter\":57},\"record_index\":1453,\"record_size\":176,\"source_file_sha256\":\"092a07c62d1df0f19da6ad0e4e1252de07e5e1df8e9090760734829044c0d42a\",\"source_role\":\"dt870_updated\"}"
+  },
+  "comparison": {
+    "tecnicos": {
+      "status": "comparado",
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 0
+    },
+    "nacionalidades": {
+      "status": "comparado",
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 0
+    },
+    "afinidades_tecnico": {
+      "status": "comparado",
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 0
+    }
+  },
+  "logs": [
+    "habilidades · DT870 da atualização: 72",
+    "ímpetos · dt200: 195",
+    "ímpetos · dt870_updated: 408",
+    "ímpetos · dt870_original pelo mapa físico selado: 102",
+    "ímpetos · união com procedência: 440",
+    "playstyles · base DT200: 36; overlay sem base: 2",
+    "textos · 11679 chaves oficiais únicas em 188 seções",
+    "técnicos · DT870 da atualização: 1478; nacionalidades: 214; afinidades: 8"
+  ],
+  "passed": true,
+  "errors": []
+}

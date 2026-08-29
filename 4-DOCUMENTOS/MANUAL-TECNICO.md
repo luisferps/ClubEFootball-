@@ -13,9 +13,9 @@ entra na A.
 ```
 C:\ProgramData\KONAMI\eFootball\ST\Download\dt870_console_win.cpk
         |
-  Extrator-ClubEfootball.html   (navegador do Luis, nada sai do PC)
+  Extrator eFootball.exe       (aplicativo local; fontes e comparação automáticas)
         |
-  CSV de 29 colunas  ->  import  ->  clube.carta_jogo      O CADASTRO
+  pacote selado de 29 colunas -> confirmação manual -> clube_novo.carta_jogo
         |                                    |
         |                         gatilhos: cap_do_id + carta_entrou
         |                                    v
@@ -47,13 +47,13 @@ E há dado que o arquivo do jogo **não tem** e continua vindo de fora:
 `tier` · `votos` · `max_ovr` · `data_lancamento` (esta dá pra derivar da `clube.extracao`:
 é a primeira extração em que o `card_id` apareceu).
 
-## A.3 · A conta (a cadeia da equação, imutável)
+## A.3 · A conta do Otimizador (corrigida em 27/08/2026)
 
 ```
-base + barras   (= a REFERÊNCIA da habilidade)
-   × multiplicador     (incremento truncado, piso 40, teto 99)
-   + 1 do técnico      (passa de 99)
-   + ímpetos NATIVO e ADICIONADO juntos   (passam de 99)
+base + barras   (= a REFERÊNCIA da habilidade; teto 99 somente aqui)
+   + ímpetos NATIVO e ADICIONADO juntos
+   × multiplicador     (incremento truncado, piso 40, SEM teto superior)
+   + boost do técnico  (depois da proficiência)
    + ceil(referência × pct/100 + flat)    (habilidade, SEM trava)
 ```
 
@@ -63,6 +63,12 @@ base + barras   (= a REFERÊNCIA da habilidade)
   arredondar, sem cascata); as raras somam inteiras por cima.
 - **A nota é o `b1`** (+ `bonus.b_total`). As colunas `nota`, `b1n`, `b2`, `b4`, `b5`,
   `b4r` da `builds` são legado 100% NULL.
+
+**Regra anterior, preservada como histórico e não vigente:** até 27/08, o código
+aplicava proficiência com teto 99 antes dos ímpetos. Alessandro Nesta provou o erro:
+`98 → 101` pela proficiência 89 e `→ 102` pelo boost. Marcel Desailly confirmou
+`96 → 99 → 100`. A regra completa, exemplos, limites e testes agora ficam no
+`MANUAL-DO-OTIMIZADOR.md`.
 
 ## A.4 · As chaves
 
@@ -103,8 +109,11 @@ Nunca mudar o esperado para o teste passar. Nunca relatar "pronto" com FALHA abe
 
 ## A.7 · A FONTE = CÓDIGO DO JOGO (atualizado 27/08 — carga completa)
 
-O extrator (`7-VARREDURA-DO-JOGO\Extrator-ClubEfootball.html`) lê o `.cpk` no navegador
-(decifra WESYS+CPK localmente, nada sai do PC) e entrega **42.803 cartas, 29 colunas**.
+O extrator (`7-VARREDURA-DO-JOGO\Extrator eFootball.exe`) lê o `.cpk` localmente
+(decifra WESYS+CPK, sem enviar os arquivos do jogo) e entrega **43.072 cartas, 29
+colunas**. A aplicação nunca é automática; o pacote selado só vai para
+`clube_novo.carta_jogo` após confirmação manual no próprio aplicativo. A cópia legada
+`clube.carta_jogo` permanece com 42.803 linhas e não foi removida.
 
 **A pasta certa** — a que o jogo atualiza toda semana:
 ```
@@ -114,7 +123,7 @@ C:\ProgramData\KONAMI\eFootball\ST\Download\dt870_console_win.cpk
 
 **Os arquivos de dentro que a gente usa:**
 ```
-Player.bin ................ 17.122.400 bytes → 42.806 cartas, registro de 400 bytes
+Player.bin ................ 17.230.000 bytes → 43.075 registros físicos, 43.072 cartas válidas, registro de 400 bytes
 PlayerAppearance.bin ....... 2.739.584 → o CORPO (registro de 64 bytes, card_id no offset 0)
 PlayerVariationDetail.bin .. 2.246.160 → a BOX (registro de 168 bytes)
 ```

@@ -1,0 +1,665 @@
+{
+  "alteradas": {
+    "campos": 84,
+    "cartas": 34,
+    "por_card": {
+      "108959": [
+        {
+          "campo": "altura",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "corpo",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "113676": [
+        {
+          "campo": "overall",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "116575": [
+        {
+          "campo": "altura",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "corpo",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "122897": [
+        {
+          "campo": "slot2_id",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "126622": [
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "slot2_id",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "132859": [
+        {
+          "campo": "corpo",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "133588": [
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "138075": [
+        {
+          "campo": "overall",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "aptidoes",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "142185": [
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "corpo",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "152929": [
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "altura",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "peso",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "corpo",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "habilidades_bits",
+          "metodo": "cardinalidade+ponte_fisica_bit_skill_id",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "aptidoes",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "153479": [
+        {
+          "campo": "overall",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "aptidoes",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "155498": [
+        {
+          "campo": "overall",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "altura",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "peso",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "corpo",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "habilidades_bits",
+          "metodo": "cardinalidade+ponte_fisica_bit_skill_id",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "slot2_id",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "157714": [
+        {
+          "campo": "slot2_id",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "159325": [
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "aptidoes",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "159560": [
+        {
+          "campo": "slot2_id",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "160233": [
+        {
+          "campo": "overall",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "posicao",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "habilidades_bits",
+          "metodo": "cardinalidade+ponte_fisica_bit_skill_id",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "slot1_id",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "160344": [
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "slot1_id",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "160769": [
+        {
+          "campo": "overall",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "aptidoes",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "162270": [
+        {
+          "campo": "altura",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "peso",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "corpo",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "168465": [
+        {
+          "campo": "peso",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "168494": [
+        {
+          "campo": "corpo",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "172103": [
+        {
+          "campo": "posicao",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "aptidoes",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "176844": [
+        {
+          "campo": "overall",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "peso",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "pe_ruim_precisao",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "habilidades_bits",
+          "metodo": "cardinalidade+ponte_fisica_bit_skill_id",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "177921": [
+        {
+          "campo": "altura",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "peso",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "pe",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "corpo",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "aptidoes",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "179438": [
+        {
+          "campo": "overall",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "slot2_id",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "179667": [
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "slot2_id",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "181560": [
+        {
+          "campo": "overall",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "182363": [
+        {
+          "campo": "overall",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "posicao",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "aptidoes",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "slot1_id",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "183541": [
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "183754": [
+        {
+          "campo": "corpo",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "184816": [
+        {
+          "campo": "overall",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "atributos",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "184827": [
+        {
+          "campo": "altura",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "corpo",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "60754": [
+        {
+          "campo": "slot2_id",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ],
+      "63474": [
+        {
+          "campo": "altura",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        },
+        {
+          "campo": "corpo",
+          "metodo": "valor_antes_depois_do_diff_fisico",
+          "status": "atualizacao_fisica_confirmada"
+        }
+      ]
+    }
+  },
+  "contrato": "classificacao_fisica_otimizador_v1",
+  "erros": [],
+  "fingerprints_lotes": {
+    "antigo_compatibilidade": "955fe05d2178e83fe16ac1a84c0b18952e1cf1447b79fa0028d9fb8e6b57a0b7",
+    "novo_por_ids": "2ab112d63c85fde9c3ade922b1805b53697f8650fcfa030975263944e3290b20"
+  },
+  "fonte_fisica": {
+    "bytes": 9415400,
+    "path": "outputs\\01-fontes\\dt870_console_win-2026-08-27.cpk",
+    "sha256": "44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5"
+  },
+  "gates": {
+    "amostras_bloqueadas": [
+      {
+        "card_id": "100012",
+        "motivos": [
+          "carta.roda_motor=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "100022",
+        "motivos": [
+          "carta.roda_motor=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "100057",
+        "motivos": [
+          "carta.roda_motor=false"
+        ]
+      },
+      {
+        "card_id": "100090",
+        "motivos": [
+          "carta.roda_motor=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "100108",
+        "motivos": [
+          "carta.roda_motor=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "100111",
+        "motivos": [
+          "carta.roda_motor=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "100112",
+        "motivos": [
+          "carta.roda_motor=false"
+        ]
+      },
+      {
+        "card_id": "100117",
+        "motivos": [
+          "carta.roda_motor=false"
+        ]
+      },
+      {
+        "card_id": "100133",
+        "motivos": [
+          "carta.roda_motor=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "100135",
+        "motivos": [
+          "carta.roda_motor=false"
+        ]
+      },
+      {
+        "card_id": "100144",
+        "motivos": [
+          "carta.roda_motor=false"
+        ]
+      },
+      {
+        "card_id": "100150",
+        "motivos": [
+          "carta.roda_motor=false"
+        ]
+      },
+      {
+        "card_id": "100159",
+        "motivos": [
+          "carta.roda_motor=false",
+          "clube_bloqueado",
+          "liga_bloqueada"
+        ]
+      },
+      {
+        "card_id": "100177",
+        "motivos": [
+          "carta.roda_motor=false"
+        ]
+      },
+      {
+        "card_id": "100181",
+        "motivos": [
+          "carta.roda_motor=false"
+        ]
+      },
+      {
+        "card_id": "100187",
+        "motivos": [
+          "carta.roda_motor=false"
+        ]
+      },
+      {
+        "card_id": "100196",
+        "motivos": [
+          "carta.roda_motor=false"
+        ]
+      },
+      {
+        "card_id": "100205",
+        "motivos": [
+          "carta.roda_motor=false"
+        ]
+      },
+      {
+        "card_id": "100219",
+        "motivos": [
+          "carta.roda_motor=false"
+        ]
+      },
+      {
+        "card_id": "100224",
+        "motivos": [
+          "carta.roda_motor=false"
+        ]
+      }
+    ],
+    "motivos": {
+      "carta.pode_rodar_vinculos=false": 354,
+      "carta.roda_motor=false": 22186,
+      "clube_bloqueado": 11275,
+      "impetos_consumidor_desligado": 2324,
+      "liga_bloqueada": 12915
+    }
+  },
+  "novas": {
+    "quantidade": 269,
+    "status": "insercao_fisica_confirmada"
+  },
+  "paridade_tecnica_classificada": true,
+  "prova_habilidades_por_id": "RELATORIO-HABILIDADES-ID-2026-08-28.md: Player.bin bit físico → skill_id canônico",
+  "referencia_csv": {
+    "ids_unicos": 43072,
+    "registros": 43072,
+    "sha256": "07c9b8cf9690b1f177cd724ada4329351424b71fb8c6d09e4cd35d3875389c38",
+    "sha256_esperado": "07c9b8cf9690b1f177cd724ada4329351424b71fb8c6d09e4cd35d3875389c38"
+  },
+  "somente_leitura": true
+}

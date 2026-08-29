@@ -1,0 +1,243 @@
+{
+  "contract": "clubef-coach-display-fields-db-readonly-preflight-v1",
+  "database_write": false,
+  "transaction_read_only": "on",
+  "table": "clube_novo.tecnico_jogo",
+  "counts": {
+    "total": 1594,
+    "current_rows": 1478,
+    "distinct_ids": 1594
+  },
+  "columns": [
+    {
+      "name": "id",
+      "data_type": "bigint",
+      "udt_name": "int8",
+      "nullable": false,
+      "default": null,
+      "position": 1
+    },
+    {
+      "name": "nome_en",
+      "data_type": "text",
+      "udt_name": "text",
+      "nullable": true,
+      "default": null,
+      "position": 2
+    },
+    {
+      "name": "nome_jp",
+      "data_type": "text",
+      "udt_name": "text",
+      "nullable": true,
+      "default": null,
+      "position": 3
+    },
+    {
+      "name": "nome_cn",
+      "data_type": "text",
+      "udt_name": "text",
+      "nullable": true,
+      "default": null,
+      "position": 4
+    },
+    {
+      "name": "no_dt200",
+      "data_type": "boolean",
+      "udt_name": "bool",
+      "nullable": true,
+      "default": "false",
+      "position": 5
+    },
+    {
+      "name": "no_dt870",
+      "data_type": "boolean",
+      "udt_name": "bool",
+      "nullable": true,
+      "default": "true",
+      "position": 6
+    },
+    {
+      "name": "arquivo",
+      "data_type": "text",
+      "udt_name": "text",
+      "nullable": true,
+      "default": "'Coach.bin'::text",
+      "position": 7
+    },
+    {
+      "name": "endereco",
+      "data_type": "text",
+      "udt_name": "text",
+      "nullable": true,
+      "default": "'id u32 no offset 0 · nome japones no offset 32 · nome latino no offset 78 · nome chines no offset 124 · registro de 176 bytes'::text",
+      "position": 8
+    },
+    {
+      "name": "pode_rodar",
+      "data_type": "boolean",
+      "udt_name": "bool",
+      "nullable": true,
+      "default": null,
+      "position": 9
+    },
+    {
+      "name": "falta_o_que",
+      "data_type": "text",
+      "udt_name": "text",
+      "nullable": true,
+      "default": null,
+      "position": 10
+    },
+    {
+      "name": "tamanho_registro",
+      "data_type": "smallint",
+      "udt_name": "int2",
+      "nullable": true,
+      "default": "176",
+      "position": 11
+    },
+    {
+      "name": "bit_codigo",
+      "data_type": "smallint",
+      "udt_name": "int2",
+      "nullable": true,
+      "default": "0",
+      "position": 12
+    },
+    {
+      "name": "largura_codigo",
+      "data_type": "smallint",
+      "udt_name": "int2",
+      "nullable": true,
+      "default": "32",
+      "position": 13
+    },
+    {
+      "name": "registro_dt200",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "nullable": true,
+      "default": null,
+      "position": 14
+    },
+    {
+      "name": "registro_dt870_steam",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "nullable": true,
+      "default": null,
+      "position": 15
+    },
+    {
+      "name": "registro_dt870_atualizacao",
+      "data_type": "integer",
+      "udt_name": "int4",
+      "nullable": true,
+      "default": null,
+      "position": 16
+    },
+    {
+      "name": "presente_dt200",
+      "data_type": "boolean",
+      "udt_name": "bool",
+      "nullable": true,
+      "default": "false",
+      "position": 17
+    },
+    {
+      "name": "presente_dt870_steam",
+      "data_type": "boolean",
+      "udt_name": "bool",
+      "nullable": true,
+      "default": "false",
+      "position": 18
+    },
+    {
+      "name": "presente_dt870_atualizacao",
+      "data_type": "boolean",
+      "udt_name": "bool",
+      "nullable": true,
+      "default": "false",
+      "position": 19
+    },
+    {
+      "name": "fonte_autoritativa",
+      "data_type": "text",
+      "udt_name": "text",
+      "nullable": true,
+      "default": null,
+      "position": 20
+    },
+    {
+      "name": "cpk_origem",
+      "data_type": "text",
+      "udt_name": "text",
+      "nullable": true,
+      "default": null,
+      "position": 21
+    },
+    {
+      "name": "hash_coach_bin",
+      "data_type": "text",
+      "udt_name": "text",
+      "nullable": true,
+      "default": null,
+      "position": 22
+    },
+    {
+      "name": "contrato_extracao",
+      "data_type": "text",
+      "udt_name": "text",
+      "nullable": true,
+      "default": null,
+      "position": 23
+    },
+    {
+      "name": "carregado_em",
+      "data_type": "timestamp with time zone",
+      "udt_name": "timestamptz",
+      "nullable": false,
+      "default": "now()",
+      "position": 24
+    }
+  ],
+  "constraints": [
+    {
+      "name": "tecnico_jogo_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)"
+    }
+  ],
+  "related_tables": [],
+  "samples": [
+    {
+      "id": 17601044514701,
+      "nome_en": "José Mourinho",
+      "fonte_autoritativa": "dt870_updated",
+      "registro_dt870_atualizacao": 1452,
+      "pode_rodar": true
+    },
+    {
+      "id": 17601312850052,
+      "nome_en": "Fabio Capello",
+      "fonte_autoritativa": "dt870_updated",
+      "registro_dt870_atualizacao": 1453,
+      "pode_rodar": true
+    },
+    {
+      "id": 17608292273375,
+      "nome_en": "Frank Lampard",
+      "fonte_autoritativa": "dt870_updated",
+      "registro_dt870_atualizacao": 1475,
+      "pode_rodar": true
+    },
+    {
+      "id": 17609097478250,
+      "nome_en": "Antonio Conte",
+      "fonte_autoritativa": "dt870_updated",
+      "registro_dt870_atualizacao": 1476,
+      "pode_rodar": true
+    }
+  ]
+}

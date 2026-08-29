@@ -1,0 +1,110 @@
+{
+  "contract": "clubef-metadados-diff-v3",
+  "generated_at": "2026-08-27T19:45:05.217Z",
+  "no_supabase_writes": true,
+  "source": {
+    "path": "outputs\\01-fontes\\dt870_console_win-2026-08-27.cpk",
+    "bytes": 9415400,
+    "sha256": "44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5"
+  },
+  "summary": {
+    "estilos_ia": {
+      "status": "comparado",
+      "atuais": 7,
+      "base_ativa": 7,
+      "novas": 0,
+      "alteradas": 0,
+      "ausentes": 0,
+      "sem_fingerprint_anterior": 0,
+      "duplicados_atuais": 0,
+      "motivo": null
+    },
+    "habilidades": {
+      "status": "comparado",
+      "atuais": 72,
+      "base_ativa": 72,
+      "novas": 0,
+      "alteradas": 0,
+      "ausentes": 0,
+      "sem_fingerprint_anterior": 72,
+      "duplicados_atuais": 0,
+      "motivo": null
+    },
+    "impetos": {
+      "status": "comparado",
+      "atuais": 408,
+      "base_ativa": 408,
+      "novas": 0,
+      "alteradas": 0,
+      "ausentes": 0,
+      "sem_fingerprint_anterior": 408,
+      "duplicados_atuais": 0,
+      "motivo": null
+    },
+    "playstyles": {
+      "status": "comparado",
+      "atuais": 36,
+      "base_ativa": 36,
+      "novas": 0,
+      "alteradas": 0,
+      "ausentes": 0,
+      "sem_fingerprint_anterior": 36,
+      "duplicados_atuais": 0,
+      "motivo": null
+    },
+    "posicoes": {
+      "status": "comparado",
+      "atuais": 13,
+      "base_ativa": 13,
+      "novas": 0,
+      "alteradas": 0,
+      "ausentes": 0,
+      "sem_fingerprint_anterior": 0,
+      "duplicados_atuais": 0,
+      "motivo": null
+    },
+    "tecnicos": {
+      "status": "sem_gabarito",
+      "atuais": 1478,
+      "base_ativa": 0,
+      "novas": 0,
+      "alteradas": 0,
+      "ausentes": 0,
+      "sem_fingerprint_anterior": 0,
+      "duplicados_atuais": 0,
+      "motivo": "a tabela fisica de tecnicos ainda nao tem gabarito carregado em clube.tecnico_jogo"
+    }
+  },
+  "diff": {
+    "estilos_ia": {
+      "novas": [],
+      "alteradas": [],
+      "ausentes": []
+    },
+    "habilidades": {
+      "novas": [],
+      "alteradas": [],
+      "ausentes": []
+    },
+    "impetos": {
+      "novas": [],
+      "alteradas": [],
+      "ausentes": []
+    },
+    "playstyles": {
+      "novas": [],
+      "alteradas": [],
+      "ausentes": []
+    },
+    "posicoes": {
+      "novas": [],
+      "alteradas": [],
+      "ausentes": []
+    },
+    "tecnicos": {
+      "novas": [],
+      "alteradas": [],
+      "ausentes": []
+    }
+  }
+}

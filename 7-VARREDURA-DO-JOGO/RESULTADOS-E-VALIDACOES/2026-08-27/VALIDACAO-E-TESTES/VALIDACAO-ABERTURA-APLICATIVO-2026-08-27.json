@@ -1,0 +1,49 @@
+{
+  "contract": "clubef-windows-app-opening-test-v1",
+  "tested_at": "2026-08-27T20:47:59.2425984+00:00",
+  "executable": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO\\Extrator eFootball.exe",
+  "launcher_process_id": 4324,
+  "new_pythonw_processes": [
+    {
+      "Id": 9812,
+      "ProcessName": "pythonw",
+      "MainWindowHandle": {
+        "value": 0
+      }
+    }
+  ],
+  "edge_app_processes": [
+    {
+      "ProcessId": 6404,
+      "Name": "msedge.exe",
+      "CommandLine": "\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" --app=\"http://127.0.0.1:8765/Extrator-ClubEfootball.html\" --start-maximized --no-first-run --disable-features=msEdgeSidebarV2"
+    }
+  ],
+  "edge_windows": [
+    {
+      "Id": 6404,
+      "ProcessName": "msedge",
+      "MainWindowHandle": {
+        "value": 1574894
+      },
+      "MainWindowTitle": "Extrator eFootball"
+    }
+  ],
+  "api_status": {
+    "online": true,
+    "mode": "dry-run",
+    "write_enabled": false,
+    "database_configured": false,
+    "config_source": "configuracao.exemplo.json"
+  },
+  "checks": {
+    "executable_started": true,
+    "executor_online": true,
+    "executor_dry_run": true,
+    "database_write_disabled": true,
+    "hidden_pythonw_started": true,
+    "edge_app_window_opened": true
+  },
+  "database_write": false,
+  "passed": true
+}

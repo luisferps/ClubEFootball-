@@ -1,0 +1,28 @@
+{
+  "consultado_em": "2026-08-27T21:27:11-03:00",
+  "projeto_supabase": "trqqpsnafpbudtvvicch",
+  "controle_do_projeto": "ACTIVE_HEALTHY",
+  "postgres": "indisponivel_em_recuperacao",
+  "evidencia_primaria": "could not write to file pg_wal/xlogtemp: No space left on device",
+  "erros_de_conexao_observados": [
+    "57P03: the database system is not accepting connections; Hot standby mode is disabled",
+    "ECONNREFUSED na porta PostgreSQL"
+  ],
+  "remocao_revogada": {
+    "alvo_unico": "clube.carta_jogo",
+    "acao": "drop_table_only_restrict",
+    "precondicao_legado": 42803,
+    "precondicao_atual": 43072,
+    "proteger": "clube_novo.carta_jogo",
+    "cascade": false,
+    "executada": false,
+    "autorizacao_vigente": false,
+    "motivo": "usuario revogou a remocao; clube.carta_jogo deve ser preservada"
+  },
+  "migracao_impetos": {
+    "executada": false,
+    "preflight_live_concluido": false,
+    "motivo": "PostgreSQL indisponivel"
+  },
+  "escritas_realizadas_por_esta_frente": 0
+}

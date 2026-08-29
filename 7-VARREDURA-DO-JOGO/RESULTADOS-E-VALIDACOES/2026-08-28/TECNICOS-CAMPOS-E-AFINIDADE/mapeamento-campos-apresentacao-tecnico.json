@@ -1,0 +1,1694 @@
+{
+  "contract": "clubef-coach-display-fields-physical-mapping-v1",
+  "database_write": false,
+  "physical_source": "C:/Users/Luis Fernando/Downloads/Clubefootball V4/7-VARREDURA-DO-JOGO/RESULTADOS-E-VALIDACOES/2026-08-27/FONTES-E-BASE/dt870_console_win-2026-08-27.cpk",
+  "physical_sha256": "44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5",
+  "coach_records": 1478,
+  "reference_path": "C:\\Users\\Luis Fernando\\Downloads\\efhub_coaches.json",
+  "reference_role": "cross-check only; physical Coach.bin remains authoritative",
+  "reference_records": 1662,
+  "intersection_full_u64_id": 1319,
+  "best": {
+    "age": {
+      "bit": 231,
+      "width": 7,
+      "additive_offset": 14,
+      "exact_after_offset": 1241,
+      "modal_reference_minus_raw": 14,
+      "modal_count": 1241,
+      "total": 1319
+    },
+    "country": {
+      "bit": 170,
+      "width": 8,
+      "additive_offset": 0,
+      "exact_after_offset": 1317,
+      "modal_reference_minus_raw": 0,
+      "modal_count": 1317,
+      "total": 1319
+    },
+    "affinity": {
+      "bit": 187,
+      "width": 3,
+      "additive_offset": 0,
+      "exact_after_offset": 1276,
+      "modal_reference_minus_raw": 0,
+      "modal_count": 1276,
+      "total": 1319
+    }
+  },
+  "age_candidate_search_note": "candidate search was exploratory; the sealed mapping is bit 231 width 7 plus 14",
+  "age_candidates_exploratory": [
+    {
+      "bit": 228,
+      "width": 6,
+      "exact": 45,
+      "affine": 120,
+      "modal_reference_minus_physical": -12,
+      "total": 1319
+    },
+    {
+      "bit": 192,
+      "width": 7,
+      "exact": 34,
+      "affine": 35,
+      "modal_reference_minus_physical": 45,
+      "total": 1319
+    },
+    {
+      "bit": 192,
+      "width": 6,
+      "exact": 33,
+      "affine": 37,
+      "modal_reference_minus_physical": 45,
+      "total": 1319
+    },
+    {
+      "bit": 197,
+      "width": 6,
+      "exact": 31,
+      "affine": 33,
+      "modal_reference_minus_physical": -3,
+      "total": 1319
+    },
+    {
+      "bit": 238,
+      "width": 7,
+      "exact": 28,
+      "affine": 43,
+      "modal_reference_minus_physical": -15,
+      "total": 1319
+    },
+    {
+      "bit": 211,
+      "width": 6,
+      "exact": 28,
+      "affine": 41,
+      "modal_reference_minus_physical": -3,
+      "total": 1319
+    },
+    {
+      "bit": 238,
+      "width": 6,
+      "exact": 26,
+      "affine": 38,
+      "modal_reference_minus_physical": -15,
+      "total": 1319
+    },
+    {
+      "bit": 217,
+      "width": 6,
+      "exact": 25,
+      "affine": 46,
+      "modal_reference_minus_physical": 5,
+      "total": 1319
+    },
+    {
+      "bit": 217,
+      "width": 7,
+      "exact": 25,
+      "affine": 46,
+      "modal_reference_minus_physical": 5,
+      "total": 1319
+    },
+    {
+      "bit": 172,
+      "width": 6,
+      "exact": 24,
+      "affine": 63,
+      "modal_reference_minus_physical": -7,
+      "total": 1319
+    },
+    {
+      "bit": 172,
+      "width": 7,
+      "exact": 24,
+      "affine": 63,
+      "modal_reference_minus_physical": -7,
+      "total": 1319
+    },
+    {
+      "bit": 172,
+      "width": 8,
+      "exact": 24,
+      "affine": 61,
+      "modal_reference_minus_physical": -7,
+      "total": 1319
+    },
+    {
+      "bit": 222,
+      "width": 6,
+      "exact": 24,
+      "affine": 43,
+      "modal_reference_minus_physical": -3,
+      "total": 1319
+    },
+    {
+      "bit": 244,
+      "width": 6,
+      "exact": 23,
+      "affine": 88,
+      "modal_reference_minus_physical": 5,
+      "total": 1319
+    },
+    {
+      "bit": 172,
+      "width": 9,
+      "exact": 23,
+      "affine": 60,
+      "modal_reference_minus_physical": -6,
+      "total": 1319
+    },
+    {
+      "bit": 226,
+      "width": 6,
+      "exact": 22,
+      "affine": 65,
+      "modal_reference_minus_physical": -2,
+      "total": 1319
+    },
+    {
+      "bit": 204,
+      "width": 6,
+      "exact": 22,
+      "affine": 50,
+      "modal_reference_minus_physical": -3,
+      "total": 1319
+    },
+    {
+      "bit": 240,
+      "width": 6,
+      "exact": 22,
+      "affine": 49,
+      "modal_reference_minus_physical": 30,
+      "total": 1319
+    },
+    {
+      "bit": 213,
+      "width": 7,
+      "exact": 22,
+      "affine": 46,
+      "modal_reference_minus_physical": -15,
+      "total": 1319
+    },
+    {
+      "bit": 213,
+      "width": 6,
+      "exact": 22,
+      "affine": 39,
+      "modal_reference_minus_physical": -1,
+      "total": 1319
+    },
+    {
+      "bit": 244,
+      "width": 7,
+      "exact": 21,
+      "affine": 88,
+      "modal_reference_minus_physical": 5,
+      "total": 1319
+    },
+    {
+      "bit": 244,
+      "width": 8,
+      "exact": 21,
+      "affine": 88,
+      "modal_reference_minus_physical": 5,
+      "total": 1319
+    },
+    {
+      "bit": 244,
+      "width": 9,
+      "exact": 21,
+      "affine": 88,
+      "modal_reference_minus_physical": 5,
+      "total": 1319
+    },
+    {
+      "bit": 205,
+      "width": 6,
+      "exact": 21,
+      "affine": 52,
+      "modal_reference_minus_physical": -11,
+      "total": 1319
+    },
+    {
+      "bit": 224,
+      "width": 7,
+      "exact": 21,
+      "affine": 49,
+      "modal_reference_minus_physical": -15,
+      "total": 1319
+    },
+    {
+      "bit": 194,
+      "width": 6,
+      "exact": 21,
+      "affine": 45,
+      "modal_reference_minus_physical": 38,
+      "total": 1319
+    },
+    {
+      "bit": 224,
+      "width": 6,
+      "exact": 21,
+      "affine": 40,
+      "modal_reference_minus_physical": -15,
+      "total": 1319
+    },
+    {
+      "bit": 208,
+      "width": 6,
+      "exact": 20,
+      "affine": 67,
+      "modal_reference_minus_physical": 30,
+      "total": 1319
+    },
+    {
+      "bit": 212,
+      "width": 6,
+      "exact": 20,
+      "affine": 42,
+      "modal_reference_minus_physical": -11,
+      "total": 1319
+    },
+    {
+      "bit": 237,
+      "width": 6,
+      "exact": 20,
+      "affine": 42,
+      "modal_reference_minus_physical": -3,
+      "total": 1319
+    },
+    {
+      "bit": 229,
+      "width": 6,
+      "exact": 19,
+      "affine": 209,
+      "modal_reference_minus_physical": -15,
+      "total": 1319
+    },
+    {
+      "bit": 166,
+      "width": 6,
+      "exact": 19,
+      "affine": 172,
+      "modal_reference_minus_physical": 45,
+      "total": 1319
+    },
+    {
+      "bit": 189,
+      "width": 6,
+      "exact": 19,
+      "affine": 79,
+      "modal_reference_minus_physical": 45,
+      "total": 1319
+    },
+    {
+      "bit": 217,
+      "width": 8,
+      "exact": 18,
+      "affine": 29,
+      "modal_reference_minus_physical": 28,
+      "total": 1319
+    },
+    {
+      "bit": 201,
+      "width": 6,
+      "exact": 17,
+      "affine": 51,
+      "modal_reference_minus_physical": 40,
+      "total": 1319
+    },
+    {
+      "bit": 206,
+      "width": 7,
+      "exact": 17,
+      "affine": 50,
+      "modal_reference_minus_physical": -15,
+      "total": 1319
+    },
+    {
+      "bit": 206,
+      "width": 6,
+      "exact": 17,
+      "affine": 46,
+      "modal_reference_minus_physical": -15,
+      "total": 1319
+    },
+    {
+      "bit": 191,
+      "width": 6,
+      "exact": 17,
+      "affine": 41,
+      "modal_reference_minus_physical": 43,
+      "total": 1319
+    },
+    {
+      "bit": 221,
+      "width": 6,
+      "exact": 17,
+      "affine": 36,
+      "modal_reference_minus_physical": 13,
+      "total": 1319
+    },
+    {
+      "bit": 197,
+      "width": 7,
+      "exact": 17,
+      "affine": 26,
+      "modal_reference_minus_physical": -67,
+      "total": 1319
+    },
+    {
+      "bit": 168,
+      "width": 7,
+      "exact": 16,
+      "affine": 64,
+      "modal_reference_minus_physical": -3,
+      "total": 1319
+    },
+    {
+      "bit": 203,
+      "width": 6,
+      "exact": 16,
+      "affine": 44,
+      "modal_reference_minus_physical": 12,
+      "total": 1319
+    },
+    {
+      "bit": 243,
+      "width": 6,
+      "exact": 16,
+      "affine": 44,
+      "modal_reference_minus_physical": 28,
+      "total": 1319
+    },
+    {
+      "bit": 194,
+      "width": 7,
+      "exact": 16,
+      "affine": 26,
+      "modal_reference_minus_physical": 37,
+      "total": 1319
+    },
+    {
+      "bit": 213,
+      "width": 8,
+      "exact": 16,
+      "affine": 25,
+      "modal_reference_minus_physical": -143,
+      "total": 1319
+    },
+    {
+      "bit": 192,
+      "width": 8,
+      "exact": 16,
+      "affine": 21,
+      "modal_reference_minus_physical": 11,
+      "total": 1319
+    },
+    {
+      "bit": 167,
+      "width": 6,
+      "exact": 15,
+      "affine": 102,
+      "modal_reference_minus_physical": 45,
+      "total": 1319
+    },
+    {
+      "bit": 170,
+      "width": 6,
+      "exact": 15,
+      "affine": 57,
+      "modal_reference_minus_physical": 33,
+      "total": 1319
+    },
+    {
+      "bit": 236,
+      "width": 6,
+      "exact": 15,
+      "affine": 56,
+      "modal_reference_minus_physical": -3,
+      "total": 1319
+    },
+    {
+      "bit": 224,
+      "width": 8,
+      "exact": 15,
+      "affine": 39,
+      "modal_reference_minus_physical": -143,
+      "total": 1319
+    }
+  ],
+  "country_candidates": [
+    {
+      "bit": 170,
+      "width": 8,
+      "exact": 1317,
+      "affine": 1317,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 170,
+      "width": 9,
+      "exact": 1297,
+      "affine": 1297,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 170,
+      "width": 10,
+      "exact": 1285,
+      "affine": 1285,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 170,
+      "width": 7,
+      "exact": 243,
+      "affine": 1074,
+      "modal_reference_minus_physical": 128,
+      "total": 1319
+    },
+    {
+      "bit": 246,
+      "width": 7,
+      "exact": 24,
+      "affine": 33,
+      "modal_reference_minus_physical": 192,
+      "total": 1319
+    },
+    {
+      "bit": 246,
+      "width": 8,
+      "exact": 24,
+      "affine": 33,
+      "modal_reference_minus_physical": 192,
+      "total": 1319
+    },
+    {
+      "bit": 246,
+      "width": 9,
+      "exact": 24,
+      "affine": 33,
+      "modal_reference_minus_physical": 192,
+      "total": 1319
+    },
+    {
+      "bit": 246,
+      "width": 10,
+      "exact": 24,
+      "affine": 33,
+      "modal_reference_minus_physical": 192,
+      "total": 1319
+    },
+    {
+      "bit": 225,
+      "width": 8,
+      "exact": 13,
+      "affine": 19,
+      "modal_reference_minus_physical": -7,
+      "total": 1319
+    },
+    {
+      "bit": 200,
+      "width": 8,
+      "exact": 12,
+      "affine": 13,
+      "modal_reference_minus_physical": 118,
+      "total": 1319
+    },
+    {
+      "bit": 214,
+      "width": 8,
+      "exact": 11,
+      "affine": 18,
+      "modal_reference_minus_physical": 50,
+      "total": 1319
+    },
+    {
+      "bit": 236,
+      "width": 8,
+      "exact": 11,
+      "affine": 15,
+      "modal_reference_minus_physical": 3,
+      "total": 1319
+    },
+    {
+      "bit": 208,
+      "width": 8,
+      "exact": 11,
+      "affine": 13,
+      "modal_reference_minus_physical": 6,
+      "total": 1319
+    },
+    {
+      "bit": 189,
+      "width": 8,
+      "exact": 10,
+      "affine": 27,
+      "modal_reference_minus_physical": 144,
+      "total": 1319
+    },
+    {
+      "bit": 207,
+      "width": 8,
+      "exact": 10,
+      "affine": 14,
+      "modal_reference_minus_physical": 65,
+      "total": 1319
+    },
+    {
+      "bit": 188,
+      "width": 8,
+      "exact": 9,
+      "affine": 37,
+      "modal_reference_minus_physical": 144,
+      "total": 1319
+    },
+    {
+      "bit": 190,
+      "width": 8,
+      "exact": 9,
+      "affine": 29,
+      "modal_reference_minus_physical": 144,
+      "total": 1319
+    },
+    {
+      "bit": 190,
+      "width": 9,
+      "exact": 9,
+      "affine": 28,
+      "modal_reference_minus_physical": 144,
+      "total": 1319
+    },
+    {
+      "bit": 232,
+      "width": 8,
+      "exact": 9,
+      "affine": 22,
+      "modal_reference_minus_physical": -3,
+      "total": 1319
+    },
+    {
+      "bit": 236,
+      "width": 9,
+      "exact": 9,
+      "affine": 17,
+      "modal_reference_minus_physical": -33,
+      "total": 1319
+    },
+    {
+      "bit": 187,
+      "width": 8,
+      "exact": 8,
+      "affine": 43,
+      "modal_reference_minus_physical": 144,
+      "total": 1319
+    },
+    {
+      "bit": 233,
+      "width": 8,
+      "exact": 8,
+      "affine": 21,
+      "modal_reference_minus_physical": 69,
+      "total": 1319
+    },
+    {
+      "bit": 226,
+      "width": 8,
+      "exact": 8,
+      "affine": 19,
+      "modal_reference_minus_physical": -26,
+      "total": 1319
+    },
+    {
+      "bit": 196,
+      "width": 8,
+      "exact": 8,
+      "affine": 15,
+      "modal_reference_minus_physical": 13,
+      "total": 1319
+    },
+    {
+      "bit": 221,
+      "width": 8,
+      "exact": 8,
+      "affine": 14,
+      "modal_reference_minus_physical": -10,
+      "total": 1319
+    },
+    {
+      "bit": 155,
+      "width": 7,
+      "exact": 7,
+      "affine": 90,
+      "modal_reference_minus_physical": 144,
+      "total": 1319
+    },
+    {
+      "bit": 155,
+      "width": 8,
+      "exact": 7,
+      "affine": 90,
+      "modal_reference_minus_physical": 144,
+      "total": 1319
+    },
+    {
+      "bit": 155,
+      "width": 9,
+      "exact": 7,
+      "affine": 90,
+      "modal_reference_minus_physical": 144,
+      "total": 1319
+    },
+    {
+      "bit": 155,
+      "width": 10,
+      "exact": 7,
+      "affine": 90,
+      "modal_reference_minus_physical": 144,
+      "total": 1319
+    },
+    {
+      "bit": 231,
+      "width": 7,
+      "exact": 7,
+      "affine": 43,
+      "modal_reference_minus_physical": 173,
+      "total": 1319
+    },
+    {
+      "bit": 219,
+      "width": 8,
+      "exact": 7,
+      "affine": 15,
+      "modal_reference_minus_physical": 12,
+      "total": 1319
+    },
+    {
+      "bit": 214,
+      "width": 9,
+      "exact": 7,
+      "affine": 13,
+      "modal_reference_minus_physical": -142,
+      "total": 1319
+    },
+    {
+      "bit": 207,
+      "width": 9,
+      "exact": 7,
+      "affine": 10,
+      "modal_reference_minus_physical": 65,
+      "total": 1319
+    },
+    {
+      "bit": 153,
+      "width": 8,
+      "exact": 6,
+      "affine": 91,
+      "modal_reference_minus_physical": 144,
+      "total": 1319
+    },
+    {
+      "bit": 231,
+      "width": 8,
+      "exact": 6,
+      "affine": 27,
+      "modal_reference_minus_physical": 173,
+      "total": 1319
+    },
+    {
+      "bit": 188,
+      "width": 9,
+      "exact": 6,
+      "affine": 27,
+      "modal_reference_minus_physical": 144,
+      "total": 1319
+    },
+    {
+      "bit": 214,
+      "width": 7,
+      "exact": 6,
+      "affine": 24,
+      "modal_reference_minus_physical": 121,
+      "total": 1319
+    },
+    {
+      "bit": 200,
+      "width": 7,
+      "exact": 6,
+      "affine": 19,
+      "modal_reference_minus_physical": 131,
+      "total": 1319
+    },
+    {
+      "bit": 218,
+      "width": 8,
+      "exact": 6,
+      "affine": 18,
+      "modal_reference_minus_physical": 7,
+      "total": 1319
+    },
+    {
+      "bit": 241,
+      "width": 8,
+      "exact": 6,
+      "affine": 18,
+      "modal_reference_minus_physical": 54,
+      "total": 1319
+    },
+    {
+      "bit": 239,
+      "width": 8,
+      "exact": 6,
+      "affine": 15,
+      "modal_reference_minus_physical": 114,
+      "total": 1319
+    },
+    {
+      "bit": 232,
+      "width": 9,
+      "exact": 6,
+      "affine": 15,
+      "modal_reference_minus_physical": -67,
+      "total": 1319
+    },
+    {
+      "bit": 193,
+      "width": 8,
+      "exact": 6,
+      "affine": 14,
+      "modal_reference_minus_physical": 50,
+      "total": 1319
+    },
+    {
+      "bit": 194,
+      "width": 8,
+      "exact": 6,
+      "affine": 13,
+      "modal_reference_minus_physical": 7,
+      "total": 1319
+    },
+    {
+      "bit": 210,
+      "width": 8,
+      "exact": 6,
+      "affine": 13,
+      "modal_reference_minus_physical": 28,
+      "total": 1319
+    },
+    {
+      "bit": 187,
+      "width": 9,
+      "exact": 5,
+      "affine": 34,
+      "modal_reference_minus_physical": 144,
+      "total": 1319
+    },
+    {
+      "bit": 207,
+      "width": 7,
+      "exact": 5,
+      "affine": 20,
+      "modal_reference_minus_physical": 117,
+      "total": 1319
+    },
+    {
+      "bit": 205,
+      "width": 8,
+      "exact": 5,
+      "affine": 20,
+      "modal_reference_minus_physical": 95,
+      "total": 1319
+    },
+    {
+      "bit": 215,
+      "width": 8,
+      "exact": 5,
+      "affine": 19,
+      "modal_reference_minus_physical": 1,
+      "total": 1319
+    },
+    {
+      "bit": 215,
+      "width": 9,
+      "exact": 5,
+      "affine": 19,
+      "modal_reference_minus_physical": 1,
+      "total": 1319
+    }
+  ],
+  "affinity_candidates": [
+    {
+      "bit": 187,
+      "width": 3,
+      "exact": 1276,
+      "affine": 1276,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 187,
+      "width": 4,
+      "exact": 1267,
+      "affine": 1267,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 187,
+      "width": 5,
+      "exact": 1266,
+      "affine": 1266,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 187,
+      "width": 2,
+      "exact": 1264,
+      "affine": 1264,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 127,
+      "width": 2,
+      "exact": 1258,
+      "affine": 1258,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 130,
+      "width": 2,
+      "exact": 1258,
+      "affine": 1258,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 130,
+      "width": 3,
+      "exact": 1258,
+      "affine": 1258,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 130,
+      "width": 4,
+      "exact": 1258,
+      "affine": 1258,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 130,
+      "width": 5,
+      "exact": 1258,
+      "affine": 1258,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 130,
+      "width": 6,
+      "exact": 1258,
+      "affine": 1258,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 130,
+      "width": 7,
+      "exact": 1258,
+      "affine": 1258,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 130,
+      "width": 8,
+      "exact": 1258,
+      "affine": 1258,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 189,
+      "width": 2,
+      "exact": 1257,
+      "affine": 1257,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 64,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 65,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 66,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 67,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 68,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 69,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 70,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 71,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 72,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 73,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 74,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 75,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 76,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 77,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 78,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 79,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 80,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 81,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 82,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 83,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 84,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 85,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 86,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 87,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 88,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 89,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 90,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 91,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 92,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 93,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 94,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 95,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 96,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 97,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 98,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 99,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    },
+    {
+      "bit": 100,
+      "width": 2,
+      "exact": 1256,
+      "affine": 1256,
+      "modal_reference_minus_physical": 0,
+      "total": 1319
+    }
+  ],
+  "affinity_distribution_reference": {
+    "0": 1256,
+    "4": 11,
+    "2": 14,
+    "5": 14,
+    "3": 9,
+    "1": 6,
+    "6": 6,
+    "7": 3
+  },
+  "affinity_distribution_physical": {
+    "0": 1299,
+    "1": 2,
+    "5": 3,
+    "6": 2,
+    "3": 3,
+    "2": 3,
+    "4": 4,
+    "7": 3
+  },
+  "affinity_mismatches": [
+    {
+      "id": "102134",
+      "nome_en": "Akiba Tadahiro",
+      "record_index": 97,
+      "reference_affinity": 4,
+      "header_hex": "f68e0100000000000000000000000000000000c000340000b4cee94739128803",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "102314",
+      "nome_en": "Ruben Amorim",
+      "record_index": 101,
+      "reference_affinity": 2,
+      "header_hex": "aa8f0100000000000000000000000000000000c00090030012092f29418dc504",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8388721",
+      "nome_en": "Frank Pietri",
+      "record_index": 297,
+      "reference_affinity": 2,
+      "header_hex": "7100800000000000000000000000000000000000005c0300b31eef263cd8a803",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8390826",
+      "nome_en": "Wilfrid Knell",
+      "record_index": 416,
+      "reference_affinity": 5,
+      "header_hex": "aa088000000000000000000000000000000000000030030016c8045299cf2f02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8390857",
+      "nome_en": "Joseba Iraizoz",
+      "record_index": 428,
+      "reference_affinity": 3,
+      "header_hex": "c90880000000000000000000000000000000000000b003002e9ea7318b0fa302",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8390859",
+      "nome_en": "Iban Gordillo",
+      "record_index": 429,
+      "reference_affinity": 2,
+      "header_hex": "cb0880000000000000000000000000000000000000b003009fc38822910f4f02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8390952",
+      "nome_en": "Kings Toshack",
+      "record_index": 434,
+      "reference_affinity": 4,
+      "header_hex": "280980000000000000000000000000000000000000c40300278684458b0faf02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8390954",
+      "nome_en": "D. Melachrino",
+      "record_index": 435,
+      "reference_affinity": 5,
+      "header_hex": "2a0980000000000000000000000000000000000000c4030019de8251868fac02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8390955",
+      "nome_en": "Alton Golding",
+      "record_index": 436,
+      "reference_affinity": 5,
+      "header_hex": "2b0980000000000000000000000000000000000000c40300ae05a554a08fef02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8390975",
+      "nome_en": "Adolf Vadim",
+      "record_index": 440,
+      "reference_affinity": 4,
+      "header_hex": "3f0980000000000000000000000000000000000000400300b69e4744a00f2203",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8390981",
+      "nome_en": "Sid Cousins",
+      "record_index": 441,
+      "reference_affinity": 2,
+      "header_hex": "450980000000000000000000000000000000000000a003002c9f47219c8fc402",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8391007",
+      "nome_en": "Georg Knudsen",
+      "record_index": 448,
+      "reference_affinity": 1,
+      "header_hex": "5f09800000000000000000000000000000000000002c0300a84ae9109d0f8f02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8391011",
+      "nome_en": "Sasa Kauffmann",
+      "record_index": 449,
+      "reference_affinity": 6,
+      "header_hex": "6309800000000000000000000000000000000000004803000f1fa564a0cf8202",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8391014",
+      "nome_en": "Wiljan Vos",
+      "record_index": 450,
+      "reference_affinity": 4,
+      "header_hex": "6609800000000000000000000000000000000000008003001fc8e540bd8f6802",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8391017",
+      "nome_en": "Armando Baraja",
+      "record_index": 451,
+      "reference_affinity": 2,
+      "header_hex": "690980000000000000000000000000000000000000b00300139e032392cfcc02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8391036",
+      "nome_en": "Gladys Rodwell",
+      "record_index": 455,
+      "reference_affinity": 6,
+      "header_hex": "7c09800000000000000000000000000000000000003003000e892361a5cf8f02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8391042",
+      "nome_en": "Niek Hendriks",
+      "record_index": 457,
+      "reference_affinity": 4,
+      "header_hex": "820980000000000000000000000000000000000000800300b1c3a743bd8fe202",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8391072",
+      "nome_en": "Helge Prim",
+      "record_index": 462,
+      "reference_affinity": 1,
+      "header_hex": "a00980000000000000000000000000000000000000b003009ee0a213980fa202",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8391091",
+      "nome_en": "Erol Sönmez",
+      "record_index": 464,
+      "reference_affinity": 5,
+      "header_hex": "b30980000000000000000000000000000000000000f802002d11e9549d0fcf02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8391152",
+      "nome_en": "Auguste Mirouze",
+      "record_index": 472,
+      "reference_affinity": 3,
+      "header_hex": "f00980000000000000000000000000000000000000400300970a8f339b8f6902",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8391156",
+      "nome_en": "Joris Martens",
+      "record_index": 474,
+      "reference_affinity": 1,
+      "header_hex": "f409800000000000000000000000000000000000008003009c9e6311904f2702",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8391185",
+      "nome_en": "Gökmen Sunay",
+      "record_index": 477,
+      "reference_affinity": 2,
+      "header_hex": "110a80000000000000000000000000000000000000f80200ab48042196cfcf02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8391219",
+      "nome_en": "Kurt Polverini",
+      "record_index": 480,
+      "reference_affinity": 5,
+      "header_hex": "330a800000000000000000000000000000000000005c03009ccfc552c14fa202",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8391252",
+      "nome_en": "Mustafa Çinar",
+      "record_index": 481,
+      "reference_affinity": 5,
+      "header_hex": "540a80000000000000000000000000000000000000f80200ac47c3588a8f6403",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8392613",
+      "nome_en": "R. Jan de Lange",
+      "record_index": 537,
+      "reference_affinity": 3,
+      "header_hex": "a50f8000000000000000000000000000000000000080030012dec1308b8fac02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8392639",
+      "nome_en": "Kasper Bosch",
+      "record_index": 541,
+      "reference_affinity": 3,
+      "header_hex": "bf0f800000000000000000000000000000000000008003002d1e4331858fcc02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8488733",
+      "nome_en": "Pierre L.Maiden",
+      "record_index": 554,
+      "reference_affinity": 4,
+      "header_hex": "1d87810000000000000000000000000000000000001403002a9ee542898fcb02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8488748",
+      "nome_en": "Romeo Larini",
+      "record_index": 559,
+      "reference_affinity": 3,
+      "header_hex": "2c87810000000000000000000000000000000000005c0300a94323348d4ff002",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8488923",
+      "nome_en": "Ramon Bermejo",
+      "record_index": 581,
+      "reference_affinity": 2,
+      "header_hex": "db87810000000000000000000000000000000000004c02009d59e82626996f03",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8489206",
+      "nome_en": "Alphonse Boyer",
+      "record_index": 605,
+      "reference_affinity": 5,
+      "header_hex": "f68881000000000000000000000000000000000000400300ae9e2d56aa124c03",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8489899",
+      "nome_en": "Constan Jepsen",
+      "record_index": 656,
+      "reference_affinity": 6,
+      "header_hex": "ab8b810000000000000000000000000000000000002c03002b1c6b65b9126f03",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8490206",
+      "nome_en": "Gian Montero",
+      "record_index": 677,
+      "reference_affinity": 6,
+      "header_hex": "de8c810000000000000000000000000000000000005c03002f1aaa65bcd1cf03",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8491018",
+      "nome_en": "Bert Frappier",
+      "record_index": 751,
+      "reference_affinity": 2,
+      "header_hex": "0a9081000000000000000000000000000000000000300300950a88279d89cc02",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8491019",
+      "nome_en": "Ivo Herrando",
+      "record_index": 752,
+      "reference_affinity": 5,
+      "header_hex": "0b9081000000000000000000000000000000000000b003001f90aa57b0ceaf03",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8491218",
+      "nome_en": "Nestor Omus",
+      "record_index": 772,
+      "reference_affinity": 1,
+      "header_hex": "d29081000000000000000000000000000000000000b003003318cf179814ad03",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8491221",
+      "nome_en": "Celedonio Triay",
+      "record_index": 773,
+      "reference_affinity": 5,
+      "header_hex": "d59081000000000000000000000000000000000000b0030026937259424f6d05",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8491235",
+      "nome_en": "Lam Brambilla",
+      "record_index": 775,
+      "reference_affinity": 3,
+      "header_hex": "e390810000000000000000000000000000000000005c03004f881054b00f4603",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8491297",
+      "nome_en": "Julian Siodmak",
+      "record_index": 783,
+      "reference_affinity": 2,
+      "header_hex": "2191810000000000000000000000000000000000004803002ad52f28c40f6d04",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8491463",
+      "nome_en": "Fran Lesaka",
+      "record_index": 805,
+      "reference_affinity": 2,
+      "header_hex": "c7918100000000000000000000000000000000000040020032538d27be0fcf03",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8491754",
+      "nome_en": "Alfonso Flores",
+      "record_index": 834,
+      "reference_affinity": 5,
+      "header_hex": "ea92810000000000000000000000000000000000005c030031918a55a5517003",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8491852",
+      "nome_en": "Kevin Balzola",
+      "record_index": 847,
+      "reference_affinity": 2,
+      "header_hex": "4c9381000000000000000000000000000000000000b00300318f8f2532104703",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8491885",
+      "nome_en": "Serge Carcani",
+      "record_index": 849,
+      "reference_affinity": 5,
+      "header_hex": "6d93810000000000000000000000000000000000005c0300ab12cc56bfd18a03",
+      "physical_affinity": 0,
+      "matches": false
+    },
+    {
+      "id": "8492403",
+      "nome_en": "Florens Bosman",
+      "record_index": 921,
+      "reference_affinity": 4,
+      "header_hex": "739581000000000000000000000000000000000000800300ad904f4532cc2703",
+      "physical_affinity": 0,
+      "matches": false
+    }
+  ],
+  "samples": [
+    {
+      "id": "17595138936066",
+      "nome_en": "Steven Gerrard",
+      "record_index": 1431,
+      "age_reference": 41,
+      "age_raw": 26,
+      "age_physical": 40,
+      "country_reference": 204,
+      "country_raw": 204,
+      "affinity_reference": 0,
+      "affinity_raw": 0
+    },
+    {
+      "id": "17595944242399",
+      "nome_en": "Frank Lampard",
+      "record_index": 1434,
+      "age_reference": 42,
+      "age_raw": 27,
+      "age_physical": 41,
+      "country_reference": 204,
+      "country_raw": 204,
+      "affinity_reference": 0,
+      "affinity_raw": 0
+    },
+    {
+      "id": "17601312850052",
+      "nome_en": "Fabio Capello",
+      "record_index": 1453,
+      "age_reference": 45,
+      "age_raw": 30,
+      "age_physical": 44,
+      "country_reference": 215,
+      "country_raw": 215,
+      "affinity_reference": 5,
+      "affinity_raw": 5
+    }
+  ]
+}

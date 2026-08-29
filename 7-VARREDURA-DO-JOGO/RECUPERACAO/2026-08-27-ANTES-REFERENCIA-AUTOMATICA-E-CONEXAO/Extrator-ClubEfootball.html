@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Extrator eFootball</title>
+  <link rel="stylesheet" href="app/extrator.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">ClubEfootball · fonte física do jogo</p>
+        <h1>Extrator de dados</h1>
+        <p class="lead">O fluxo normal lê o jogo, compara com uma base explícita e mostra somente diferenças. Nada é aplicado sem revisão e confirmação.</p>
+      </div>
+      <div class="status-card">
+        <span id="executor-dot" class="dot neutral"></span>
+        <div><b id="executor-title">Executor local</b><small id="executor-detail">verificando…</small></div>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Operações do extrator">
+      <button class="tab active" type="button" data-pane="incremental"><span>01</span>Atualização por diff</button>
+      <button class="tab" type="button" data-pane="metadata"><span>02</span>Metadados</button>
+      <button class="tab danger-tab" type="button" data-pane="full"><span>03</span>Recarga completa</button>
+    </nav>
+
+    <section class="source-center" aria-labelledby="source-title">
+      <div class="section-head">
+        <div><p class="kicker">Localização automática</p><h2 id="source-title">Fontes físicas por operação</h2></div>
+        <button id="refresh-sources" class="secondary compact" type="button">Procurar novamente</button>
+      </div>
+      <p class="explain">Cada arquivo tem um papel próprio. O extrator não mistura CPKs nem pede caminhos técnicos quando encontra as fontes conhecidas.</p>
+      <div id="source-list" class="source-list" aria-live="polite"><div class="callout">Procurando os arquivos do jogo…</div></div>
+      <input id="source-folder-picker" type="file" webkitdirectory multiple hidden>
+      <div class="source-rule"><b>Cartas:</b> somente o DT870 da atualização. <b>Catálogos:</b> fontes separadas conforme a família.</div>
+    </section>
+
+    <section id="pane-incremental" class="pane active" aria-labelledby="title-incremental">
+      <div class="section-head">
+        <div><p class="kicker">Fluxo normal</p><h2 id="title-incremental">Atualização incremental de cartas</h2></div>
+        <span class="read-only">comparação primeiro</span>
+      </div>
+      <p class="explain">A fonte física pode ser varrida por inteiro, mas o resultado contém apenas cartas novas, alterações comprovadas por campo e possíveis inativações.</p>
+      <div class="input-grid">
+        <label class="file-card" for="inc-base">
+          <span class="step">1</span><b>Base atual do sistema</b>
+          <span id="inc-base-name">Escolher carta_jogo_completo.csv</span>
+          <small>Somente leitura; nenhuma base é substituída.</small>
+          <input id="inc-base" type="file" accept=".csv,text/csv">
+        </label>
+        <div class="file-card source-reference">
+          <span class="step">2</span><b>Estado atual do jogo</b>
+          <span id="inc-source-name">Localizando o DT870 da atualização…</span>
+          <small>Fonte única, obrigatória e autoritativa para cartas.</small>
+        </div>
+      </div>
+      <button id="run-incremental" class="primary" type="button" disabled>Extrair e comparar</button>
+      <pre id="log-incremental" class="log" hidden></pre>
+      <div id="result-incremental" class="result" hidden>
+        <div id="stats-incremental" class="stats"></div>
+        <div class="toolbar">
+          <button id="download-incremental" class="secondary" type="button">Baixar novas + alteradas</button>
+          <button id="download-card-manifest" class="secondary" type="button">Baixar manifesto</button>
+          <button id="download-inactive" class="secondary" type="button">Baixar possíveis inativas</button>
+        </div>
+        <div class="review-head">
+          <div><h3>Conjunto revisável</h3><p>Novas e alteradas começam selecionadas. Possíveis inativas começam desmarcadas.</p></div>
+          <div class="quick-select">
+            <button type="button" data-select="new">Novas</button>
+            <button type="button" data-select="change">Alteradas</button>
+            <button type="button" data-select="none">Limpar</button>
+          </div>
+        </div>
+        <div id="table-incremental" class="table-wrap"></div>
+        <div id="apply-incremental" class="apply-box">
+          <div class="apply-title"><span>2º estágio</span><h3>Aplicar dados aprovados</h3></div>
+          <p>Somente a seleção desta execução será enviada ao executor local. O manifesto expira e não pode ser reaproveitado.</p>
+          <div id="apply-summary-incremental" class="summary-line"></div>
+          <button id="prepare-incremental" class="warning" type="button">Preparar aplicação / dry-run</button>
+          <div id="approval-incremental" class="approval" hidden>
+            <div id="approval-preview-incremental" class="approval-preview"></div>
+            <label class="check"><input id="approval-check-incremental" type="checkbox"> Revisei o resumo e aprovo somente este conjunto.</label>
+            <label>Digite <code id="approval-phrase-incremental"></code>
+              <input id="approval-text-incremental" type="text" autocomplete="off">
+            </label>
+            <button id="apply-button-incremental" class="danger" type="button" disabled>Aplicar dados aprovados</button>
+            <small id="apply-lock-incremental" class="lock-note"></small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pane-metadata" class="pane" aria-labelledby="title-metadata">
+      <div class="section-head">
+        <div><p class="kicker">Catálogos independentes</p><h2 id="title-metadata">Atualização de metadados</h2></div>
+        <span class="read-only">seleção manual</span>
+      </div>
+      <p class="explain">Habilidades, ímpetos, playstyles, técnicos, posições e estilos de IA são comparados sem misturar seus efeitos com as cartas. Itens ambíguos nunca são selecionados automaticamente.</p>
+      <div class="input-grid">
+        <label class="file-card" for="meta-base">
+          <span class="step">1</span><b>Fotografia atual dos catálogos</b>
+          <span id="meta-base-name">Escolher referência JSON</span>
+          <small>Exportação do banco em leitura ou manifesto físico anterior.</small>
+          <input id="meta-base" type="file" accept=".json,application/json">
+        </label>
+        <div class="file-card source-reference">
+          <span class="step">2</span><b>Estado atual do jogo</b>
+          <span id="meta-source-name">Localizando as quatro fontes de catálogos…</span>
+          <small>DT870 atualizado, DT200, DT870 original e textos em português.</small>
+        </div>
+      </div>
+      <button id="run-metadata" class="primary" type="button" disabled>Extrair e comparar metadados</button>
+      <pre id="log-metadata" class="log" hidden></pre>
+      <div id="result-metadata" class="result" hidden>
+        <div id="stats-metadata" class="stats"></div>
+        <div id="metadata-support" class="support-list"></div>
+        <div class="toolbar">
+          <button id="download-metadata-diff" class="secondary" type="button">Baixar diff</button>
+          <button id="download-metadata-manifest" class="secondary" type="button">Baixar manifesto</button>
+        </div>
+        <div class="review-head"><div><h3>Itens para conferência</h3><p>Nenhum item de catálogo começa selecionado.</p></div></div>
+        <div id="table-metadata" class="table-wrap"></div>
+        <div class="apply-box">
+          <div class="apply-title"><span>2º estágio</span><h3>Aplicar metadados aprovados</h3></div>
+          <p>O executor bloqueia catálogos sem adaptador canônico ou com conteúdo ambíguo.</p>
+          <div id="apply-summary-metadata" class="summary-line"></div>
+          <button id="prepare-metadata" class="warning" type="button" disabled>Preparar aplicação / dry-run</button>
+          <div id="approval-metadata" class="approval" hidden>
+            <div id="approval-preview-metadata" class="approval-preview"></div>
+            <label class="check"><input id="approval-check-metadata" type="checkbox"> Revisei os itens selecionados.</label>
+            <label>Digite <code id="approval-phrase-metadata"></code>
+              <input id="approval-text-metadata" type="text" autocomplete="off">
+            </label>
+            <button id="apply-button-metadata" class="danger" type="button" disabled>Aplicar metadados aprovados</button>
+            <small id="apply-lock-metadata" class="lock-note"></small>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pane-full" class="pane" aria-labelledby="title-full">
+      <div class="section-head">
+        <div><p class="kicker danger-text">Contingência</p><h2 id="title-full">Recarga completa de cartas</h2></div>
+        <span class="danger-label">não é o fluxo normal</span>
+      </div>
+      <div class="callout danger-callout">Este modo reconstrói a fotografia completa, mas não a promove nem altera o banco. A confirmação dupla libera apenas a extração local.</div>
+      <div class="input-grid">
+        <div class="file-card source-reference">
+          <span class="step">1</span><b>Estado atual do jogo</b>
+          <span id="full-source-name">Localizando o DT870 da atualização…</span>
+          <small>A recarga completa não consulta DT200, DT870 original nem textos.</small>
+        </div>
+        <label class="file-card" for="full-base">
+          <span class="step">2</span><b>Gabarito ou base para comparar</b>
+          <span id="full-base-name">Escolher carta_jogo_GABARITO-INTEGRAL.csv</span>
+          <small>Use o gabarito selado para a prova exata; uma base anterior gera apenas o diff.</small>
+          <input id="full-base" type="file" accept=".csv,text/csv">
+        </label>
+      </div>
+      <div class="guard">
+        <label class="check"><input id="full-check" type="checkbox"> Entendo que estou gerando uma recarga completa de contingência.</label>
+        <label>Digite <code>RECARREGAR COMPLETO</code>
+          <input id="full-text" type="text" autocomplete="off">
+        </label>
+      </div>
+      <button id="run-full" class="danger" type="button" disabled>Executar recarga completa</button>
+      <pre id="log-full" class="log" hidden></pre>
+      <div id="result-full" class="result" hidden>
+        <div id="stats-full" class="stats"></div>
+        <div id="full-golden-status" class="callout"></div>
+        <div class="toolbar">
+          <button id="download-full" class="secondary" type="button">Baixar carga completa</button>
+          <button id="download-full-manifest" class="secondary" type="button">Baixar manifesto de validação</button>
+        </div>
+        <div id="table-full" class="table-wrap"></div>
+        <div class="callout">Uma eventual aplicação ao banco usa somente o diff comparado e volta ao mesmo estágio revisável do modo 01; a carga completa nunca é enviada automaticamente.</div>
+      </div>
+    </section>
+
+    <footer>
+      <b>Sistema novo e limpo</b>
+      <span>Mapeamento físico isolado · diff revisável · executor local sem credenciais no navegador · sem escrita automática.</span>
+    </footer>
+  </main>
+  <script src="app/mapeamento-fisico.js"></script>
+  <script src="app/catalog-source-map.js"></script>
+  <script src="app/extrator-core.js"></script>
+  <script src="app/extrator-ui.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "contract": "clubef-zero-write-proof-v1",
+  "scope": [
+    "clube.carta_jogo",
+    "clube_novo.carta_jogo"
+  ],
+  "before": {
+    "captured_at": "2026-08-27T19:39:21.900555+00:00",
+    "transaction_read_only": true,
+    "clube": { "count": 42803, "unique_card_ids": 42803, "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821" },
+    "clube_novo": { "count": 42803, "unique_card_ids": 42803, "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821" }
+  },
+  "after": {
+    "captured_at": "2026-08-27T19:42:38.143464+00:00",
+    "transaction_read_only": true,
+    "clube": { "count": 42803, "unique_card_ids": 42803, "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821" },
+    "clube_novo": { "count": 42803, "unique_card_ids": 42803, "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821" }
+  },
+  "counts_unchanged": true,
+  "unique_ids_unchanged": true,
+  "ordered_rows_fingerprint_unchanged": true,
+  "database_write": false,
+  "passed": true
+}

@@ -1,0 +1,20 @@
+{
+  "contract": "clubef-application-dry-run-v1",
+  "execution_id": "0a3a0023-bb60-49ff-85d8-53f642ee9fad",
+  "generated_at": "2026-08-27T19:30:39.073253+00:00",
+  "manifest_sha256": "cef671cc1af7b8a822764c2d2520b9d5a0665e7e208e71fa82c5bd2eae463bbd",
+  "selection_sha256": "5c7f41b9233a8da61f7386a87e1382462a11b4083333d050ad9909278e048c5f",
+  "summary": {
+    "insert": 269,
+    "update": 34,
+    "inactive": 0
+  },
+  "preflight": {
+    "database_checked": true,
+    "transaction_read_only": true,
+    "ready": 303,
+    "already_applied": 0
+  },
+  "database_write": false,
+  "result": "dry_run_only"
+}

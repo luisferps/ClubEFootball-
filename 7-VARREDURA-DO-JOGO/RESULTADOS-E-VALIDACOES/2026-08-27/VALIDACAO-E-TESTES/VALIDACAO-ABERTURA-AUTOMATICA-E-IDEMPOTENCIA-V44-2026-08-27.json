@@ -1,0 +1,79 @@
+{
+  "contract": "clubef-extractor-v44-final-validation-v1",
+  "validated_at": "2026-08-27T22:40:00Z",
+  "passed": true,
+  "operational_installation": {
+    "root": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO",
+    "launcher": "Extrator eFootball.exe",
+    "file_version": "4.4.0.0",
+    "bytes": 103936,
+    "sha256": "ec8473443b8163268131f2b3b4a64166f5d29ec2bfc7465d275458aa38d858be",
+    "server_from_operational_path": true,
+    "one_visible_launcher": true
+  },
+  "automatic_opening": {
+    "immediate_state": "Verificando",
+    "first_region": "Resumo desta abertura",
+    "sources_located_automatically": true,
+    "cards_started_without_click": true,
+    "metadata_started_without_click": true,
+    "final_overall_badge": "Tudo atualizado",
+    "cards": "Nada para atualizar: 43.072 cartas conferidas e nenhuma diferença pendente.",
+    "metadata": "Nada para atualizar nas famílias suportadas; as demais continuam identificadas como não suportadas.",
+    "source_details_below_review": true,
+    "manual_json_selector_removed": true
+  },
+  "metadata": {
+    "internal_reference": "meta-ref-eba124d25472-75b2e907eb25",
+    "source_identity_matches": true,
+    "supported_families": 5,
+    "unsupported_families": 2,
+    "new": 0,
+    "changed": 0,
+    "absent": 0,
+    "application_enabled": false,
+    "database_write": false
+  },
+  "progress_feedback": {
+    "prepare_immediate_button": "Preparando pré-voo…",
+    "prepare_immediate_status": "Preparando o envio com segurança",
+    "prepare_slow_status": "Pré-voo ainda em andamento",
+    "prepare_final_status": "Sem mudanças para enviar",
+    "button_disabled_while_running": true,
+    "empty_response_is_blocked": true,
+    "timeout_has_clear_message": true,
+    "apply_states_implemented": ["Aplicando carga", "Carga aplicada e conferida", "Aplicação bloqueada ou não confirmada"]
+  },
+  "idempotency": {
+    "package_key": "execution_id + selection_sha256",
+    "same_preflight_reuses_token": true,
+    "concurrent_duplicate_state": "applying",
+    "persistent_completed_manifest_reused": true,
+    "previous_execution_status": "completed",
+    "previous_execution_id": "ddd7cded-3a60-4bb9-8ba0-a34c1ce88f02",
+    "no_repeat_write_tested": true
+  },
+  "database_final_readonly_audit": {
+    "clube": {
+      "records": 42803,
+      "unique_card_ids": 42803,
+      "exact_legacy_match": true,
+      "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821"
+    },
+    "clube_novo": {
+      "records": 43072,
+      "unique_card_ids": 43072,
+      "exact_current_reference_match": true,
+      "ordered_rows_md5": "26dab714d49de47d5ba61ec792c2a645"
+    },
+    "previous_authorized_application": {
+      "insert": 269,
+      "update": 34,
+      "inactive": 0,
+      "readback_count": 303
+    },
+    "new_database_write_during_v44_implementation": false
+  },
+  "recovery": "RECUPERACAO\\2026-08-27-ANTES-ABERTURA-AUTOMATICA-V44",
+  "database_write": false
+}

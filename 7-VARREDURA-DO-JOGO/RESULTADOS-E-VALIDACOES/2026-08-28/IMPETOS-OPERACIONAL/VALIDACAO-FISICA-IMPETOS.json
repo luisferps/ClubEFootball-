@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "contract": "clubef-impetos-physical-v1",
+  "codes": 440,
+  "effects": 2072,
+  "messi507": [
+    {
+      "quantidade_minima": 1,
+      "quantidade_maxima": 7,
+      "delta": 1
+    },
+    {
+      "quantidade_minima": 8,
+      "quantidade_maxima": 10,
+      "delta": 2
+    },
+    {
+      "quantidade_minima": 11,
+      "quantidade_maxima": 23,
+      "delta": 3
+    }
+  ],
+  "neymar170": {
+    "target": 149,
+    "members": [
+      588,
+      149
+    ],
+    "ranges": [
+      {
+        "quantidade_minima": 1,
+        "quantidade_maxima": 13,
+        "delta": 1
+      },
+      {
+        "quantidade_minima": 14,
+        "quantidade_maxima": 19,
+        "delta": 2
+      },
+      {
+        "quantidade_minima": 20,
+        "quantidade_maxima": 23,
+        "delta": 3
+      }
+    ]
+  },
+  "preserved": {
+    "technicians": 1478,
+    "texts": 11679
+  }
+}

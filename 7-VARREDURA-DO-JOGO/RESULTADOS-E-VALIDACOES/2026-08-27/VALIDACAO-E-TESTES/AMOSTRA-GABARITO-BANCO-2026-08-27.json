@@ -1,0 +1,434 @@
+[
+  {
+    "card_id": "100230",
+    "tipo": "base",
+    "posicao": "AMF",
+    "nome": "César Falletti",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100742",
+    "tipo": "base",
+    "posicao": "AMF",
+    "nome": "Tana",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100057",
+    "tipo": "base",
+    "posicao": "CB",
+    "nome": "Einar Galilea",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100144",
+    "tipo": "base",
+    "posicao": "CB",
+    "nome": "Ignasi Miquel",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100159",
+    "tipo": "base",
+    "posicao": "CF",
+    "nome": "Jamie Vardy",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100196",
+    "tipo": "base",
+    "posicao": "CF",
+    "nome": "Kike García",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100111",
+    "tipo": "base",
+    "posicao": "CMF",
+    "nome": "Jacopo Dezi",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100150",
+    "tipo": "base",
+    "posicao": "CMF",
+    "nome": "Matty James",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100108",
+    "tipo": "base",
+    "posicao": "DMF",
+    "nome": "Lorenzo Crisetig",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100112",
+    "tipo": "base",
+    "posicao": "DMF",
+    "nome": "Danilo Cataldi",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100012",
+    "tipo": "base",
+    "posicao": "GK",
+    "nome": "Juan Carlos",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100090",
+    "tipo": "base",
+    "posicao": "GK",
+    "nome": "Caio Secco",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100224",
+    "tipo": "base",
+    "posicao": "LB",
+    "nome": "Yuri Berchiche",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100316",
+    "tipo": "base",
+    "posicao": "LB",
+    "nome": "Diego Rico",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "101234",
+    "tipo": "base",
+    "posicao": "LMF",
+    "nome": "Maxwel Cornet",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "101667",
+    "tipo": "base",
+    "posicao": "LMF",
+    "nome": "Adam Reach",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100022",
+    "tipo": "base",
+    "posicao": "LWF",
+    "nome": "Sebas Moyano",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100617",
+    "tipo": "base",
+    "posicao": "LWF",
+    "nome": "F. Di Francesco",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100241",
+    "tipo": "base",
+    "posicao": "RB",
+    "nome": "Filippo De Col",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100289",
+    "tipo": "base",
+    "posicao": "RB",
+    "nome": "Gaetano Letizia",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100181",
+    "tipo": "base",
+    "posicao": "RMF",
+    "nome": "Salvatore Molina",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100261",
+    "tipo": "base",
+    "posicao": "RMF",
+    "nome": "Solly March",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100117",
+    "tipo": "base",
+    "posicao": "RWF",
+    "nome": "F. Bernardeschi",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100177",
+    "tipo": "base",
+    "posicao": "RWF",
+    "nome": "Niccolò Belloni",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "100493",
+    "tipo": "base",
+    "posicao": "SS",
+    "nome": "Jacopo Manconi",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "104518",
+    "tipo": "base",
+    "posicao": "SS",
+    "nome": "Víctor Dávila",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116326804",
+    "tipo": "colecionavel",
+    "posicao": "AMF",
+    "nome": "Maximiliano Meza",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553384835422",
+    "tipo": "colecionavel",
+    "posicao": "AMF",
+    "nome": "Charles De Ketelaere",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116307843",
+    "tipo": "colecionavel",
+    "posicao": "CB",
+    "nome": "Oswaldo Alanís",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116313107",
+    "tipo": "colecionavel",
+    "posicao": "CB",
+    "nome": "Matheus Dória",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116301513",
+    "tipo": "colecionavel",
+    "posicao": "CF",
+    "nome": "André-Pierre Gignac",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116305447",
+    "tipo": "colecionavel",
+    "posicao": "CF",
+    "nome": "Abel Hernández",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116385423",
+    "tipo": "colecionavel",
+    "posicao": "CMF",
+    "nome": "Erick Sánchez",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116396752",
+    "tipo": "colecionavel",
+    "posicao": "CMF",
+    "nome": "Carlos Rodríguez",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116314105",
+    "tipo": "colecionavel",
+    "posicao": "DMF",
+    "nome": "Juan Vázquez",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116325761",
+    "tipo": "colecionavel",
+    "posicao": "DMF",
+    "nome": "Claudio Baeza",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116303042",
+    "tipo": "colecionavel",
+    "posicao": "GK",
+    "nome": "Alfredo Talavera",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116314414",
+    "tipo": "colecionavel",
+    "posicao": "GK",
+    "nome": "Washington Aguerre",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116382614",
+    "tipo": "colecionavel",
+    "posicao": "LB",
+    "nome": "Luis Reyes",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553384816556",
+    "tipo": "colecionavel",
+    "posicao": "LB",
+    "nome": "Owen Wijndal",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553384740391",
+    "tipo": "colecionavel",
+    "posicao": "LMF",
+    "nome": "Ivan Perišić",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553653248004",
+    "tipo": "colecionavel",
+    "posicao": "LMF",
+    "nome": "Mikel Oyarzabal",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116385541",
+    "tipo": "colecionavel",
+    "posicao": "LWF",
+    "nome": "Alexis Vega",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553384747220",
+    "tipo": "colecionavel",
+    "posicao": "LWF",
+    "nome": "Raheem Sterling",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116307125",
+    "tipo": "colecionavel",
+    "posicao": "RB",
+    "nome": "Miguel Layún",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553116385407",
+    "tipo": "colecionavel",
+    "posicao": "RB",
+    "nome": "José Esquivel",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553384818423",
+    "tipo": "colecionavel",
+    "posicao": "RMF",
+    "nome": "Brais Méndez",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105553653259272",
+    "tipo": "colecionavel",
+    "posicao": "RMF",
+    "nome": "Kubo Takefusa",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105555263807267",
+    "tipo": "colecionavel",
+    "posicao": "RWF",
+    "nome": "Mohamed Salah",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105555532222706",
+    "tipo": "colecionavel",
+    "posicao": "RWF",
+    "nome": "Ángel Di María",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105556605974603",
+    "tipo": "colecionavel",
+    "posicao": "SS",
+    "nome": "Paulo Dybala",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "105557142924672",
+    "tipo": "colecionavel",
+    "posicao": "SS",
+    "nome": "João Félix",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "8554053",
+    "tipo": "teste",
+    "posicao": "GK",
+    "nome": "Ismail Nasrallah",
+    "status": "igual",
+    "campos_divergentes": []
+  },
+  {
+    "card_id": "8554076",
+    "tipo": "teste",
+    "posicao": "GK",
+    "nome": "Safi Belal",
+    "status": "igual",
+    "campos_divergentes": []
+  }
+]

@@ -1,0 +1,143 @@
+{
+  "contract": "clubef-metadata-reference-v1",
+  "reference_id": "meta-ref-eba124d25472-75b2e907eb25",
+  "created_at": "2026-08-27T22:11:31.468807+00:00",
+  "source_identity": {
+    "dt870_updated": {
+      "filename": "dt870_console_win.cpk",
+      "bytes": 9415400,
+      "modified_at": "2026-08-27T07:08:04.613712+00:00",
+      "valid_container": true
+    },
+    "dt200": {
+      "filename": "dt200_console_all.cpk",
+      "bytes": 9910363,
+      "modified_at": "2026-08-13T00:59:44.855004+00:00",
+      "valid_container": true
+    },
+    "dt870_original": {
+      "filename": "dt870_console_win.cpk",
+      "bytes": 5007376,
+      "modified_at": "2026-08-13T00:59:44.859027+00:00",
+      "valid_container": true
+    },
+    "dt261_bra": {
+      "filename": "dt261_bra_console_win.cpk",
+      "bytes": 258498,
+      "modified_at": "2026-08-13T01:09:38.778789+00:00",
+      "valid_container": true
+    }
+  },
+  "source_identity_sha256": "eba124d25472013b458df31381b1b354b70eb9c276c226055dedeb767e2d634b",
+  "snapshot": {
+    "file": "snapshot.json",
+    "bytes": 198326,
+    "sha256": "75b2e907eb25091ecec872b8ca5bad78c94fc0377b8c9086f714729af6415c0b"
+  },
+  "summary": {
+    "estilos_ia": {
+      "status": "comparado",
+      "reason": null,
+      "current": 7,
+      "baseline_active": 7,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 0,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt870_updated"
+      ]
+    },
+    "habilidades": {
+      "status": "comparado",
+      "reason": null,
+      "current": 72,
+      "baseline_active": 72,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 72,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt870_updated"
+      ]
+    },
+    "impetos": {
+      "status": "comparado",
+      "reason": null,
+      "current": 408,
+      "baseline_active": 408,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 408,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt870_updated",
+        "dt200",
+        "dt870_original"
+      ]
+    },
+    "playstyles": {
+      "status": "comparado",
+      "reason": null,
+      "current": 36,
+      "baseline_active": 36,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 36,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt200",
+        "dt870_updated"
+      ]
+    },
+    "posicoes": {
+      "status": "comparado",
+      "reason": null,
+      "current": 13,
+      "baseline_active": 13,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 0,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt870_updated"
+      ]
+    },
+    "tecnicos": {
+      "status": "nao_suportado_nesta_atualizacao",
+      "reason": "a tabela fisica de tecnicos ainda nao tem gabarito carregado em clube.tecnico_jogo",
+      "current": 1478,
+      "baseline_active": 0,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 0,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt870_updated"
+      ]
+    },
+    "textos": {
+      "status": "nao_suportado_nesta_atualizacao",
+      "reason": "all.str localizado; recorte canônico por entrada ainda não comprovado",
+      "current": 0,
+      "baseline_active": 0,
+      "new": 0,
+      "changed": 0,
+      "absent": 0,
+      "without_previous_fingerprint": 0,
+      "duplicate_ids": 0,
+      "source_roles": [
+        "dt261_bra"
+      ]
+    }
+  },
+  "source_policy": "por familia; identidade fisica reutiliza referencia somente quando todas as fontes conferem",
+  "database_write": false,
+  "manifest_sha256": "278813c5ae67fe9df40b579e17615a2722429a11ea86c1e9d781c713f832551c"
+}

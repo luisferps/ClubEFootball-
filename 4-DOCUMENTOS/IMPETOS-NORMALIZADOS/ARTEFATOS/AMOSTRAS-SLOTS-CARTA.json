@@ -1,0 +1,78 @@
+{
+  "counters": {
+    "registros_fisicos": 43075,
+    "cartas_validas": 43072,
+    "registros_descartados_pelo_contrato": 3,
+    "slot_primario_preenchido": 2324,
+    "slot_condicional_preenchido": 57,
+    "slot_primario_acima_255": 214,
+    "slot_condicional_acima_255": 56,
+    "atribuicoes_acima_255": 270,
+    "atribuicoes_que_low8_confunde_com_sem_impeto": 1,
+    "atribuicoes_que_low8_confunde_com_vaga": 2,
+    "codigos_preenchidos_sem_catalogo": 0,
+    "codigos_distintos_sem_catalogo": 0,
+    "codigos_distintos_preenchidos": 349
+  },
+  "sentinel_vaga": 136,
+  "sem_impeto": 0,
+  "samples": [
+    {
+      "card_id": "88036360701097",
+      "registro": 34316,
+      "byte_offset": 13726400,
+      "slot_primario_codigo_jogo": 30,
+      "slot_condicional_codigo_jogo": 136,
+      "slot_primario_low8": 30,
+      "slot_condicional_low8": 136,
+      "slot_primario_bit": 308,
+      "slot_condicional_bit": 288,
+      "largura": 10
+    },
+    {
+      "card_id": "89138288270047",
+      "registro": 34755,
+      "byte_offset": 13902000,
+      "slot_primario_codigo_jogo": 207,
+      "slot_condicional_codigo_jogo": 136,
+      "slot_primario_low8": 207,
+      "slot_condicional_low8": 136,
+      "slot_primario_bit": 308,
+      "slot_condicional_bit": 288,
+      "largura": 10
+    },
+    {
+      "card_id": "89138556575063",
+      "registro": 34757,
+      "byte_offset": 13902800,
+      "slot_primario_codigo_jogo": 199,
+      "slot_condicional_codigo_jogo": 507,
+      "slot_primario_low8": 199,
+      "slot_condicional_low8": 251,
+      "slot_primario_bit": 308,
+      "slot_condicional_bit": 288,
+      "largura": 10
+    }
+  ],
+  "low8_loss_samples": [
+    {
+      "card_id": "56164482134050",
+      "slot": "primario",
+      "codigo_jogo": 392,
+      "low8": 136
+    },
+    {
+      "card_id": "105884634166456",
+      "slot": "primario",
+      "codigo_jogo": 512,
+      "low8": 0
+    },
+    {
+      "card_id": "106782013894690",
+      "slot": "condicional",
+      "codigo_jogo": 392,
+      "low8": 136
+    }
+  ],
+  "missing_codes": []
+}

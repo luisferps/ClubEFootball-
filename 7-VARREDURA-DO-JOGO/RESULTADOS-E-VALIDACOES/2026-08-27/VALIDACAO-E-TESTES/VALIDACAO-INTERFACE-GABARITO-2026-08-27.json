@@ -1,0 +1,31 @@
+{
+  "contract": "clubef-ui-golden-test-v1",
+  "tested_at": "2026-08-27T19:43:00Z",
+  "url": "http://127.0.0.1:8770/Extrator-ClubEfootball.html",
+  "browser": "Codex In-app Browser",
+  "mode": "full_reload_contingency",
+  "inputs": {
+    "cpk": "dt870_console_win-2026-08-27.cpk",
+    "golden": "carta_jogo_GABARITO-INTEGRAL.csv"
+  },
+  "double_confirmation": {
+    "checkbox": true,
+    "phrase": "RECARREGAR COMPLETO"
+  },
+  "executor": "Executor local · dry-run",
+  "executor_detail": "banco protegido; sem escrita real",
+  "observed": {
+    "cards": 43072,
+    "unique_card_ids": 43072,
+    "duplicate_card_ids": 0,
+    "fields": 29,
+    "golden_status": "EXATO",
+    "golden_sha256": "07c9b8cf9690b1f177cd724ada4329351424b71fb8c6d09e4cd35d3875389c38",
+    "physical_boxes": 13366,
+    "physical_bodies": 43075
+  },
+  "visible_message": "Concluído: fotografia completa exatamente igual ao gabarito; nenhum banco foi alterado.",
+  "console_errors": [],
+  "database_write": false,
+  "passed": true
+}

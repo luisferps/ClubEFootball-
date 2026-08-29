@@ -1,0 +1,50 @@
+{
+  "contract": "clubef-single-card-package-flow-test-v1",
+  "generated_at": "2026-08-27T21:30:34.421862+00:00",
+  "passed": true,
+  "integral_package": {
+    "selected_automatically": true,
+    "records": 43072,
+    "summary": {
+      "insert": 269,
+      "update": 34,
+      "inactive": 0
+    },
+    "target": {
+      "schema": "clube_novo",
+      "table": "carta_jogo",
+      "display": "clube_novo.carta_jogo",
+      "preserved_schema": "clube"
+    },
+    "write_enabled": true
+  },
+  "incremental_package": {
+    "selected_automatically": true,
+    "items": 303,
+    "summary": {
+      "insert": 269,
+      "update": 34,
+      "inactive": 0
+    },
+    "target": {
+      "schema": "clube_novo",
+      "table": "carta_jogo",
+      "display": "clube_novo.carta_jogo",
+      "preserved_schema": "clube"
+    },
+    "write_enabled": true
+  },
+  "guards": {
+    "arbitrary_csv_blocked": true,
+    "clube_target_blocked": true,
+    "final_confirmation_operational": true,
+    "apply_not_called_in_tests": true,
+    "database_write_calls": 0
+  },
+  "preflight": {
+    "simulation_only": true,
+    "transaction_read_only": true,
+    "expected_target_before": 42803,
+    "expected_target_after": 43072
+  }
+}

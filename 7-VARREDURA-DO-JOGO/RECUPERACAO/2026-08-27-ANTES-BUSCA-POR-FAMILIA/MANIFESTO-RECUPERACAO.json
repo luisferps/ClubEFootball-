@@ -1,0 +1,15 @@
+{
+  "contract": "clubef-extractor-recovery-manifest-v1",
+  "preserved_at": "2026-08-27T19:10:00Z",
+  "description": "Versao operacional imediatamente anterior a busca automatica por familia.",
+  "database_write": false,
+  "files": [
+    {"path":"Extrator-ClubEfootball.html","bytes":10692,"sha256":"1E0DFF2EF4DEBEDBE5D60069DE2A85268DB09138029298381658DA6F854B20C0"},
+    {"path":"app\\extrator-core.js","bytes":28894,"sha256":"0FCB14C6288474A7E8FEB6188DF80D3046C001E772BEFFF822AD6FD73452E2EF"},
+    {"path":"app\\extrator-ui.js","bytes":25096,"sha256":"43E03B6FBE4D4C1D1FBB0917EA6044A6182920627A9240AB52948E751546692B"},
+    {"path":"app\\extrator.css","bytes":6894,"sha256":"15943C3E4BB05C099721667C351364911192645E31D86666C409839E8FBEE786"},
+    {"path":"app\\mapeamento-fisico.js","bytes":76035,"sha256":"3AF3B7F05122E409C1629509BFD211B38410FA7754BAC42291E312C743B74103"},
+    {"path":"DOCUMENTACAO\\MANUAL-DO-EXTRATOR.md","bytes":17740,"sha256":"59F7B5A767D4BC2B68CCD7E446390825CEC115C492AE920F3F48F7AB13F94F94"},
+    {"path":"executor\\executor_local.py","bytes":27778,"sha256":"8C46A54B530BFFCDEE05A0BAFE76A89E22C980CB437930A507C5E57403A9E5E5"}
+  ]
+}

@@ -1,0 +1,1364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Mapa Clube Novo</title>
+<style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
+</head>
+<body>
+<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="Mapa Clube Novo" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
+&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
+&lt;title&gt;Mapa Clube Novo&lt;/title&gt;
+&lt;style&gt;:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 14px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, &quot;Segoe UI&quot;, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, &quot;Liberation Mono&quot;,
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --radius: var(--border-radius-lg, 12.5px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url(&quot;data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 17 17&#x27;%3E%3Cpath d=&#x27;M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z&#x27;/%3E%3C/svg%3E&quot;);
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme=&quot;light&quot;] {
+  color-scheme: light;
+}
+
+:root[data-theme=&quot;dark&quot;] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html &gt; body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: 5px;
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive &gt; .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align=&quot;right&quot;]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align=&quot;center&quot;]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: superellipse(1.5);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget &gt; :not(.card, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress {
+  display: flex;
+  height: 6px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 6px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls &gt; .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls &gt; .form-label &gt; :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type=&quot;file&quot;] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type=&quot;file&quot;]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type=&quot;file&quot;]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type=&quot;color&quot;] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: superellipse(1.5);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: superellipse(1.5);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: superellipse(1.5);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type=&quot;checkbox&quot;]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: &quot;&quot;;
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type=&quot;radio&quot;] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type=&quot;radio&quot;]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: &quot;&quot;;
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed=&quot;true&quot;],
+  [aria-selected=&quot;true&quot;],
+  .is-selected
+) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed=&quot;true&quot;], [aria-selected=&quot;true&quot;], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .btn,
+  .form-control,
+  .form-select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control,
+  .form-select {
+    font-size: max(16px, var(--font-size-normal));
+  }
+
+  .form-control[type=&quot;file&quot;]::file-selector-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control-color[type=&quot;color&quot;] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .form-control:is(
+    [type=&quot;date&quot;],
+    [type=&quot;datetime-local&quot;],
+    [type=&quot;month&quot;],
+    [type=&quot;time&quot;],
+    [type=&quot;week&quot;]
+  ) {
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 8px;
+  }
+
+  .form-check {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .form-check-input {
+    position: relative;
+  }
+
+  .form-check-input::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: &quot;&quot;;
+    transform: translate(-50%, -50%);
+  }
+
+  .form-check-label {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .form-range {
+    height: 44px;
+    touch-action: pan-y;
+  }
+
+  .form-range::-webkit-slider-runnable-track {
+    height: 44px;
+  }
+
+  .form-range::-moz-range-track {
+    height: 44px;
+  }
+
+  .form-range::-webkit-slider-thumb {
+    margin-top: 12px;
+  }
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget &gt; svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: 16px !important;
+  height: 16px !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html&gt;body{padding:0}&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;mapa-clube-novo&quot; aria-label=&quot;Mapa do schema clube_novo&quot;&gt;
+  &lt;style&gt;
+    #mapa-clube-novo { color: var(--foreground); }
+    #mapa-clube-novo .schema-caption { margin: 0 0 .65rem; color: var(--muted-foreground); }
+    #mapa-clube-novo .schema-legend { display:flex; flex-wrap:wrap; gap:1rem; margin:0 0 .6rem; color:var(--muted-foreground); }
+    #mapa-clube-novo .schema-key { display:inline-flex; align-items:center; gap:.35rem; }
+    #mapa-clube-novo .schema-line { width:2rem; height:0; border-top:2px solid var(--foreground); opacity:.75; }
+    #mapa-clube-novo .schema-line.is-doc { border-top-style:dashed; border-color:var(--orange); }
+    #mapa-clube-novo svg { width:100%; height:auto; display:block; }
+    #mapa-clube-novo .lane { fill:color-mix(in srgb, var(--muted) 52%, transparent); }
+    #mapa-clube-novo .lane-label { font:500 15px system-ui,sans-serif; fill:var(--muted-foreground); letter-spacing:.04em; }
+    #mapa-clube-novo .edge { fill:none; stroke:var(--border); stroke-width:2; opacity:.9; }
+    #mapa-clube-novo .edge.doc { stroke:var(--orange); stroke-dasharray:7 6; }
+    #mapa-clube-novo .node rect { stroke:var(--border); stroke-width:1.2; rx:8; }
+    #mapa-clube-novo .node.core rect { fill:var(--primary); stroke:var(--primary); }
+    #mapa-clube-novo .node.rel rect { fill:color-mix(in srgb, var(--blue) 18%, var(--card)); }
+    #mapa-clube-novo .node.catalog rect { fill:color-mix(in srgb, var(--green) 15%, var(--card)); }
+    #mapa-clube-novo .node.system rect { fill:color-mix(in srgb, var(--purple) 15%, var(--card)); }
+    #mapa-clube-novo .node.docs rect { fill:color-mix(in srgb, var(--orange) 15%, var(--card)); }
+    #mapa-clube-novo .node text { font:500 13px system-ui,sans-serif; fill:var(--card-foreground); }
+    #mapa-clube-novo .node .count { font:400 11px system-ui,sans-serif; fill:var(--muted-foreground); }
+    #mapa-clube-novo .node.core text { fill:var(--primary-foreground); }
+    #mapa-clube-novo .node.core .count { fill:color-mix(in srgb, var(--primary-foreground) 78%, transparent); }
+    #mapa-clube-novo .empty text { fill:var(--muted-foreground); }
+    #mapa-clube-novo .empty rect { stroke-dasharray:4 4; }
+    #mapa-clube-novo .note { margin:.55rem 0 0; color:var(--muted-foreground); }
+  &lt;/style&gt;
+  &lt;p class=&quot;schema-caption&quot;&gt;Schema &lt;strong&gt;clube_novo&lt;/strong&gt; — fotografia somente leitura: 24 tabelas, 19 relações físicas e 9 referências documentadas de texto.&lt;/p&gt;
+  &lt;div class=&quot;schema-legend&quot; aria-label=&quot;Legenda&quot;&gt;
+    &lt;span class=&quot;schema-key&quot;&gt;&lt;span class=&quot;schema-line&quot;&gt;&lt;/span&gt; chave estrangeira física&lt;/span&gt;
+    &lt;span class=&quot;schema-key&quot;&gt;&lt;span class=&quot;schema-line is-doc&quot;&gt;&lt;/span&gt; referência documentada de texto&lt;/span&gt;
+    &lt;span class=&quot;schema-key&quot;&gt;contagem entre parênteses&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;svg viewBox=&quot;0 0 1600 960&quot; role=&quot;img&quot; aria-label=&quot;Diagrama de relações das tabelas do schema clube_novo&quot;&gt;
+    &lt;title&gt;Mapa de relações de clube_novo&lt;/title&gt;
+    &lt;desc&gt;As relações físicas são linhas contínuas. As referências para texto_do_jogo são linhas tracejadas e ainda não são chaves estrangeiras físicas.&lt;/desc&gt;
+    &lt;defs&gt;&lt;marker id=&quot;arrow&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;9&quot; refY=&quot;5&quot; markerWidth=&quot;6&quot; markerHeight=&quot;6&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M 0 0 L 10 5 L 0 10 z&quot; fill=&quot;var(--border)&quot;&gt;&lt;/path&gt;&lt;/marker&gt;&lt;marker id=&quot;arrow-doc&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;9&quot; refY=&quot;5&quot; markerWidth=&quot;6&quot; markerHeight=&quot;6&quot; orient=&quot;auto-start-reverse&quot;&gt;&lt;path d=&quot;M 0 0 L 10 5 L 0 10 z&quot; fill=&quot;var(--orange)&quot;&gt;&lt;/path&gt;&lt;/marker&gt;&lt;/defs&gt;
+
+    &lt;rect class=&quot;lane&quot; x=&quot;18&quot; y=&quot;46&quot; width=&quot;770&quot; height=&quot;570&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;lane-label&quot; x=&quot;42&quot; y=&quot;76&quot;&gt;CARTAS E CATÁLOGOS&lt;/text&gt;
+    &lt;rect class=&quot;lane&quot; x=&quot;812&quot; y=&quot;46&quot; width=&quot;770&quot; height=&quot;570&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;lane-label&quot; x=&quot;836&quot; y=&quot;76&quot;&gt;TÉCNICOS&lt;/text&gt;
+    &lt;rect class=&quot;lane&quot; x=&quot;18&quot; y=&quot;642&quot; width=&quot;770&quot; height=&quot;278&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;lane-label&quot; x=&quot;42&quot; y=&quot;672&quot;&gt;ÍMPETOS E TEXTO OFICIAL&lt;/text&gt;
+    &lt;rect class=&quot;lane&quot; x=&quot;812&quot; y=&quot;642&quot; width=&quot;770&quot; height=&quot;278&quot; rx=&quot;12&quot;&gt;&lt;/rect&gt;&lt;text class=&quot;lane-label&quot; x=&quot;836&quot; y=&quot;672&quot;&gt;SISTEMA E PROCEDÊNCIA&lt;/text&gt;
+
+    &lt;g aria-hidden=&quot;true&quot;&gt;
+      &lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M366 242 C415 190,420 160,470 150&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M366 242 C415 225,420 228,470 232&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M366 242 C415 260,420 304,470 314&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M366 242 C415 315,420 380,470 396&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M366 242 C415 390,420 458,470 478&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M366 242 C415 445,420 534,470 560&quot;&gt;&lt;/path&gt;
+      &lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M470 150 L672 150&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M470 232 L672 232&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M470 314 L672 314&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M470 396 L672 396&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M470 478 L672 478&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M470 560 L672 560&quot;&gt;&lt;/path&gt;
+      &lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M1160 242 C1210 190,1215 150,1260 150&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M1160 242 C1210 285,1215 315,1260 315&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M1260 150 L1475 150&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M1260 315 L1475 315&quot;&gt;&lt;/path&gt;
+      &lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M365 768 L470 768&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M470 768 L672 728&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M470 768 L672 810&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M365 768 C425 744,425 724,470 718&quot;&gt;&lt;/path&gt;
+      &lt;path class=&quot;edge&quot; marker-end=&quot;url(#arrow)&quot; d=&quot;M1105 768 L1260 768&quot;&gt;&lt;/path&gt;
+      &lt;path class=&quot;edge doc&quot; marker-end=&quot;url(#arrow-doc)&quot; d=&quot;M672 150 C730 175,735 700,672 720&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge doc&quot; marker-end=&quot;url(#arrow-doc)&quot; d=&quot;M672 232 C735 260,735 700,672 720&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge doc&quot; marker-end=&quot;url(#arrow-doc)&quot; d=&quot;M672 314 C735 350,735 700,672 720&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge doc&quot; marker-end=&quot;url(#arrow-doc)&quot; d=&quot;M672 396 C735 440,735 700,672 720&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge doc&quot; marker-end=&quot;url(#arrow-doc)&quot; d=&quot;M672 478 C735 520,735 700,672 720&quot;&gt;&lt;/path&gt;&lt;path class=&quot;edge doc&quot; marker-end=&quot;url(#arrow-doc)&quot; d=&quot;M672 560 C735 590,735 700,672 720&quot;&gt;&lt;/path&gt;
+    &lt;/g&gt;
+
+    &lt;g class=&quot;node core&quot; transform=&quot;translate(160 202)&quot;&gt;&lt;title&gt;carta_jogo: 43.072 cartas&lt;/title&gt;&lt;rect width=&quot;206&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;16&quot; y=&quot;33&quot;&gt;carta_jogo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;16&quot; y=&quot;56&quot;&gt;43.072 cartas&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node rel empty&quot; transform=&quot;translate(470 110)&quot;&gt;&lt;title&gt;carta_atributo_jogo: vazia&lt;/title&gt;&lt;rect width=&quot;202&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;14&quot; y=&quot;32&quot;&gt;carta_atributo_jogo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;14&quot; y=&quot;55&quot;&gt;0 · aguarda carga&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node rel&quot; transform=&quot;translate(470 192)&quot;&gt;&lt;title&gt;carta_corpo_jogo: 516.864 relações&lt;/title&gt;&lt;rect width=&quot;202&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;14&quot; y=&quot;32&quot;&gt;carta_corpo_jogo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;14&quot; y=&quot;55&quot;&gt;516.864&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node rel&quot; transform=&quot;translate(470 274)&quot;&gt;&lt;title&gt;carta_estilo_ia_jogo: 54.435 relações&lt;/title&gt;&lt;rect width=&quot;202&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;14&quot; y=&quot;32&quot;&gt;carta_estilo_ia_jogo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;14&quot; y=&quot;55&quot;&gt;54.435&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node rel&quot; transform=&quot;translate(470 356)&quot;&gt;&lt;title&gt;carta_habilidade_jogo: 179.189 relações&lt;/title&gt;&lt;rect width=&quot;202&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;14&quot; y=&quot;32&quot;&gt;carta_habilidade_jogo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;14&quot; y=&quot;55&quot;&gt;179.189&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node rel empty&quot; transform=&quot;translate(470 438)&quot;&gt;&lt;title&gt;carta_impeto_jogo: vazia&lt;/title&gt;&lt;rect width=&quot;202&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;14&quot; y=&quot;32&quot;&gt;carta_impeto_jogo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;14&quot; y=&quot;55&quot;&gt;0 · aguarda carga&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node rel&quot; transform=&quot;translate(470 520)&quot;&gt;&lt;title&gt;carta_posicao_jogo: 516.864 relações&lt;/title&gt;&lt;rect width=&quot;202&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;14&quot; y=&quot;32&quot;&gt;carta_posicao_jogo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;14&quot; y=&quot;55&quot;&gt;516.864&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node catalog&quot; transform=&quot;translate(672 110)&quot;&gt;&lt;title&gt;atributo_jogo: 26 atributos&lt;/title&gt;&lt;rect width=&quot;98&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;12&quot; y=&quot;32&quot;&gt;atributo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;12&quot; y=&quot;55&quot;&gt;26&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node catalog&quot; transform=&quot;translate(672 192)&quot;&gt;&lt;title&gt;corpo_ordem: 15 medidas&lt;/title&gt;&lt;rect width=&quot;98&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;12&quot; y=&quot;32&quot;&gt;corpo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;12&quot; y=&quot;55&quot;&gt;15&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node catalog&quot; transform=&quot;translate(672 274)&quot;&gt;&lt;title&gt;estilo_ia: 7 estilos&lt;/title&gt;&lt;rect width=&quot;98&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;12&quot; y=&quot;32&quot;&gt;estilo IA&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;12&quot; y=&quot;55&quot;&gt;7&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node catalog&quot; transform=&quot;translate(672 356)&quot;&gt;&lt;title&gt;habilidade_jogo: 72 habilidades&lt;/title&gt;&lt;rect width=&quot;98&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;12&quot; y=&quot;32&quot;&gt;habilidade&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;12&quot; y=&quot;55&quot;&gt;72&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node catalog&quot; transform=&quot;translate(672 438)&quot;&gt;&lt;title&gt;impeto_jogo: 440 ímpetos&lt;/title&gt;&lt;rect width=&quot;98&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;12&quot; y=&quot;32&quot;&gt;ímpeto&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;12&quot; y=&quot;55&quot;&gt;440&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node catalog&quot; transform=&quot;translate(672 520)&quot;&gt;&lt;title&gt;posicao_jogo: 13 posições&lt;/title&gt;&lt;rect width=&quot;98&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;12&quot; y=&quot;32&quot;&gt;posição&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;12&quot; y=&quot;55&quot;&gt;13&lt;/text&gt;&lt;/g&gt;
+
+    &lt;g class=&quot;node core&quot; transform=&quot;translate(954 202)&quot;&gt;&lt;title&gt;tecnico_jogo: 1.594 registros&lt;/title&gt;&lt;rect width=&quot;206&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;16&quot; y=&quot;33&quot;&gt;tecnico_jogo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;16&quot; y=&quot;56&quot;&gt;1.594 cards-versão&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node rel&quot; transform=&quot;translate(1260 110)&quot;&gt;&lt;title&gt;tecnico_estilo_jogo: 7.390 proficiências&lt;/title&gt;&lt;rect width=&quot;215&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;14&quot; y=&quot;32&quot;&gt;tecnico_estilo_jogo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;14&quot; y=&quot;55&quot;&gt;7.390 proficiências&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node rel&quot; transform=&quot;translate(1260 275)&quot;&gt;&lt;title&gt;tecnico_atributo_jogo: 104 boosts&lt;/title&gt;&lt;rect width=&quot;215&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;14&quot; y=&quot;32&quot;&gt;tecnico_atributo_jogo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;14&quot; y=&quot;55&quot;&gt;104 boosts&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node catalog&quot; transform=&quot;translate(1475 110)&quot;&gt;&lt;title&gt;estilo_jogo_tecnico: 6 estilos&lt;/title&gt;&lt;rect width=&quot;92&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;10&quot; y=&quot;32&quot;&gt;estilo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;10&quot; y=&quot;55&quot;&gt;6&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node catalog&quot; transform=&quot;translate(1475 275)&quot;&gt;&lt;title&gt;atributo_jogo: 26 atributos&lt;/title&gt;&lt;rect width=&quot;92&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;10&quot; y=&quot;32&quot;&gt;atributo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;10&quot; y=&quot;55&quot;&gt;26&lt;/text&gt;&lt;/g&gt;
+
+    &lt;g class=&quot;node catalog&quot; transform=&quot;translate(160 728)&quot;&gt;&lt;title&gt;impeto_jogo: 440 ímpetos&lt;/title&gt;&lt;rect width=&quot;205&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;15&quot; y=&quot;33&quot;&gt;impeto_jogo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;15&quot; y=&quot;56&quot;&gt;440 códigos&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node rel&quot; transform=&quot;translate(470 728)&quot;&gt;&lt;title&gt;impeto_atributo_jogo: 1.542 relações&lt;/title&gt;&lt;rect width=&quot;202&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;14&quot; y=&quot;32&quot;&gt;impeto_atributo_jogo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;14&quot; y=&quot;55&quot;&gt;1.542 relações&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node docs&quot; transform=&quot;translate(672 688)&quot;&gt;&lt;title&gt;texto_do_jogo: 211 textos oficiais&lt;/title&gt;&lt;rect width=&quot;98&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;10&quot; y=&quot;32&quot;&gt;texto&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;10&quot; y=&quot;55&quot;&gt;211&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node catalog&quot; transform=&quot;translate(672 770)&quot;&gt;&lt;title&gt;atributo_jogo: 26 atributos&lt;/title&gt;&lt;rect width=&quot;98&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;10&quot; y=&quot;32&quot;&gt;atributo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;10&quot; y=&quot;55&quot;&gt;26&lt;/text&gt;&lt;/g&gt;
+
+    &lt;g class=&quot;node system&quot; transform=&quot;translate(900 728)&quot;&gt;&lt;title&gt;funcao_alias: 14 aliases&lt;/title&gt;&lt;rect width=&quot;205&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;15&quot; y=&quot;33&quot;&gt;funcao_alias&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;15&quot; y=&quot;56&quot;&gt;14 aliases&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node system&quot; transform=&quot;translate(1260 728)&quot;&gt;&lt;title&gt;funcao_sistema: 19 funções&lt;/title&gt;&lt;rect width=&quot;205&quot; height=&quot;80&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;15&quot; y=&quot;33&quot;&gt;funcao_sistema&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;15&quot; y=&quot;56&quot;&gt;19 funções&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node catalog&quot; transform=&quot;translate(900 830)&quot;&gt;&lt;title&gt;playstyle: 36 estilos da carta&lt;/title&gt;&lt;rect width=&quot;150&quot; height=&quot;64&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;13&quot; y=&quot;28&quot;&gt;playstyle&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;13&quot; y=&quot;48&quot;&gt;36&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node catalog&quot; transform=&quot;translate(1070 830)&quot;&gt;&lt;title&gt;pe: 11 valores&lt;/title&gt;&lt;rect width=&quot;150&quot; height=&quot;64&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;13&quot; y=&quot;28&quot;&gt;pe&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;13&quot; y=&quot;48&quot;&gt;11&lt;/text&gt;&lt;/g&gt;
+    &lt;g class=&quot;node system&quot; transform=&quot;translate(1240 830)&quot;&gt;&lt;title&gt;mapa_do_jogo: 21 itens&lt;/title&gt;&lt;rect width=&quot;150&quot; height=&quot;64&quot;&gt;&lt;/rect&gt;&lt;text x=&quot;13&quot; y=&quot;28&quot;&gt;mapa_do_jogo&lt;/text&gt;&lt;text class=&quot;count&quot; x=&quot;13&quot; y=&quot;48&quot;&gt;21&lt;/text&gt;&lt;/g&gt;
+  &lt;/svg&gt;
+  &lt;p class=&quot;note&quot;&gt;Linhas contínuas: 19 chaves estrangeiras físicas. Tracejadas: 9 referências de texto documentadas; elas ainda não são FKs. As duas relações vazias aparecem tracejadas no próprio nó.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;script src=&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
+  const tooltipPlacements = new Set([&quot;top&quot;, &quot;right&quot;, &quot;bottom&quot;, &quot;left&quot;]);
+  const tooltipId = `codex-visualization-tooltip-${
+    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
+  }`;
+  const tooltipGap = 5;
+  const hoverDelay = 700;
+  const skipDelay = 300;
+  let activeTrigger = null;
+  let pendingTrigger = null;
+  let tooltip = null;
+  let openTimeout = null;
+  let autoUpdateCleanup = null;
+  let positionRequest = 0;
+  let skipDelayUntil = 0;
+  let lastPointerWasTouch = false;
+  let pinnedByTouch = false;
+
+  const getTrigger = (target) =&gt;
+    target?.nodeType === Node.ELEMENT_NODE
+      ? target.closest(&quot;[data-tooltip]&quot;)
+      : null;
+  const containsTarget = (trigger, target) =&gt;
+    target?.nodeType != null &amp;&amp; trigger.contains(target);
+  const getContent = (trigger) =&gt;
+    trigger.getAttribute(&quot;data-tooltip&quot;)?.trim() ?? &quot;&quot;;
+  const getPlacement = (trigger) =&gt; {
+    const placement = trigger.getAttribute(&quot;data-tooltip-placement&quot;);
+    return tooltipPlacements.has(placement) ? placement : &quot;top&quot;;
+  };
+  const getTooltip = () =&gt; {
+    if (tooltip == null) {
+      tooltip = document.createElement(&quot;div&quot;);
+      tooltip.id = tooltipId;
+      tooltip.className = &quot;tooltip&quot;;
+      tooltip.setAttribute(&quot;role&quot;, &quot;tooltip&quot;);
+    }
+    return tooltip;
+  };
+  const setDescribedBy = (trigger, described) =&gt; {
+    const ids = new Set(
+      (trigger.getAttribute(&quot;aria-describedby&quot;) ?? &quot;&quot;)
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    if (described) {
+      ids.add(tooltipId);
+    } else {
+      ids.delete(tooltipId);
+    }
+    if (ids.size === 0) {
+      trigger.removeAttribute(&quot;aria-describedby&quot;);
+    } else {
+      trigger.setAttribute(&quot;aria-describedby&quot;, [...ids].join(&quot; &quot;));
+    }
+  };
+  const clearOpenTimeout = () =&gt; {
+    if (openTimeout != null) {
+      window.clearTimeout(openTimeout);
+      openTimeout = null;
+    }
+    pendingTrigger = null;
+  };
+  const closeTooltip = (activateSkipDelay = true) =&gt; {
+    clearOpenTimeout();
+    pinnedByTouch = false;
+    positionRequest += 1;
+    autoUpdateCleanup?.();
+    autoUpdateCleanup = null;
+    if (activeTrigger == null) {
+      return;
+    }
+    setDescribedBy(activeTrigger, false);
+    activeTrigger = null;
+    tooltip?.remove();
+    if (activateSkipDelay) {
+      skipDelayUntil = Date.now() + skipDelay;
+    }
+  };
+  const updatePosition = (trigger, floating) =&gt; {
+    const request = ++positionRequest;
+    void computePosition(trigger, floating, {
+      middleware: [
+        offset(tooltipGap),
+        flip({ padding: tooltipGap }),
+        shift({ padding: tooltipGap }),
+        size({
+          padding: tooltipGap,
+          apply({ availableHeight, availableWidth, elements }) {
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-width&quot;,
+              `${Math.max(0, availableWidth)}px`,
+            );
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-height&quot;,
+              `${Math.max(0, availableHeight)}px`,
+            );
+          },
+        }),
+      ],
+      placement: getPlacement(trigger),
+      strategy: &quot;fixed&quot;,
+    })
+      .then(({ x, y }) =&gt; {
+        if (activeTrigger !== trigger || request !== positionRequest) {
+          return;
+        }
+        const scale = window.devicePixelRatio || 1;
+        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
+        floating.style.visibility = &quot;visible&quot;;
+      })
+      .catch(() =&gt; {
+        if (activeTrigger === trigger &amp;&amp; request === positionRequest) {
+          closeTooltip(false);
+        }
+      });
+  };
+  const openTooltip = (trigger) =&gt; {
+    const content = getContent(trigger);
+    if (!trigger.isConnected || content.length === 0) {
+      return;
+    }
+    clearOpenTimeout();
+    if (activeTrigger === trigger) {
+      return;
+    }
+    closeTooltip();
+    const floating = getTooltip();
+    floating.textContent = content;
+    floating.style.visibility = &quot;hidden&quot;;
+    floating.style.transform = &quot;translate(0, 0)&quot;;
+    document.body.appendChild(floating);
+    activeTrigger = trigger;
+    setDescribedBy(trigger, true);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () =&gt; {
+      updatePosition(trigger, floating);
+    });
+  };
+  const requestOpen = (trigger, immediate = false) =&gt; {
+    if (
+      getContent(trigger).length === 0 ||
+      activeTrigger === trigger ||
+      pendingTrigger === trigger
+    ) {
+      return;
+    }
+    clearOpenTimeout();
+    pendingTrigger = trigger;
+    const delay =
+      immediate || activeTrigger != null || Date.now() &lt; skipDelayUntil
+        ? 0
+        : hoverDelay;
+    if (delay === 0) {
+      openTooltip(trigger);
+      return;
+    }
+    openTimeout = window.setTimeout(() =&gt; {
+      openTimeout = null;
+      pendingTrigger = null;
+      openTooltip(trigger);
+    }, delay);
+  };
+  const handlePointerOpen = (event) =&gt; {
+    if (event.pointerType === &quot;touch&quot;) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    requestOpen(trigger);
+  };
+  const handlePointer = (event) =&gt; {
+    lastPointerWasTouch =
+      event.type === &quot;pointerdown&quot; &amp;&amp; event.pointerType === &quot;touch&quot;;
+  };
+  const handleTouchClick = (event) =&gt; {
+    const isTouch = event.pointerType === &quot;touch&quot; || lastPointerWasTouch;
+    lastPointerWasTouch = false;
+    if (!isTouch || event.detail === 0) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (
+      trigger == null ||
+      !trigger.isConnected ||
+      getContent(trigger).length === 0 ||
+      (pinnedByTouch &amp;&amp; activeTrigger === trigger)
+    ) {
+      if (pinnedByTouch) {
+        closeTooltip();
+      }
+      return;
+    }
+    openTooltip(trigger);
+    pinnedByTouch = activeTrigger === trigger;
+    window.setTimeout(() =&gt; {
+      if (activeTrigger === trigger &amp;&amp; !trigger.isConnected) {
+        closeTooltip(false);
+      }
+    }, 0);
+  };
+  const handleLeave = (event) =&gt; {
+    if (pinnedByTouch) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handleFocusIn = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (trigger?.matches(&quot;:focus-visible&quot;)) {
+      requestOpen(trigger, true);
+    }
+  };
+  const handleKeyDown = (event) =&gt; {
+    if (event.key === &quot;Escape&quot;) {
+      closeTooltip();
+    }
+  };
+  const handleContextMenu = (event) =&gt; {
+    lastPointerWasTouch = false;
+    const trigger = getTrigger(event.target);
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const destroy = () =&gt; {
+    closeTooltip(false);
+    lastPointerWasTouch = false;
+    document.removeEventListener(&quot;pointerover&quot;, handlePointerOpen);
+    document.removeEventListener(&quot;pointerdown&quot;, handlePointer);
+    document.removeEventListener(&quot;pointercancel&quot;, handlePointer);
+    document.removeEventListener(&quot;click&quot;, handleTouchClick);
+    document.removeEventListener(&quot;pointerout&quot;, handleLeave);
+    document.removeEventListener(&quot;focusin&quot;, handleFocusIn);
+    document.removeEventListener(&quot;focusout&quot;, handleLeave);
+    document.removeEventListener(&quot;keydown&quot;, handleKeyDown);
+    document.removeEventListener(&quot;contextmenu&quot;, handleContextMenu);
+    tooltip = null;
+  };
+
+  document.addEventListener(&quot;pointerover&quot;, handlePointerOpen);
+  document.addEventListener(&quot;pointerdown&quot;, handlePointer);
+  document.addEventListener(&quot;pointercancel&quot;, handlePointer);
+  document.addEventListener(&quot;click&quot;, handleTouchClick);
+  document.addEventListener(&quot;pointerout&quot;, handleLeave);
+  document.addEventListener(&quot;focusin&quot;, handleFocusIn);
+  document.addEventListener(&quot;focusout&quot;, handleLeave);
+  document.addEventListener(&quot;keydown&quot;, handleKeyDown);
+  document.addEventListener(&quot;contextmenu&quot;, handleContextMenu);
+  window.addEventListener(&quot;pagehide&quot;, destroy, { once: true });
+})();
+&lt;/script&gt;
+&lt;script id=&quot;codex-visualization-lucide&quot; async src=&quot;https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  const initialize = () =&gt; {
+    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
+  };
+  if (globalThis.lucide != null) {
+    initialize();
+    return;
+  }
+  document
+    .getElementById(&quot;codex-visualization-lucide&quot;)
+    ?.addEventListener(&quot;load&quot;, initialize, { once: true });
+})();
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+</body>
+</html>

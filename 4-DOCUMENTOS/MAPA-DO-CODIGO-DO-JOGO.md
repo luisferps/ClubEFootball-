@@ -74,3 +74,33 @@ base + digital (atributos/estilo), não por ID cru.
 
 _Método: extração real do CPK do Steam, decifra WESYS, cruzamento por card_id e base
 (18 bits) contra 23.519 (dt200) e 33.616 (dt870). O que não foi aberto = convenção._
+
+## 7 · Técnicos e nacionalidades — mapeamento comprovado em 28/08/2026
+
+Fonte autoritativa para os técnicos atuais: DT870 atualizado. A identidade é cada
+registro/card-versão, pelo ID físico `u64`; o nome não é chave.
+
+| dado | arquivo | registro/endereço | decodificação |
+|---|---|---|---|
+| ID do técnico | `Coach.bin` | 176 bytes; byte 0 | u64 little-endian |
+| nomes JP/latino/CN | `Coach.bin` | offsets 32/78/124 | UTF-8 terminado por NUL |
+| idade | `Coach.bin` | bit 231, largura 7 | valor físico + 14 |
+| nacionalidade | `Coach.bin` | bit 170, largura 8 | FK para código de `Country.bin` |
+| afinidade | `Coach.bin` | bit 187, largura 3 | código 0 = ausência legítima |
+| Posse de bola | `Coach.bin` | bit 206, largura 7 | proficiência 0–99 |
+| Contra-ataque | `Coach.bin` | bit 238, largura 7 | proficiência 0–99 |
+| Contra-ataque rápido | `Coach.bin` | bit 224, largura 7 | proficiência 0–99 |
+| Passe longo | `Coach.bin` | bit 199, largura 7 | proficiência 0–99 |
+| Por fora | `Coach.bin` | bit 213, largura 7 | proficiência 0–99 |
+| Sobreposição | `Coach.bin` | bit 135, largura 7 | zero = ausência legítima; no arquivo atual, somente Antônio Conte tem 96 |
+| código da nacionalidade | `Country.bin` | registro de 1.488 bytes; bit 10, largura 9 | inteiro sem sinal |
+| sigla | `Country.bin` | offset 708, largura máxima 10 | ASCII/UTF-8 terminado por NUL |
+| nome pt-BR | `Country.bin` | offset 788, largura máxima 70 | UTF-8 terminado por NUL |
+| rótulo da afinidade 5 | `all.str` de `dt261_bra` | `Any1W:495` | `Jogadores de AT`; tela observada `Atacantes` |
+
+O `Country.bin` auditado é byte-idêntico em DT200, DT870 original e DT870 atualizado.
+São 214 códigos únicos; os 1.478 técnicos atuais resolvem todos, sem órfãos. Os
+rótulos das afinidades 1, 2, 3, 4, 6 e 7 não foram vinculados fisicamente e não devem
+ser inferidos. A procedência reproduzível também está registrada nas linhas
+granulares correspondentes de `clube_novo.mapa_do_jogo`, inclusive
+`tecnico.estilo.sobreposicao`.

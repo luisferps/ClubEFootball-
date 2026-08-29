@@ -1,0 +1,34 @@
+{
+  "contract": "clubef-application-incident-readonly-content-audit-v1",
+  "captured_at": "2026-08-27T22:40:21.730131+00:00",
+  "classification": "integralmente_aplicada",
+  "expected_operations": {
+    "insert": 269,
+    "update": 34,
+    "inactive": 0
+  },
+  "expected_new_ids_sha256": "b6de3bab093cf11091832afed491c1ffdd7304ebe9a2dab7684ac8c85abb6070",
+  "expected_changed_ids_sha256": "e676b08985a455649292bb2e8f9c19f32ff8274605e713ade12da2106a3f5628",
+  "clube_novo_vs_current_reference": {
+    "expected_records": 43072,
+    "actual_records": 43072,
+    "missing_ids": [],
+    "unexpected_ids": [],
+    "changed_rows": [],
+    "exact_semantic_match": true,
+    "expected_fingerprint": "bc43c4048e19d9c29c12e6b23280d0f4116d856af01f20e72fbe8d68a0a2d0df",
+    "actual_fingerprint": "bc43c4048e19d9c29c12e6b23280d0f4116d856af01f20e72fbe8d68a0a2d0df"
+  },
+  "clube_vs_legacy_reference": {
+    "expected_records": 42803,
+    "actual_records": 42803,
+    "missing_ids": [],
+    "unexpected_ids": [],
+    "changed_rows": [],
+    "exact_semantic_match": true,
+    "expected_fingerprint": "f3bbce527ef59c1a65604cc481b86aa4259ad4e65918e3a102d6ca3980a58f1e",
+    "actual_fingerprint": "f3bbce527ef59c1a65604cc481b86aa4259ad4e65918e3a102d6ca3980a58f1e"
+  },
+  "transaction_read_only": true,
+  "database_write": false
+}

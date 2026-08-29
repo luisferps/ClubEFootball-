@@ -1,0 +1,242 @@
+{
+  "contract": "clubef-coach-display-fields-readback-v1",
+  "generated_at": "2026-08-28T03:37:10.707912+00:00",
+  "database_write": true,
+  "write_scope": "reexecução idempotente exclusivamente em clube_novo",
+  "migration_sha256": "9aec0fe80639c1114f2bd11c002ea8382b4993b4eb5fc181d68a1f29260986e0",
+  "migration_history": [
+    [
+      "20260828033121",
+      "tecnico_idade_nacionalidade_afinidade_v1"
+    ]
+  ],
+  "semantic_state_before": {
+    "fingerprints": {
+      "technicians": "509273e2eee7e97bf1c6767de4e7bb6668c8211bceec9c0ba506b9cb3ffb07a0",
+      "nationalities": "5dae7a63b49cb914d7b6d4793a0e0438c5ba3a84bf327d6ad89a20e0cb633933",
+      "affinities": "98cb27f2edad4384cd2743b9f6de9982ea99223cb074dba7d7af1b7db0397f4d",
+      "map_rows": "1b8c90033c257ce11c23d72cb477a776a66a4e7fc93f46c30435b8ce7a0b1dbe"
+    },
+    "counts": {
+      "tecnico_jogo_total": 1594,
+      "tecnicos_current_complete": 1478,
+      "tecnicos_historical_null": 116,
+      "nacionalidade_jogo": 214,
+      "afinidade_tecnico_jogo": 8,
+      "map_rows_granular": 7
+    }
+  },
+  "semantic_state_after": {
+    "fingerprints": {
+      "technicians": "509273e2eee7e97bf1c6767de4e7bb6668c8211bceec9c0ba506b9cb3ffb07a0",
+      "nationalities": "5dae7a63b49cb914d7b6d4793a0e0438c5ba3a84bf327d6ad89a20e0cb633933",
+      "affinities": "98cb27f2edad4384cd2743b9f6de9982ea99223cb074dba7d7af1b7db0397f4d",
+      "map_rows": "1b8c90033c257ce11c23d72cb477a776a66a4e7fc93f46c30435b8ce7a0b1dbe"
+    },
+    "counts": {
+      "tecnico_jogo_total": 1594,
+      "tecnicos_current_complete": 1478,
+      "tecnicos_historical_null": 116,
+      "nacionalidade_jogo": 214,
+      "afinidade_tecnico_jogo": 8,
+      "map_rows_granular": 7
+    }
+  },
+  "idempotent": true,
+  "readback": {
+    "counts": {
+      "tecnico_jogo": 1594,
+      "unique_ids": 1594,
+      "current_complete": 1478,
+      "historical_null": 116,
+      "nacionalidade_jogo": 214,
+      "afinidade_tecnico_jogo": 8,
+      "tecnico_estilo_jogo_preserved": 7390,
+      "tecnico_atributo_jogo_preserved": 104,
+      "mapa_do_jogo": 28
+    },
+    "age_range": [
+      28,
+      80
+    ],
+    "affinity_distribution": {
+      "0": 1456,
+      "1": 2,
+      "2": 3,
+      "3": 4,
+      "4": 4,
+      "5": 3,
+      "6": 2,
+      "7": 4
+    },
+    "orphans": {
+      "nationality": 0,
+      "affinity": 0
+    },
+    "constraints": [
+      [
+        "afinidade_tecnico_jogo_bit_check",
+        "CHECK ((\"bit\" >= 0))"
+      ],
+      [
+        "afinidade_tecnico_jogo_check",
+        "CHECK (((codigo_jogo = 0) = ausencia_legitima))"
+      ],
+      [
+        "afinidade_tecnico_jogo_check1",
+        "CHECK (((NOT rotulo_confirmado) OR ((nome_pt IS NOT NULL) AND (nome_tela IS NOT NULL) AND (secao_texto IS NOT NULL) AND (id_texto IS NOT NULL))))"
+      ],
+      [
+        "afinidade_tecnico_jogo_check2",
+        "CHECK ((rotulo_confirmado OR ((nome_pt IS NULL) AND (nome_tela IS NULL) AND (secao_texto IS NULL) AND (id_texto IS NULL))))"
+      ],
+      [
+        "afinidade_tecnico_jogo_codigo_jogo_check",
+        "CHECK (((codigo_jogo >= 0) AND (codigo_jogo <= 7)))"
+      ],
+      [
+        "afinidade_tecnico_jogo_largura_check",
+        "CHECK ((largura > 0))"
+      ],
+      [
+        "afinidade_tecnico_jogo_pkey",
+        "PRIMARY KEY (codigo_jogo)"
+      ],
+      [
+        "nacionalidade_jogo_bit_codigo_check",
+        "CHECK ((bit_codigo >= 0))"
+      ],
+      [
+        "nacionalidade_jogo_codigo_jogo_check",
+        "CHECK (((codigo_jogo >= 0) AND (codigo_jogo <= 511)))"
+      ],
+      [
+        "nacionalidade_jogo_largura_codigo_check",
+        "CHECK ((largura_codigo > 0))"
+      ],
+      [
+        "nacionalidade_jogo_largura_nome_pt_br_check",
+        "CHECK ((largura_nome_pt_br > 0))"
+      ],
+      [
+        "nacionalidade_jogo_largura_sigla_check",
+        "CHECK ((largura_sigla > 0))"
+      ],
+      [
+        "nacionalidade_jogo_offset_nome_pt_br_check",
+        "CHECK ((offset_nome_pt_br >= 0))"
+      ],
+      [
+        "nacionalidade_jogo_offset_sigla_check",
+        "CHECK ((offset_sigla >= 0))"
+      ],
+      [
+        "nacionalidade_jogo_pkey",
+        "PRIMARY KEY (codigo_jogo)"
+      ],
+      [
+        "nacionalidade_jogo_registro_check",
+        "CHECK ((registro >= 0))"
+      ],
+      [
+        "nacionalidade_jogo_tamanho_registro_check",
+        "CHECK ((tamanho_registro > 0))"
+      ],
+      [
+        "tecnico_jogo_campos_apresentacao_completos_check",
+        "CHECK ((((idade IS NULL) AND (codigo_nacionalidade IS NULL) AND (codigo_afinidade IS NULL) AND (fonte_campos_apresentacao IS NULL) AND (cpk_campos_apresentacao IS NULL) AND (arquivo_campos_apresentacao IS NULL) AND (registro_campos_apresentacao IS NULL) AND (hash_campos_apresentacao IS NULL) AND (contrato_campos_apresentacao IS NULL) AND (carregado_campos_apresentacao_em IS NULL)) OR ((idade IS NOT NULL) AND (codigo_nacionalidade IS NOT NULL) AND (codigo_afinidade IS NOT NULL) AND (fonte_campos_apresentacao IS NOT NULL) AND (cpk_campos_apresentacao IS NOT NULL) AND (arquivo_campos_apresentacao IS NOT NULL) AND (registro_campos_apresentacao IS NOT NULL) AND (hash_campos_apresentacao IS NOT NULL) AND (contrato_campos_apresentacao IS NOT NULL) AND (carregado_campos_apresentacao_em IS NOT NULL))))"
+      ],
+      [
+        "tecnico_jogo_codigo_afinidade_fkey",
+        "FOREIGN KEY (codigo_afinidade) REFERENCES clube_novo.afinidade_tecnico_jogo(codigo_jogo) ON DELETE RESTRICT"
+      ],
+      [
+        "tecnico_jogo_codigo_nacionalidade_fkey",
+        "FOREIGN KEY (codigo_nacionalidade) REFERENCES clube_novo.nacionalidade_jogo(codigo_jogo) ON DELETE RESTRICT"
+      ],
+      [
+        "tecnico_jogo_idade_check",
+        "CHECK (((idade IS NULL) OR ((idade >= 14) AND (idade <= 141))))"
+      ],
+      [
+        "tecnico_jogo_pkey",
+        "PRIMARY KEY (id)"
+      ]
+    ],
+    "indexes": [
+      [
+        "afinidade_tecnico_jogo",
+        "afinidade_tecnico_jogo_pkey",
+        "CREATE UNIQUE INDEX afinidade_tecnico_jogo_pkey ON clube_novo.afinidade_tecnico_jogo USING btree (codigo_jogo)"
+      ],
+      [
+        "nacionalidade_jogo",
+        "nacionalidade_jogo_pkey",
+        "CREATE UNIQUE INDEX nacionalidade_jogo_pkey ON clube_novo.nacionalidade_jogo USING btree (codigo_jogo)"
+      ],
+      [
+        "tecnico_jogo",
+        "tecnico_jogo_codigo_afinidade_idx",
+        "CREATE INDEX tecnico_jogo_codigo_afinidade_idx ON clube_novo.tecnico_jogo USING btree (codigo_afinidade)"
+      ],
+      [
+        "tecnico_jogo",
+        "tecnico_jogo_codigo_nacionalidade_idx",
+        "CREATE INDEX tecnico_jogo_codigo_nacionalidade_idx ON clube_novo.tecnico_jogo USING btree (codigo_nacionalidade)"
+      ],
+      [
+        "tecnico_jogo",
+        "tecnico_jogo_pkey",
+        "CREATE UNIQUE INDEX tecnico_jogo_pkey ON clube_novo.tecnico_jogo USING btree (id)"
+      ]
+    ],
+    "samples": [
+      [
+        "17601044514701",
+        "José Mourinho",
+        45,
+        228,
+        "Portugal",
+        "POR",
+        1,
+        null,
+        1452
+      ],
+      [
+        "17601312850052",
+        "Fabio Capello",
+        44,
+        215,
+        "Itália",
+        "ITA",
+        5,
+        "Atacantes",
+        1453
+      ],
+      [
+        "17608292273375",
+        "Frank Lampard",
+        46,
+        204,
+        "Inglaterra",
+        "ENG",
+        3,
+        null,
+        1475
+      ],
+      [
+        "17609097478250",
+        "Antonio Conte",
+        46,
+        215,
+        "Itália",
+        "ITA",
+        7,
+        null,
+        1476
+      ]
+    ]
+  },
+  "passed": true,
+  "errors": []
+}

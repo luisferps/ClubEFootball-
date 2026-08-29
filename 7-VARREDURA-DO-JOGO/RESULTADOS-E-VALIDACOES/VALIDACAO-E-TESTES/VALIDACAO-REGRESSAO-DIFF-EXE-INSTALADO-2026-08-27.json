@@ -1,0 +1,51 @@
+{
+  "contract": "clubef-installed-exe-diff-regression-validation-v1",
+  "generated_at": "2026-08-27T18:51:00-03:00",
+  "passed": true,
+  "cause": "o fluxo incremental ainda dependia de um CSV escolhido manualmente; sem esse arquivo o botão permanecia desabilitado e o clique na aba parecia não fazer nada",
+  "correction": {
+    "automatic_baseline": "clube_novo.carta_jogo",
+    "baseline_transaction_read_only": true,
+    "manual_csv_input_removed": true,
+    "tab_click_shows_result": true,
+    "explicit_no_changes_state_implemented": true,
+    "blocked_state_with_reason_implemented": true,
+    "structured_json_comparison_canonicalized": true
+  },
+  "installed_executable": {
+    "path": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO\\Extrator eFootball.exe",
+    "file_version": "4.3.0.0",
+    "bytes": 103936,
+    "last_write": "2026-08-27 18:48:00",
+    "sha256": "050920a93c963ee0a0ec1fd4cee6f7514a3ca320616c290fd3ae32eed02d478c",
+    "launched_operational_executor": true,
+    "executor_path_confirmed": true
+  },
+  "installed_interface": {
+    "title": "Extrator eFootball",
+    "manual_csv_inputs": 0,
+    "result": "NOVA CARGA IDENTIFICADA — 269 novas, 34 atualizadas e 0 possíveis inativas.",
+    "current_cards": 43072,
+    "new": 269,
+    "updated": 34,
+    "inactive": 0,
+    "duplicates": 0,
+    "package_summary": "269 para inserir · 34 para atualizar · 0 possíveis inativações",
+    "prepare_button": "OK — preparar envio ao clube_novo",
+    "prepare_button_enabled": true
+  },
+  "preflight": {
+    "target": "clube_novo.carta_jogo",
+    "preserved_schema": "clube",
+    "final_apply_button_enabled_before_confirmation": false,
+    "apply_endpoint_called": false
+  },
+  "database_after_test": {
+    "clube": 42803,
+    "clube_novo": 42803,
+    "fingerprint_both": "ff67b8a2e544570dae42ed71d8428821",
+    "database_write": false,
+    "zero_write_proof": true
+  },
+  "recovery": "RECUPERACAO\\2026-08-27-ANTES-DIFF-AUTOMATICO-V43"
+}

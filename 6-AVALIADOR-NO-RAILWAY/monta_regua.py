@@ -4,40 +4,63 @@ from regua_do_banco import Regua, ReguaIncompleta
 
 def da_rpc(pac, tatica=None):
     if not pac:
-        raise ReguaIncompleta('a RPC regua_pacote() nao devolveu nada')
-    faltou = [k for k in ('parametro','atributo','barra','custo_nivel','multiplicador',
-                          'ordem_boost','molde','habilidade','tecnico','impeto',
-                          'versao_molde') if pac.get(k) in (None, {}, [])]
+        raise ReguaIncompleta('a RPC otimizador_regua_v1() nao devolveu nada')
+    if pac.get('contrato') != 'otimizador_regua_v1':
+        raise ReguaIncompleta('versao inesperada do contrato da regua')
+    if not (pac.get('gate') or {}).get('pode_rodar'):
+        raise ReguaIncompleta('gate do contrato v1 recusou a regua')
+    faltou = [k for k in ('parametros','atributos','barras','custo_nivel','multiplicadores',
+                          'funcoes','molde','habilidades','tecnicos','versao_molde')
+              if pac.get(k) in (None, {}, [])]
     if faltou:
         raise ReguaIncompleta('o pacote veio sem: ' + ', '.join(faltou))
 
-    ordem = {int(k): int(v) for k, v in pac['ordem_boost'].items()}
     tec = {}
-    for tid, t in pac['tecnico'].items():
-        prof = t.get('proficiencias') or {}
-        if tatica and tatica in prof:      v = prof[tatica]
-        elif prof:                          v = max(prof.values())
-        else:                               v = None
+    for t in pac['tecnicos']:
         boosts = []
         for b in (t.get('boosts') or []):
-            b = int(b)
-            if b not in ordem:
-                raise ReguaIncompleta('tecnico %s com boost %d fora da ordem do efHub' % (tid, b))
-            boosts.append(ordem[b])
-        tec[int(tid)] = {'boosts': boosts, 'proficiencia': v}
+            if float(b.get('delta') or 0) != 1.0:
+                raise ReguaIncompleta('tecnico %s com delta diferente de +1' % t.get('tecnico_id'))
+            boosts.append(int(b['indice_otimizador']))
+        tid = int(t['tecnico_id'])
+        profs = {str(x['codigo_estilo']): float(x['valor'])
+                 for x in (t.get('proficiencias') or [])}
+        tec[tid] = {'boosts': boosts,
+                    'proficiencia': float(t['proficiencia_maxima']),
+                    'proficiencias': profs,
+                    'estilos_principais': t.get('estilos_principais') or [],
+                    'nome_apresentacao': t.get('nome_apresentacao')}
+
+    habilidades, skill_names = {}, {}
+    for h in pac['habilidades']:
+        efeitos = {}
+        for e in (h.get('efeitos') or []):
+            d = {}
+            if e.get('pct'): d['pct'] = float(e['pct'])
+            if e.get('flat'): d['flat'] = float(e['flat'])
+            if d: efeitos[int(e['indice_otimizador'])] = d
+        sid = int(h['skill_id'])
+        habilidades[sid] = {'fabricavel': bool(h.get('fabricavel')),
+                            'vetada': bool(h.get('vetada')), 'efeito': efeitos}
+        skill_names[sid] = h.get('nome_apresentacao')
+
+    molde = {}
+    for x in pac['molde']:
+        molde.setdefault(int(x['funcao_id']), {})[int(x['indice_otimizador'])] = \
+            (float(x['alvo']), int(x['peso']))
 
     dados = {
-      'parametro'    : pac['parametro'],
-      'atributo'     : {int(k): v for k, v in pac['atributo'].items()},
-      'barra'        : {k: [int(i) for i in v] for k, v in pac['barra'].items()},
+      'parametro'    : pac['parametros'],
+      'atributo'     : {int(x['indice_otimizador']): x['codigo'] for x in pac['atributos']},
+      'barra'        : {k: [int(i) for i in v] for k, v in pac['barras'].items()},
       'custo_nivel'  : {int(k): int(v) for k, v in pac['custo_nivel'].items()},
-      'multiplicador': {int(k): float(v) for k, v in pac['multiplicador'].items()},
-      'ordem_boost'  : ordem,
-      'molde'        : {f: {int(i): (float(av[0]), int(av[1])) for i, av in m.items()}
-                        for f, m in pac['molde'].items()},
-      'habilidade'   : pac['habilidade'],
+      'multiplicador': {int(k): float(v) for k, v in pac['multiplicadores'].items()},
+      'molde'        : molde,
+      'habilidade'   : habilidades,
       'tecnico'      : tec,
-      'impeto'       : {int(k): {int(i): int(d) for i, d in v.items()}
-                        for k, v in pac['impeto'].items()},
+      'impeto'       : {},
+      'funcoes'      : {int(x['funcao_id']): x for x in pac['funcoes']},
+      'skill_names'  : skill_names,
+      'gate'         : pac['gate'],
     }
     return Regua(dados, int(pac['versao_molde']))

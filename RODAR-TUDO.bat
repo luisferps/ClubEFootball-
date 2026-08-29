@@ -4,8 +4,8 @@ title RODAR O MOTOR - a fila inteira
 cd /d "%~dp02-MOTORES"
 set PARAR_EM=0
 
-if not exist "roda_lote_v6.py" (
-  echo   ^>^> nao achei roda_lote_v6.py em 2-MOTORES.
+if not exist "OTIMIZADOR\roda_lote_v6.py" (
+  echo   ^>^> nao achei roda_lote_v6.py em 2-MOTORES\OTIMIZADOR.
   pause
   exit /b 1
 )
@@ -30,6 +30,6 @@ echo   O que ja rodou nao se perde - grava linha a linha no banco.
 echo.
 echo  ------------------------------------------------------------
 echo.
-python roda_lote_v6.py
+python OTIMIZADOR\roda_lote_v6.py
 echo.
 pause

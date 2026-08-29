@@ -1,0 +1,29 @@
+{
+  "contract": "clubef-http-dry-run-validation-v1",
+  "generated_at": "2026-08-27T19:49:03.2923158+00:00",
+  "executor_status": {
+    "online": true,
+    "mode": "dry-run",
+    "write_enabled": false,
+    "database_configured": true
+  },
+  "prepared": {
+    "mode": "dry-run",
+    "write_enabled": false,
+    "summary": {
+      "insert": 269,
+      "update": 34,
+      "inactive": 0
+    },
+    "preflight": {
+      "database_checked": true,
+      "transaction_read_only": true,
+      "ready": 303,
+      "already_applied": 0
+    },
+    "manifest_contract": "clubef-application-dry-run-v1",
+    "database_write": false
+  },
+  "real_apply_blocked_http_403": true,
+  "passed": true
+}

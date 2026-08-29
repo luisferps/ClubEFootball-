@@ -1,0 +1,51 @@
+{
+  "contract": "clubef-windows-icon-build-v1",
+  "source": "outputs\\SISTEMA-EXTRATOR\\windows-app\\assets\\icone-extrator-clubefootball-gerado.png",
+  "normalized_png": "outputs\\SISTEMA-EXTRATOR\\windows-app\\assets\\icone-extrator-clubefootball.png",
+  "ico": "outputs\\SISTEMA-EXTRATOR\\windows-app\\assets\\icone-extrator-clubefootball.ico",
+  "transparent": true,
+  "encoded_sizes": [
+    [
+      16,
+      16
+    ],
+    [
+      20,
+      20
+    ],
+    [
+      24,
+      24
+    ],
+    [
+      32,
+      32
+    ],
+    [
+      40,
+      40
+    ],
+    [
+      48,
+      48
+    ],
+    [
+      64,
+      64
+    ],
+    [
+      128,
+      128
+    ],
+    [
+      256,
+      256
+    ]
+  ],
+  "sha256": {
+    "source": "daca80b9c69589a3dbd61156dff632a31d84bf7b9c606fb6dfb59482349bfab6",
+    "normalized_png": "deace406bc6df8453deb44115c2a1f09f07b1b4c2d714b81c6d1140aabcc2e3e",
+    "ico": "0e59b5429be34dd6bef3983b9a053d02b2608166a85557ba1fb134f444e25cb1"
+  },
+  "passed": true
+}

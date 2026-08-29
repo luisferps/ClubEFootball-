@@ -1,0 +1,82 @@
+{
+  "contract": "clubef-technicians-final-closure-readback-v1",
+  "generated_at": "2026-08-28T04:43:12.431917+00:00",
+  "scope": "Técnicos: identidade, idade, nacionalidade, afinidade, estilos/proficiências, Sobreposição e boosts",
+  "database_read": true,
+  "database_write": false,
+  "transaction_read_only": "on",
+  "reference_id": "meta-ref-eba124d25472-9db3bc3ebba1",
+  "reference_manifest_sha256": "0d011072d3b03e6eb582cd49655cae68ac6c83247022b0b1618927a39ffa977a",
+  "snapshot_sha256": "9db3bc3ebba11958f8dc55947b8c584320f6614c649618b5f25123cdd241aa16",
+  "reference_checks": {
+    "pointer_reference_id_matches_manifest": true,
+    "pointer_manifest_hash_matches_manifest": true,
+    "snapshot_sha256_matches_manifest": true,
+    "technician_contract_current": true,
+    "link_up_deferred": true
+  },
+  "counts": {
+    "tecnico_jogo_total": 1594,
+    "tecnicos_atuais_comparados": 1478,
+    "tecnico_estilo_jogo": 7391,
+    "tecnico_atributo_jogo": 104,
+    "estilos_aptos": 6,
+    "sobreposicao_relacoes": 1,
+    "estilos_principais": 1478,
+    "orfaos_estilo": 0,
+    "orfaos_boost": 0,
+    "nacionalidades": 214,
+    "afinidades": 8
+  },
+  "expected_counts": {
+    "tecnico_jogo_total": 1594,
+    "tecnicos_atuais_comparados": 1478,
+    "tecnico_estilo_jogo": 7391,
+    "tecnico_atributo_jogo": 104,
+    "estilos_aptos": 6,
+    "sobreposicao_relacoes": 1,
+    "estilos_principais": 1478,
+    "orfaos_estilo": 0,
+    "orfaos_boost": 0,
+    "nacionalidades": 214,
+    "afinidades": 8
+  },
+  "comparisons": {
+    "technician_ids_exact": true,
+    "technician_field_relation_mismatches": 0,
+    "nationality_mismatches": [],
+    "affinity_mismatches": [],
+    "conte_overload": {
+      "proficiencia": 96,
+      "record_index": 1476,
+      "bit": 135,
+      "largura": 7,
+      "source_file_sha256": "092a07c62d1df0f19da6ad0e4e1252de07e5e1df8e9090760734829044c0d42a",
+      "source_role": "dt870_updated",
+      "confirmado": true
+    },
+    "capello_has_overload": false
+  },
+  "installation": {
+    "workspace_core": "C:\\Users\\Luis Fernando\\Documents\\Codex\\2026-08-27\\atualizar-extrator-carga-atual\\outputs\\SISTEMA-EXTRATOR\\app\\extrator-core.js",
+    "operational_core": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO\\app\\extrator-core.js",
+    "workspace_sha256": "98c21d5d62747b9165dcc4a793cce8b7076cc4135415178d0ab626e95cf92bab",
+    "operational_sha256": "2f015f6ac4e9715197034d8f583e7cca18bf953737d8b5c763666f70dee4744e",
+    "whole_core_same": false,
+    "workspace_technician_extractor_sha256": "8b8d22bee2c4bd7eca16436e46135634972d7d7d5ad7121dd527fb012d049ed1",
+    "operational_technician_extractor_sha256": "8b8d22bee2c4bd7eca16436e46135634972d7d7d5ad7121dd527fb012d049ed1",
+    "technician_extractor_same": true,
+    "note": "o núcleo operacional contém mudanças posteriores fora de Técnicos; o bloco de Técnicos deve permanecer idêntico"
+  },
+  "excluded": {
+    "link_up": "adiado; não alterado",
+    "cards": "não alteradas",
+    "impetos": "não alterados",
+    "legacy": "não consultado nem alterado por este validador",
+    "optimizer": "não alterado",
+    "ui": "não alterada"
+  },
+  "passed": true,
+  "errors": [],
+  "mismatch_samples": []
+}

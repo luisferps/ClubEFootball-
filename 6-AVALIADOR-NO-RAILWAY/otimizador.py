@@ -19,7 +19,7 @@ servidor acha onde por cada ponto de barra para a nota ser a maior possivel.
 import math
 import numpy as np
 
-TETO = 99
+TETO = 99       # teto de base+barras e da etapa de proficiencia
 PISO = 40
 
 
@@ -38,12 +38,13 @@ def _multv(a, m):
 class Otimizador:
     """Pre-computa o que nao muda e roda o DP. Um por avaliacao."""
 
-    def __init__(self, regua, base, orcamento, arows, add, buff, m):
+    def __init__(self, regua, base, orcamento, arows, impeto_add, boost_add, buff, m):
         self.r     = regua
         self.base  = list(base)
         self.orc   = int(orcamento or 0)
         self.m     = float(m)
-        self.add   = list(add)          # nm + impeto + tecnico, ja somados
+        self.imp   = list(impeto_add)   # entra depois da proficiencia e dos boosts
+        self.boost = list(boost_add)    # entra depois da proficiencia
         self.bf    = dict(buff or {})   # {idx: (pct, flat)}
         self.arows = [t for t in arows if t[2]]           # (idx, alvo, peso), peso != 0
         self.R     = {i: (alvo, peso) for i, alvo, peso in self.arows}
@@ -56,8 +57,8 @@ class Otimizador:
         self.ACCU  = self._accu()
 
         self.tab = {i: self._pts_regua(a, p) for i, (a, p) in self.R.items()}
-        self.vb  = {i: _multv(np.minimum(TETO, self.base[i] + np.arange(26)), self.m) for i in self.R}
         self.bb  = {i: np.minimum(TETO, self.base[i] + np.arange(26)) for i in self.R}
+        self.vb  = {i: _multv(self.bb[i], self.m) + self.boost[i] + self.imp[i] for i in self.R}
         self.nmax_barra = {b: self._nivel_max(b) for b in self.MBK}
 
     # ---------------------------------------------------------------- insumos
@@ -108,9 +109,9 @@ class Otimizador:
         pct, flat = self.bf[i]
         return np.ceil(self.bb[i] * pct / 100.0 + flat).astype(int)
 
-    def _ganho(self, i, add_i):
+    def _ganho(self, i):
         t = self.tab[i]
-        v = self.vb[i] + add_i
+        v = self.vb[i]
         if i in self.bf:
             v = v + self._buff_esc(i)
         g = t[np.clip(v, 0, self.VMAX)]
@@ -123,7 +124,6 @@ class Otimizador:
         orc = self.orc
         if orc <= 0:
             return {b: 0 for b in self.MBK}, 0.0
-        add = self.add
         PAR = ('aerialStrength', 'gk1')
         grupos = []
         for b in self.MBK:
@@ -135,7 +135,7 @@ class Otimizador:
                 continue
             g = np.zeros(26)
             for i in ids:
-                g += self._ganho(i, add[i])
+                g += self._ganho(i)
             nmax = int(np.searchsorted(self.ACCU, orc, side='right'))
             nmax = min(nmax, self.nmax_barra[b] + 1)
             grupos.append((b, self.ACCU[:nmax], g[:nmax]))
@@ -143,8 +143,8 @@ class Otimizador:
         ga = np.zeros(26)
         for i in (7, 14):
             if i in self.R:
-                ga += self._ganho(i, add[i])
-        gk = self._ganho(21, add[21]) if 21 in self.R else np.zeros(26)
+                ga += self._ganho(i)
+        gk = self._ganho(21) if 21 in self.R else np.zeros(26)
         t13 = self.tab.get(13)
 
         NEG = -1e18
@@ -187,8 +187,8 @@ class Otimizador:
                 if t13 is not None:
                     b1 = min(TETO, self.base[13] + a + k)
                     b0 = min(TETO, self.base[13])
-                    vv = _mult(b1, self.m) + add[13]
-                    v0 = _mult(b0, self.m) + add[13]
+                    vv = _mult(b1, self.m) + self.boost[13] + self.imp[13]
+                    v0 = _mult(b0, self.m) + self.boost[13] + self.imp[13]
                     if 13 in self.bf:
                         p13, f13 = self.bf[13]
                         vv += math.ceil(b1 * p13 / 100 + f13)

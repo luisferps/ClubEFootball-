@@ -8,7 +8,8 @@ echo  ============================================================
 echo   APAGAR O LIXO
 echo  ============================================================
 echo.
-echo   Os 9 arquivos do motor JA ESTAO em 2-MOTORES.
+echo   Os 11 arquivos do Otimizador estao em 2-MOTORES\OTIMIZADOR.
+echo   O Bonificador esta em 2-MOTORES\BONIFICADOR.
 echo   Este arquivo so apaga. Nao copia nada.
 echo.
 echo   Vai apagar:
@@ -21,9 +22,19 @@ echo.
 pause
 
 echo.
-echo --- conferindo se o motor esta em 2-MOTORES ---
+echo --- conferindo Otimizador, Bonificador e arquivos comuns ---
 set ERRO=0
-for %%A in (roda_lote_v6.py fonte_unica.py motor.py motor_bonus.py equacao.py regua.py grava_direto.py funcao_nativa.py regras_do_card.py) do (
+for %%A in (auditar_entradas_v1.py auditar_moldes_v1.py classificar_diferencas_fisicas_v1.py conferir_uma.py equacao.py fonte_unica.py grava_direto.py motor.py regua.py roda_lote_v6.py travas.py) do (
+  if not exist "2-MOTORES\OTIMIZADOR\%%A" (
+    echo   FALTA  %%A
+    set ERRO=1
+  )
+)
+if not exist "2-MOTORES\BONIFICADOR\motor_bonus.py" (
+  echo   FALTA  2-MOTORES\BONIFICADOR\motor_bonus.py
+  set ERRO=1
+)
+for %%A in (funcao_nativa.py regras_do_card.py) do (
   if not exist "2-MOTORES\%%A" (
     echo   FALTA  %%A
     set ERRO=1
@@ -37,7 +48,7 @@ if "%ERRO%"=="1" (
   pause
   exit /b 1
 )
-echo   ok: os 9 estao la.
+echo   ok: Otimizador, Bonificador e arquivos comuns estao nos lugares certos.
 
 echo.
 echo --- apagando ---

@@ -1,0 +1,441 @@
+codigo_jogo,fonte_preferida,registro_preferido,tipo_efeito_fisico,nivel_fisico,presente_dt200,presente_dt870_original,presente_dt870_atualizacao,dicionario_existente,condicional_dicionario,condicao_estado,nome_dicionario,record_sha256,receita_fisica_disponivel
+0,dt870_original,160,,,false,true,false,false,,nao_avaliada,,21b4582ba7bfac0bc7fc65d9a3ad8b4400da785f007b5cdb450ff5a57ebf3065,false
+1,dt870_atualizacao,0,0,1,true,true,true,false,,nao_avaliada,,e25030d5beb44f3ba96e1a85f64925e45f99da4cb1f39740331cf013897fa66a,true
+2,dt870_atualizacao,1,0,1,true,false,true,false,,nao_avaliada,,19cf1bdfef646a4735f92cfbb1529ce610486b1dd9254d1f9e8a5c0ca96b0d94,true
+3,dt870_atualizacao,2,0,1,true,false,true,false,,nao_avaliada,,8897dd4c711ba5214daebb44c534e31c737d91b99830e779d77032986be05fe7,true
+4,dt870_atualizacao,3,0,1,true,true,true,false,,nao_avaliada,,051de10a88f35ab33ce19dfce06c633c962416cbc6f393793f246fd9568cff9e,true
+5,dt870_atualizacao,4,0,1,true,false,true,false,,nao_avaliada,,742d9acb10f3fae35ec28d897a4c63d897ab5f8223ca9e396c5dba842a4e1922,true
+6,dt870_atualizacao,5,0,1,true,false,true,false,,nao_avaliada,,8245c160758f20b00b33f72c48408229aab67ab8b1eee9ef066b3b94832136d3,true
+7,dt870_atualizacao,6,0,1,true,false,true,false,,nao_avaliada,,8b1c3cd447609a034e66e139a76f86c33920d5e2a1fec4e5826246cb22e9b87f,true
+8,dt870_atualizacao,7,0,1,true,true,true,true,false,ausente_comprovada,Duelo (Divididas),bbb39324db68dff5f6b486ac2665ab7533404dc7e9b4130061c036a351e30bdf,true
+9,dt870_atualizacao,8,0,1,true,true,true,true,false,ausente_comprovada,Agilidade,b3475fc041f0e450940461644625ebf5a069645cda091d247c54513d4efa80ba,true
+10,dt870_atualizacao,9,0,1,true,true,true,false,,nao_avaliada,,b17d3fe41cc92ed66f1c246c2ee728038c7397eefdf05eccc96b7f2b1cabf6bc,true
+11,dt870_atualizacao,10,0,1,true,false,true,false,,nao_avaliada,,c1a360068020aef9d3cd6650db9bbde5da90f8cfc7ff2c27f85ac094c5ddbd16,true
+12,dt870_atualizacao,11,0,2,true,true,true,true,false,ausente_comprovada,Chute,1e2aa33a9537166c5c2970e14bf00762559b8489f340bab6778bb89e84eed5e3,true
+13,dt870_atualizacao,12,0,2,true,false,true,true,false,ausente_comprovada,Cobrança de Falta,0347806643a14177b9291b73eaff2435fc4c540f0b26d774d9b58912ca363605,true
+14,dt870_atualizacao,13,0,2,true,true,true,true,false,ausente_comprovada,Disputa Aérea,bfa6702b6a32cc45e51426a65176c4cd40a454c60f1cf9620bbffea30272dc21,true
+15,dt870_atualizacao,14,0,2,true,false,true,true,false,ausente_comprovada,Passe,c818395f9bca9fc431048910f445bffec041e66bfba2cdca7066014c6ca18474,true
+16,dt870_atualizacao,15,0,2,true,true,true,true,false,ausente_comprovada,Condução Técnica,69f287494beb5b17fd496a9cceb20a8cbfb06423b6a0c2a489f62b47a1336651,true
+17,dt870_atualizacao,16,0,2,true,false,true,true,false,ausente_comprovada,Técnica,f21a77cf91a4c72389385b7f6e5f230443a5853ec9d8349d5be212fca2d01d97,true
+18,dt870_atualizacao,17,0,2,true,false,true,true,false,ausente_comprovada,Defesa,4b810e24b7d7820d9702eb8a07fe388d8ac2d036391f99a277661e8e543dbd2e,true
+19,dt870_atualizacao,18,0,2,true,true,true,true,false,ausente_comprovada,Duelo (Divididas),bf93d757e9c463cfc4ebb9c2c651a1de242618fd58ae2bcfcb479f41f732f03d,true
+20,dt870_atualizacao,19,0,2,true,false,true,true,false,ausente_comprovada,Agilidade,d74d251224dc67307afe4bcf1d21b845fb124521c282113ada9692b3287485a3,true
+21,dt870_atualizacao,20,0,2,true,false,true,true,false,ausente_comprovada,Vigor Físico,e872dee75fed82a6062d79d51f405210ece42dcf32837847abdcdd25329d7160,true
+22,dt870_atualizacao,21,0,2,true,false,true,true,false,ausente_comprovada,Goalkeeping,a056d15a4ed8be6ee23e1d4798420e1b22208e2e974a24b275c6ca8a4d97b498,true
+23,dt870_atualizacao,22,0,3,true,false,true,true,false,ausente_comprovada,Chute,e7b883f861b1a1c40e82594c5e7b006742e062c1d7ccdf62d25dab44408e7a58,true
+24,dt870_atualizacao,23,0,3,true,true,true,true,false,ausente_comprovada,Cobrança de Falta,991029c712fe22bf578c2eaaad91e82b0cdec8c44b6e90aebb92513934cc4e9e,true
+25,dt870_atualizacao,24,0,3,true,false,true,true,false,ausente_comprovada,Disputa Aérea,f0827cc99ddf833d996a14d30538e7d70208a100fec23b2811a4accc88cb8afb,true
+26,dt870_atualizacao,25,0,3,true,false,true,true,false,ausente_comprovada,Passe,3abf1d889d6242f9aad0e9828b9652ea02c70936f4fa51d64040ce91ed472b26,true
+27,dt870_atualizacao,26,0,3,true,false,true,true,false,ausente_comprovada,Condução Técnica,c8da756d406ad58681a15e5d93d7a327cae94349d28be5f6fa1e055adb2c4261,true
+28,dt870_atualizacao,27,0,3,true,false,true,true,false,ausente_comprovada,Técnica,45841ce79bffaa1eb16822584f46a6d240c945e68c863dbdfb2843d996907a31,true
+29,dt870_atualizacao,28,0,3,true,true,true,true,false,ausente_comprovada,Defesa,39b9c3cc9e457aac6490c14e9d27beda12bf7de862d932e54f2db4585bb82a5e,true
+30,dt870_atualizacao,29,0,3,true,false,true,true,false,ausente_comprovada,Duelo (Divididas),61f0f5e89fc9d080462fa7a05a58f4d9c6f1331a77b757e23dcbbc8b8b752853,true
+31,dt870_atualizacao,30,0,3,true,false,true,true,false,ausente_comprovada,Agilidade,9a3bf3d60c556f61145368226e9968fce5b5686ab429b10ef151f6c43208d671,true
+32,dt870_atualizacao,31,0,3,true,true,true,true,false,ausente_comprovada,Vigor Físico,3739aeffc53eebc4a52afcc2034fd8d9687f0e34bafaa2960aa95e8fd6d000f4,true
+33,dt870_atualizacao,32,0,3,true,true,true,true,false,ausente_comprovada,Goalkeeping,01c4ec47bd459ae4817b872f85d97fb6ff5be563251b15cfe2b201b8bc36ed28,true
+34,dt870_atualizacao,33,0,4,true,true,true,true,false,ausente_comprovada,Chute,0e06d9470f1f37b5ca56c2e1e3924e5add3b971646a17264f19c963874a9b82b,true
+35,dt870_atualizacao,34,0,4,true,false,true,false,,nao_avaliada,,1beecaad3342e5265b1fefda2bc40c532a444c4ab792a60eb887141606914fd1,true
+36,dt870_atualizacao,35,0,4,true,false,true,true,false,ausente_comprovada,Disputa Aérea,eeb3a6d0f638ef4bc24994f9672d2793979def2ee67950ae3e0f8e64ce854b46,true
+37,dt870_atualizacao,36,0,4,true,false,true,true,false,ausente_comprovada,Passe,574c950fa2dd28644f02a237cc40319b1b3b3c9c9d1e71f49a0d07d306518ceb,true
+38,dt870_atualizacao,37,0,4,true,false,true,true,false,ausente_comprovada,Condução Técnica,7bfd085fed52f3828b4c6ac33f19d188d94a6e253b54ec54c0bb2618ca61aea6,true
+39,dt870_atualizacao,38,0,4,true,true,true,true,false,ausente_comprovada,Técnica,e5e6bfcf68894a24de1dc203934f82409736224e06e61a2f0863b0fc62c6dd3a,true
+40,dt870_atualizacao,39,0,4,true,false,true,true,false,ausente_comprovada,Defesa,48e58aba213f9e94c5ac19a02831164a32a2bdec23ad067de4e03b91a35f43cf,true
+41,dt870_atualizacao,40,0,4,true,false,true,true,false,ausente_comprovada,Duelo (Divididas),115490f8036c98bfad555a572c67dd01ec69f9254f730e193f8e6cf82f031c03,true
+42,dt870_atualizacao,41,0,4,true,false,true,true,false,ausente_comprovada,Agilidade,8215e54627dbd04209da9b6ff96ca0972a88994087b0f944fad49c71380980de,true
+43,dt870_atualizacao,42,0,4,true,false,true,false,,nao_avaliada,,b097ecaf0ebf8f9be89fd9558c94b304f5434cfb3de56948d6598963674f4786,true
+44,dt870_atualizacao,43,0,4,true,true,true,true,false,ausente_comprovada,Goalkeeping,6f68ea3773116a2f296c3b9c40a8b60eb0b41f9f1050c60cf8f1c069f759253d,true
+45,dt870_atualizacao,44,0,5,true,false,true,true,false,ausente_comprovada,Chute,238389a7ec0fbd8cf38f4099f29d0a293c434904dfa720346e987bbaed98d552,true
+46,dt870_atualizacao,45,0,5,true,false,true,false,,nao_avaliada,,0aa77b1c98c005c5058150e7a8cab68b2f611e134fa2e10c23215fadcb715448,true
+47,dt870_atualizacao,46,0,5,true,false,true,false,,nao_avaliada,,14472891ccb9cd221dae44d4021423ff9edce0a7e298b881495a595cc224a025,true
+48,dt870_atualizacao,47,0,5,true,false,true,false,,nao_avaliada,,5d9b5cf32374b579a891101d1eb8a6c6c34dcca1a1a216d35a26d43f1c01c2ac,true
+49,dt870_atualizacao,48,0,5,true,true,true,true,false,ausente_comprovada,Condução Técnica,a1dfcc8cb3c4de4613ae431a726c2f55cd7263903c6834a7033e5d449bd3e6bf,true
+50,dt870_atualizacao,49,0,5,true,false,true,true,false,ausente_comprovada,Técnica,076258c103e6b64b8dfe4c607cace8a3786e811fd0aabf6fd3cf2a72801a6fb1,true
+51,dt870_atualizacao,50,0,5,true,false,true,false,,nao_avaliada,,2a6655046c73e66101dddc62895aa3399eefbb0f2430df1f5a8b817e36de15fe,true
+52,dt870_atualizacao,51,0,5,true,false,true,false,,nao_avaliada,,5a832a89af90268587f2377b75b272ed473c66455e9525692e3ef125210c885a,true
+53,dt870_atualizacao,52,0,5,true,false,true,false,,nao_avaliada,,0446d7228d60899bfb8a8143e62fbee9a87af5d9f4a74a5d0bd4fefa1920a797,true
+54,dt870_atualizacao,53,0,5,true,true,true,false,,nao_avaliada,,a74a475006b44995346bc19705ff264b4c3f1208fb3277c68f7e5607370133fe,true
+55,dt870_atualizacao,54,0,5,true,false,true,false,,nao_avaliada,,8d9b8e96b85825069af7f2a0774f6cbf58ba839657825504d6a1c29db3cf28e2,true
+56,dt870_atualizacao,55,3,4,true,false,true,true,false,ausente_comprovada,Bearer of Fate,fbe6b9b9464e47104b57e0b9a71521fcf95264eff3920a44d783487d04cf7f4d,true
+57,dt870_atualizacao,56,3,4,true,false,true,true,false,ausente_comprovada,Son of God,ef463ada888e11fa67ed89509ee59ad8f0a7875669ef3d03ee0ea0f7ecedd1bd,true
+58,dt870_atualizacao,57,3,4,true,false,true,true,false,ausente_comprovada,King of Football,43eeda3e3d0882e24a6ac272c93349e7631698091000fbf263d135e1f8cae509,true
+59,dt870_atualizacao,58,2,1,true,true,true,false,,nao_avaliada,,48e2f5c9027b455f449a610072580fe8fc7e017c782081f1f18f22500a1d830f,true
+60,dt870_atualizacao,59,2,2,true,false,true,false,,nao_avaliada,,a0a7a24f3bf8537aa63bcf93244e32dc530502c6f5fa2d80491c875556e6f83a,true
+61,dt870_atualizacao,60,2,3,true,false,true,false,,nao_avaliada,,0cf36f90299bf9197fb739e3b394bc495cfa7b28659d9baeb785642504c0059e,true
+62,dt870_atualizacao,61,2,4,true,false,true,false,,nao_avaliada,,17ab2ac107c0139599e6e11ab296e0f353db7e9f883b8d182bb0415f84912417,true
+63,dt870_atualizacao,62,2,5,true,false,true,false,,nao_avaliada,,9bef092af23cb8aeb1e4a3004f98708e84e6e8a5b395687aa351c33e4567d7b6,true
+64,dt870_atualizacao,63,0,1,true,true,true,true,false,ausente_comprovada,Instinto Artilheiro,8d39bf837f1d3a5a25a3bb29ccdd11cb258f067870daa0dff2bada02613b3273,true
+65,dt870_atualizacao,64,0,1,true,true,true,false,,nao_avaliada,,439e2af1753f40ebce567683c20b1cd9ec9f3ccbc420a88d3d009be591dabeda,true
+66,dt870_atualizacao,65,0,1,true,false,true,false,,nao_avaliada,,0d5b27155fb862ee04ff9cf1801e4214f32711440f70442194c5b0875030c71a,true
+67,dt870_atualizacao,66,0,1,true,false,true,false,,nao_avaliada,,1182baf24342fb173e535530f19c02211e5f623b5ea593ba23caddf1c1e9dfae,true
+68,dt870_atualizacao,67,0,1,true,false,true,false,,nao_avaliada,,38967f12d3507c774d6f900b7a3a90be5c3c88bcdae0f83542f269b2b9dadc8f,true
+69,dt870_atualizacao,68,0,1,true,true,true,true,false,ausente_comprovada,Fantasia,b0a95cce655ce5f5b32b67ea599f097676ac71c42e31d38ea0fc5a84bf673cb6,true
+70,dt870_atualizacao,69,0,2,true,false,true,true,false,ausente_comprovada,Instinto Artilheiro,1fc1f3f02fc6332fd285d1481f45d801321d6189dd9317e2b5f24a8b73f252e8,true
+71,dt870_atualizacao,70,0,2,true,false,true,true,false,ausente_comprovada,Duelo,478deefd8a30d25309f4a2f7e68630cb55c170857689f719bdab1e3781e188f5,true
+72,dt870_atualizacao,71,0,2,true,false,true,true,false,ausente_comprovada,Motor do Time,b7384a5f2449746996be5b1b8b687ec9ba94c4c3d2c7024d1ee699c2381b0dd1,true
+73,dt870_atualizacao,72,0,2,true,false,true,true,false,ausente_comprovada,Defesaça,15c3933d0b10456f4f66df1ee14986ed774280c7ab6516e08fa0347fd96ffcd6,true
+74,dt870_atualizacao,73,0,2,true,true,true,true,false,ausente_comprovada,Cruzamento,af1ff065313d0abac0d29b2d19f3f97ce3b1e5d3b65dab0147f4c67a1cbc6f84,true
+75,dt870_atualizacao,74,0,2,true,false,true,true,false,ausente_comprovada,Fantasia,7860abfae78f0977183b6b3d5b9f309a1d93c86fbce3a0eca766e70a0c18a843,true
+76,dt870_atualizacao,75,0,3,true,false,true,true,false,ausente_comprovada,Instinto Artilheiro,c17e97fed8cfaf8e97e853aa76a62e87cd4e762b84b173e16e99aecadf5d366b,true
+77,dt870_atualizacao,76,0,3,true,false,true,true,false,ausente_comprovada,Duelo,1ad2843fbf22076c78264b210b648b99b23e8f4bbdb6b5287cbb1eb3160c4f35,true
+78,dt870_atualizacao,77,0,3,true,false,true,true,false,ausente_comprovada,Motor do Time,f09654057b1418561bc7bfc19887ce3aeb3e78a321520a36bc414afed3557c1d,true
+79,dt870_atualizacao,78,0,3,true,true,true,true,false,ausente_comprovada,Defesaça,a3bf0de6a4f5d4e51aaa4c969bda87b89a870a9cfcfc3a8bc66b893d369bd28c,true
+80,dt870_atualizacao,79,0,3,true,false,true,true,false,ausente_comprovada,Cruzamento,352fe39c4edc79a0e0a8c2ea54401ebdb6d527e00b43f8149f5fca83b0be2fca,true
+81,dt870_atualizacao,80,0,3,true,false,true,true,false,ausente_comprovada,Fantasia,27c3896a4ed71e034fcb4f51a4355ed093dc6160a43a87b7523b1ec256d6a753,true
+82,dt870_atualizacao,81,0,4,true,false,true,true,false,ausente_comprovada,Instinto Artilheiro,73e3a0f199aa56404bdaea1f24109252d43a30de85554a2c0010217b5ded08b1,true
+83,dt870_atualizacao,82,0,4,true,false,true,true,false,ausente_comprovada,Duelo,950c92508a0b54bc4bc7d9502355644f3dcb8cc5031032541ff2749a4d6b9d25,true
+84,dt870_atualizacao,83,0,4,true,true,true,true,false,ausente_comprovada,Motor do Time,e69747b9d5fb218e592955b99ad751d5162cc7d624d98ee8dc38f5a507f6a6d1,true
+85,dt870_atualizacao,84,0,4,true,false,true,true,false,ausente_comprovada,Defesaça,650f0245ec46565ec4566cb91df090ce92f318126b966ddfae8eae1d30f1382b,true
+86,dt870_atualizacao,85,0,4,true,false,true,true,false,ausente_comprovada,Cruzamento,03cc5bc84e840a829bd0e0ce67e9df892081cf6e6df49ebd7c84e2e2322dc7bf,true
+87,dt870_atualizacao,86,0,4,true,false,true,true,false,ausente_comprovada,Fantasia,2537c7f44d7ddc982816c8a108b07c76b61f6e48f2916f18398eb55f7573e89f,true
+88,dt870_atualizacao,87,0,5,true,false,true,false,,nao_avaliada,,19766cd508ecea2fbc2209def7d816e0886144644d9f6378b910179814740490,true
+89,dt870_atualizacao,88,0,5,true,true,true,false,,nao_avaliada,,2834c5d3ad4a248b9804737612a17fc813c2d967f99cbeb72c79480c38707229,true
+90,dt870_atualizacao,89,0,5,true,false,true,false,,nao_avaliada,,a38af1f9f38a8832055587712a9101ed10079a5adbb14f7c9e3d321e7d0bc7fc,true
+91,dt870_atualizacao,90,0,5,true,false,true,false,,nao_avaliada,,5b4535c110c1eb935e240840d9f60073c9a07319461507785bc567bf16730319,true
+92,dt870_atualizacao,91,0,5,true,false,true,false,,nao_avaliada,,4adfc88594fdb6620a79c88b30761b59655c3ff46356e187525a2ac5b2db50ff,true
+93,dt870_atualizacao,92,0,5,true,false,true,false,,nao_avaliada,,78f3ae88f47de9e942037817c0631a86adc697afc63fc7dccb52097b3416d480,true
+94,dt870_atualizacao,93,2,1,true,true,true,false,,nao_avaliada,,e0a7a8180b7b510e3169a5b21d4787faf2c5b9d871559c0898d7fa0a21adea73,true
+95,dt870_atualizacao,94,2,2,true,false,true,false,,nao_avaliada,,920a48fbb247803eed4288510a1a73e1f0201a5db47ab099b043be3771c89b71,true
+96,dt870_atualizacao,95,2,3,true,true,true,true,true,presente_sem_semantica,Total Package,c8457bb06917cd303139459d8d451162f61630eb4a23735df716b07755c2e924,true
+97,dt870_atualizacao,96,2,4,true,true,true,false,,nao_avaliada,,dc572834c988a4699403df2758a831a19f7820dc6978062fb61f390ea3455032,true
+98,dt870_atualizacao,97,2,5,true,false,true,false,,nao_avaliada,,5c69b767f743f92ce9b4462b0f15373d3de7f3c89ca69d510ab79bfd9898e90a,true
+99,dt870_atualizacao,98,2,1,true,true,true,false,,nao_avaliada,,b9c5cae363b398eaf481f1e6ba22bc935cbea39e5c772cf928f9d5fcc0055b3e,true
+100,dt870_atualizacao,99,2,2,true,false,true,false,,nao_avaliada,,14095cb7855b71c75949492c9e98fc1ea84348955bf7f544c5d7805a5d3bb4fe,true
+101,dt870_atualizacao,100,2,3,true,false,true,true,true,presente_sem_semantica,Total Package,e8b482613428977b7f79f70401ae3d47737a395b3deda4fcbdca5195ada049e5,true
+102,dt870_atualizacao,101,2,4,true,false,true,false,,nao_avaliada,,860986add6950c889637c946ecfd85d16c9b6e36681bdf34e0b7d01ef0aec309,true
+103,dt870_atualizacao,102,2,5,true,false,true,false,,nao_avaliada,,bda69808736546c3cfd637db9eac047844674d99a83800c9d52fede9ae2427cd,true
+104,dt870_atualizacao,103,1,3,true,true,true,true,false,ausente_comprovada,Chute,8bfeb85fc9ed06866327f711d09da18ad8c2f0066cbbb9816847d3dd12f7e980,true
+105,dt870_atualizacao,104,1,3,true,false,true,true,false,ausente_comprovada,Cobrança de Falta,434ee97e9a2ba5b7fd4fa3d0a5fc32ff2820bf73ca3710486ddab1b490b0f5e8,true
+106,dt870_atualizacao,105,1,3,true,false,true,true,false,ausente_comprovada,Disputa Aérea,87bf35078546a8586706e595cb21eaba68b801cb019f7a889e3ee5ced5bccf39,true
+107,dt870_atualizacao,106,1,3,true,false,true,true,false,ausente_comprovada,Passe,43efe646f867d47f809ec02c9d8d3554f3d913cb15d5cc681d010513387fd8db,true
+108,dt870_atualizacao,107,1,3,true,false,true,true,false,ausente_comprovada,Condução Técnica,2aa0a21d106e9fb1ce41ed51f968fd5975049c38d50d2c75aa8d6a4b0e801e4c,true
+109,dt870_atualizacao,108,1,3,true,true,true,true,false,ausente_comprovada,Técnica,51b78938b9a700db0f47476e41c1853ed151436c5f785c4d7d37e4a27cd37ae6,true
+110,dt870_atualizacao,109,1,3,true,false,true,true,false,ausente_comprovada,Defesa,a65e13c63f904ba199efc112ab72295c785a9d8ba45ccd50b6b83a3db32eec10,true
+111,dt870_atualizacao,110,1,3,true,false,true,true,false,ausente_comprovada,Duelo (Divididas),41ba551be2f492d4d6e3180afe569faabe6d0b73e7466b27bc5fdcc2b0aaaebe,true
+112,dt870_atualizacao,111,1,3,true,false,true,true,false,ausente_comprovada,Agilidade,462b3ffdae64d018ff4757fae0601db3f2501842379e4f7aacf01d3046bdfb99,true
+113,dt870_atualizacao,112,1,3,true,false,true,true,false,ausente_comprovada,Vigor Físico,2083b0bd04eb873338304ba593834398097cc23ba66ef8e40de6f5425273b981,true
+114,dt870_atualizacao,113,1,3,true,true,true,true,false,ausente_comprovada,Goalkeeping,561c64b6c387d91d77bd53c1b572dfb0031d0cf3f8dbbe4c20b7773c05fac751,true
+115,dt870_atualizacao,114,1,3,true,false,true,true,false,ausente_comprovada,Instinto Artilheiro,2022351b9d979f03b2e8ffb9fa6dbbc80711a995b144937c3933f7d97a19cd45,true
+116,dt870_atualizacao,115,1,3,true,false,true,true,false,ausente_comprovada,Duelo,c662f0541c872a5de96a7bef1c3c9e7b1c8229504cbd99818b78abc72ddab9f8,true
+117,dt870_atualizacao,116,1,3,true,false,true,true,false,ausente_comprovada,Motor do Time,71362ee652a51c1b740a8e4ca8856f75d5afc5474bb6f5874bbfe97fe59acb3c,true
+118,dt870_atualizacao,117,1,3,true,false,true,true,false,ausente_comprovada,Defesaça,6c668a15c3b6bf22ed3be38e0fd9d207c99b8727f5bdf2f96b7fc46ecb4c277e,true
+119,dt870_atualizacao,118,1,3,true,true,true,true,false,ausente_comprovada,Cruzamento,3e87c2de502361602bebebd59c02ca88d4f172909ce5300a3797fa3578531b4d,true
+120,dt870_atualizacao,119,1,3,true,false,true,true,false,ausente_comprovada,Fantasia,e33141392e16d20b2c30f79a1e8b6252b186056dbc470dc506a8ab18bb666a05,true
+121,dt870_atualizacao,120,1,3,true,false,true,false,,nao_avaliada,,68b6b673af797cb0ab8a062b6be239c665f968aaa824ac7406ac148325dd9ade,true
+122,dt870_atualizacao,121,2,3,true,false,true,true,true,presente_sem_semantica,Chute,5fe7cd0a9400ba11cab48a33dd531aa95822ed44eff54e8e3523d8d815f283b3,true
+123,dt870_atualizacao,122,2,3,true,false,true,true,true,presente_sem_semantica,Disputa Aérea,51070692c0736674f5ce5f9cfc980c438c44fdc91a09c79d246454c3cf719b0c,true
+124,dt870_atualizacao,123,2,3,true,true,true,true,true,presente_sem_semantica,Passe,d7bc579dbf4214405698e95b5d05a6dbcc34df00ffee94f9d85cbebbbdafe87f,true
+125,dt870_atualizacao,124,2,3,true,false,true,true,true,presente_sem_semantica,Condução Técnica,1e48d276f58b69dcb91347fd4396251cfd1ff4fe7e90d156598c1f05ab2f18bd,true
+126,dt870_atualizacao,125,2,3,true,false,true,true,true,presente_sem_semantica,Técnica,5ae6911ccec4240f8b7dbe1b253401848c23944a251e33e28f5a9b624ff76e7e,true
+127,dt870_atualizacao,126,2,3,true,false,true,true,true,presente_sem_semantica,Agilidade,534b22b8ccfc69d844077419e74a2083ab9b88802cb92593d67e4455f932e7b7,true
+128,dt870_atualizacao,127,2,3,true,false,true,true,true,presente_sem_semantica,Vigor Físico,deaa1cf7ebd13ea252bf8b7a1c643255e95d62d2b1145d15a802f92520f16cf0,true
+129,dt870_atualizacao,128,2,3,true,true,true,true,true,presente_sem_semantica,Instinto Artilheiro,538a6e40f303c7970e40a8baa7ed3db55edc0d5035cdc9b894396d92ae2dc2e1,true
+130,dt870_atualizacao,129,2,3,true,true,true,true,true,presente_sem_semantica,Motor do Time,f47d4ffa75653e453b8b82f21c0c81defe625b44b2abd543adaad9709209e3bb,true
+131,dt870_atualizacao,130,2,3,true,false,true,true,true,presente_sem_semantica,Fantasia,5ece9bc750c0bf9edeffdbe5bbc2b62d7ce0bbe0a540b3bd4334ec90dadc4f40,true
+132,dt870_atualizacao,131,2,3,true,false,true,true,true,presente_sem_semantica,Total Package,50b50b794628a037ec3bf2babf3db5954444c9d76ccd43b7a80ca1802bbc0765,true
+133,dt870_atualizacao,132,2,3,true,false,true,true,true,presente_sem_semantica,Total Package,0cc50a9367505779e164af0f1c023fd6ce6d05a28ad0fe4b1f4318cbe13c17b5,true
+134,dt870_atualizacao,133,3,3,true,true,true,true,false,ausente_comprovada,The Undisputed,b76ce67713c8a22db5dd0c4f47fc7dae564a4f5131ad85b213377e4e5de3bca9,true
+135,dt870_atualizacao,134,3,3,true,false,true,true,false,ausente_comprovada,Le Petit Prince,056f23e27540d8d655e245c5125c386ab33b705b3c951111781c613aee4e3789,true
+136,dt870_atualizacao,135,4,1,true,false,true,false,,nao_avaliada,,aff7cf0da0ace25237bb6630f4c022017b4005510463834601bef3d7544f5dcb,true
+137,dt200,136,4,2,true,false,false,false,,nao_avaliada,,20549be487205bb9f2942a63c16fd19a6c29e3dc9846df311a16de796ae790a2,true
+138,dt200,137,4,3,true,false,false,false,,nao_avaliada,,82df52ef50c7b6c1abfc49eecf90be1f11a566a13ab9efc130e474bdf7886320,true
+139,dt200,138,4,4,true,true,false,false,,nao_avaliada,,b7fb4273c7f4e2a88d19d5835d998f1d743fff4d940c721494c03c0ee33d7b8e,true
+140,dt200,139,4,5,true,false,false,false,,nao_avaliada,,31ccfea0680580b89f94040d562ea3d9a845420aba1efd0cc0fe47b767fd4ce7,true
+142,dt870_atualizacao,136,3,4,true,false,true,true,false,ausente_comprovada,Magical,b436b6a604a43295f88c67ba0907144132c9328d5ecfefd3e501532ba8385cb8,true
+143,dt870_atualizacao,137,3,4,true,false,true,true,false,ausente_comprovada,Striking,f6bb190a245bc21f8d6fde6cd0b2e73b2260c78baac68f71775ef49fcb24025e,true
+144,dt870_atualizacao,138,3,4,true,true,true,true,false,ausente_comprovada,Natural-born,cf288851bcb93faedc6d6755b00c36aa0152e5d727480cc1930b19a5ecf70ca4,true
+145,dt870_atualizacao,139,0,2,true,false,true,true,false,ausente_comprovada,Regista,495060f556542676757c4ee2beb979e2d6cfe7b17b16868bab76fe2e5efadd80,true
+146,dt870_atualizacao,140,0,2,true,false,true,true,false,ausente_comprovada,Reconstrução,ca5056ca83a18692220d1e4363b25765ac0413995b8f0eb9e6ffe865f3ba33a9,true
+147,dt870_atualizacao,141,0,2,true,false,true,true,false,ausente_comprovada,Precisão,e2129233ef58b33de3c33cc227d22b0062b7af5687ef781029a12042eadac139,true
+148,dt870_atualizacao,142,0,2,true,false,true,true,false,ausente_comprovada,Criador de Jogadas,7a5c883368880ca8bba1f99e240b747c94b38774a9666f4e2bd137f5ffd6f4df,true
+149,dt870_atualizacao,143,0,2,true,true,true,true,false,ausente_comprovada,Física,e33d3f7572a3508a7dbbe1a71c9fb561e90d95daeaa96ff92880db3696199a30,true
+150,dt870_atualizacao,144,0,2,true,false,true,true,false,ausente_comprovada,Equilibrista,32cf550d5c9b64519214c84e2faa4e86889ce6354f48244becd1bd10995afe54,true
+151,dt870_atualizacao,145,0,2,true,false,true,true,false,ausente_comprovada,Contra-ataque,c8932d091fa737e0099419186e21f065ccae7e1210f19d2c8f72815d1a4ad44e,true
+152,dt870_atualizacao,146,0,2,true,false,true,true,false,ausente_comprovada,Bloqueio Aéreo,80caaf65d341a110e7929efe4a9bd90c4bf8601c629aa84b355a13d32b4c8538,true
+153,dt870_atualizacao,147,0,2,true,false,true,true,false,ausente_comprovada,Arrancada,1c27363ae813409866933cedaf9ce7bf75f6ad410ffdc1546cae2ac018aa5d68,true
+154,dt870_atualizacao,148,0,2,true,true,true,true,false,ausente_comprovada,Força,2fba1dd386eb0055b74d7feac8a91f558db4c77e4851efd06ef8f8db77c55d06,true
+155,dt870_atualizacao,149,0,2,true,false,true,true,false,ausente_comprovada,Sem Bola,227c268f40cc50bfb9b51fd80404b80ae2e00e7609c18f2d03cb7bdd32385006,true
+156,dt870_atualizacao,150,0,2,true,false,true,true,false,ausente_comprovada,Defesa (Roubo),722f83c4735d70a1e9c2d0e182736e530f23171c1efa5dd5344c533cd7045aa4,true
+157,dt870_atualizacao,151,0,4,true,false,true,true,false,ausente_comprovada,Força,d6953b8fd4332506126efb191bbb11ee713af85fe1eb3b3835724b61e35aa729,true
+158,dt870_atualizacao,152,1,3,true,false,true,true,false,ausente_comprovada,Regista,ced645ed4065cda8d316b3359efb2608bf176887ea095ccd77b7ac0dc48bb5c7,true
+159,dt870_atualizacao,153,1,3,true,true,true,true,false,ausente_comprovada,Reconstrução,287d85d36955b3b505529ae985c67660ac3872e64c664ece98f9cef0f0e11781,true
+160,dt870_atualizacao,154,1,3,true,false,true,true,false,ausente_comprovada,Precisão,0b0354dc84bb907af699ba430e75028da3aa96145af8874660f1ea5e40ef9b05,true
+161,dt870_atualizacao,155,1,3,true,true,true,true,false,ausente_comprovada,Criador de Jogadas,38fe7637d64443385cd57d8285d355ebae649ef362e5f43232b21e2527251bd4,true
+162,dt870_atualizacao,156,1,3,true,false,true,true,false,ausente_comprovada,Física,25f5fed3540e657d3958058ffb050772aebbe1e0db54d66b84cb95437506ff7b,true
+163,dt870_atualizacao,157,1,3,true,false,true,true,false,ausente_comprovada,Equilibrista,3d49b31e0662250653b538cea7d5e30ab3471dc19b46cb881e6f72167ff8f5f8,true
+164,dt870_atualizacao,158,1,3,true,true,true,true,false,ausente_comprovada,Contra-ataque,f37837e7f5496a99f37857fcb442965ef415890a6e07c3e0c3687eefe3c92dd5,true
+165,dt870_atualizacao,159,1,3,true,false,true,true,false,ausente_comprovada,Bloqueio Aéreo,d608d039eed4cca8ecfecd33472b10303e7db1041a7ef690c932c8fa5abeedb2,true
+166,dt870_atualizacao,160,1,3,true,false,true,true,false,ausente_comprovada,Arrancada,7d023cd0356f6ea9131341aa0e5a94a3cd1a9eaa7f0ff4fc1d237a08ba4ee14f,true
+167,dt870_atualizacao,161,1,3,true,false,true,true,false,ausente_comprovada,Força,12d57c85db82de0bc838b58505742e8842c5dff59a113aa2b60cc8f87fb949d0,true
+168,dt870_atualizacao,162,1,3,true,false,true,true,false,ausente_comprovada,Sem Bola,58d96cb1f53b825284668bfeadd97aa3c11edc03cde8571481eb6d478059d17f,true
+169,dt870_atualizacao,163,1,3,true,true,true,true,false,ausente_comprovada,Defesa (Roubo),576ad6692261f28c076b4a8ff539d2f0e461f196a9c3b67931ddbfdb6fd867c9,true
+170,dt870_atualizacao,164,2,3,true,false,true,true,true,presente_sem_semantica,Total Package,6af0118ec67ec891bd29580b08ca5fe7c781c2f3830da8a4f62e4a9602aa7b5e,true
+171,dt870_atualizacao,165,2,3,true,false,true,true,true,presente_sem_semantica,Total Package,b5ab4c4adbdb0548b480ffcf4b90c572d5d10338106af3cbb6175a44ece4a622,true
+172,dt870_atualizacao,166,0,1,true,false,true,false,,nao_avaliada,,07131968bcedad6ad4371ca5d00e75e5cfec7793dde466e5844eb800f5ab82b2,true
+173,dt870_atualizacao,167,0,1,true,false,true,true,false,ausente_comprovada,Reconstrução,902022b716f6665c1bd350ff31c465ceaec3019f8f7d8c64851c1d2a23cd89bb,true
+174,dt870_atualizacao,168,0,1,true,true,true,false,,nao_avaliada,,d53fe409cb34642db0b13f8ea0ad25de965263b2381d8e32519fe43d56f3b7fe,true
+175,dt870_atualizacao,169,0,1,true,false,true,true,false,ausente_comprovada,Criador de Jogadas,3098faf96e86b989a5ebe12025e04ae1a9bac084c7600960e287afc7d57b6ebc,true
+176,dt870_atualizacao,170,0,1,true,false,true,false,,nao_avaliada,,8a5d7297faa7785eaf15f6e22d2e87a40305952e429e32bffb0f681a98c08893,true
+177,dt870_atualizacao,171,0,1,true,false,true,false,,nao_avaliada,,6d0c30d570c5478248ac520bfc7409bebcf13c4903ed01f18c17dbdf6bde044c,true
+178,dt870_atualizacao,172,0,1,true,false,true,false,,nao_avaliada,,3bd74c4336af4ea22a343f69c1f1d4f336bc40174e8d1a61283e838d93e754ec,true
+179,dt870_atualizacao,173,0,1,true,true,true,false,,nao_avaliada,,563994bddf7fd08d04a227eb60eeb82ef3d987dfdadd70e7719d5b5c03af13aa,true
+180,dt870_atualizacao,174,0,1,true,false,true,false,,nao_avaliada,,9db4c3f583f13f64356723604d589a0a6de04d869a1d026018a97f719073d2e3,true
+181,dt870_atualizacao,175,0,1,true,false,true,false,,nao_avaliada,,6fe1e4dd4315060e387c6e7c97143ad7f4baf64412ab4a9f788a83faf5589a86,true
+182,dt870_atualizacao,176,0,1,true,false,true,false,,nao_avaliada,,5de5e89f53d1a67625addf2af229c0febd827b38d3215b2fdc67062e3a5b7bb3,true
+183,dt870_atualizacao,177,0,1,true,false,true,false,,nao_avaliada,,2f2324ced92d74de2837ad6fe1ab2fde58f78e29ee9f73bf46772dd655b9a5f3,true
+184,dt870_atualizacao,178,0,3,true,true,true,true,false,ausente_comprovada,Regista,0e76642f421cd0a689fcd209208a08fc2a6859db55e1133c478ff190f89b68e6,true
+185,dt870_atualizacao,179,0,3,true,false,true,true,false,ausente_comprovada,Reconstrução,3f7b859df5350d627b6ff55e4f598b614bfad09b32f1c2db03fa3478b16c6099,true
+186,dt870_atualizacao,180,0,3,true,false,true,true,false,ausente_comprovada,Precisão,d3584b6f911ecad56c3a3dcdad2a9c7934902497e373ec8e4856ab7227894769,true
+187,dt870_atualizacao,181,0,3,true,false,true,true,false,ausente_comprovada,Criador de Jogadas,39b490e21ccd87d6549c050862d0058b13d289ae1fb21dcbf7a934382f77c01f,true
+188,dt870_atualizacao,182,0,3,true,false,true,true,false,ausente_comprovada,Física,8bd6ea2d3b3acfec5c9636001fe098293936d69fbc35b8e4b64788c6e75d0eb6,true
+189,dt870_atualizacao,183,0,3,true,true,true,true,false,ausente_comprovada,Equilibrista,916a0985d1e0114c004d6413929b217ef507944110c85312c7d12df43f92a317,true
+190,dt870_atualizacao,184,0,3,true,false,true,true,false,ausente_comprovada,Contra-ataque,c9425d05868be9cbf12c8a0579933d746971ae6345ce59a950d2bfe69393b0e6,true
+191,dt870_atualizacao,185,0,3,true,false,true,true,false,ausente_comprovada,Bloqueio Aéreo,e6d5bc20b4442e7941a7737f54cea40343b1865d568bf73ac60f90cdaa070563,true
+192,dt870_atualizacao,186,0,3,true,false,true,true,false,ausente_comprovada,Arrancada,a503c74224e9155450fbfb781a3af1ff51d515ab9e8f00fdce5ea33e8d51aa80,true
+193,dt870_atualizacao,187,0,3,true,false,true,true,false,ausente_comprovada,Força,37f0556b153b7bce0da92cd327372ce2d246f6470e6565f9f5f8d760f26fb901,true
+194,dt870_atualizacao,188,0,3,true,true,true,true,false,ausente_comprovada,Sem Bola,d4736c8ed4f37d959aeb45b61e7b36148acd35292b78b00abcdbb9fd848fb662,true
+195,dt870_atualizacao,189,0,3,true,false,true,true,false,ausente_comprovada,Defesa (Roubo),e37ce77f576b4c95aa98bb549063a60f522723e266b5830f3d5e3a0d8813bd76,true
+197,dt870_atualizacao,190,0,4,false,false,true,false,,nao_avaliada,,e5d2fe3d07fce477f673e622297f799b8f4b1d379a6ec37de9b1c90634dd7f73,true
+198,dt870_atualizacao,191,0,4,false,false,true,false,,nao_avaliada,,b2a2b1e7eb03e705b5956a197ff85b2cca5c18b51956d7bf1e448cfd6ed529ae,true
+199,dt870_atualizacao,192,0,4,false,true,true,true,false,ausente_comprovada,Precisão,d5183e6a30a9473334b1a221a0b1866f943a861cffe4b6162cbc7b82c175a6fe,true
+200,dt870_atualizacao,193,0,4,true,false,true,true,false,ausente_comprovada,Criador de Jogadas,40395d9d12df1910d903c46436eb6041c3d322bd0fd1a986e4cd556b922614e2,true
+201,dt870_atualizacao,194,0,4,false,false,true,true,false,ausente_comprovada,Física,d71709e2a92c36fe2338e049632eea3726b73014debcfd868a73d64e37099f0d,true
+202,dt870_atualizacao,195,0,4,false,false,true,true,false,ausente_comprovada,Equilibrista,657c16d45a50c242198d0396b76a346931e54b0e5a326bd6dd57996d3dc217ca,true
+204,dt870_original,81,,,false,true,false,false,,nao_avaliada,,19b45e98b4f0c51d19f5c994e18aca30a9971b477f7ab25f6841185919adc549,false
+205,dt870_atualizacao,196,0,4,false,false,true,true,false,ausente_comprovada,Arrancada,b8d83c39b4f75c8306daaf63f23d14f1bace3e2df29ab8c53d45e5822a7da34b,true
+206,dt870_atualizacao,197,0,4,false,false,true,true,false,ausente_comprovada,Sem Bola,a340f8ba0f15dc548d9e0fae9b345f064ea93782ce2e3a9f297fd2ea0165b964,true
+207,dt870_atualizacao,198,0,4,false,false,true,true,false,ausente_comprovada,Defesa (Roubo),e2d9d87020a120cd02c616f1eacce0dc0e2cc0be0eb88a0ad9e88ac9c3ff8fd4,true
+208,dt870_atualizacao,199,2,3,false,false,true,true,true,presente_sem_semantica,Total Package,18f4cc50a49ceec6d70f06de7884ba03fe5db42f4c4f02345ec977fce1126239,true
+209,dt870_original,83,,,false,true,false,false,,nao_avaliada,,4515e87eed4ef7b3d2fd76ae89b5bc3e56b2894df066f626b67be5b17af721d1,false
+214,dt870_original,85,,,false,true,false,false,,nao_avaliada,,773a4c48c4f6df8e1dd73714bc709ac9759cf93413fb69e488a1638b4dca7b35,false
+219,dt870_original,87,,,false,true,false,false,,nao_avaliada,,f2c9aa8366355aa5e831a017b437a0f5f486e7fb4fc1e9a15f92ca6545c56716,false
+224,dt870_original,89,,,false,true,false,false,,nao_avaliada,,b4354bdbf15d6be88109ed8abc7c241aabb0b469524fbbcd59b20aee9e0a8776,false
+229,dt870_original,91,,,false,true,false,false,,nao_avaliada,,b79137fd0e58983804bc8835625d696c8a984508a132d1611e83e3b9b085309e,false
+234,dt870_original,93,,,false,true,false,false,,nao_avaliada,,613f58f5254c972a2dc11b1ae40f696a083377df7f0104fdf43aa15df5bb516a,false
+239,dt870_original,95,,,false,true,false,false,,nao_avaliada,,7566380074ea3794edbcfb9824b7a60612419e4033b4071a8e8812d7b1dc0cbd,false
+244,dt870_original,97,,,false,true,false,false,,nao_avaliada,,0263d48c7324d085adc34482023ad134f6378d7251887afaab574fe735264cce,false
+249,dt870_original,99,,,false,true,false,false,,nao_avaliada,,e8a5f2e0ac0e4da642816703cb46d1adea565254459dedf7d5c21f3a6f5af955,false
+250,dt870_atualizacao,200,5,6,false,false,true,true,false,ausente_comprovada,Ball Control,249dd7fc64f32d0471ccf58a4d588ec0aa467fd616e3ef9b8014fa16d40416a6,true
+254,dt870_original,101,,,false,true,false,false,,nao_avaliada,,951a98b42c86bd54b4f4b051d913eeaf59930ca7e0c8c11e3480994ac820dfdb,false
+259,dt870_original,103,,,false,true,false,false,,nao_avaliada,,f795aee5e3c4b7ed87b7ca4df34574937db46ab51925ae0ae1edda46c96edc83,false
+260,dt870_original,30,,,false,true,false,false,,nao_avaliada,,21c820ec616696eabdcf242de3e9f615bd0b25fbbace41c31b0e24e39ae30ef5,false
+261,dt870_atualizacao,201,5,6,false,false,true,false,,nao_avaliada,,c00ccd4dc0d1764432149f6d14424b1ff563cf332691dfe5b105630da2f42c53,true
+262,dt870_original,52,,,false,true,false,false,,nao_avaliada,,05a1437edcf05e0fa68a764152e09187d88bcb0e33676c351f45debbb7489971,false
+263,dt870_atualizacao,202,5,6,false,false,true,true,false,ausente_comprovada,Velocidade,62e53c0a727bfe97fbef3ae4bd7668be754579a41ab4d2a67e19b8d29f4f27ca,true
+264,dt870_original,162,,,false,true,false,false,,nao_avaliada,,45b12c02ee5b0b1ebd0b05aa49d7e0b15f3ffb5d176716efa03a8bb0124f705a,false
+265,dt870_atualizacao,203,5,6,false,false,true,true,false,ausente_comprovada,Physical Contact,ccc717d0641ba75368137167206be9142e89a2bf53366f26cf596558491f971f,true
+266,dt870_atualizacao,204,5,6,false,false,true,false,,nao_avaliada,,5012ac3d288d22dab1ff2db8d61843126e133076ac17e6677163be6c81e803cc,true
+267,dt870_atualizacao,205,5,6,false,false,true,true,false,ausente_comprovada,Salto,4c078e1949fa53e15e329b3c7d70d0ce30f5ece6c898725459761794ede9ca94,true
+268,dt870_original,154,,,false,true,false,false,,nao_avaliada,,839708d2eb3a474c9eacdc02feeaf30481955c6d03c6a2dcee4bd97153e44612,false
+269,dt870_original,107,,,false,true,false,false,,nao_avaliada,,49820c5433b2eb9321fb5aebfaf354d55e13047cdc61e10de39e3fe282fa7d4c,false
+274,dt870_original,109,,,false,true,false,false,,nao_avaliada,,88f942e263ce1f8b000099c66c67de935f9f26a87f61185f1b092749210c4e2a,false
+279,dt870_original,111,,,false,true,false,false,,nao_avaliada,,6581500f2c6e6b38584b97f71d25c2f29ff4050585c3f3c71402ad2a3cdbc71c,false
+284,dt870_original,113,,,false,true,false,false,,nao_avaliada,,a5b8df35ca73f86260ec2332ca046ebd6cc78f59befd5ddf7ab8cb2a137a1e07,false
+289,dt870_original,115,,,false,true,false,false,,nao_avaliada,,f3df709a1ced3ad463cd35827f12640de211dfb5494034a397521d88f945011f,false
+294,dt870_original,117,,,false,true,false,false,,nao_avaliada,,caeb0ade6b5244fe9297acb57c97e359e171387a8e80fdb41d2be006786e5751,false
+299,dt870_original,119,,,false,true,false,false,,nao_avaliada,,0da563438c8fd46915b38a6c07ced2a2b32b3ec69f7e6b421cb8e61b34186fb7,false
+301,dt870_atualizacao,206,2,3,false,false,true,true,true,presente_sem_semantica,Goalkeeping,4750c8f8983ade4ef73e2f4e0193a36daf5d1fa184188c589d28a6ce24844c5a,true
+302,dt870_atualizacao,207,2,3,false,false,true,true,true,presente_sem_semantica,Vigor Físico,bccc595ac16780d7da050761b92da1f8c4f63933fd0a8eae119b26bca828ca42,true
+303,dt870_atualizacao,208,2,3,false,false,true,true,true,presente_sem_semantica,Técnica,fbc562745a6a70c6b87052eace24ea012af97122156a2702c27d39e5ae43aaa7,true
+304,dt870_atualizacao,209,2,3,false,true,true,true,true,presente_sem_semantica,Bloqueio Aéreo,b97b1f6dfb83de9d2c60bb1935f602b214a827d3a9f3325503d741e4ca9c2b96,true
+305,dt870_atualizacao,210,2,3,false,false,true,true,true,presente_sem_semantica,Criador de Jogadas,9d88304ebf60b85912f5200b925b703a4afc6a19824ef3f6402f27a40636e7f1,true
+306,dt870_atualizacao,211,2,3,false,false,true,true,true,presente_sem_semantica,Instinto Artilheiro,9655ff7c7791376dab6e33738546831be354792325242674aa0251d6386c593e,true
+308,dt870_atualizacao,212,2,3,false,false,true,true,true,presente_sem_semantica,Força,a2f1cbfe6c9fc9bcb31c0def59dd20eeaf097fd326212f1c67059db3d78ca9b7,true
+309,dt870_original,123,,,false,true,false,false,,nao_avaliada,,97475f172397c16879023b7ded29af492aedfe0d939bbd7618e7693d24323821,false
+310,dt870_atualizacao,213,2,3,false,false,true,true,true,presente_sem_semantica,Técnica,29c6c5f9f42fda1aff26d5ff69a00c8fd812a900294cf26e730b8719c6c0e8bb,true
+311,dt870_atualizacao,214,2,3,false,false,true,true,true,presente_sem_semantica,Contra-ataque,18c77005e6312cfaa3625f88dbe6637f28b3aa9ccf7e0842ecd5facfbc7d0439,true
+312,dt870_atualizacao,215,2,3,false,false,true,true,true,presente_sem_semantica,Cruzamento,b2d7ce7a7830a3e2002e8c79d7e87f87af914f05cedf80fa995ab3fbf285e1c2,true
+313,dt870_atualizacao,216,2,3,false,false,true,true,true,presente_sem_semantica,Sem Bola,47154fd56c9e4214950f970f9a28f71e745af018705dac95f598915e685154a9,true
+314,dt870_atualizacao,217,2,3,false,true,true,true,true,presente_sem_semantica,Física,2b693f857aa56262528064b6e22288c88869dab1cc79e6ca568f1dd2673b2a68,true
+315,dt870_atualizacao,218,2,3,false,false,true,true,true,presente_sem_semantica,Defesaça,070acfdb59da42b801cbadcb606bb0fa75b2926f94bda533bf80e75ec5207f36,true
+317,dt870_atualizacao,219,2,3,false,false,true,true,true,presente_sem_semantica,Precisão,73c5c6a76ce8e07adb1200bed341894b95ee5ce31170e3bca4a27f53806e1d7d,true
+318,dt870_atualizacao,220,2,3,false,false,true,true,true,presente_sem_semantica,Criador de Jogadas,6e7a0fea5da74c0e3632f765a4e76329be50c97c2f7809989613ed643f748181,true
+319,dt870_atualizacao,221,2,3,false,true,true,true,true,presente_sem_semantica,Defesa,80855d0bbdb8b94749c9cf2a76fbec7679f47de06d1f46e9d0e761cc574a6581,true
+320,dt870_atualizacao,222,2,3,false,false,true,true,true,presente_sem_semantica,Condução Técnica,b82eb96bc89895baf68988a92d68453fe0e0173eab87618d1b00e93e254042b6,true
+321,dt870_atualizacao,223,2,3,false,false,true,true,true,presente_sem_semantica,Chute,f0ac3b728fe6402eebf7e372fef47db949045c1bb2733e656dc54952f5320a14,true
+322,dt870_atualizacao,224,2,3,false,false,true,true,true,presente_sem_semantica,Força,8903f4fbdedc13d7c1c73221d9d235aca8e5a713fa951ab375374a0560f7ee73,true
+323,dt870_atualizacao,225,2,3,false,false,true,true,true,presente_sem_semantica,Passe,9b6cedec8dc187775fe829068510a65d076d41bbf30f892330dca2ae16472e03,true
+324,dt870_atualizacao,226,2,3,false,true,true,true,true,presente_sem_semantica,Duelo (Divididas),86645c59ce7b126f555e1385c347721a3210be3a1553c405adb7bd2e11e5efaf,true
+325,dt870_atualizacao,227,2,3,false,false,true,true,true,presente_sem_semantica,Instinto Artilheiro,2193effd1b12ac001ca3802ef7b4aab616242bc813ae7c730ba6f25b3b0dd815,true
+326,dt870_atualizacao,228,2,3,false,false,true,true,true,presente_sem_semantica,Chute,31bea6b4ea9711c3217c416018a48c86a4938ab0c2d460fd88e5948754ebb1ba,true
+327,dt870_atualizacao,229,2,3,false,false,true,true,true,presente_sem_semantica,Técnica,4156232540ca9ad6caee7034349f88c7a76d6a831f1699df219e3c54fb305bc2,true
+328,dt870_atualizacao,230,2,3,false,false,true,true,true,presente_sem_semantica,Força,d0380d373116a25898afa0096a7c636b05d8a2a9c0e74bb20bed473a404d7b0c,true
+329,dt870_atualizacao,231,2,3,false,true,true,true,true,presente_sem_semantica,Disputa Aérea,0107af18860dd7ebbb165526cf5a67797acf532cb58578234641a3240f859f45,true
+330,dt870_atualizacao,232,2,3,false,false,true,true,true,presente_sem_semantica,Técnica,4f60038fd3bdd444f5fe29e0457cee51b3dc3d875e9b4401c8de0cbeec0dd779,true
+331,dt870_atualizacao,233,2,3,false,false,true,true,true,presente_sem_semantica,Motor do Time,18d7be3672fd5ac5aeda476a75edfbe309cf8fff7e99a502b9934cb2e59ba1bf,true
+332,dt870_atualizacao,234,2,3,false,false,true,true,true,presente_sem_semantica,Sem Bola,92803476d092cc9337e2707ece146c53a6548be13fef6681b2c54c46e4f85de1,true
+334,dt870_atualizacao,235,2,3,false,true,true,true,true,presente_sem_semantica,Chute,9416b4529127fb8e56c548d764c887ef78536f28c3f5c6291b9a76eaeb8d65dd,true
+335,dt870_atualizacao,236,2,3,false,false,true,true,true,presente_sem_semantica,Criador de Jogadas,893d9c9259dd2457440c3518779f9ab28de58f03e6ddab729e41cc24f81a326e,true
+336,dt870_atualizacao,237,2,3,false,false,true,true,true,presente_sem_semantica,Disputa Aérea,99f1e24bcc4a8449a490e77d6891187ceabd0ae38e12c529d3eaae9f154c5439,true
+337,dt870_atualizacao,238,2,3,false,false,true,true,true,presente_sem_semantica,Arrancada,86da0f5c5c3d854c8443242f3dc65d1eaed59121e43b4b5700dfb8406a0bcd5a,true
+338,dt870_atualizacao,239,2,3,false,false,true,true,true,presente_sem_semantica,Precisão,256cb3296d577d09fceb74d3e54ce20a0dc92ab01fe9360d3461b62ca0c4677e,true
+339,dt870_atualizacao,240,2,3,false,true,true,true,true,presente_sem_semantica,Chute,1527ed97d7a0fed06d74d489f8e0a5b6aa6313d1e52cd9a0c71475de33713ce6,true
+340,dt870_atualizacao,241,2,3,false,false,true,true,true,presente_sem_semantica,Equilibrista,6a0ffabb8e7cc723ad919d74c4196653faa9244d15bf9a3a4643df7522cb5346,true
+341,dt870_atualizacao,242,2,3,false,false,true,true,true,presente_sem_semantica,Precisão,5dc6380ef8f51bc7273279e1ae4e362d057a62b8ccdf8390e4d9d548cf9942f9,true
+342,dt870_atualizacao,243,2,3,false,false,true,true,true,presente_sem_semantica,Contra-ataque,f1a0c9061a2aa8983b3459232b74a7dfac5de77e1af6f9a4c90b4580828b3299,true
+343,dt870_atualizacao,244,2,3,false,false,true,true,true,presente_sem_semantica,Chute,46d9f06533cbe9e38f44b376bc73d14dd2ce96ef59baf0cfa47452a6ac7d2bd1,true
+344,dt870_atualizacao,245,2,3,false,true,true,true,true,presente_sem_semantica,Arrancada,5bbaedaaa151c5345c08901ecd602014ab012bb130b869a849e5a6734f15f17b,true
+345,dt870_atualizacao,246,2,3,false,false,true,true,true,presente_sem_semantica,Passe,4246627550589fc7c50031aeed1b251cb9a6e5682d12c1b2eb1daccf5ecb9792,true
+346,dt870_atualizacao,247,2,3,false,false,true,true,true,presente_sem_semantica,Cobrança de Falta,135883439e5c8335526022cb649b4e695fc05d64e89104dce5e80f7488b5fcc3,true
+347,dt870_atualizacao,248,2,3,false,false,true,true,true,presente_sem_semantica,Defesa,9b48a51b5035a1f86641c09d51550dd7b153de85ea02d33142e209720ebf33d8,true
+348,dt870_atualizacao,249,2,3,false,false,true,true,true,presente_sem_semantica,Contra-ataque,1eeacecb84bb819baaceb982dbc596db32aa16f67b987870e6c96eb6eac3f496,true
+349,dt870_atualizacao,250,2,3,false,true,true,true,true,presente_sem_semantica,Sem Bola,b10ee9aaea3e7c545872be5a9108bf641041c0014b3ef474ca5ad3d866f8c318,true
+350,dt870_atualizacao,251,2,3,false,false,true,true,true,presente_sem_semantica,Reconstrução,20b184061c547d7a160324af6badd3a3d6ca56938784b165f41626635a810cd5,true
+351,dt870_atualizacao,252,2,3,false,false,true,true,true,presente_sem_semantica,Passe,78bf3feef378d449dd3ad0ca633aaedf1fe56bfbc6325fdc4c7b1a319494982e,true
+352,dt870_atualizacao,253,2,3,false,false,true,true,true,presente_sem_semantica,Física,7c5c5078810c8ef383952a067ecd3da982b5bac9567e959ae3059887d2ae1501,true
+353,dt870_atualizacao,254,2,3,false,false,true,true,true,presente_sem_semantica,Chute,984e260b850807401b4c1a4c56f78a9471c6ed09e90081541e82d16b54dfcbb5,true
+354,dt870_atualizacao,255,2,3,false,true,true,true,true,presente_sem_semantica,Motor do Time,77169add770c055710f5be5f1bfce13b53e5ca6c10ea34c3339e23c5dd94565d,true
+355,dt870_atualizacao,256,2,3,false,false,true,true,true,presente_sem_semantica,Cruzamento,ad7e2b74ef462b8a62bdb87a4cf5c6e7f53cac25e090ccdd30af43676370d730,true
+356,dt870_atualizacao,257,2,3,false,false,true,true,true,presente_sem_semantica,Instinto Artilheiro,6a25f87c14bbbd4825b819740ead644ca2aa88545769c5e8fb8ce6a4929fab79,true
+357,dt870_atualizacao,258,2,3,false,false,true,true,true,presente_sem_semantica,Precisão,8d1b45f6fec8105d03a2071dc74754069d433c4698b20f9b4226ed4b17f3459e,true
+358,dt870_atualizacao,259,2,3,false,false,true,true,true,presente_sem_semantica,Sem Bola,bb8044d7eb3793b24356586b364a5c52a69e55cc62351ecb9572510c7b752a5e,true
+359,dt870_atualizacao,260,2,3,false,true,true,true,true,presente_sem_semantica,Goalkeeping,1d16dfdc1b4502e70f8997c037f1f661a9af3b3e7b47c303ef48149809f0c36e,true
+360,dt870_atualizacao,261,2,3,false,false,true,true,true,presente_sem_semantica,Defesaça,560644aee83bbe0e05c047422a74039ed456ae795a4574c9df82311dc7f3bbe4,true
+361,dt870_atualizacao,262,2,3,false,false,true,true,true,presente_sem_semantica,Precisão,83bf5acd79a66fb6a9b35339e54caaa61525b827d083ef3b5468a8820967664d,true
+362,dt870_atualizacao,263,2,3,false,false,true,true,true,presente_sem_semantica,Sem Bola,d48a7dbc3994a5820edc562740534515657dfc16c7cb15480497f16fc6404d95,true
+363,dt870_atualizacao,264,2,3,false,false,true,true,true,presente_sem_semantica,Instinto Artilheiro,f94e8e1f917dec0a60e3c736297c45e60ad9ee0b282745204548c55c73838575,true
+364,dt870_atualizacao,265,2,3,false,true,true,true,true,presente_sem_semantica,Criador de Jogadas,0f9f70bf08a147bb030c7383347006bb3060c77e6c2a559ae10e5c0eaee1f9e7,true
+365,dt870_atualizacao,266,2,3,false,false,true,true,true,presente_sem_semantica,Criador de Jogadas,05cbf9ce152dc7fb4fead5bed2fe122f8363e68e87da78faeda80161c32c44c3,true
+366,dt870_atualizacao,267,2,3,false,false,true,true,true,presente_sem_semantica,Técnica,3cf771b667233dc69e6ad83b1870ca8cb75d836be0e3289e109f40258f02c7b1,true
+367,dt870_atualizacao,268,2,3,false,false,true,true,true,presente_sem_semantica,Força,cdda95ea2c2570114d6637e4a611484d1ae2865c8b420a6f03855223db9064b0,true
+368,dt870_atualizacao,269,2,3,false,false,true,true,true,presente_sem_semantica,Contra-ataque,4741dd137a960a7df6b04948348249fe24df64b630581d395038ea236520e51b,true
+369,dt870_original,147,,,false,true,false,false,,nao_avaliada,,55ce904fb5f0583eec8faa4eb4c7d5c19ed203b0e57ad7370d7ac2ea0f2dad08,false
+370,dt870_atualizacao,270,2,3,false,false,true,true,true,presente_sem_semantica,Motor do Time,f81ee1f25695e1f3ce517e0a955e7b5dcc259e7823cf8c34e8eb28b1d2080ea3,true
+371,dt870_atualizacao,271,2,3,false,false,true,true,true,presente_sem_semantica,Defesa (Roubo),ebe6b02ef8c7ce822078fad7e880df62ccc9a7eee82da4bf8c4d145188880b6b,true
+372,dt870_atualizacao,272,2,3,false,false,true,true,true,presente_sem_semantica,Instinto Artilheiro,40d6bcdda109205096aacb2558cb7fb11b010e878bcb3bca0590fcf04be2cbb7,true
+373,dt870_atualizacao,273,2,3,false,false,true,true,true,presente_sem_semantica,Cruzamento,d61bfb59aa4b5fb349c54933c2d7c5a98ef375493c3328845a21f983a6eaeda5,true
+374,dt870_atualizacao,274,2,3,false,true,true,true,true,presente_sem_semantica,Contra-ataque,36d3e0666f3ac74037ad19f9183975f1a098ce6d44f0da1cd74134f86b667697,true
+375,dt870_atualizacao,275,2,3,false,false,true,true,true,presente_sem_semantica,Defesa,97434002946d2cb0e30c57134dbbe1e96a7fccb98b6f00aeb9ad423f634cea65,true
+376,dt870_atualizacao,276,2,3,false,false,true,true,true,presente_sem_semantica,Cobrança de Falta,f5add9997f3a743599dda9630a742b5929bbdfde4a938ce6b71c3cbde1b31990,true
+377,dt870_atualizacao,277,2,3,false,false,true,true,true,presente_sem_semantica,Vigor Físico,7ad995dd87fc8123eb6da53b0aee53e312ae34b811c16f7b7cd8625f0c78c52a,true
+378,dt870_atualizacao,278,2,3,false,false,true,true,true,presente_sem_semantica,Duelo (Divididas),3b1659de37e5e8992ea36f2ef28755893fa49ea44007b0e06b001abebb1487be,true
+379,dt870_atualizacao,279,2,3,false,true,true,true,true,presente_sem_semantica,Sem Bola,998f3a68cb061cb45523417d7d92ef1dd504e62690222b6beb22b3bc22d94742,true
+380,dt870_atualizacao,280,2,3,false,false,true,true,true,presente_sem_semantica,Chute,378d78eceb1df56db6851e8038fc46cca027e7e362fcd2c33694d40668656c10,true
+381,dt870_atualizacao,281,2,3,false,false,true,true,true,presente_sem_semantica,Defesaça,6482101868ed331f5fdfe29c2c9dc8a91e4dd0d2b4ab58e3510aebd64bad0987,true
+382,dt870_atualizacao,282,2,3,false,false,true,true,true,presente_sem_semantica,Força,fedfc9dcd01eb636f74b1d9db42434dacfb6ec71a9c6393abac8f8cd281f464f,true
+383,dt870_atualizacao,283,2,3,false,false,true,true,true,presente_sem_semantica,Condução Técnica,691d08ba23fcde5730cef9fb50983bc58d6bb6104979006ac3c764e52b365fa0,true
+384,dt870_atualizacao,284,2,3,false,true,true,true,true,presente_sem_semantica,Precisão,af0ab0076016edcad91ce542c2cfa44e8802b307c16688b53ef84086245834bb,true
+385,dt870_atualizacao,285,2,3,false,false,true,true,true,presente_sem_semantica,Reconstrução,995e70b2301f64f07a14ead42cbd0d8c04090907ed3c59ebed7dffd140cae938,true
+386,dt870_atualizacao,286,2,3,false,true,true,true,true,presente_sem_semantica,Instinto Artilheiro,fc6b3b2bf7754ecec9dfd2f6dd8161467f8b66a4bc0313933444009d8eb112ce,true
+387,dt870_atualizacao,287,2,3,false,false,true,true,true,presente_sem_semantica,Defesa (Roubo),543dfbf59e09e2eb03dc58107d7dc977388f11e3c0210c7138e50a19575e3fd7,true
+388,dt870_atualizacao,288,2,3,false,false,true,true,true,presente_sem_semantica,Chute,64e411093f1f517fc6981233eede2f87886e4567605510ecc2cd749115c97163,true
+389,dt870_atualizacao,289,2,3,false,true,true,true,true,presente_sem_semantica,Condução Técnica,f778fde6e0d2e2d6ded4aa3eab5fd045295d4f1fc5f0d59dccce5aa220f2c081,true
+390,dt870_atualizacao,290,2,3,false,false,true,true,true,presente_sem_semantica,Instinto Artilheiro,33c9adfbe6f1e0ad0518074490ea13e9edfc8ecf317c3f6cf127077299f5e877,true
+391,dt870_atualizacao,291,2,3,false,false,true,true,true,presente_sem_semantica,Goalkeeping,f57bc25b95a3e0a25d910fc2a1b08d616ce505c50cfb078eea84a7a92322aef2,true
+392,dt870_atualizacao,292,2,3,false,false,true,true,true,presente_sem_semantica,Chute,f9079346a7178a7586183072439699cd4e5765077b5722391db224c9957afa79,true
+393,dt870_atualizacao,293,2,3,false,false,true,true,true,presente_sem_semantica,Chute,82abbfdd404be97e356b745677bd322943fbc9f3ae82eb312c43545afc58cc0c,true
+394,dt870_atualizacao,294,2,3,false,true,true,true,true,presente_sem_semantica,Técnica,8b43a2c8e297273b652bb322396dd055e68da8f4f94f772ca6af3e0465777efc,true
+395,dt870_atualizacao,295,2,3,false,false,true,true,true,presente_sem_semantica,Fantasia,f4f66b5531b3eb1bd574d21f38ddd6551cf5497381d19081be2d56ce251319c3,true
+396,dt870_atualizacao,296,2,3,false,false,true,true,true,presente_sem_semantica,Física,b26d077dac2c809f7cc85fef2f43cf1054aa66d0deec25684965c3a737d0299c,true
+397,dt870_atualizacao,297,2,3,false,false,true,true,true,presente_sem_semantica,Condução Técnica,1b3f8625f6f20f6141553c13661b72df8d0ec3bfefebd482502c26f5c221445d,true
+398,dt870_atualizacao,298,2,3,false,false,true,true,true,presente_sem_semantica,Força,9fce8c490337c963a47addf1559b03dc154ccc24b05e1c7b1d2f62de3d522014,true
+399,dt870_atualizacao,299,2,3,false,true,true,true,true,presente_sem_semantica,Vigor Físico,6b76aa90969fe2f247f5ecff1e9d3f5dad87eaa43021f0f13849601a1b1eb59e,true
+400,dt870_atualizacao,300,2,3,false,false,true,true,true,presente_sem_semantica,Arrancada,d7acd4fb67654d144866a052d46475406c5ef486ad4e9837b12bed23b7df414e,true
+401,dt870_atualizacao,301,2,3,false,false,true,true,true,presente_sem_semantica,Precisão,fb615a5a41dc540ec4b48dd2cdf4ec4ae0720fdf91031d4d8343ef1ce61e7bdb,true
+402,dt870_atualizacao,302,2,3,false,false,true,true,true,presente_sem_semantica,Agilidade,4435a4612dbfaaf368ea02cc8433eaffa999f6b3770636fcec959a1e6aaae04a,true
+403,dt870_atualizacao,303,2,3,false,false,true,true,true,presente_sem_semantica,Duelo (Divididas),009359040487d22a540760e71358aa4708f4576b10e74f797457ef6a62f8e3e2,true
+404,dt870_atualizacao,304,2,3,false,true,true,true,true,presente_sem_semantica,Defesa,34cb554b3df38e610621087731c8012a4032f6beb0030a154ff1051295558d4c,true
+405,dt870_atualizacao,305,2,3,false,false,true,true,true,presente_sem_semantica,Motor do Time,62283c15b77b22a540e3636881ab578bd4f4196d86278839cf741a37ec048b0c,true
+406,dt870_atualizacao,306,2,3,false,false,true,true,true,presente_sem_semantica,Duelo,74d3ab546f8beb775c4d46e9b227c7549b30c2a1feeeb3385224fd553143be6c,true
+407,dt870_atualizacao,307,2,3,false,false,true,true,true,presente_sem_semantica,Cruzamento,2b5588b93cdb996cd578b647e0757c3e2e0697a2204b323e6d957bb658a2b88c,true
+408,dt870_atualizacao,308,2,3,false,false,true,true,true,presente_sem_semantica,Precisão,e53308f064554fd573f6d09c494d35031ba925f7296fac53206ece2cd168c26a,true
+409,dt870_atualizacao,309,2,3,false,true,true,true,true,presente_sem_semantica,Chute,c7b73287c3bced630e03018f66266511371a9769355725e12a5f5ded810de49a,true
+411,dt870_atualizacao,310,2,3,false,false,true,true,true,presente_sem_semantica,Defesaça,5f2a76fd19663d6bba984b75e6a7a954f55c6234afbdfc3210f6306ba837a849,true
+412,dt870_atualizacao,311,2,3,false,false,true,true,true,presente_sem_semantica,Técnica,2c4dfb15e29d4796fd385064c3913ab1ed8dafa38edd718da7bead257d803b47,true
+413,dt870_atualizacao,312,2,3,false,false,true,true,true,presente_sem_semantica,Chute,d4d8c9af5d90e9fac652790aa8f7fa4aafd4c74cab2c45d4ba15bac6d108df08,true
+414,dt870_atualizacao,313,2,3,false,false,true,true,true,presente_sem_semantica,Instinto Artilheiro,0747c4e441a86b4c6506f526fd851163bffa7e359fce3601cc520b4b96100f05,true
+415,dt870_atualizacao,314,2,3,false,false,true,true,true,presente_sem_semantica,Precisão,6ff748ad28edbf2ae3a7f166b25ec28dbc407559abd114a61f6de6757d4d35c7,true
+416,dt870_atualizacao,315,2,3,false,false,true,true,true,presente_sem_semantica,Vigor Físico,0be8d132bbf93522a5c104912844d526e833a1bbc17f04fe1d8a7f9bab428b52,true
+417,dt870_atualizacao,316,2,3,false,false,true,true,true,presente_sem_semantica,Instinto Artilheiro,d289ca83b3267731a87b836fc6b0ff93dd0d805d066b03796c960102a976a1a3,true
+418,dt870_atualizacao,317,2,3,false,false,true,true,true,presente_sem_semantica,Cruzamento,def20d998419a86bb72f64a2a779c8b05f9e2765144a2ee808dd2fe813b8e0a0,true
+419,dt870_atualizacao,318,2,3,false,false,true,true,true,presente_sem_semantica,Técnica,5b74d9923901f9283c9aca6057bf9bff5c080eeb152ce4a25a4d829e7a17b3b7,true
+420,dt870_atualizacao,319,2,3,false,false,true,true,true,presente_sem_semantica,Defesaça,81ff4f49a229f604d01e1fc32813708b45ca9ea5ce995cf8eb062e910126d392,true
+421,dt870_atualizacao,320,2,3,false,false,true,true,true,presente_sem_semantica,Bloqueio Aéreo,db581a5a193c3889fa2ee41de9033907cf5e79367229b18fe43385afa6318df1,true
+422,dt870_atualizacao,321,2,3,false,false,true,true,true,presente_sem_semantica,Reconstrução,994d814f17e7c7216b55545d45c0fc48a1d87b5e4562c7f7f0ff73a398dadcf5,true
+423,dt870_atualizacao,322,2,3,false,false,true,true,true,presente_sem_semantica,Agilidade,30427bc6c2c76bb4796f700191be94d64d53988676af4b19455f9ff417bbfecd,true
+424,dt870_atualizacao,323,2,3,false,false,true,true,true,presente_sem_semantica,Arrancada,b594ea8d035bda85f181db21a5a5f15fbf2b7661d2623444fab4cc46219b10cd,true
+425,dt870_atualizacao,324,2,3,false,false,true,true,true,presente_sem_semantica,Criador de Jogadas,e7b9dde0d9550d7ff1204bd02155efbcb3398107fe3d4d93bbb5954f22c261ed,true
+426,dt870_atualizacao,325,2,3,false,false,true,true,true,presente_sem_semantica,Chute,e82437b7bf5fc162697334cd120d21289e417ace327e0caea68e1769ff74d613,true
+427,dt870_atualizacao,326,2,3,false,false,true,true,true,presente_sem_semantica,Chute,b9604d4b4cf8c19cf3206d846b49cfc04bbc2aa321063ebd7a397207a8800dbc,true
+428,dt870_atualizacao,327,2,3,false,false,true,true,true,presente_sem_semantica,Chute,af2a71862fbf2864a5b64e4019c39da740a579b7d9b3e0cf25aedec3be9c4a6d,true
+429,dt870_atualizacao,328,2,3,false,false,true,true,true,presente_sem_semantica,Precisão,45c886146dcc5ecac5ec3f433f29794844c521a372d37d2ba78f32d8710ef3c1,true
+430,dt870_atualizacao,329,2,3,false,false,true,true,true,presente_sem_semantica,Duelo (Divididas),18dc2cb5de6c361dbf21a379963473391423547d85638e4ec9d8352008ccd2b8,true
+431,dt870_atualizacao,330,2,3,false,false,true,true,true,presente_sem_semantica,Cruzamento,455c7d1865e01678f2b1d86c005c20c0dfffddf8c6757c10df3a796926e8d247,true
+433,dt870_atualizacao,331,2,3,false,false,true,true,true,presente_sem_semantica,Cobrança de Falta,2e891ea444d5b023672ef05e480a1c760634a7dfbccbe733799605e74e52baf1,true
+435,dt870_atualizacao,332,2,3,false,false,true,true,true,presente_sem_semantica,Defesa,db7c3c814ef2316df9639c99f9d8e67525a04f421aefe6b1543156a2e19dd084,true
+436,dt870_atualizacao,333,2,3,false,false,true,true,true,presente_sem_semantica,Cruzamento,9b85fcda02fbf8a3995fece19be789ee5a5772a03cf328ce65078ebe5b505ee0,true
+437,dt870_atualizacao,334,2,3,false,false,true,true,true,presente_sem_semantica,Física,b1af4495e7449dd46eaaa56aa62698ec11f34543c8206352bd7060e9ff6281d0,true
+438,dt870_atualizacao,335,2,3,false,false,true,true,true,presente_sem_semantica,Sem Bola,9dfea197809af70033d7f867244cc16fcbb8237a69b161394fddaf63969865c8,true
+439,dt870_atualizacao,336,2,3,false,false,true,true,true,presente_sem_semantica,Disputa Aérea,d54ea6f87c6232c82fbacaefc029f75c4dfe904e9dfb7ef1ef4618bdb57ecb63,true
+440,dt870_atualizacao,337,2,3,false,false,true,true,true,presente_sem_semantica,Motor do Time,0bc896673e9f57df60fa8db51f969d95b7403cce90ea7f2216cd4f152d0ff9e7,true
+441,dt870_atualizacao,338,2,3,false,false,true,true,true,presente_sem_semantica,Motor do Time,cfbfd690fe069e21337af4cf46de75a7cfa167306e0aaa8d61ed9ad08bc63c37,true
+442,dt870_atualizacao,339,2,3,false,false,true,true,true,presente_sem_semantica,Bloqueio Aéreo,ab0b793bbca25df8dec682fa739d80b5ff1fdfbe6967065978e02589337ec26c,true
+443,dt870_atualizacao,340,2,3,false,false,true,true,true,presente_sem_semantica,Defesa (Roubo),31ac36015b064948dee619ca40a512f018396254c30d4a659b7956ac99f8ef81,true
+444,dt870_atualizacao,341,2,3,false,false,true,true,true,presente_sem_semantica,Cruzamento,1908fa255769daf5704a3542db01339fa06f1d55e8eccf7d6da8deec55d8ea0f,true
+445,dt870_atualizacao,342,2,3,false,false,true,true,true,presente_sem_semantica,Reconstrução,7bf30077edd2892c441c04c26cc7408ba9d1d5a7b42a70ff54153c481bd7d090,true
+446,dt870_atualizacao,343,2,3,false,false,true,true,true,presente_sem_semantica,Chute,d2b9dd66d97d0016e038f8d04b792109e677ac08c3aa87c5a48cd68a21da2448,true
+447,dt870_atualizacao,344,2,3,false,false,true,true,true,presente_sem_semantica,Bloqueio Aéreo,d85aa053520054f2a1b13d4d0b29b62cfb1cad166282dcd48a41686f5762ad28,true
+451,dt870_atualizacao,345,2,3,false,false,true,true,true,presente_sem_semantica,Passe,6abc4aa37471ed1559691e02ff319468565fb5fb384965f4d1f417a87fbcef56,true
+452,dt870_atualizacao,346,2,3,false,false,true,true,true,presente_sem_semantica,Goalkeeping,0935b17c74b1ad778b083e7be97754f784b5f74f64460659e619db8a03fe0386,true
+453,dt870_atualizacao,347,2,3,false,false,true,true,true,presente_sem_semantica,Criador de Jogadas,83077509d3079a789cbbf61b9e5ea4c964f04e3eada3f81581bacdac79e2b9d1,true
+454,dt870_atualizacao,348,2,3,false,false,true,true,true,presente_sem_semantica,Reconstrução,04b25318652332c2888224b22dc25f12b39e2764a7d4e3400369d443529dcf8d,true
+455,dt870_atualizacao,349,2,3,false,false,true,true,true,presente_sem_semantica,Defesaça,c1d0ada4289d9ca488b1a8108e44a1db46dd76918ffdd10079abdb94e40581e5,true
+456,dt870_atualizacao,350,2,3,false,false,true,true,true,presente_sem_semantica,Defesa (Roubo),2399e92349e3cb88013921134aef566860b6918302a162f188ed0591f1944b58,true
+457,dt870_atualizacao,351,2,3,false,false,true,true,true,presente_sem_semantica,Duelo,56e3fde508a81e6eb947fc3e70a411e22e3ddd2e8da5f4428fd0eae86693f83b,true
+458,dt870_atualizacao,352,2,3,false,false,true,true,true,presente_sem_semantica,Chute,e751b8f0198d7cd442b897cb89c0127df26efd80b143f2e8556cff8edba2d320,true
+459,dt870_atualizacao,353,2,3,false,false,true,true,true,presente_sem_semantica,Sem Bola,7809f720bcd2f3a27dba3a82983ba79d0be38d39c3975fffc0f5c0a5c62b9e5a,true
+460,dt870_atualizacao,354,2,3,false,false,true,true,true,presente_sem_semantica,Condução Técnica,d5415ffb517f89f748a9517e0e1c69d5adf2fe74ac3c65d755b5940ecf9d6d71,true
+461,dt870_atualizacao,355,2,3,false,false,true,true,true,presente_sem_semantica,Disputa Aérea,4fe053f6d06719fb3c5a40c8d47b85f2db1bbbf596d6513b005aa3064984dd28,true
+462,dt870_atualizacao,356,2,3,false,false,true,true,true,presente_sem_semantica,Técnica,7da92e141704ea77fc9a25b74b77d7004e2ed4badd8492e1c6083621050cb481,true
+463,dt870_atualizacao,357,2,3,false,false,true,true,true,presente_sem_semantica,Vigor Físico,2aacfa2d2b8f65b23819b4fdd7e4625c6e4684fc50719a09f2d1aca1b54f76e7,true
+464,dt870_atualizacao,358,2,3,false,false,true,true,true,presente_sem_semantica,Defesaça,7dcf7e0886a8ca524064544428c377a37eb6d6192d0d91e6e521dd08c49704fc,true
+465,dt870_atualizacao,359,2,3,false,false,true,true,true,presente_sem_semantica,Motor do Time,8526e2d7316cb7e0a867c14709bd923d52794ee26782f55e27fbf87a568c8dfd,true
+466,dt870_atualizacao,360,2,3,false,false,true,true,true,presente_sem_semantica,Sem Bola,a22adb40d8f4b3612313c1836972e87a4cd4e567c2fd26f3d8a5d0e9d6f5dec6,true
+467,dt870_atualizacao,361,2,3,false,false,true,true,true,presente_sem_semantica,Técnica,a1d5c5eb811bba5ac4b6de1087352665c3e99721a9c5bb26d5b2b6de232d3599,true
+468,dt870_atualizacao,362,2,3,false,false,true,true,true,presente_sem_semantica,Equilibrista,f6d6bd7156c29ef0231c3e27d010d4050ebc3208b47512fda0cb1960aac1c3b6,true
+469,dt870_atualizacao,363,2,3,false,false,true,true,true,presente_sem_semantica,Instinto Artilheiro,ab9f8547d78ec351fdde8f293c1de2ca9082e7142d891e87f88f03811c990b75,true
+470,dt870_atualizacao,364,2,3,false,false,true,true,true,presente_sem_semantica,Cruzamento,81b2ed5b3409ef2974963cf39a53ca3cf9a36ad82562330aceec682079dc2d2d,true
+471,dt870_atualizacao,365,2,3,false,false,true,true,true,presente_sem_semantica,Defesa,753ce5f07acfa4b88b9df45be293b969aa0616e1b56baec457d9e2ee68ed9566,true
+472,dt870_atualizacao,366,2,3,false,false,true,true,true,presente_sem_semantica,Equilibrista,c44cb1e606d84240690205eed62ba493a1c64bfc9c6d8ea447b9b93fa06fa2f3,true
+473,dt870_atualizacao,367,2,3,false,false,true,true,true,presente_sem_semantica,Goalkeeping,e6fbf79c1ee9820ed544507a2ea3da14bdd013b9cb941a884af0c496cf0fedae,true
+474,dt870_atualizacao,368,2,3,false,false,true,true,true,presente_sem_semantica,Defesa (Roubo),9abdee6bc0aefe9bc0e0b98f74351c18b761fc56673bf06e235acc8e7efd0c6f,true
+475,dt870_atualizacao,369,2,3,false,false,true,true,true,presente_sem_semantica,Goalkeeping,2738e07cb36c49b2a0b7c8e553918e14ce717b017a06de3ed3c76464b3e93dd2,true
+476,dt870_atualizacao,370,2,3,false,false,true,true,true,presente_sem_semantica,Criador de Jogadas,e4c57dd1a57e9e3db2a1cb944fbd9de07a983101ac8269b0a3530ed827ceb787,true
+477,dt870_atualizacao,371,2,3,false,false,true,true,true,presente_sem_semantica,Defesa,28489764c4fea25c3b51a8e6f4621d6b83549a0f3dc0239a96fed4971f170549,true
+478,dt870_atualizacao,372,2,3,false,false,true,true,true,presente_sem_semantica,Reconstrução,51331c1591374b81d28372e798f2837e58ccb5231f7b96458182d8ebf22d1bc9,true
+480,dt870_atualizacao,373,2,3,false,false,true,true,true,presente_sem_semantica,Chute,22ff81cecc813a027958fb36eb7456be819b17187c5d8814856b137ebd058d0c,true
+481,dt870_atualizacao,374,2,3,false,false,true,true,true,presente_sem_semantica,Contra-ataque,9b50122ab852e6a2db9a514da17d354b2adb2c002fe9dba9090c5d0a72e54476,true
+482,dt870_atualizacao,375,2,3,false,false,true,true,true,presente_sem_semantica,Precisão,077e593ea2c8a573bdbe9ee325eb7a5e7883f57a63168eb2e67488188542d052,true
+483,dt870_atualizacao,376,2,3,false,false,true,true,true,presente_sem_semantica,Reconstrução,e07f0e52b2735a45cba0129238b966597990a685f247472c2eee3403b077fea9,true
+484,dt870_atualizacao,377,2,3,false,false,true,true,true,presente_sem_semantica,Técnica,bc50c1e6abf2d89b7137133516d2fb0c6867791d60c87afa09e5070509954b62,true
+485,dt870_atualizacao,378,2,3,false,false,true,true,true,presente_sem_semantica,Defesa (Roubo),1b91bb09d7317a6952440d1251140cdc94cec3a226eb9f32db7f6abb3f35fc11,true
+486,dt870_atualizacao,379,2,3,false,false,true,true,true,presente_sem_semantica,Precisão,ec1707d1fddec043721ab68d3b5acb8ce4a34d60b40d8678a23361dde49dee3d,true
+487,dt870_atualizacao,380,2,3,false,false,true,true,true,presente_sem_semantica,Chute,0be0f7bf4c4e98cd05aa89a0e6465b5cfe72545e4f5193d510277523de0d7229,true
+488,dt870_atualizacao,381,2,3,false,false,true,true,true,presente_sem_semantica,Precisão,323e84f110ae0f724149e5c892b16c568fc468871cc49515f754801fbfdebd79,true
+489,dt870_atualizacao,382,2,3,false,false,true,true,true,presente_sem_semantica,Instinto Artilheiro,5884d53d06f2e396210f3d628cf9632de9ef006b3d2a315cdde3125152daf6d7,true
+490,dt870_atualizacao,383,2,3,false,false,true,true,true,presente_sem_semantica,Defesaça,e3f3d9363542247d73090e426f40a2ffa2d09ae76c954888a3034e2adf84ca8f,true
+491,dt870_atualizacao,384,2,3,false,false,true,true,true,presente_sem_semantica,Instinto Artilheiro,ddb776a87cdaf099e988ac39e8297943740b404830c6c43b3df1da8f0336f97a,true
+492,dt870_atualizacao,385,2,3,false,false,true,true,true,presente_sem_semantica,Física,e9d533d5e688fca6c737bde3fb619dcfd1e6c077bb7629b5f55a0a76bd3517a8,true
+493,dt870_atualizacao,386,2,3,false,false,true,true,true,presente_sem_semantica,Defesa (Roubo),569fa05ba0c07cedad7f8a16cb431817041d44f31fc5f4ce3993240d28d4601d,true
+494,dt870_atualizacao,387,2,3,false,false,true,true,true,presente_sem_semantica,Precisão,ae31764c962b66ddee9bec225085833ca9f848fb9ec379538f9f768e2d379490,true
+495,dt870_atualizacao,388,2,3,false,false,true,true,true,presente_sem_semantica,Passe,900be7c52ddb0ed7b6512242c975c8a8c5b4e3aa70603a168563198fb8936be3,true
+496,dt870_atualizacao,389,2,3,false,false,true,true,true,presente_sem_semantica,Sem Bola,6f99dfc85ea5575d9e648f40cde5ae6d4589c5351ab384e8bb1b09e175768659,true
+497,dt870_atualizacao,390,2,3,false,false,true,true,true,presente_sem_semantica,Arrancada,9db672d52bfb6c4690f7b8f47900ad3941167c919c49d26f9eb4524b197b8e72,true
+498,dt870_atualizacao,391,2,3,false,false,true,true,true,presente_sem_semantica,Força,2235c4d219234015719940b1ac3fcc2ed33b1419f308b9c804ee9e45c2516922,true
+499,dt870_atualizacao,392,2,3,false,false,true,true,true,presente_sem_semantica,Condução Técnica,07c1a317f58d75d398a0027a1035fdad23d2da632bdc5b7cbd04f279115e8059,true
+500,dt870_atualizacao,393,2,3,false,false,true,true,true,presente_sem_semantica,Motor do Time,0a33e7f367402c2a8cb2bf58fe5b37f82cf3b456fc53f20640da342de5942f97,true
+501,dt870_atualizacao,394,2,3,false,false,true,true,true,presente_sem_semantica,Condução Técnica,6e99c7c8f55dabdb47dcbf82d1c417afe2366fd1f7e7650832e2f372130ae0b3,true
+502,dt870_atualizacao,395,2,3,false,false,true,true,true,presente_sem_semantica,Passe,f7f2aa8e47080d8f0f9d020101ab0997e13ff8618b3ca16bcc0b0fc336ae6063,true
+503,dt870_atualizacao,396,2,3,false,false,true,true,true,presente_sem_semantica,Regista,9511008d9c85d59a3fe451b9c1b7016344932e782a40c4a068a895b264d46005,true
+504,dt870_atualizacao,397,2,3,false,false,true,true,true,presente_sem_semantica,Chute,fdcee2ebedeef036b57a8e57460871f39d93e7d297f7d7fd7e91b78aa519b8e5,true
+505,dt870_atualizacao,398,2,3,false,false,true,true,true,presente_sem_semantica,Criador de Jogadas,1e05e1c13612bd2a09e48aa71ca6886c03db4aa32f479981209b16b76c5f9700,true
+506,dt870_atualizacao,399,2,3,false,false,true,true,true,presente_sem_semantica,Agilidade,c8a6fa5621dcef1af533591347fe2f020ebbb8ec96eb6e6a88a99ab5b8b5fa12,true
+507,dt870_atualizacao,400,2,3,false,false,true,true,true,presente_sem_semantica,Física,9e7828714e6bf95a19db365a62bb7928f1cde287a6c839176d3c23f1941f8a2f,true
+510,dt870_atualizacao,401,2,3,false,false,true,true,true,presente_sem_semantica,Física,8178e785e02c6321932e63f484b91b2ba09cd88e6b674580796f82206e57f286,true
+511,dt870_atualizacao,402,2,3,false,false,true,true,true,presente_sem_semantica,Defesa,56eb7fb07f6c021fb458fdc29f621c8912cdf383ece27134de512472772105bf,true
+512,dt870_atualizacao,403,2,3,false,false,true,true,true,presente_sem_semantica,Defesa,73508b61ff4693d765495f6dc7454dfa7ef40ef3f6188936c73284eb3150094f,true
+513,dt870_atualizacao,404,2,3,false,false,true,true,true,presente_sem_semantica,Condução Técnica,b8ecaa840b13a1759cc354130516cb398f93eb97620be5f01ba5a98f4ed997ea,true
+514,dt870_atualizacao,405,2,3,false,false,true,true,true,presente_sem_semantica,Defesa (Roubo),323aa4530a45087dbdd4e0112b554821a40bd9893f304c1fdaf2b0d576c06117,true
+515,dt870_atualizacao,406,2,3,false,false,true,true,true,presente_sem_semantica,Vigor Físico,5345f890784c07e39888fd8b04b96e4d27748802ff681fd0333e9c1d9cc37967,true
+516,dt870_atualizacao,407,2,3,false,true,true,true,true,presente_sem_semantica,Instinto Artilheiro,69ef2692798435c3a4de22765d46ac47759e9a80361079a12d769314d27e9f33,true
+544,dt870_original,152,,,false,true,false,false,,nao_avaliada,,a2091661cf7ba1a9bfbcbd93bd37a013e67a06f80bb2b00ebbb48cee17a3e2df,false
+1023,dt870_original,100,,,false,true,false,false,,nao_avaliada,,d674277525f785503269be7fbb6d467d9301b5ba69a619dcd9dff95472cbf44a,false

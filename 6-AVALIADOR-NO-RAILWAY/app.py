@@ -98,17 +98,21 @@ def avaliar():
 
     p = request.get_json(silent=True) or {}
     card_id = p.get('card_id')
-    funcao  = p.get('funcao')
-    if not card_id or not funcao:
-        return erro('faltou card_id ou funcao')
+    funcao_id = p.get('funcao_id')
+    if not card_id or funcao_id is None:
+        return erro('faltou card_id ou funcao_id')
+    try:
+        funcao_id = int(funcao_id)
+    except (TypeError, ValueError):
+        return erro('funcao_id invalido')
 
     try:
         r = regua()
     except Exception:
         return erro('nao sei agora: a regua nao esta carregada', 503)
 
-    if funcao not in r.molde:
-        return erro('funcao desconhecida')
+    if funcao_id not in r.molde:
+        return erro('funcao_id desconhecida')
 
     try:
         c = banco.carta_para_simular(card_id)
@@ -127,35 +131,34 @@ def avaliar():
     if any(n < 0 or n > 25 for n in barras.values()):
         return erro('nivel de barra fora de 0 a 25')
 
-    fixas    = set(c.get('habilidades_fixas') or [])
-    possivel = set(c.get('habilidades_possiveis') or [])
-    escolhidas = list(p.get('habilidades_escolhidas') or [])
+    fixas = {int(x) for x in (c.get('habilidades_fixas') or [])}
+    possivel = banco.pool_da_funcao(card_id, funcao_id)
+    if possivel is None:
+        return erro('pool canônico recusado para esta carta e função', 409)
+    possivel = set(possivel)
+    try:
+        escolhidas = [int(x) for x in (p.get('skill_ids') or [])]
+    except (TypeError, ValueError):
+        return erro('skill_ids invalidos')
     fora = [h for h in escolhidas if h not in possivel]
     if fora:
-        return erro('esta carta nao aceita: %s' % ', '.join(fora[:3]))
+        return erro('esta carta nao aceita skill_id: %s' % ', '.join(str(x) for x in fora[:3]))
     vagas_hab = 5 if possivel else 0
     if len(escolhidas) > vagas_hab:
         return erro('a carta tem %d vagas de habilidade' % vagas_hab)
     habs = sorted(fixas | set(escolhidas))
 
-    impetos = [int(i['impeto_id']) for i in (c.get('impetos_nativos') or [])
-               if i.get('impeto_id') is not None]
-    extra = p.get('impeto_escolhido')
-    if extra is not None:
-        if int(c.get('vagas_livres') or 0) < 1:
-            return erro('esta carta nao tem vaga de impeto livre')
-        if int(extra) not in r.imp:
-            return erro('impeto desconhecido')
-        impetos.append(int(extra))
+    if p.get('impeto_escolhido') is not None or p.get('impeto_nome') is not None:
+        return erro('consumidor de ímpetos continua desligado', 409)
+    impetos = []
 
     tid  = p.get('tecnico_id')
-    prof = p.get('proficiencia')
+    prof = None
     if tid is not None:
         tid = int(tid)
         if tid not in r.tec:
             return erro('tecnico desconhecido')
-        if prof is None:
-            prof = r.tec[tid].get('proficiencia')
+        prof = r.tec[tid].get('proficiencia')
         if prof is None:
             return erro('falta a proficiencia do tecnico')
 
@@ -164,7 +167,7 @@ def avaliar():
     carta = {'atributos': c.get('atributos'), 'orcamento': c.get('orcamento')}
 
     try:
-        r2 = AV.avalia(estado, carta, funcao, r)
+        r2 = AV.avalia(estado, carta, funcao_id, r)
     except (AV.InsumoFaltando, ReguaIncompleta) as e:
         return erro('nao da para calcular: %s' % e, 409)
 
@@ -174,7 +177,7 @@ def avaliar():
         'valores': r2['valores'],
         'ganho_por_etapa': r2['ganho_por_etapa'],
         'versao_molde': r2['versao_molde'],
-        'usou': {'habilidades': habs, 'impetos': len(impetos),
+        'usou': {'skill_ids': habs, 'impetos': len(impetos),
                  'barras_gastas': sum(r.custo[n] for n in barras.values() if n),
                  'orcamento': carta['orcamento']},
     })
@@ -195,16 +198,20 @@ def otimizar():
         return erro('muitas contas em pouco tempo; espere um minuto', 429)
 
     p = request.get_json(silent=True) or {}
-    card_id, funcao = p.get('card_id'), p.get('funcao')
-    if not card_id or not funcao:
-        return erro('faltou card_id ou funcao')
+    card_id, funcao_id = p.get('card_id'), p.get('funcao_id')
+    if not card_id or funcao_id is None:
+        return erro('faltou card_id ou funcao_id')
+    try:
+        funcao_id = int(funcao_id)
+    except (TypeError, ValueError):
+        return erro('funcao_id invalido')
 
     try:
         r = regua()
     except Exception:
         return erro('nao sei agora: a regua nao esta carregada', 503)
-    if funcao not in r.molde:
-        return erro('funcao desconhecida')
+    if funcao_id not in r.molde:
+        return erro('funcao_id desconhecida')
 
     try:
         c = banco.carta_para_simular(card_id)
@@ -215,27 +222,27 @@ def otimizar():
     if not c.get('pronto_motor_otimizacao'):
         return erro('esta carta ainda esta incompleta para a conta; falta insumo', 409)
 
-    fixas      = set(c.get('habilidades_fixas') or [])
-    possivel   = set(c.get('habilidades_possiveis') or [])
-    escolhidas = list(p.get('habilidades_escolhidas') or [])
+    fixas = {int(x) for x in (c.get('habilidades_fixas') or [])}
+    pool = banco.pool_da_funcao(card_id, funcao_id)
+    if pool is None:
+        return erro('pool canônico recusado para esta carta e função', 409)
+    possivel = set(pool)
+    try:
+        escolhidas = [int(x) for x in (p.get('skill_ids') or [])]
+    except (TypeError, ValueError):
+        return erro('skill_ids invalidos')
     fora = [h for h in escolhidas if h not in possivel]
     if fora:
-        return erro('esta carta nao aceita: %s' % ', '.join(fora[:3]))
+        return erro('esta carta nao aceita skill_id: %s' % ', '.join(str(x) for x in fora[:3]))
     if len(escolhidas) > (5 if possivel else 0):
         return erro('a carta tem %d vagas de habilidade' % (5 if possivel else 0))
     habs = sorted(fixas | set(escolhidas))
 
-    impetos = [int(i['impeto_id']) for i in (c.get('impetos_nativos') or [])
-               if i.get('impeto_id') is not None]
-    extra = p.get('impeto_escolhido')
-    if extra is not None:
-        if int(c.get('vagas_livres') or 0) < 1:
-            return erro('esta carta nao tem vaga de impeto livre')
-        if int(extra) not in r.imp:
-            return erro('impeto desconhecido')
-        impetos.append(int(extra))
+    if p.get('impeto_escolhido') is not None or p.get('impeto_nome') is not None:
+        return erro('consumidor de ímpetos continua desligado', 409)
+    impetos = []
 
-    tid, prof = p.get('tecnico_id'), p.get('proficiencia')
+    tid, prof = p.get('tecnico_id'), None
     m = 1.0
     boosts = []
     if tid is not None:
@@ -243,8 +250,7 @@ def otimizar():
         t = r.tec.get(tid)
         if t is None:
             return erro('tecnico desconhecido')
-        if prof is None:
-            prof = t.get('proficiencia')
+        prof = t.get('proficiencia')
         if prof is None:
             return erro('falta a proficiencia do tecnico')
         mm = r.mult.get(int(round(float(prof))))
@@ -257,22 +263,24 @@ def otimizar():
     if not base:
         return erro('a carta nao tem os 26 atributos', 409)
 
-    add = [0] * len(base)
+    impeto_add = [0] * len(base)
     for i in impetos:
         for k, d in (r.imp.get(i) or {}).items():
-            add[int(k)] += int(d)
+            impeto_add[int(k)] += int(d)
+    boost_add = [0] * len(base)
     for i in boosts:
-        add[int(i)] += 1
+        boost_add[int(i)] += 1
 
     try:
         buff = AV.buff_de(habs, r)
     except AV.InsumoFaltando as e:
         return erro('nao da para calcular: %s' % e, 409)
 
-    mol = r.molde[funcao]
+    mol = r.molde[funcao_id]
     arows = [(i, mol[i][0], mol[i][1]) for i in sorted(mol)]
 
-    o = Otimizador(r, base, c.get('orcamento'), arows, add, buff, m)
+    o = Otimizador(r, base, c.get('orcamento'), arows,
+                   impeto_add, boost_add, buff, m)
     lvl, _ = o.melhor()
     lvl = o.sobra_para_o_maior_peso(lvl)
 
@@ -280,7 +288,7 @@ def otimizar():
               'habilidades': habs, 'tecnico_id': tid, 'proficiencia': prof, 'buff': buff}
     carta = {'atributos': base, 'orcamento': c.get('orcamento')}
     try:
-        r2 = AV.avalia(estado, carta, funcao, r)
+        r2 = AV.avalia(estado, carta, funcao_id, r)
     except (AV.InsumoFaltando, ReguaIncompleta) as e:
         return erro('nao da para calcular: %s' % e, 409)
 

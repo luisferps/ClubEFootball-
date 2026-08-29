@@ -1,0 +1,130 @@
+{
+  "contract": "clube_novo-impeto-fisico-audit-v1",
+  "generated_at": "2026-08-28T00:19:20.237Z",
+  "read_only": true,
+  "sources": {
+    "dt200": {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\eFootball\\cpk\\dt200_console_all.cpk",
+      "cpk_sha256": "fd920cd8e7f3f1089892ef4051c68c1c5c56c49000ecf6f751025a0ae2c94a50",
+      "cpk_bytes": 9910363,
+      "player_booster_bytes": 7800,
+      "records": 195,
+      "recipe_layout": "registro_atual_40_bytes"
+    },
+    "dt870_original": {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\eFootball\\cpk\\dt870_console_win.cpk",
+      "cpk_sha256": "ae0d8cef26804439e9930ef8959f8d9425754d0e290d056b3e4d1f7b999edd5c",
+      "cpk_bytes": 5007376,
+      "player_booster_bytes": 6624,
+      "records": 102,
+      "recipe_layout": "legado_id_apenas"
+    },
+    "dt870_atualizacao": {
+      "path": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO\\RESULTADOS-E-VALIDACOES\\2026-08-27\\FONTES-E-BASE\\dt870_console_win-2026-08-27.cpk",
+      "cpk_sha256": "44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5",
+      "cpk_bytes": 9415400,
+      "player_booster_bytes": 16320,
+      "records": 408,
+      "recipe_layout": "registro_atual_40_bytes"
+    }
+  },
+  "catalog": {
+    "union_codes": 440,
+    "mapped_dictionary_codes": 350,
+    "mapped_checks_ok": 350,
+    "mapped_checks_divergent": 0,
+    "source_semantic_divergences": 0,
+    "condition_states": {
+      "nao_avaliada": 90,
+      "ausente_comprovada": 131,
+      "presente_sem_semantica": 219
+    }
+  },
+  "relation_candidates": {
+    "rows": 1542,
+    "applicable_now": 488,
+    "blocked": 1054,
+    "blocked_gk_permutation": 87,
+    "blocked_condition": 1030,
+    "observed_delta_min": 1,
+    "observed_delta_max": 6
+  },
+  "cards": {
+    "counters": {
+      "registros_fisicos": 43075,
+      "cartas_validas": 43072,
+      "registros_descartados_pelo_contrato": 3,
+      "slot_primario_preenchido": 2324,
+      "slot_condicional_preenchido": 57,
+      "slot_primario_acima_255": 214,
+      "slot_condicional_acima_255": 56,
+      "atribuicoes_acima_255": 270,
+      "atribuicoes_que_low8_confunde_com_sem_impeto": 1,
+      "atribuicoes_que_low8_confunde_com_vaga": 2,
+      "codigos_preenchidos_sem_catalogo": 0,
+      "codigos_distintos_sem_catalogo": 0,
+      "codigos_distintos_preenchidos": 349
+    },
+    "sentinel_vaga": 136,
+    "sem_impeto": 0,
+    "samples": [
+      {
+        "card_id": "88036360701097",
+        "registro": 34316,
+        "byte_offset": 13726400,
+        "slot_primario_codigo_jogo": 30,
+        "slot_condicional_codigo_jogo": 136,
+        "slot_primario_low8": 30,
+        "slot_condicional_low8": 136,
+        "slot_primario_bit": 308,
+        "slot_condicional_bit": 288,
+        "largura": 10
+      },
+      {
+        "card_id": "89138288270047",
+        "registro": 34755,
+        "byte_offset": 13902000,
+        "slot_primario_codigo_jogo": 207,
+        "slot_condicional_codigo_jogo": 136,
+        "slot_primario_low8": 207,
+        "slot_condicional_low8": 136,
+        "slot_primario_bit": 308,
+        "slot_condicional_bit": 288,
+        "largura": 10
+      },
+      {
+        "card_id": "89138556575063",
+        "registro": 34757,
+        "byte_offset": 13902800,
+        "slot_primario_codigo_jogo": 199,
+        "slot_condicional_codigo_jogo": 507,
+        "slot_primario_low8": 199,
+        "slot_condicional_low8": 251,
+        "slot_primario_bit": 308,
+        "slot_condicional_bit": 288,
+        "largura": 10
+      }
+    ],
+    "low8_loss_samples": [
+      {
+        "card_id": "56164482134050",
+        "slot": "primario",
+        "codigo_jogo": 392,
+        "low8": 136
+      },
+      {
+        "card_id": "105884634166456",
+        "slot": "primario",
+        "codigo_jogo": 512,
+        "low8": 0
+      },
+      {
+        "card_id": "106782013894690",
+        "slot": "condicional",
+        "codigo_jogo": 392,
+        "low8": 136
+      }
+    ],
+    "missing_codes": []
+  }
+}

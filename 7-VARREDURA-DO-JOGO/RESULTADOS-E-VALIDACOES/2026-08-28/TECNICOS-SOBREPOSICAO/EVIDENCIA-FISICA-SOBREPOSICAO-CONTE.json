@@ -1,0 +1,171 @@
+{
+  "contract": "clubef-sobreposicao-conte-physical-proof-v1",
+  "generated_at": "2026-08-28T04:18:50.871Z",
+  "database_read": false,
+  "database_write": false,
+  "executable_inspection": false,
+  "source": {
+    "role": "dt870_updated_downloads",
+    "path": "C:/Users/Luis Fernando/Downloads/Clubefootball V4/7-VARREDURA-DO-JOGO/RESULTADOS-E-VALIDACOES/2026-08-27/FONTES-E-BASE/dt870_console_win-2026-08-27.cpk",
+    "cpk_bytes": 9415400,
+    "cpk_sha256": "44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5",
+    "coach_bin_bytes": 260128,
+    "coach_bin_sha256": "092a07c62d1df0f19da6ad0e4e1252de07e5e1df8e9090760734829044c0d42a",
+    "record_size": 176,
+    "records": 1478,
+    "unique_ids": 1478
+  },
+  "physical_field": {
+    "file": "Coach.bin",
+    "bit_start_in_record": 135,
+    "width_bits": 7,
+    "decoding": "unsigned little-endian bitfield",
+    "physical_byte_span": [
+      16,
+      17
+    ],
+    "relative_to_existing_fields": "imediatamente após codigo Link-up bit 128 largura 7; fisicamente separado dos cinco campos históricos nos bits 199/206/213/224/238",
+    "distribution": {
+      "0": 1477,
+      "96": 1
+    },
+    "positive_records": [
+      {
+        "id": "17609097478250",
+        "nome_en": "Antonio Conte",
+        "record_index": 1476,
+        "value": 96
+      }
+    ]
+  },
+  "mandatory_positive_sample": {
+    "id": "17609097478250",
+    "id_text": "17609097478250",
+    "record_index": 1476,
+    "byte_offset": 259776,
+    "nome_en": "Antonio Conte",
+    "header_hex": "6a0000f00310000000000000000000000730e0c00b5c733a4522317b5a507207",
+    "link_up_codigo_bit128_width7": 7,
+    "sobreposicao_proficiencia_bit135_width7": 96,
+    "boost_slot_2_bit148_width5": 14,
+    "boost_slot_1_bit160_width5": 11,
+    "nacionalidade_bit170_width8": 215,
+    "afinidade_bit187_width3": 7,
+    "passe_longo_bit199_width7": 68,
+    "posse_bit206_width7": 68,
+    "por_fora_bit213_width7": 89,
+    "contra_ataque_rapido_bit224_width7": 90,
+    "idade_raw_bit231_width7": 32,
+    "contra_ataque_bit238_width7": 73
+  },
+  "mandatory_negative_sample": {
+    "id": "17601312850052",
+    "id_text": "17601312850052",
+    "record_index": 1453,
+    "byte_offset": 255728,
+    "nome_en": "Fabio Capello",
+    "header_hex": "840000200210000000000000000000000100b0c0075c6b2aaeac0b78394f5607",
+    "link_up_codigo_bit128_width7": 1,
+    "sobreposicao_proficiencia_bit135_width7": 0,
+    "boost_slot_2_bit148_width5": 11,
+    "boost_slot_1_bit160_width5": 7,
+    "nacionalidade_bit170_width8": 215,
+    "afinidade_bit187_width3": 5,
+    "passe_longo_bit199_width7": 89,
+    "posse_bit206_width7": 46,
+    "por_fora_bit213_width7": 64,
+    "contra_ataque_rapido_bit224_width7": 57,
+    "idade_raw_bit231_width7": 30,
+    "contra_ataque_bit238_width7": 89
+  },
+  "references_by_file": {
+    "Coach.bin": {
+      "unpacked": true,
+      "unpack_error": null,
+      "bytes": 260128,
+      "sha256": "092a07c62d1df0f19da6ad0e4e1252de07e5e1df8e9090760734829044c0d42a",
+      "conte_u64_offsets": [
+        259776
+      ],
+      "capello_u64_offsets": [
+        255728
+      ],
+      "first_256_hex": "08000000000000000000000000000000000000c0004802002a118e56c015ac03e382a2e383ace382b7e383a3e383b3e38389e383ac20e382ace3839e000000000000000000000000000000000000416c6578616e6472652047616d610000000000000000000000000000000000000000000000000000000000000000e4ba9ae58e86e5b1b1e5a4a7c2b7e4bcbde9a9ac00000000000000000000000000000000000000000000000000000000000000001a000000000000000000000000000000000000c0005c03002da22f39bd100d05e382b8e382a7e383b3e3838ae383bce383ad20e382ace38383e38388e382a5e383bce382be0000000000000000004765"
+    },
+    "CoachBooster.bin": {
+      "unpacked": true,
+      "unpack_error": null,
+      "bytes": 208,
+      "sha256": "7a78d8aaef2439e5fa6da10537e9fd6338d8c4c5f38217eaa3ecd61c4d45c2f2",
+      "conte_u64_offsets": [],
+      "capello_u64_offsets": [],
+      "first_256_hex": "0184000002040100038401000404020005840200060403000784030008040400098404000a0405000b8405000c0406000d8406000e0407000f8407001004080011840800120409001384090014040a0015840a0016040b0017840b0018040c0019840c001a040d001b8800001c0801001d8801001e0802001f880200200803002188030022080400238804002408050025880500260806002788060028080700298807002a0808002b8808002c0809002d8809002e080a002f880a0030080b0031880b0032080c0033880c0034080d00"
+    },
+    "CoachLink.bin": {
+      "unpacked": true,
+      "unpack_error": null,
+      "bytes": 232,
+      "sha256": "24e3e087c540b99f72906928e3f959148272a38845360505405d65cad5465d22",
+      "conte_u64_offsets": [],
+      "capello_u64_offsets": [],
+      "first_256_hex": "0150011010000000025084010000020003380b06200401000438064000110000054c033000020000062c031880000000073c040104000200081c81100000000009380401001002000a380110001000000b380112000001000c100312000001000d101612000001000e100d12000001000f18019000000000103803300002000011340500400800001224c9000040000013340600400800001434031040000000153416104000000016240900184000001734460040000000183445800000000019340680000800001a344680000000001b340390000000001c341690000000001d24890008400000"
+    },
+    "CoachTactics.bin": {
+      "unpacked": false,
+      "unpack_error": "Error: unexpected end of file",
+      "bytes": 16,
+      "sha256": "9ec9146c883b87f8e0c6a58e272ded486c45dd842d9685a93538008c21c202ea",
+      "conte_u64_offsets": [],
+      "capello_u64_offsets": [],
+      "first_256_hex": "ff220257455359530000000000000000"
+    },
+    "CoachTacticsFormation.bin": {
+      "unpacked": false,
+      "unpack_error": "Error: unexpected end of file",
+      "bytes": 16,
+      "sha256": "9ec9146c883b87f8e0c6a58e272ded486c45dd842d9685a93538008c21c202ea",
+      "conte_u64_offsets": [],
+      "capello_u64_offsets": [],
+      "first_256_hex": "ff220257455359530000000000000000"
+    },
+    "CoachVariationDetail.bin": {
+      "unpacked": true,
+      "unpack_error": null,
+      "bytes": 11040,
+      "sha256": "b8d66ddeca66d7c169730cc11d22d4f220d23c1839426f24b99d4a57246c4ce6",
+      "conte_u64_offsets": [
+        10720
+      ],
+      "capello_u64_offsets": [
+        6880
+      ],
+      "first_256_hex": "fe8d0100001000004d616e61676572205061636b204a2e20437275696a66662039312d393200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000063870100001000004d616e61676572205061636b20462e2043616e6e617661726f203230313900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "rows": [
+        {
+          "id": "17609097478250",
+          "record_index": 67,
+          "label": "Chelsea B 16-17",
+          "nonzero_bytes_after_label": 0,
+          "row_hex": "6a0000f0031000004368656c73656120422031362d31370000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "id": "17601312850052",
+          "record_index": 43,
+          "label": "Manager Pack Fabio Capello 91-92",
+          "nonzero_bytes_after_label": 0,
+          "row_hex": "84000020021000004d616e61676572205061636b20466162696f20436170656c6c6f2039312d3932000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ]
+    }
+  },
+  "verdict": {
+    "physically_proven": true,
+    "expected_relation": {
+      "tecnico_id": "17609097478250",
+      "estilo_codigo": "overload",
+      "proficiencia": 96
+    },
+    "no_relation_for_zero_values": true,
+    "explanation": "O mesmo campo de 7 bits vale 96 somente em Antônio Conte e 0 nos demais 1.477 registros. O controle Fabio Capello vale 0. O campo está separado fisicamente dos cinco estilos históricos."
+  }
+}

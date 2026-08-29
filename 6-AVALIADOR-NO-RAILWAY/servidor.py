@@ -26,15 +26,20 @@ from otimizador import Otimizador
 
 def _abre(p):
     """As conferencias que toda rota faz. Devolve (erro, regua, carta)."""
-    card_id, funcao = p.get('card_id'), p.get('funcao')
-    if not card_id or not funcao:
-        return erro('faltou card_id ou funcao'), None, None
+    card_id, funcao_id = p.get('card_id'), p.get('funcao_id')
+    if not card_id or funcao_id is None:
+        return erro('faltou card_id ou funcao_id'), None, None
+    try:
+        funcao_id = int(funcao_id)
+    except (TypeError, ValueError):
+        return erro('funcao_id invalido'), None, None
+    p['funcao_id'] = funcao_id
     try:
         r = regua()
     except Exception:
         return erro('nao sei agora: a regua nao esta carregada', 503), None, None
-    if funcao not in r.molde:
-        return erro('funcao desconhecida'), None, None
+    if funcao_id not in r.molde:
+        return erro('funcao_id desconhecida'), None, None
     try:
         c = banco.carta_para_simular(card_id)
     except banco.BancoIndisponivel:
@@ -48,7 +53,7 @@ def _abre(p):
 
 def _le_estado(p, c, r):
     """Traduz o que a tela mandou para o que a conta precisa."""
-    fixas      = set(c.get('habilidades_fixas') or [])
+    fixas = {int(x) for x in (c.get('habilidades_fixas') or [])}
 
     # ⛔ 25/08 — O POOL E POR FUNCAO, NAO POR CARTA.
     #    Esta linha recusava as builds que o proprio motor fez. Medido: das 4
@@ -66,19 +71,19 @@ def _le_estado(p, c, r):
     #    E isto esclarece a outra ponta: `habilidades_possiveis` (relacao
     #    'espaco') nao e a lista de candidatas — sao as VAGAS que a carta tem.
     #    Sao os dois numeros de que a conta precisa, e eram um so.
-    vagas    = len(c.get('habilidades_possiveis') or [])
-    possivel = set(c.get('habilidades_possiveis') or [])
-    try:
-        pool_funcao = banco.pool_da_funcao(p.get('card_id'), p.get('funcao'))
-    except Exception:
-        pool_funcao = None
-    if pool_funcao:
-        possivel = set(pool_funcao)
+    vagas = 5
+    pool_funcao = banco.pool_da_funcao(p.get('card_id'), p.get('funcao_id'))
+    if pool_funcao is None:
+        return erro('pool canônico recusado para esta carta e função', 409), None
+    possivel = set(pool_funcao)
 
-    escolhidas = list(p.get('habilidades_escolhidas') or [])
+    try:
+        escolhidas = [int(x) for x in (p.get('skill_ids') or [])]
+    except (TypeError, ValueError):
+        return erro('skill_ids invalidos'), None
     fora = [h for h in escolhidas if h not in possivel]
     if fora:
-        return erro('esta carta nao aceita: %s' % ', '.join(fora[:3])), None
+        return erro('esta carta nao aceita skill_id: %s' % ', '.join(str(x) for x in fora[:3])), None
 
     # ⛔ 25/08 — AS VAGAS SAO DA CARTA, NAO SAO 5 SEMPRE.
     #    Estava escrito `5 if possivel else 0`. O numero 5 cravado e o achado
@@ -90,45 +95,20 @@ def _le_estado(p, c, r):
         return erro('a carta tem %d vaga(s) de habilidade' % vagas), None
     habs = sorted(fixas | set(escolhidas))
 
-    impetos = [int(i['impeto_id']) for i in (c.get('impetos_nativos') or [])
-               if i.get('impeto_id') is not None]
-    extra = p.get('impeto_escolhido')
-    if extra is None and p.get('impeto_nome'):
-        # a tela guarda o impeto por NOME ("Forca +1"), nunca por id
-        extra = (getattr(r, 'imp_nome', None) or {}).get(str(p['impeto_nome']).strip())
-        if extra is None:
-            return erro('impeto desconhecido: %s' % p['impeto_nome']), None
-    if extra is not None:
-        if int(c.get('vagas_livres') or 0) < 1:
-            return erro('esta carta nao tem vaga de impeto livre'), None
-        if int(extra) not in r.imp:
-            return erro('impeto desconhecido'), None
-        impetos.append(int(extra))
+    if p.get('impeto_escolhido') is not None or p.get('impeto_nome') is not None:
+        return erro('consumidor de ímpetos continua desligado', 409), None
+    impetos = []
 
-    boosts, m, prof = [], 1.0, p.get('proficiencia')
+    boosts, m, prof = [], 1.0, None
     tid = p.get('tecnico_id')
     if tid is not None:
         t = r.tec.get(int(tid))
         if t is None:
             return erro('tecnico desconhecido'), None
         boosts = list(t.get('boosts') or [])
-        if prof is None:
-            prof = t.get('proficiencia')
-    else:
-        for b in (p.get('boosts_attr') or []):
-            b = int(b)
-            if not (0 <= b < len(c.get('atributos') or [])):
-                return erro('boost fora dos 26 atributos'), None
-            boosts.append(b)
+        prof = t.get('proficiencia')
 
-    if p.get('multiplicador') is not None:
-        try:
-            m = float(p['multiplicador'])
-        except (TypeError, ValueError):
-            return erro('multiplicador invalido'), None
-        if not (0.5 <= m <= 1.5):
-            return erro('multiplicador fora da faixa'), None
-    elif prof is not None:
+    if prof is not None:
         mm = r.mult.get(int(round(float(prof))))
         if mm is None:
             return erro('proficiencia fora da tabela de multiplicador'), None
@@ -139,12 +119,13 @@ def _le_estado(p, c, r):
     base = c.get('atributos')
     if not base:
         return erro('a carta nao tem os 26 atributos', 409), None
-    add = [0] * len(base)
+    impeto_add = [0] * len(base)
     for i in impetos:
         for k, d in (r.imp.get(i) or {}).items():
-            add[int(k)] += int(d)
+            impeto_add[int(k)] += int(d)
+    boost_add = [0] * len(base)
     for i in boosts:
-        add[int(i)] += 1
+        boost_add[int(i)] += 1
 
     try:
         buff = AV.buff_de(habs, r)
@@ -152,20 +133,18 @@ def _le_estado(p, c, r):
         return erro('nao da para calcular: %s' % e, 409), None
 
     return None, {'habs': habs, 'impetos': impetos, 'boosts': boosts, 'm': m,
-                  'prof': prof, 'base': base, 'add': add, 'buff': buff}
+                  'prof': prof, 'base': base, 'impeto_add': impeto_add,
+                  'boost_add': boost_add, 'buff': buff}
 
 
 def _avalia_com_m(estado, carta, funcao, r, d):
     """A cadeia do avaliador com o multiplicador ja resolvido:
-    base+barras -> multiplicador -> +1 do tecnico -> impetos -> habilidade."""
+    base+barras -> proficiencia -> boosts -> impetos -> habilidade."""
     base = carta['atributos']
     ref = AV.base_barras(base, estado.get('barras') or {}, r)
-    v = [AV._mult(x, d['m']) for x in ref]
-    for i in d['boosts']:
-        v[int(i)] = v[int(i)] + 1
-    for i in d['impetos']:
-        for k, dd in (r.imp.get(i) or {}).items():
-            v[int(k)] = v[int(k)] + int(dd)
+    v = [AV._mult(ref[i], d['m']) for i in range(len(ref))]
+    v = [v[i] + d['boost_add'][i] for i in range(len(v))]
+    v = [v[i] + d['impeto_add'][i] for i in range(len(v))]
     for i, (pct, flat) in d['buff'].items():
         i = int(i)
         v[i] = v[i] + math.ceil(ref[i] * pct / 100.0 + flat)
@@ -195,7 +174,7 @@ def nota_da_tela():
     try:
         r2 = _avalia_com_m({'barras': barras},
                            {'atributos': d['base'], 'orcamento': c.get('orcamento')},
-                           p['funcao'], r, d)
+                           p['funcao_id'], r, d)
     except (AV.InsumoFaltando, ReguaIncompleta) as ex:
         return erro('nao da para calcular: %s' % ex, 409)
     return jsonify({'ok': True, 'nota': round(r2['b1'], CASAS),
@@ -218,16 +197,17 @@ def otimizar():
     if e: return e
     e, d = _le_estado(p, c, r)
     if e: return e
-    mol = r.molde[p['funcao']]
+    mol = r.molde[p['funcao_id']]
     arows = [(i, mol[i][0], mol[i][1]) for i in sorted(mol)]
-    o = Otimizador(r, d['base'], c.get('orcamento'), arows, d['add'], d['buff'], d['m'])
+    o = Otimizador(r, d['base'], c.get('orcamento'), arows,
+                   d['impeto_add'], d['boost_add'], d['buff'], d['m'])
     lvl, _ = o.melhor()
     lvl = o.sobra_para_o_maior_peso(lvl)
     barras = {k: v for k, v in lvl.items() if v}
     try:
         r2 = _avalia_com_m({'barras': barras},
                            {'atributos': d['base'], 'orcamento': c.get('orcamento')},
-                           p['funcao'], r, d)
+                           p['funcao_id'], r, d)
     except (AV.InsumoFaltando, ReguaIncompleta) as ex:
         return erro('nao da para calcular: %s' % ex, 409)
     return jsonify({'ok': True, 'barras': barras, 'nota': round(r2['b1'], CASAS),

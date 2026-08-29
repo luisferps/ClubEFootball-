@@ -1,0 +1,63 @@
+{
+  "contract": "clubef-live-connection-readonly-preflight-v1",
+  "generated_at": "2026-08-27T21:34:56.486852+00:00",
+  "passed": true,
+  "connection": {
+    "configured": true,
+    "authenticated": true,
+    "source": "existing_project_config_and_user_environment",
+    "credential_exposed": false,
+    "database": "postgres",
+    "user_sha256": "a942b37ccfaf5a813b1432caa209a43b9d144e47ad0de1549c289c253e556cd5"
+  },
+  "target": {
+    "schema": "clube_novo",
+    "table": "carta_jogo",
+    "display": "clube_novo.carta_jogo",
+    "preserved_schema": "clube"
+  },
+  "package": {
+    "type": "full",
+    "records": 43072,
+    "summary": {
+      "insert": 269,
+      "update": 34,
+      "inactive": 0
+    }
+  },
+  "preflight": {
+    "database_checked": true,
+    "transaction_read_only": true,
+    "ready": 303,
+    "already_applied": 0
+  },
+  "button_operational_after_confirmation": true,
+  "initial_automatic_write": false,
+  "before": {
+    "clube": {
+      "count": 42803,
+      "unique_card_ids": 42803,
+      "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821"
+    },
+    "clube_novo": {
+      "count": 42803,
+      "unique_card_ids": 42803,
+      "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821"
+    }
+  },
+  "after": {
+    "clube": {
+      "count": 42803,
+      "unique_card_ids": 42803,
+      "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821"
+    },
+    "clube_novo": {
+      "count": 42803,
+      "unique_card_ids": 42803,
+      "ordered_rows_md5": "ff67b8a2e544570dae42ed71d8428821"
+    }
+  },
+  "zero_write_proof": true,
+  "apply_endpoint_called": false,
+  "database_write": false
+}

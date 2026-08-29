@@ -38,9 +38,9 @@ echo  ---- extrator velho da raiz (o bom esta em 7-VARREDURA-DO-JOGO)
 if exist "Extrator-ClubEfootball.html" ( move /Y "Extrator-ClubEfootball.html" "_LIXO\raiz\" > nul && echo    movido: Extrator-ClubEfootball.html )
 
 echo.
-echo  ---- copias soltas do extrator e do motor
+echo  ---- copias soltas do extrator
 if exist "VER DADOS DO JOGO\Extrator-ClubEfootball.html" ( move /Y "VER DADOS DO JOGO\Extrator-ClubEfootball.html" "_LIXO\raiz\" > nul && echo    movido: VER DADOS DO JOGO\Extrator-ClubEfootball.html )
-if exist "2-MOTORES\motor_bonus.py" ( move /Y "2-MOTORES\motor_bonus.py" "_LIXO\raiz\" > nul && echo    movido: 2-MOTORES\motor_bonus.py )
+rem Bonificador oficial: 2-MOTORES\BONIFICADOR\motor_bonus.py (nao mover)
 for %%F in ("coletor_efhub.js" "ids-para-coletar.js" "baixar-o-que-tem.js") do (
   if exist "VER DADOS DO JOGO\%%~F" ( move /Y "VER DADOS DO JOGO\%%~F" "_LIXO\raiz\" > nul && echo    movido: VER DADOS DO JOGO\%%~F )
 )

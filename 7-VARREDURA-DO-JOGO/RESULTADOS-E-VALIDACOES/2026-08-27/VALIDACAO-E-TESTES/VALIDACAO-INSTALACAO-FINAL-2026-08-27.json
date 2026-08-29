@@ -1,0 +1,95 @@
+{
+  "contract": "clubef-operational-installation-validation-v2",
+  "validated_at": "2026-08-27T20:52:12.9349803+00:00",
+  "target": "C:\\Users\\Luis Fernando\\Downloads\\Clubefootball V4\\7-VARREDURA-DO-JOGO",
+  "identity": [
+    {
+      "path": "Extrator-ClubEfootball.html",
+      "source_sha256": "5F2F4516A6BEEC3AA47C428F5864E04660C8AF292DD7C07C6F6F398D2142832B",
+      "installed_sha256": "5F2F4516A6BEEC3AA47C428F5864E04660C8AF292DD7C07C6F6F398D2142832B",
+      "exact": true
+    },
+    {
+      "path": "app\\mapeamento-fisico.js",
+      "source_sha256": "3AF3B7F05122E409C1629509BFD211B38410FA7754BAC42291E312C743B74103",
+      "installed_sha256": "3AF3B7F05122E409C1629509BFD211B38410FA7754BAC42291E312C743B74103",
+      "exact": true
+    },
+    {
+      "path": "app\\catalog-source-map.js",
+      "source_sha256": "843A075D2AC208CB4CDEAB16BCC6A716763FE52075D22EB7F33210C2E439877E",
+      "installed_sha256": "843A075D2AC208CB4CDEAB16BCC6A716763FE52075D22EB7F33210C2E439877E",
+      "exact": true
+    },
+    {
+      "path": "app\\extrator-core.js",
+      "source_sha256": "F9F5A819813A70D2A547182A150D27D6BE4F1755942A008E6CAAF8E7677B6BB0",
+      "installed_sha256": "F9F5A819813A70D2A547182A150D27D6BE4F1755942A008E6CAAF8E7677B6BB0",
+      "exact": true
+    },
+    {
+      "path": "app\\extrator-ui.js",
+      "source_sha256": "BB16498BE67A5033E79AAEC57E147436B1B8B77DBC1CE4B48F4B71B7172A091D",
+      "installed_sha256": "BB16498BE67A5033E79AAEC57E147436B1B8B77DBC1CE4B48F4B71B7172A091D",
+      "exact": true
+    },
+    {
+      "path": "app\\extrator.css",
+      "source_sha256": "2D3E6D16FE96D0A0BB5C4768BC0CC839B67E21C4640FA1EAAA507BE6E14471CE",
+      "installed_sha256": "2D3E6D16FE96D0A0BB5C4768BC0CC839B67E21C4640FA1EAAA507BE6E14471CE",
+      "exact": true
+    },
+    {
+      "path": "executor\\executor_local.py",
+      "source_sha256": "8FB0CA1538157FDE04ACD16DF3641C6AD5D92476492DD62768B9161E88330EB8",
+      "installed_sha256": "8FB0CA1538157FDE04ACD16DF3641C6AD5D92476492DD62768B9161E88330EB8",
+      "exact": true
+    },
+    {
+      "path": "configuracao.exemplo.json",
+      "source_sha256": "F8C847513925D57E72C46992BC02BD38798064E80AB15084118A8553F99AED6A",
+      "installed_sha256": "F8C847513925D57E72C46992BC02BD38798064E80AB15084118A8553F99AED6A",
+      "exact": true
+    },
+    {
+      "path": "Extrator eFootball.exe",
+      "source_sha256": "960D26739783D5D1D0CFEB315B44AD0B9AD189EA21063EBDA21A38DA5EF21A63",
+      "installed_sha256": "960D26739783D5D1D0CFEB315B44AD0B9AD189EA21063EBDA21A38DA5EF21A63",
+      "exact": true
+    }
+  ],
+  "checks": {
+    "source_and_install_exact": true,
+    "write_disabled": true,
+    "safe_target_schema": true,
+    "safe_target_table": true,
+    "local_write_config_absent": true,
+    "golden_sha256_exact": true,
+    "golden_read_only": true,
+    "legacy_sha256_exact": true,
+    "family_previous_version_present": true,
+    "family_recovery_hashes_exact": true,
+    "family_source_validation_passed": true,
+    "one_visible_launcher": true,
+    "technical_components_hidden": true,
+    "executable_visible": true,
+    "native_icon_extracted": true,
+    "native_icon_differs_from_previous_launcher": true,
+    "explorer_product_name_exact": true,
+    "explorer_file_description_exact": true,
+    "documentation_folder_clear": true,
+    "recovery_root_present": true,
+    "pre_icon_recovery_hashes_exact": true,
+    "confusing_old_roots_absent": true,
+    "manual_present": true,
+    "report_present": true
+  },
+  "database_write": false,
+  "explorer_identity": {
+    "visible_launcher": "Extrator eFootball.exe",
+    "extracted_icon_png": "C:\\Users\\Luis Fernando\\Documents\\Codex\\2026-08-27\\atualizar-extrator-carga-atual\\outputs\\03-validacao\\ICONE-EXTRAIDO-DO-EXECUTAVEL-32PX.png",
+    "extracted_icon_sha256": "407F2AD4EE1E8AD02C53B3E37DFFA871AEB0A01B5E7FE7DBAC01EA721AE0D4D0",
+    "previous_launcher_icon_sha256": "18BDCA4692AED20185B28A48F9A70B9689810A65E925960745640A17CBC2DF42"
+  },
+  "passed": true
+}

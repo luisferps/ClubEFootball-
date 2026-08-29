@@ -1,0 +1,125 @@
+{
+  "contract": "clubef-impetos-physical-v1",
+  "transaction_read_only": true,
+  "database_write": false,
+  "preserved_schema": "clube",
+  "checks": {
+    "effects": {
+      "source": 2072,
+      "database": 1556,
+      "missing_in_database": 516,
+      "extra_in_database": 0,
+      "changed": 0,
+      "samples": {
+        "missing": [
+          [
+            1,
+            "PB:384:6"
+          ],
+          [
+            1,
+            "PB:396:6"
+          ],
+          [
+            1,
+            "PB:518:6"
+          ],
+          [
+            1,
+            "PB:530:6"
+          ],
+          [
+            2,
+            "PB:368:6"
+          ],
+          [
+            2,
+            "PB:384:6"
+          ],
+          [
+            2,
+            "PB:428:6"
+          ],
+          [
+            2,
+            "PB:530:6"
+          ],
+          [
+            3,
+            "PB:402:6"
+          ],
+          [
+            3,
+            "PB:408:6"
+          ],
+          [
+            3,
+            "PB:518:6"
+          ],
+          [
+            3,
+            "PB:530:6"
+          ],
+          [
+            4,
+            "PB:384:6"
+          ],
+          [
+            4,
+            "PB:428:6"
+          ],
+          [
+            4,
+            "PB:448:6"
+          ],
+          [
+            4,
+            "PB:524:6"
+          ],
+          [
+            5,
+            "PB:434:6"
+          ],
+          [
+            5,
+            "PB:492:6"
+          ],
+          [
+            5,
+            "PB:504:6"
+          ],
+          [
+            5,
+            "PB:550:6"
+          ]
+        ],
+        "extra": [],
+        "changed": []
+      }
+    },
+    "conditions": {
+      "source": 407,
+      "database": 407,
+      "changed": 0,
+      "samples": []
+    },
+    "ranges": {
+      "source": 696,
+      "database": 696,
+      "symmetric_difference": 0
+    },
+    "league_members": {
+      "source": 35,
+      "database": 35,
+      "symmetric_difference": 0
+    },
+    "slots": {
+      "total": 3748,
+      "preenchidos": 2381,
+      "vagas": 1367
+    },
+    "consumer_apt": 0
+  },
+  "passed": false,
+  "result": "reabrir_frente"
+}
