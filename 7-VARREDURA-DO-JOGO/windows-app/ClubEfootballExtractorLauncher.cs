@@ -11,18 +11,18 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Busca e extração local de dados de futebol")]
 [assembly: AssemblyProduct("Extrator eFootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("4.6.4.0")]
-[assembly: AssemblyFileVersion("4.6.4.0")]
+[assembly: AssemblyVersion("4.6.5.0")]
+[assembly: AssemblyFileVersion("4.6.5.0")]
 
 namespace ClubEfootballWindowsApp
 {
     internal static class Program
     {
-        // Porta própria desta compilação para impedir reaproveitamento de runtime antigo.
-        // O launcher só abre o servidor; a busca de CPK pertence ao Extrator.
-        private const int AppPort = 8769;
-        private const string AppUrl = "http://127.0.0.1:8769/Extrator-ClubEfootball.html";
-        private const string StatusUrl = "http://127.0.0.1:8769/api/status";
+        // Porta nova para não reutilizar nenhum servidor anterior durante o teste.
+        // O launcher só abre o servidor; a busca dos CPKs continua no Extrator.
+        private const int AppPort = 8770;
+        private const string AppUrl = "http://127.0.0.1:8770/Extrator-ClubEfootball.html";
+        private const string StatusUrl = "http://127.0.0.1:8770/api/status";
 
         [STAThread]
         private static void Main()
@@ -88,7 +88,7 @@ namespace ClubEfootballWindowsApp
                 if (ServerReady()) return;
                 Thread.Sleep(200);
             }
-            throw new InvalidOperationException("O executor local V4.6.4 não respondeu. A instalação pode estar incompleta.");
+            throw new InvalidOperationException("O executor local V4.6.5 não respondeu. A instalação pode estar incompleta.");
         }
 
         private static void StartHiddenExecutor(string root)
@@ -119,7 +119,6 @@ namespace ClubEfootballWindowsApp
             server.EnvironmentVariables.Remove("CLUBEF_SOURCE_DT200");
             server.EnvironmentVariables.Remove("CLUBEF_SOURCE_DT870_ORIGINAL");
             server.EnvironmentVariables.Remove("CLUBEF_SOURCE_DT261_BRA");
-            server.EnvironmentVariables.Remove("CLUBEF_SUPABASE_DB_URL");
             server.EnvironmentVariables.Remove("CLUBEF_ENABLE_REAL_WRITE");
             Process.Start(server);
         }
