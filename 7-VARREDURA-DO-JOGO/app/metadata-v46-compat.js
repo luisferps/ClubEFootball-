@@ -25,6 +25,22 @@
     if (!found) throw new Error(`campo canônico ausente: ${key}`);
     return found;
   }
+  function rowsRequired(table) {
+    const found = catalog(currentPlan, table);
+    if (!found || !Array.isArray(found.rows) || !found.rows.length) throw new Error(`catálogo canônico ausente: clube_novo.${table}`);
+    return found.rows;
+  }
+  function requireColumns(table, columns) {
+    const values = rowsRequired(table);
+    for (const [index, row] of values.entries()) {
+      for (const column of columns) {
+        if (row[column] === null || row[column] === undefined || row[column] === '') {
+          throw new Error(`${table}[${index}] sem referência canônica ${column}`);
+        }
+      }
+    }
+    return values;
+  }
   function addProjection(table, row, source) {
     if (catalog(currentPlan, table)) return null;
     const projected = {
@@ -62,8 +78,16 @@
 
   async function extractMetadataWithCanonicalDependencies(sourceBytes, sourceDescriptors, log) {
     if (!currentPlan) throw new Error('contrato ativo não foi recebido antes dos metadados');
-    const injected = [];
 
+    // Falha fechada antes da extração. Assim nenhum fallback textual do runtime
+    // pode virar autoridade se uma linha canônica perder o seu endereço.
+    requireColumns('impeto_jogo', ['arquivo_catalogo', 'tamanho_registro', 'bit_codigo', 'largura_codigo']);
+    requireColumns('impeto_atributo_jogo', ['arquivo_origem', 'fonte_origem', 'bit_delta', 'largura_delta']);
+    requireColumns('estilo_jogo_tecnico', ['bit', 'largura']);
+    requireColumns('afinidade_tecnico_jogo', ['bit', 'largura']);
+    requireColumns('atributo_ordem_otimizador', ['codigo_atributo', 'indice_otimizador']);
+
+    const injected = [];
     const typeCatalog = catalog(currentPlan, 'tipo_impeto_jogo');
     const typeSource = typeCatalog && Array.isArray(typeCatalog.rows)
       ? typeCatalog.rows.find((row) => Number.isInteger(row.bit_tipo_espelho) && Number.isInteger(row.largura_tipo_espelho))
