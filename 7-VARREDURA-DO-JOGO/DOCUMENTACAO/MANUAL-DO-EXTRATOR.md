@@ -1,7 +1,7 @@
 # Manual do Extrator eFootball
 
 **Versão:** 4.6 · 29 de agosto de 2026  
-**Estado:** migração de referências físicas em execução; escrita produtiva bloqueada até a validação integral read-only  
+**Estado:** contrato V4.6 ativo para leitura e validação controlada; teste integral local ainda pendente  
 **Pasta operacional:** `Clubefootball V4\7-VARREDURA-DO-JOGO`
 
 ## Regra estrutural
@@ -28,6 +28,27 @@ Extrator + acessórios
 valor extraído
 ```
 
+## Contrato ativo em 29/08/2026
+
+O contrato `clubef-dt870-2026-r1`, versão `r1`, foi fechado para a etapa de leitura e validação controlada após a reconciliação da cadeia V4.6.
+
+Estado conferido no momento da ativação:
+
+- 214 campos ativos: 211 com prova `comprovado` e 3 com `convencao_aprovada`;
+- 12 arquivos obrigatórios com fingerprint físico preenchido;
+- 14 elos que exigem selo do contrato marcados `conforme` e 3 elos de transporte/launcher mantidos `neutro`;
+- nenhum campo ativo sem prova aceita;
+- nenhum arquivo obrigatório sem hash;
+- nenhum elo selado pendente;
+- consumidores condicionais de ímpeto permanecem desligados durante a validação (`pode_rodar = false`).
+
+Fingerprints selados:
+
+- contrato: `86723a63b116c3fb31fcc9c1f01728f5072869b548b34f1dab5196b710dcb2fd`;
+- fontes: `719e580013a0eedb2d6a8a777653bc366eabd2d4a1becc7579a493493cb0cd35`.
+
+Após a ativação, `clube_novo.obter_pedido_leitura_contrato_ativo()` passou a devolver o pedido `r1` com os 12 arquivos e os 214 campos. A ativação libera **leitura e validação**; ela não constitui aprovação do resultado de uma nova extração nem substitui o teste integral local.
+
 ## Caminhos ativos V4.6
 
 ### Cartas e Dimensões
@@ -52,7 +73,7 @@ O `executor/servidor_v46.py` amplia o payload de catálogos do pedido ativo e en
 
 - `executor/tecnicos.py`: sem `STYLE_BITS`; proficiências e boosts exigem evidência física recebida da fotografia canônica;
 - `executor/card_dimensions.py`: referências de nacionalidade, clube, liga, tipo e vínculo vêm das tabelas canônicas;
-- `executor/impetos.py`: bit/largura do tipo, espelho, alvos, classes, corte, efeito máximo, arquivos e tamanhos são obrigatórios no `field_contract`/fotografia; a auditoria final continua até eliminar qualquer fallback semântico residual do código;
+- `executor/impetos.py`: bit/largura do tipo, espelho, alvos, classes, corte, efeito máximo, arquivos e tamanhos são obrigatórios no `field_contract`/fotografia, sem fallback físico produtivo local;
 - `executor/card_impetus.py`: endereços dos slots vêm do contrato ativo;
 - `executor/card_relations.py`: resolve chaves pelos catálogos sem decidir endereço de extração.
 
@@ -72,16 +93,16 @@ Textos oficiais vêm de `all.str` em `dt261_bra`, com chave seção + ID. Boxes 
 
 ## Segurança e liberação
 
-Nenhuma carga produtiva deve ser feita durante a migração. A ordem é:
+A auditoria estrutural necessária para ativar o contrato de leitura foi concluída. A sequência restante é:
 
-1. terminar a auditoria dos caminhos ativos e acessórios;
-2. eliminar fallback numérico semântico residual;
-3. executar leitura integral sem escrita;
-4. validar fingerprints, tamanhos e cardinalidades;
-5. comparar com a referência já aprovada;
-6. investigar qualquer divergência;
-7. só então liberar aplicação de metadados/cards;
-8. depois liberar Otimizador e Bonificador.
+1. executar a leitura integral local, sem aplicação automática;
+2. validar fingerprints, tamanhos e cardinalidades contra as fontes físicas encontradas na máquina;
+3. comparar a fotografia extraída com a referência já aprovada;
+4. investigar toda divergência antes de qualquer promoção;
+5. somente depois liberar/aplicar os metadados e cards aprovados;
+6. depois liberar Otimizador e Bonificador.
+
+Ativar o contrato não significa aceitar automaticamente uma nova carga. O primeiro ciclo após a ativação é de validação e comparação.
 
 ## Arquivos ativos
 
