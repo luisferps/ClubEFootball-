@@ -35,7 +35,7 @@ echo.
 echo   Pasta: %PASTA%
 echo   Repositorio: %REPO%
 echo.
-echo   Baixa o codigo atual, confere o commit e recompila o Extrator V4.6.3.
+echo   Baixa o codigo atual, confere o commit e recompila o Extrator V4.6.5.
 echo   Funciona tambem quando a pasta foi baixada como ZIP do GitHub.
 echo   O config.txt NAO e tocado.
 echo   Esta janela NAO fecha automaticamente.
@@ -88,9 +88,6 @@ if not defined REMOTO_SHA goto ERRO_OPERACAO
 echo   ---- aplicando commit %REMOTO_SHA%...
 if "%BOOTSTRAP%"=="1" goto APLICAR_BOOTSTRAP
 
-rem Em uma copia de trabalho normal o EXE pode estar diferente porque foi
-rem recompilado localmente. Reset hard e intencional aqui: primeiro traz
-rem exatamente o codigo do GitHub e depois recompila o EXE de novo.
 git reset --hard FETCH_HEAD >> "%LOG%" 2>&1
 if errorlevel 1 goto ERRO_OPERACAO
 git branch -M main >> "%LOG%" 2>&1
@@ -125,7 +122,7 @@ if exist "%TEMP%\cf-config-raiz.txt" (
   del /f /q "%TEMP%\cf-config-raiz.txt" >nul 2>&1
 )
 
-echo   ---- recompilando o Extrator V4.6.3 a partir do codigo baixado...
+echo   ---- recompilando o Extrator V4.6.5 a partir do codigo baixado...
 if not exist "%BUILD_SCRIPT%" goto ERRO_BUILD
 where powershell >nul 2>&1
 if errorlevel 1 goto ERRO_BUILD
@@ -144,7 +141,7 @@ for %%F in ("%EXTRATOR_EXE%") do (
 >>"%LOG%" echo commit: %LOCAL_SHA%
 echo.
 echo  ============================================================
-echo   BAIXOU, CONFERIU E RECOMPILOU O EXTRATOR V4.6.3.
+echo   BAIXOU, CONFERIU E RECOMPILOU O EXTRATOR V4.6.5.
 echo   Commit local = GitHub:
 echo   %LOCAL_SHA%
 echo  ============================================================
