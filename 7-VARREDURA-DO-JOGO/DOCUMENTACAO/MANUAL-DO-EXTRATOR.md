@@ -49,6 +49,22 @@ Fingerprints selados:
 
 Após a ativação, `clube_novo.obter_pedido_leitura_contrato_ativo()` passou a devolver o pedido `r1` com os 12 arquivos e os 214 campos. A ativação libera **leitura e validação**; ela não constitui aprovação do resultado de uma nova extração nem substitui o teste integral local.
 
+## Descoberta automática das fontes físicas
+
+O fluxo normal não exige que o usuário procure CPKs manualmente. Ao abrir o Extrator V4.6, o executor tenta localizar e validar as fontes automaticamente.
+
+Raízes conhecidas no Windows:
+
+- atualização atual: `C:\ProgramData\KONAMI\eFootball\ST\Download`;
+- instalação Steam principal: `C:\Program Files (x86)\Steam\steamapps\common\eFootball`;
+- a variante em `C:\Program Files\Steam\steamapps\common\eFootball` também é aceita automaticamente.
+
+Para a instalação Steam, os arquivos esperados continuam sendo encontrados diretamente em `cpk` quando presentes: `dt200_console_all.cpk`, `dt870_console_win.cpk` e `dt261_bra_console_win.cpk`.
+
+Para o `DT870 da atualização`, `ST\Download` pode conter subpastas numéricas/identificadoras criadas pelo jogo. A V4.6 pesquisa essa raiz recursivamente por `dt870_console_win.cpk`, valida a assinatura CPK e, se houver mais de uma cópia, escolhe a candidata mais recentemente modificada. O contrato e o fingerprint continuam sendo a validação autoritativa antes de qualquer leitura.
+
+A seleção manual permanece apenas como recuperação: ela deve ser oferecida quando a busca automática realmente não encontrar uma fonte válida.
+
 ## Caminhos ativos V4.6
 
 ### Cartas e Dimensões
