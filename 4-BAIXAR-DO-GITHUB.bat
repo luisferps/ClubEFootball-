@@ -10,12 +10,12 @@ if /I "%~1"=="DELA" goto TRABALHO
 set "ORIGEM=%~dp0"
 set "ORIGEM=%ORIGEM:~0,-1%"
 copy /Y "%~f0" "%TEMP%\cf-baixar.bat" >nul
-"%TEMP%\cf-baixar.bat" DELA "%ORIGEM%"
+start "4 - BAIXAR DO GITHUB" cmd /k ""%TEMP%\cf-baixar.bat" DELA "%ORIGEM%""
 exit /b
 
 :TRABALHO
 set "PASTA=%~2"
-set "LOG=%TEMP%\cf-baixar.log"
+set "LOG=%PASTA%\_ULTIMO-BAIXAR-DO-GITHUB.txt"
 set "REPO=https://github.com/luisferps/ClubEFootball-.git"
 set "BUILD_SCRIPT=%PASTA%\7-VARREDURA-DO-JOGO\windows-app\COMPILAR-APLICATIVO.ps1"
 set "EXTRATOR_EXE=%PASTA%\7-VARREDURA-DO-JOGO\Extrator eFootball.exe"
@@ -37,6 +37,7 @@ echo   Repositorio: %REPO%
 echo.
 echo   Baixa o codigo atual, confere o commit e recompila o Extrator V4.6.
 echo   O config.txt NAO e tocado.
+echo   Esta janela NAO fecha automaticamente.
 echo.
 pause
 
@@ -95,7 +96,6 @@ echo   ---- recompilando o Extrator V4.6 a partir do codigo baixado...
 if not exist "%BUILD_SCRIPT%" goto ERRO_BUILD
 where powershell >nul 2>&1
 if errorlevel 1 goto ERRO_BUILD
-rem Nunca deixa um executavel velho sobreviver a uma falha de compilacao.
 if exist "%EXTRATOR_EXE%" del /f /q "%EXTRATOR_EXE%" >> "%LOG%" 2>&1
 
 powershell -NoProfile -ExecutionPolicy Bypass -File "%BUILD_SCRIPT%" >> "%LOG%" 2>&1
@@ -107,6 +107,8 @@ for %%F in ("%EXTRATOR_EXE%") do (
   >>"%LOG%" echo executavel recompilado: %%~fF ^| %%~tF ^| %%~zF bytes
 )
 
+>>"%LOG%" echo RESULTADO: SUCESSO
+>>"%LOG%" echo commit: %LOCAL_SHA%
 echo.
 echo  ============================================================
 echo   BAIXOU, CONFERIU E RECOMPILOU O EXTRATOR.
@@ -114,38 +116,47 @@ echo   Commit local = GitHub:
 echo   %LOCAL_SHA%
 echo  ============================================================
 echo.
-pause
-exit /b 0
+echo   Resultado gravado em:
+echo   %LOG%
+echo.
+echo   ESTA JANELA FICARA ABERTA. FECHE-A MANUALMENTE QUANDO QUISER.
+goto MANTER_ABERTO
 
 :ERRO_GIT
-echo   ^>^> O GIT NAO FOI ENCONTRADO.
+set "MOTIVO=O GIT NAO FOI ENCONTRADO."
 goto ERRO_FINAL
 
 :ERRO_PASTA
-echo   ^>^> NAO ACHEI A PASTA: %PASTA%
+set "MOTIVO=NAO ACHEI A PASTA: %PASTA%"
 goto ERRO_FINAL
 
 :ERRO_FETCH
-echo   ^>^> NAO CONSEGUI BUSCAR O GITHUB.
+set "MOTIVO=NAO CONSEGUI BUSCAR O GITHUB."
 goto ERRO_FINAL
 
 :ERRO_BUILD
-echo.
-echo   ^>^> O CODIGO FOI BAIXADO, MAS O EXTRATOR NAO FOI RECOMPILADO.
-echo   ^>^> O executavel velho foi removido para impedir regressao silenciosa.
-echo   ^>^> NAO USE O EXTRATOR ate corrigir a compilacao.
->>"%LOG%" echo ERRO: falha na recompilacao do Extrator V4.6
-set "ERRO_SEM_PAUSA=1"
+set "MOTIVO=O CODIGO FOI BAIXADO, MAS O EXTRATOR NAO FOI RECOMPILADO. O executavel velho foi removido."
 goto ERRO_FINAL
 
 :ERRO_OPERACAO
-echo   ^>^> A ATUALIZACAO NAO FOI CONCLUIDA.
+set "MOTIVO=A ATUALIZACAO NAO FOI CONCLUIDA."
 goto ERRO_FINAL
 
 :ERRO_FINAL
 echo.
-echo   Log: %LOG%
-echo   Nao considere a pasta pronta para uso.
+echo   ^>^> ERRO: %MOTIVO%
+echo   ^>^> NAO considere a pasta pronta para uso.
+>>"%LOG%" echo RESULTADO: ERRO
+>>"%LOG%" echo motivo: %MOTIVO%
 echo.
-pause
-exit /b 1
+echo   Resultado gravado em:
+echo   %LOG%
+echo.
+echo   ESTA JANELA FICARA ABERTA. FECHE-A MANUALMENTE QUANDO QUISER.
+goto MANTER_ABERTO
+
+:MANTER_ABERTO
+echo.
+echo   Digite EXIT e pressione Enter somente quando quiser fechar esta janela.
+echo.
+cmd /k
