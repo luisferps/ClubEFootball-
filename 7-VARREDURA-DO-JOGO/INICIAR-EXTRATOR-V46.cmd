@@ -1,34 +1,57 @@
 @echo off
-setlocal
+setlocal EnableExtensions
 cd /d "%~dp0"
 
-echo Extrator eFootball V4.6.4
-echo Ordem produtiva: METADADOS ^> CARDS
+if not exist "logs" mkdir "logs" >nul 2>nul
+set "BOOTLOG=%~dp0logs\inicializacao-v46.log"
 
-rem Porta exclusiva desta versao para nao reaproveitar runtime antigo.
-set "CLUBEF_EXTRACTOR_PORT=8769"
+echo.>>"%BOOTLOG%"
+echo ============================================================>>"%BOOTLOG%"
+echo [%date% %time%] INICIO - Extrator eFootball V4.6.6>>"%BOOTLOG%"
 
-rem Este launcher nao decide onde estao os CPKs.
-rem O Extrator procura sozinho no Windows antes de validar/extrair.
-set "CLUBEF_SOURCE_DT870_UPDATED="
-set "CLUBEF_SOURCE_DT200="
-set "CLUBEF_SOURCE_DT870_ORIGINAL="
-set "CLUBEF_SOURCE_DT261_BRA="
-
-where py >nul 2>nul
-if %errorlevel%==0 (
-  py -3 executor\servidor_v46.py
-  goto :fim
+if not exist "%~dp0configuracao.local.json" (
+  echo.
+  echo ============================================================
+  echo  EXTRATOR EFOOTBALL - CONFIGURACAO AUSENTE
+  echo ============================================================
+  echo.
+  echo O arquivo configuracao.local.json nao esta nesta pasta.
+  echo Coloque o seu arquivo de configuracao do Supabase aqui e tente de novo.
+  echo.
+  echo Pasta esperada:
+  echo %~dp0
+  echo.
+  echo [%date% %time%] ERRO - configuracao.local.json ausente>>"%BOOTLOG%"
+  start "" "%~dp0"
+  pause
+  exit /b 2
 )
 
-where python >nul 2>nul
-if %errorlevel%==0 (
-  python executor\servidor_v46.py
-  goto :fim
+echo [%date% %time%] OK - configuracao.local.json encontrado>>"%BOOTLOG%"
+
+echo Preparando o Extrator eFootball V4.6.6...
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0windows-app\COMPILAR-APLICATIVO.ps1" >>"%BOOTLOG%" 2>&1
+if errorlevel 1 (
+  echo [%date% %time%] ERRO - falha ao reconstruir o EXE>>"%BOOTLOG%"
+  echo.
+  echo Nao foi possivel preparar o Extrator.
+  echo O diagnostico ficou salvo em:
+  echo %BOOTLOG%
+  echo.
+  pause
+  exit /b 3
 )
 
-echo ERRO: Python nao encontrado no PATH.
-pause
+if not exist "%~dp0Extrator eFootball.exe" (
+  echo [%date% %time%] ERRO - EXE nao foi criado>>"%BOOTLOG%"
+  echo.
+  echo O EXE nao foi criado. Veja:
+  echo %BOOTLOG%
+  echo.
+  pause
+  exit /b 4
+)
 
-:fim
-endlocal
+echo [%date% %time%] OK - EXE V4.6.6 reconstruido; abrindo>>"%BOOTLOG%"
+start "" "%~dp0Extrator eFootball.exe"
+exit /b 0
