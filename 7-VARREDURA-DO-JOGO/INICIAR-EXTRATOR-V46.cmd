@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
-setlocal EnableExtensions EnableDelayedExpansion
+setlocal EnableExtensions
 cd /d "%~dp0"
 
 set "VERSAO=4.6.12"
-set "PORTA=8777"
+set "PORTA=8778"
 set "URL=http://127.0.0.1:%PORTA%/Extrator-ClubEfootball.html?v=%VERSAO%"
 set "STATUS_URL=http://127.0.0.1:%PORTA%/api/runtime-version"
 set "RUNTIME=%~dp0executor\servidor_v4612.py"
@@ -52,8 +52,9 @@ if not exist "%RUNTIME%" (
   exit /b 3
 )
 
-call :SERVIDOR_OK
-if not errorlevel 1 goto ABRIR_TELA
+rem Se o servidor desta versao ja estiver aberto, apenas abre a tela.
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "try{$r=Invoke-RestMethod -Uri ('%STATUS_URL%?t=' + [DateTime]::UtcNow.Ticks) -TimeoutSec 1; if($r.online -and $r.version -eq '%VERSAO%'){exit 0}}catch{}; exit 1" >nul 2>nul
+if not errorlevel 1 goto ABRIR_EXISTENTE
 
 call :ENCONTRAR_PYTHON
 if not defined PYTHON (
@@ -79,31 +80,29 @@ set "CLUBEF_SOURCE_DT870_ORIGINAL="
 set "CLUBEF_SOURCE_DT261_BRA="
 set "CLUBEF_ENABLE_REAL_WRITE="
 
+echo Iniciando o servidor local...
 if /I "%PYTHON_MODO%"=="PYLAUNCHER" (
-  start "" /min "%PYTHON%" -3 "%RUNTIME%" --no-browser
-) else if /I "%PYTHON_MODO%"=="WINDOWLESS" (
-  start "" "%PYTHON%" "%RUNTIME%" --no-browser
+  start "Extrator eFootball - servidor" /min "%PYTHON%" -3 "%RUNTIME%"
 ) else (
-  start "" /min "%PYTHON%" "%RUNTIME%" --no-browser
+  start "Extrator eFootball - servidor" /min "%PYTHON%" "%RUNTIME%"
 )
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$deadline=(Get-Date).AddSeconds(60); while((Get-Date)-lt $deadline){try{$r=Invoke-RestMethod -Uri ('%STATUS_URL%?t=' + [DateTime]::UtcNow.Ticks) -TimeoutSec 2; if($r.online -and $r.version -eq '%VERSAO%'){exit 0}}catch{}; Start-Sleep -Milliseconds 500}; exit 1" >nul 2>nul
-if errorlevel 1 (
-  echo O executor local nao respondeu em 60 segundos.
-  echo Veja o log:
-  echo %RUNTIMELOG%
-  echo [%date% %time%] ERRO - runtime nao respondeu>>"%BOOTLOG%"
-  pause
-  exit /b 5
-)
+echo A tela sera aberta automaticamente pelo servidor.
+echo Esta janela pode ser fechada.
+echo [%date% %time%] OK - processo do runtime iniciado sem compilacao>>"%BOOTLOG%"
+exit /b 0
 
-:ABRIR_TELA
-echo [%date% %time%] OK - runtime V%VERSAO% pronto em %URL%>>"%BOOTLOG%"
+:ABRIR_EXISTENTE
+echo O servidor ja estava aberto. Abrindo a tela...
+echo [%date% %time%] OK - runtime existente em %URL%>>"%BOOTLOG%"
+call :ABRIR_URL
+exit /b 0
+
+:ABRIR_URL
 set "EDGE="
 if exist "%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe" set "EDGE=%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe"
 if not defined EDGE if exist "%ProgramFiles%\Microsoft\Edge\Application\msedge.exe" set "EDGE=%ProgramFiles%\Microsoft\Edge\Application\msedge.exe"
 if not defined EDGE if exist "%LOCALAPPDATA%\Microsoft\Edge\Application\msedge.exe" set "EDGE=%LOCALAPPDATA%\Microsoft\Edge\Application\msedge.exe"
-
 if defined EDGE (
   start "" "%EDGE%" --app="%URL%" --start-maximized --no-first-run --disable-http-cache --disable-features=msEdgeSidebarV2
 ) else (
@@ -111,42 +110,21 @@ if defined EDGE (
 )
 exit /b 0
 
-:SERVIDOR_OK
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "try{$r=Invoke-RestMethod -Uri ('%STATUS_URL%?t=' + [DateTime]::UtcNow.Ticks) -TimeoutSec 2; if($r.online -and $r.version -eq '%VERSAO%'){exit 0}}catch{}; exit 1" >nul 2>nul
-if errorlevel 1 exit /b 1
-exit /b 0
-
 :ENCONTRAR_PYTHON
 set "PYTHON="
 set "PYTHON_MODO="
 set "PY_BASE=%USERPROFILE%\.cache\codex-runtimes\codex-primary-runtime\dependencies\python"
 
-if exist "%PY_BASE%\pythonw.exe" (
-  set "PYTHON=%PY_BASE%\pythonw.exe"
-  set "PYTHON_MODO=WINDOWLESS"
-  exit /b 0
-)
+rem Usa primeiro o mesmo python.exe que ja abriu as versoes anteriores.
 if exist "%PY_BASE%\python.exe" (
   set "PYTHON=%PY_BASE%\python.exe"
   set "PYTHON_MODO=CONSOLE"
   exit /b 0
 )
 
-for /f "delims=" %%P in ('where pythonw.exe 2^>nul') do if not defined PYTHON (
-  set "PYTHON=%%P"
-  set "PYTHON_MODO=WINDOWLESS"
-)
-if defined PYTHON exit /b 0
-
 for /f "delims=" %%P in ('where python.exe 2^>nul') do if not defined PYTHON (
   set "PYTHON=%%P"
   set "PYTHON_MODO=CONSOLE"
-)
-if defined PYTHON exit /b 0
-
-for /f "delims=" %%P in ('where pyw.exe 2^>nul') do if not defined PYTHON (
-  set "PYTHON=%%P"
-  set "PYTHON_MODO=PYLAUNCHER"
 )
 if defined PYTHON exit /b 0
 
