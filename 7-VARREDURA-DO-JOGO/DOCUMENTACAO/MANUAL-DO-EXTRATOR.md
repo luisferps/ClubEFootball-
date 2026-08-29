@@ -53,11 +53,15 @@ A regra permanece: endereço, tamanho, fingerprint ou estrutura incompatível bl
 
 ## 4. Como iniciar a V4.6
 
-Nesta etapa de correção, o lançador operacional é:
+Enquanto o executável ainda não tiver sido reconstruído localmente, use:
 
 `INICIAR-EXTRATOR-V46.cmd`
 
-O executável `Extrator eFootball.exe` permanece preservado como binário da V4.5 até ser reconstruído e testado com o backend V4.6. Não substituir o EXE sem reconstrução explícita.
+O fonte do lançador Windows já foi atualizado para a versão 4.6 e aponta para `executor\servidor_v46.py`. Para reconstruir o executável no próprio Windows existe:
+
+`COMPILAR-EXTRATOR-V46.cmd`
+
+Esse comando usa `windows-app\COMPILAR-APLICATIVO.ps1` e o compilador .NET Framework do Windows. O `Extrator eFootball.exe` só passa a representar a V4.6 depois dessa compilação terminar com sucesso. Até lá, o EXE anterior deve ser tratado como binário preservado da V4.5.
 
 Ao iniciar a V4.6:
 
@@ -97,7 +101,7 @@ Antes de tocar nos vínculos dos cards, o executor aplica/atualiza:
 - ligas;
 - tipos de carta já conhecidos pelo contrato canônico.
 
-Tipos de carta fisicamente novos não são inseridos automaticamente sem prova nominal/canônica suficiente. Nesse caso a carga falha fechada para revisão.
+Tipos de carta fisicamente novos não são inseridos automaticamente sem prova nominal/canônica suficiente. Mudança na chave canônica de um tipo já existente também é bloqueada e exige migração própria, porque há cards protegidos por FK apontando para essa chave.
 
 ### 5.3 Ordem de escrita
 
@@ -108,7 +112,7 @@ A aplicação de dimensões usa uma única transação e segue esta ordem:
 3. atualizar/inserir nacionalidades;
 4. atualizar/inserir clubes;
 5. atualizar/inserir ligas;
-6. atualizar tipos de carta já canônicos;
+6. atualizar tipos de carta já canônicos, sem alterar chave canônica referenciada;
 7. somente depois atualizar os vínculos dos cards existentes;
 8. commit;
 9. abrir nova conexão somente leitura;
@@ -206,6 +210,8 @@ A V4.6 reabilita a escrita manual no servidor `executor\servidor_v46.py`. Isso n
 
 A configuração distribuída contém `allow_manual_dimensions_apply=true`. Instalações locais antigas que ainda não possuam essa chave herdam a autorização de `allow_manual_card_apply` somente dentro do servidor V4.6.
 
+O painel de status de dimensões não fica consultando o contrato do banco continuamente; o contrato completo é relido nas operações que realmente dependem dele, reduzindo carga desnecessária.
+
 ## 13. Fluxo operacional completo do Extrator
 
 Para uma atualização real do jogo:
@@ -262,18 +268,21 @@ Em caso de falha antes do commit, a transação é revertida. Em caso de falha d
 
 As pastas `RECUPERACAO` e `RESULTADOS-E-VALIDACOES` continuam preservadas como evidência histórica. Não usar código antigo como implementação atual sem autorização explícita.
 
-## 17. Arquivos novos da V4.6
+## 17. Arquivos novos/alterados da V4.6
 
 - `executor\card_dimensions_apply.py` — aplicação segura de catálogos e vínculos;
 - `executor\servidor_v46.py` — servidor operacional com escrita manual reabilitada e rota de dimensões;
 - `app\metadados-v46.js` — painel visual da etapa de metadados;
-- `INICIAR-EXTRATOR-V46.cmd` — iniciador provisório da V4.6 até a reconstrução do EXE;
+- `INICIAR-EXTRATOR-V46.cmd` — iniciador direto da V4.6;
+- `COMPILAR-EXTRATOR-V46.cmd` — reconstrução de um clique do EXE no Windows;
+- `windows-app\ClubEfootballExtractorLauncher.cs` — versão 4.6 e backend `servidor_v46.py`;
 - `configuracao.exemplo.json` — inclui `allow_manual_dimensions_apply`.
 
 ## 18. Limites atuais conhecidos
 
-- o EXE visível ainda representa a V4.5 e não deve ser usado para testar a escrita V4.6 até ser reconstruído;
+- o EXE existente só representa a V4.6 depois de ser recompilado no Windows; o fonte do lançador já está atualizado;
 - tipos de carta completamente novos são bloqueados até existir registro canônico/prova suficiente;
+- mudança da chave canônica de tipo já usado por cards é bloqueada e exige migração própria;
 - Link-up de técnicos continua adiado sem prova completa;
 - possíveis inativações de cards continuam sem exclusão automática;
 - famílias de catálogo sem adaptador específico continuam comparação/diagnóstico, não escrita genérica;
