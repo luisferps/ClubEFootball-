@@ -1,9 +1,14 @@
-Não grave senha, service_role, anon key ou URL com senha nesta pasta.
+O Extrator reutiliza o config.txt que já existe na pasta principal do ClubEfootball.
 
-O executor lê somente variáveis do processo:
-  CLUBEF_SUPABASE_DB_URL       conexão PostgreSQL/Supabase
-  CLUBEF_ENABLE_REAL_WRITE     selo adicional; para escrita futura deve valer exatamente EU_AUTORIZO_ESCRITA_REAL
+O config.txt identifica o projeto Supabase e NÃO deve subir para o GitHub.
+A senha PostgreSQL continua sendo lida somente do ambiente seguro do Windows.
 
-A configuração distribuída mantém write_enabled=false. A escrita real exige também
-uma cópia local de configuracao.exemplo.json chamada configuracao.local.json com
-write_enabled=true, além da confirmação final na tela.
+Locais reconhecidos pelo Extrator:
+  <PASTA-PRINCIPAL>\config.txt
+  <PASTA-PRINCIPAL>\2-MOTORES\config.txt
+
+Não é necessário criar configuracao.local.json para abrir ou executar o fluxo manual do Extrator V4.6.6.
+
+Os logs de diagnóstico ficam em:
+  7-VARREDURA-DO-JOGO\logs\extrator-v46.log
+  7-VARREDURA-DO-JOGO\logs\inicializacao-v46.log
