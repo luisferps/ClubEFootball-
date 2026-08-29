@@ -3,12 +3,10 @@
 /**
  * Compatibilidade transitória do runtime V4.6.
  *
- * Não conhece endereço físico. Fontes históricas que não fazem parte do selo
- * de arquivos do contrato ativo são aceitas apenas como contêineres descobertos;
- * a validação estrutural real acontece depois, dentro do leitor de metadados,
- * usando tamanhos/bits dos catálogos canônicos. O espelho de tipo de ímpeto é
- * projetado exclusivamente de tipo_impeto_jogo para uma dependência antiga do
- * runtime, sem criar uma segunda autoridade.
+ * Não contém endereço físico próprio. Quando uma dependência antiga do runtime
+ * exige uma tabela que não faz parte da lista enviada pelo contrato atual, esta
+ * camada cria somente uma projeção temporária a partir da referência canônica
+ * já presente no pedido (catálogo ou campo contratado).
  */
 (function installMetadataV46Compat(global) {
   const core = global.CLUBEF_CORE;
@@ -22,6 +20,22 @@
   function catalog(plan, table) {
     return (plan.catalogos || []).find((item) => item.schema === 'clube_novo' && item.table === table) || null;
   }
+  function contractField(plan, key) {
+    const found = reader.requirePlan(plan).fields.get(key);
+    if (!found) throw new Error(`campo canônico ausente: ${key}`);
+    return found;
+  }
+  function addProjection(table, row, source) {
+    if (catalog(currentPlan, table)) return null;
+    const projected = {
+      schema: 'clube_novo',
+      table,
+      keys: ['compat_v46'],
+      rows: [{ ...row, origem_referencia: source }]
+    };
+    currentPlan.catalogos.push(projected);
+    return projected;
+  }
 
   async function validateSourceWithoutInventingAddress(bytes, plan, role) {
     reader.requirePlan(plan);
@@ -33,10 +47,9 @@
       throw new Error(`fonte ${role} não é descrita pelo contrato ativo`);
     }
 
-    // DT200 e DT870 original são fontes históricas auxiliares. O contrato atual
-    // não publica fingerprint para elas; portanto este passo não tenta adivinhar
-    // tamanho, bit, offset ou arquivo. A rotina canônica de metadados fará a
-    // validação física pelos catálogos antes de consumir qualquer registro.
+    // O contrato atual não publica fingerprint autoritativo para as duas fontes
+    // históricas. Nenhum tamanho/bit/offset é inventado aqui. A validação de cada
+    // arquivo ocorre no consumo, pela rotina canônica de metadados.
     return {
       contract: Object.fromEntries(reader.SEAL_KEYS.map((key) => [key, plan[key]])),
       role,
@@ -49,36 +62,44 @@
 
   async function extractMetadataWithCanonicalDependencies(sourceBytes, sourceDescriptors, log) {
     if (!currentPlan) throw new Error('contrato ativo não foi recebido antes dos metadados');
+    const injected = [];
 
-    const existing = catalog(currentPlan, 'impeto_condicao_jogo');
-    let injected = null;
-    if (!existing) {
-      const typeCatalog = catalog(currentPlan, 'tipo_impeto_jogo');
-      const source = typeCatalog && Array.isArray(typeCatalog.rows) ? typeCatalog.rows.find((row) =>
-        Number.isInteger(row.bit_tipo_espelho) && Number.isInteger(row.largura_tipo_espelho)
-      ) : null;
-      if (!source) throw new Error('tipo_impeto_jogo não fornece o endereço do espelho da condição');
+    const typeCatalog = catalog(currentPlan, 'tipo_impeto_jogo');
+    const typeSource = typeCatalog && Array.isArray(typeCatalog.rows)
+      ? typeCatalog.rows.find((row) => Number.isInteger(row.bit_tipo_espelho) && Number.isInteger(row.largura_tipo_espelho))
+      : null;
+    if (!catalog(currentPlan, 'impeto_condicao_jogo')) {
+      if (!typeSource) throw new Error('tipo_impeto_jogo não fornece o endereço do espelho da condição');
+      const projection = addProjection('impeto_condicao_jogo', {
+        bit_tipo_espelho: typeSource.bit_tipo_espelho,
+        largura_tipo_espelho: typeSource.largura_tipo_espelho
+      }, 'clube_novo.tipo_impeto_jogo');
+      if (projection) injected.push(projection);
+    }
 
-      // Projeção mínima para uma dependência interna da rotina já existente.
-      // Os números continuam vindo da tabela tipo_impeto_jogo.
-      injected = {
-        schema: 'clube_novo',
-        table: 'impeto_condicao_jogo',
-        keys: ['codigo_impeto'],
-        rows: [{
-          bit_tipo_espelho: source.bit_tipo_espelho,
-          largura_tipo_espelho: source.largura_tipo_espelho,
-          origem_referencia: 'clube_novo.tipo_impeto_jogo'
-        }]
-      };
-      currentPlan.catalogos.push(injected);
+    if (!catalog(currentPlan, 'impeto_condicao_nacionalidade_jogo')) {
+      const source = contractField(currentPlan, 'impeto.condicao.nacionalidade');
+      const projection = addProjection('impeto_condicao_nacionalidade_jogo', {
+        bit_alvo: source.bit_inicio,
+        largura_alvo: source.largura_bits
+      }, 'contrato:impeto.condicao.nacionalidade');
+      if (projection) injected.push(projection);
+    }
+
+    if (!catalog(currentPlan, 'impeto_condicao_liga_jogo')) {
+      const source = contractField(currentPlan, 'impeto.condicao.liga');
+      const projection = addProjection('impeto_condicao_liga_jogo', {
+        bit_alvo: source.bit_inicio,
+        largura_alvo: source.largura_bits
+      }, 'contrato:impeto.condicao.liga');
+      if (projection) injected.push(projection);
     }
 
     try {
       return await previousExtractMetadata(sourceBytes, sourceDescriptors, log);
     } finally {
-      if (injected) {
-        const index = currentPlan.catalogos.indexOf(injected);
+      for (const projection of injected) {
+        const index = currentPlan.catalogos.indexOf(projection);
         if (index >= 0) currentPlan.catalogos.splice(index, 1);
       }
     }
