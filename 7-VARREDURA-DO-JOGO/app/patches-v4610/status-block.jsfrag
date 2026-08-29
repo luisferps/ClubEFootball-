@@ -1,4 +1,3 @@
-
 const blockedRoles = [...changedRoles].filter((role) => role !== 'dt261_bra');
 const applicationBlocked = blockedRoles.length > 0 || !baseline.schema_ready || familyWarnings.length > 0;
 const changes = totals.new + totals.changed + totals.absent;
@@ -13,6 +12,21 @@ if (applicationBlocked) {
 } else {
   setOperationStatus('metadata-status', 'success', changes ? 'Atualização de metadados disponível' : 'Metadados conferidos — nada para atualizar', changes ? `${totals.new} novas · ${totals.changed} alteradas · ${totals.absent} ausentes.` : 'As fontes são as mesmas da referência interna vigente.');
   state.automatic.metadata = { state: 'ready', pending: Boolean(changes), message: changes ? `${totals.new} novas · ${totals.changed} alteradas · ${totals.absent} ausentes.` : 'Nada para atualizar nas famílias suportadas; as demais continuam identificadas como não suportadas.' };
+}
+const metadataScanDetail = {
+  scan_completed: true,
+  summary,
+  diff,
+  family_warnings: familyWarnings.map((item) => ({ family: item.family, reason: item.reason })),
+  manifest_sha256: state.metadata?.manifest?.manifest_sha256 || null,
+  generated_at: state.metadata?.manifest?.generated_at || new Date().toISOString(),
+  database_write: false
+};
+global.CLUBEF_LAST_METADATA_SCAN = metadataScanDetail;
+try {
+  global.dispatchEvent(new CustomEvent('clubef:metadata-scan-ready', { detail: metadataScanDetail }));
+} catch (eventError) {
+  log('log-metadata', `Aviso: não foi possível atualizar o painel de conferência (${eventError.message}).`);
 }
 renderAutomaticSummary();
 log('log-metadata', `Concluído: ${Number(textDiff.current || 0).toLocaleString('pt-BR')} chaves de texto · ${Number((physical.catalogs.tecnicos.records || []).length).toLocaleString('pt-BR')} técnicos · ${Number(impetusReadback.extracted?.unique_codes ?? (physical.catalogs.impetos.records || []).length).toLocaleString('pt-BR')} códigos de ímpeto · ${Number(dimensionStructure.cards || 0).toLocaleString('pt-BR')} cartas em Dimensões. Avisos: ${familyWarnings.length}. Nenhuma escrita foi feita.`);
