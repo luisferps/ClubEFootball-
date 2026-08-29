@@ -13,6 +13,10 @@ _ERRO-DO-GITHUB.txt
 graphify-out/
 checkpoints/
 
+# artefatos compilados locais — o código-fonte é a referência.
+# O botão 4 recompila o Extrator V4.6 depois de sincronizar o GitHub.
+7-VARREDURA-DO-JOGO/Extrator eFootball.exe
+
 # arquivos de trabalho do motor — não existem mais desde 27/08,
 # mas ficam aqui para o caso de sobrar cópia velha em alguma máquina
 dados/base_unica.json
