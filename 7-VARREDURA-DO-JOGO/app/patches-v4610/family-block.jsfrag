@@ -1,0 +1,232 @@
+
+const familyWarnings = [];
+const textCatalog = physical.catalogs.textos;
+let textStructure = { official_keys: 0, sections: 0 };
+let baseline = {
+  rows: [], records: 0, sha256: null,
+  transaction_read_only: true, database_write: false,
+  schema_ready: false, catalog_references_checked: 0,
+  unresolved_catalog_references: 0, validated_foreign_keys: 0,
+  unvalidated_foreign_keys: 0
+};
+let textDiff = {
+  current: Number((textCatalog.records || []).length),
+  baseline_active: 0,
+  new_entries: [], changed_entries: [], absent_entries: [],
+  validation: {}, status: 'erro_leitura'
+};
+
+try {
+  const textSource = state.sources.dt261_bra;
+  if (!textSource || !textSource.bytes) {
+    throw new Error('O CPK de textos foi localizado, mas seus bytes não ficaram disponíveis para a comparação.');
+  }
+  log('log-metadata', 'Extraindo all.str e validando chaves oficiais…');
+  textStructure = core.validateTextCatalogStructure(textCatalog);
+  log('log-metadata', `Estrutura válida: ${textStructure.official_keys.toLocaleString('pt-BR')} chaves oficiais em ${textStructure.sections.toLocaleString('pt-BR')} seções.`);
+  const baselineResponse = await fetchWithContract('/api/text-baseline/current.json', { cache: 'no-store' });
+  baseline = await baselineResponse.json().catch(() => ({ error: `HTTP ${baselineResponse.status}` }));
+  if (!baselineResponse.ok || !baseline.transaction_read_only || baseline.database_write !== false) {
+    throw new Error(baseline.error || 'A fotografia atual de clube_novo.texto_do_jogo não pôde ser lida de modo protegido.');
+  }
+  if (baseline.duplicate_official_keys) {
+    throw new Error('clube_novo.texto_do_jogo contém chave oficial duplicada.');
+  }
+  if (Number(baseline.unresolved_catalog_references || 0) > 0) {
+    throw new Error(`${baseline.unresolved_catalog_references} referência(s) textual(is) do banco não foi(ram) resolvida(s).`);
+  }
+  if (Number(baseline.unvalidated_foreign_keys || 0) > 0) {
+    throw new Error(`${baseline.unvalidated_foreign_keys} FK(s) canônica(s) de Texto ainda não foi(ram) validada(s).`);
+  }
+  textDiff = core.compareTextCatalog(textCatalog, baseline.rows || []);
+  diff.textos = textDiff;
+  summary.textos = {
+    ...summary.textos,
+    status: 'validado_banco',
+    reason: baseline.schema_ready ? null : 'contrato estrutural ainda não instalado; comparação disponível e aplicação bloqueada',
+    current: textDiff.current,
+    baseline_active: textDiff.baseline_active,
+    new: textDiff.new_entries.length,
+    changed: textDiff.changed_entries.length,
+    absent: 0,
+    without_previous_fingerprint: 0,
+    duplicate_ids: 0,
+    source_roles: ['dt261_bra']
+  };
+} catch (error) {
+  const reason = `Textos: ${error.message}`;
+  familyWarnings.push({ family: 'textos', reason });
+  summary.textos = {
+    ...(summary.textos || {}),
+    status: 'erro_leitura',
+    reason,
+    current: Number((textCatalog.records || []).length),
+    baseline_active: Number(baseline.records || 0),
+    new: 0, changed: 0, absent: 0,
+    without_previous_fingerprint: 0,
+    duplicate_ids: 0,
+    source_roles: ['dt261_bra']
+  };
+  diff.textos = {
+    status: 'erro_leitura', reason,
+    current: Number((textCatalog.records || []).length),
+    baseline_active: Number(baseline.records || 0),
+    new_entries: [], changed_entries: [], absent_entries: [],
+    without_previous_fingerprint: 0, duplicate_ids: []
+  };
+  log('log-metadata', `AVISO — ${reason}. A varredura continuará nas outras famílias.`);
+}
+
+const technicianSnapshot = {
+  ...physical.catalogs.tecnicos,
+  nationalities: physical.catalogs.nacionalidades.records,
+  affinities: physical.catalogs.afinidades_tecnico.records
+};
+let technicianReadback = {
+  passed: false, continue_pipeline: true, application_blocked: true,
+  error: 'validação de Técnicos não executada'
+};
+try {
+  technicianReadback = await postJsonReport('/api/tecnicos/validate', { snapshot: technicianSnapshot }, 600000);
+  const techFound = Number((physical.catalogs.tecnicos.records || []).length);
+  const techExpected = Number(technicianReadback.checks?.technicians?.database ?? summary.tecnicos?.baseline_active ?? techFound);
+  const natFound = Number((physical.catalogs.nacionalidades.records || []).length);
+  const natExpected = Number(technicianReadback.checks?.nationalities?.database ?? summary.nacionalidades?.baseline_active ?? natFound);
+  const affinityFound = Number((physical.catalogs.afinidades_tecnico.records || []).length);
+  const affinityExpected = Number(technicianReadback.checks?.affinities?.database ?? summary.afinidades_tecnico?.baseline_active ?? affinityFound);
+  const exact = Boolean(technicianReadback.passed && technicianReadback.transaction_read_only && technicianReadback.database_write === false);
+  const reason = exact ? null : 'A releitura de Técnicos terminou com divergências; consulte o relatório desta família.';
+  summary.tecnicos = { ...(summary.tecnicos || {}), status: exact ? 'validado_banco' : 'divergente', reason, current: techFound, baseline_active: techExpected, new: 0, changed: 0, absent: Math.max(0, techExpected - techFound) };
+  summary.nacionalidades = { ...(summary.nacionalidades || {}), status: exact ? 'validado_banco' : 'divergente', reason, current: natFound, baseline_active: natExpected, new: 0, changed: 0, absent: Math.max(0, natExpected - natFound) };
+  summary.afinidades_tecnico = { ...(summary.afinidades_tecnico || {}), status: exact ? 'validado_banco' : 'divergente', reason, current: affinityFound, baseline_active: affinityExpected, new: 0, changed: 0, absent: Math.max(0, affinityExpected - affinityFound) };
+  for (const name of ['tecnicos', 'nacionalidades', 'afinidades_tecnico']) {
+    diff[name] = { ...(diff[name] || {}), status: exact ? 'validado_banco' : 'divergente', reason };
+  }
+  if (exact) {
+    log('log-metadata', `Técnicos conferidos: ${techFound.toLocaleString('pt-BR')} técnicos · ${natFound.toLocaleString('pt-BR')} nacionalidades · ${affinityFound.toLocaleString('pt-BR')} afinidades.`);
+  } else {
+    familyWarnings.push({ family: 'tecnicos', reason, report: technicianReadback });
+    log('log-metadata', `AVISO — ${reason} A varredura continuará.`);
+  }
+} catch (error) {
+  const reason = `Técnicos: ${error.message}`;
+  technicianReadback = { passed: false, continue_pipeline: true, application_blocked: true, error: error.message };
+  familyWarnings.push({ family: 'tecnicos', reason });
+  for (const name of ['tecnicos', 'nacionalidades', 'afinidades_tecnico']) {
+    summary[name] = { ...(summary[name] || {}), status: 'erro_leitura', reason, new: 0, changed: 0, absent: 0 };
+    diff[name] = { ...(diff[name] || {}), status: 'erro_leitura', reason };
+  }
+  log('log-metadata', `AVISO — ${reason}. A varredura continuará.`);
+}
+
+let impetusReadback = {
+  passed: false, continue_pipeline: true, application_blocked: true,
+  error: 'validação de Ímpetos não executada'
+};
+try {
+  impetusReadback = await postJsonReport('/api/impetos/validate', { snapshot: physical.catalogs.impetos }, 600000);
+  const requested = Number(impetusReadback.code_report?.requested ?? impetusReadback.requested_by_database?.union_catalog ?? 0);
+  const found = Number(impetusReadback.code_report?.found_unique ?? impetusReadback.extracted?.unique_codes ?? (physical.catalogs.impetos.records || []).length);
+  const missing = impetusReadback.code_report?.missing || [];
+  const extra = impetusReadback.code_report?.extra || [];
+  const changed = impetusReadback.code_report?.changed || [];
+  const duplicates = impetusReadback.code_report?.duplicates || [];
+  const exact = Boolean(impetusReadback.passed && impetusReadback.transaction_read_only && impetusReadback.database_write === false);
+  const reason = exact
+    ? null
+    : `O banco pediu ${requested.toLocaleString('pt-BR')} código(s); foram encontrados ${found.toLocaleString('pt-BR')}. Ausentes: ${missing.length}; novos: ${extra.length}; alterados: ${changed.length}; duplicados: ${duplicates.length}.`;
+  summary.impetos = {
+    ...(summary.impetos || {}),
+    status: exact ? 'validado_banco' : 'divergente',
+    reason,
+    current: found,
+    baseline_active: requested,
+    new: extra.length,
+    changed: changed.length,
+    absent: missing.length
+  };
+  diff.impetos = {
+    ...(diff.impetos || {}),
+    status: exact ? 'validado_banco' : 'divergente',
+    reason,
+    current: found,
+    baseline_active: requested,
+    new_entries: extra.map((id) => ({ id: String(id), origins: ['fonte_fisica'] })),
+    changed_entries: changed.map((id) => ({ id: String(id), record: { id: String(id) } })),
+    absent_entries: missing.map((id) => ({ id: String(id), record: { id: String(id) } })),
+    duplicate_ids: duplicates
+  };
+  if (exact) {
+    const requestedRows = impetusReadback.requested_by_database || {};
+    log('log-metadata', `Ímpetos conferidos pelo pedido do banco: ${found.toLocaleString('pt-BR')} códigos · ${Number(requestedRows.effects || 0).toLocaleString('pt-BR')} efeitos · ${Number(requestedRows.conditions || 0).toLocaleString('pt-BR')} condições.`);
+  } else {
+    familyWarnings.push({ family: 'impetos', reason, report: impetusReadback });
+    log('log-metadata', `AVISO — Ímpetos: ${reason} A varredura continuará para Dimensões e cartas.`);
+  }
+} catch (error) {
+  const reason = `Ímpetos: ${error.message}`;
+  impetusReadback = { passed: false, continue_pipeline: true, application_blocked: true, error: error.message };
+  familyWarnings.push({ family: 'impetos', reason });
+  summary.impetos = { ...(summary.impetos || {}), status: 'erro_leitura', reason, current: Number((physical.catalogs.impetos.records || []).length), baseline_active: 0, new: 0, changed: 0, absent: 0 };
+  diff.impetos = { ...(diff.impetos || {}), status: 'erro_leitura', reason, new_entries: [], changed_entries: [], absent_entries: [], duplicate_ids: [] };
+  log('log-metadata', `AVISO — ${reason}. A varredura continuará para Dimensões e cartas.`);
+}
+
+log('log-metadata', 'Relendo país, clube, liga e tipo para todas as cartas…');
+let dimensionSnapshot = null;
+let dimensionStructure = { cards: 0, clubs: 0, leagues: 0, nationalities: 0, types: 0 };
+let dimensionReadback = {
+  passed: false, continue_pipeline: true, application_blocked: true,
+  error: 'validação de Dimensões não executada'
+};
+try {
+  dimensionSnapshot = await core.extractCardDimensionsByFamily(
+    familySourceBytes,
+    familySourceDescriptors,
+    (message) => log('log-metadata', message)
+  );
+  dimensionStructure = core.validateCardDimensionsSnapshot(dimensionSnapshot);
+  dimensionReadback = await postJsonReport('/api/card-dimensions/validate', { snapshot: dimensionSnapshot }, 600000);
+  const exact = Boolean(dimensionReadback.passed && dimensionReadback.transaction_read_only && dimensionReadback.database_write === false);
+  const expectedCards = Number(dimensionReadback.comparisons?.cards?.database ?? 0);
+  const foundCards = Number(dimensionStructure.cards || 0);
+  const reason = exact ? null : 'País, clube, liga, tipo ou vínculos apresentam diferenças; consulte o relatório de Dimensões.';
+  diff.dimensoes_cartas = {
+    status: exact ? 'validado_banco' : 'divergente',
+    reason,
+    current: foundCards,
+    baseline_active: expectedCards,
+    new_entries: [], changed_entries: [], absent_entries: [],
+    without_previous_fingerprint: 0, duplicate_ids: []
+  };
+  summary.dimensoes_cartas = {
+    status: exact ? 'validado_banco' : 'divergente',
+    reason,
+    current: foundCards,
+    baseline_active: expectedCards,
+    new: 0,
+    changed: Number(dimensionReadback.comparisons?.cards?.changed || 0),
+    absent: Number(dimensionReadback.comparisons?.cards?.missing_in_source || 0),
+    without_previous_fingerprint: 0,
+    duplicate_ids: 0,
+    source_roles: [...METADATA_SOURCE_ROLES]
+  };
+  if (exact) {
+    log('log-metadata', `Dimensões conferidas: ${foundCards.toLocaleString('pt-BR')} cartas; país, clube, liga e tipo iguais ao pedido do banco.`);
+  } else {
+    familyWarnings.push({ family: 'dimensoes_cartas', reason, report: dimensionReadback });
+    log('log-metadata', `AVISO — ${reason} A varredura foi concluída e os demais resultados foram preservados.`);
+  }
+} catch (error) {
+  const reason = `Dimensões: ${error.message}`;
+  dimensionReadback = { passed: false, continue_pipeline: true, application_blocked: true, error: error.message };
+  familyWarnings.push({ family: 'dimensoes_cartas', reason });
+  diff.dimensoes_cartas = { status: 'erro_leitura', reason, current: Number(dimensionStructure.cards || 0), baseline_active: 0, new_entries: [], changed_entries: [], absent_entries: [], without_previous_fingerprint: 0, duplicate_ids: [] };
+  summary.dimensoes_cartas = { status: 'erro_leitura', reason, current: Number(dimensionStructure.cards || 0), baseline_active: 0, new: 0, changed: 0, absent: 0, without_previous_fingerprint: 0, duplicate_ids: 0, source_roles: [...METADATA_SOURCE_ROLES] };
+  log('log-metadata', `AVISO — ${reason}. Os resultados das outras famílias foram preservados.`);
+}
+
+const textItems = [
+  ...textDiff.new_entries.map((record) => ({ key: `textos:new:${record.id}`, catalog: 'textos', action: 'new', id: record.id, record })),
+  ...textDiff.changed_entries.map((entry) => ({ key: `textos:change:${entry.id}`, catalog: 'textos', action: 'change', id: entry.id, record: entry.record, before: entry.before, after: entry.after }))
+];
