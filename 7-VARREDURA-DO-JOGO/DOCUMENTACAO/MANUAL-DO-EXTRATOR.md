@@ -49,6 +49,20 @@ Fingerprints selados:
 
 Após a ativação, `clube_novo.obter_pedido_leitura_contrato_ativo()` passou a devolver o pedido `r1` com os 12 arquivos e os 214 campos. A ativação libera **leitura e validação**; ela não constitui aprovação do resultado de uma nova extração nem substitui o teste integral local.
 
+## Distribuição e executável Windows
+
+O arquivo `Extrator eFootball.exe` é **artefato compilado local**, não fonte de verdade do projeto. Em 29/08/2026 foi identificado que uma cópia compilada antiga permanecia versionada no GitHub e era restaurada por `git reset --hard` durante o botão `4-BAIXAR-DO-GITHUB.bat`, podendo fazer o usuário executar uma versão anterior mesmo com o código-fonte V4.6 atualizado.
+
+A correção permanente é:
+
+- `7-VARREDURA-DO-JOGO/Extrator eFootball.exe` não é mais versionado e está no `.gitignore`;
+- `4-BAIXAR-DO-GITHUB.bat` sincroniza e confere `origin/main` e, em seguida, recompila obrigatoriamente o executável a partir de `windows-app/ClubEfootballExtractorLauncher.cs` usando `windows-app/COMPILAR-APLICATIVO.ps1`;
+- antes da compilação, qualquer executável local anterior é removido, impedindo que uma falha deixe uma versão velha utilizável silenciosamente;
+- o botão 4 só informa sucesso completo quando GitHub e `HEAD` local conferem **e** o novo executável foi gerado;
+- se a compilação falhar, a mensagem deixa explícito que o código foi baixado mas o Extrator não está pronto para uso.
+
+Assim, baixar do GitHub nunca mais deve fazer o aplicativo regredir para um binário antigo. **Código-fonte V4.6 atual + compilação local posterior ao download** é o fluxo oficial.
+
 ## Descoberta automática das fontes físicas
 
 O fluxo normal não exige que o usuário procure CPKs manualmente. A descoberta automática agora pertence ao próprio `executor/servidor_v46.py`, portanto funciona mesmo quando o Extrator é aberto sem depender das variáveis definidas pelo launcher `.cmd`.
@@ -138,6 +152,8 @@ Ativar o contrato não significa aceitar automaticamente uma nova carga. O prime
 - `executor/executor_local.py`
 - `executor/servidor_v46.py`
 - `INICIAR-EXTRATOR-V46.cmd`
+- `windows-app/ClubEfootballExtractorLauncher.cs`
+- `windows-app/COMPILAR-APLICATIVO.ps1`
 - `Extrator-ClubEfootball.html`
 
 ## Critério de conclusão
