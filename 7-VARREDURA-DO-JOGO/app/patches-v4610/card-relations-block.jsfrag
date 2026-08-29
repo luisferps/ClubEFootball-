@@ -1,0 +1,26 @@
+      log('log-incremental', 'Conferindo atributos, corpo, habilidades, estilos de IA e 12 aptidões nas relações normalizadas…');
+      const relationsReadback = await postJsonReport('/api/card-relations/validate', { card_csv: core.rowsToCsv(currentRows) }, 600000);
+      const relationItems = relationsReadback.relations || {};
+      const relationsExact = Boolean(
+        relationsReadback.passed
+        && relationsReadback.transaction_read_only
+        && relationsReadback.database_write === false
+      );
+      const relationDivergences = Object.entries(relationItems)
+        .filter(([, item]) => !item.exact)
+        .map(([name, item]) => ({
+          name,
+          mismatch_count: Number(item.mismatch_count || 0),
+          expected_rows: Number(item.expected_rows || 0),
+          database_rows: Number(item.database_rows || 0),
+          samples: (item.mismatches || []).slice(0, 20)
+        }));
+      if (relationsExact) {
+        log('log-incremental', `Relações aprovadas em leitura protegida: ${Object.values(relationItems).map((item) => Number(item.database_rows || 0).toLocaleString('pt-BR')).join(' · ')} linhas.`);
+      } else {
+        const relationSummary = relationDivergences
+          .map((item) => `${item.name}: ${item.mismatch_count.toLocaleString('pt-BR')} divergência(s)`)
+          .join(' · ');
+        log('log-incremental', `AVISO — relações de cartas divergentes: ${relationSummary || 'relatório não exato'}. A leitura das cartas continuará, mas nenhum pacote será liberado para o banco.`);
+      }
+      const diff = core.compareCardRows(currentRows, baseline.rows);
