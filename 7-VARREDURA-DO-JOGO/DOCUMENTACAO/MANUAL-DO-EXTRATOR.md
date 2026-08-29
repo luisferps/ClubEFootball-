@@ -38,7 +38,7 @@ Resultado da família: aplicação bloqueada
 Resultado da varredura: continuar para Dimensões, clubes, ligas, tipos e cartas
 ```
 
-Cardinalidades como `440`, `407`, `2.072`, `696` ou `35` não são regras permanentes no código. O valor vigente é obtido das tabelas canônicas na própria execução.
+Cardinalidades como `440`, `407`, `2.072`, `696`, `35`, `1.478`, `214` ou `8` não são regras permanentes no código. O valor vigente é obtido das tabelas canônicas na própria execução.
 
 Só constituem bloqueio estrutural geral:
 
@@ -135,9 +135,9 @@ Dimensões usam `Country.bin`, `Team.bin`, `CompetitionUnit.bin`, `CompetitionEn
 
 ### Metadados
 
-`app/metadata-v46-runtime.js` preserva a leitura cumulativa para habilidades, playstyles, técnicos, nacionalidades, afinidades, ímpetos, efeitos, condições e relações de liga.
+`app/metadata-v46-runtime.js` preserva a lógica das leituras físicas. Na V4.6.10, `app/patches-v4610/metadata-family-safe.jsfrag` é aplicado pelo servidor ao carregar esse runtime. Habilidades, Ímpetos, Playstyles, Textos, Técnicos, nacionalidades e afinidades são extraídos em blocos isolados: falha física de uma família produz um catálogo de erro e a função continua nas demais.
 
-`executor/servidor_v46.py` permanece como base compatível. `executor/servidor_v4610.py` aplica o runtime V4.6.10, isola o processo na porta 8774 e serve a UI que continua a varredura após divergências de uma família.
+`executor/servidor_v46.py` permanece como base compatível. `executor/servidor_v4610.py` aplica o runtime V4.6.10, isola o processo na porta 8774, ativa os validadores orientados pelo banco e serve as versões corrigidas do runtime de metadados e da UI.
 
 ### Ímpetos
 
@@ -156,9 +156,13 @@ Dimensões usam `Country.bin`, `Team.bin`, `CompetitionUnit.bin`, `CompetitionEn
 
 Depois compara o conjunto solicitado com a fotografia física e devolve códigos ausentes, novos, alterados e duplicados. O retorno inclui `continue_pipeline=true`; divergência bloqueia a aplicação de Ímpetos, não a continuação da varredura.
 
-### Técnicos, Textos e demais famílias
+### Técnicos
 
-Técnicos, nacionalidades, afinidades, textos e Dimensões são tratados separadamente na UI V4.6.10. Falha ou divergência de uma delas gera aviso e relatório; as demais continuam.
+`executor/tecnicos_v4610.py` substitui, no caminho ativo, as contagens antigas fixas de técnicos, nacionalidades e afinidades. Ele lê o conteúdo atual das tabelas de `clube_novo`, compara os conjuntos completos e devolve um relatório com `continue_pipeline=true`. O arquivo `executor/tecnicos.py` permanece preservado como implementação legada.
+
+### Textos e demais famílias
+
+Textos e Dimensões são tratados separadamente na UI V4.6.10. Falha ou divergência de uma delas gera aviso e relatório; as demais continuam.
 
 A aplicação continua manual, selada e restrita às famílias aprovadas.
 
@@ -180,15 +184,17 @@ Nenhuma divergência deve ser escondida por fallback. Nenhuma família válida d
 
 - `app/leitura-contrato.js`
 - `app/contrato-v46-runtime.js`
-- `app/metadata-v46-runtime.js`
+- `app/metadata-v46-runtime.js` — fonte-base servida com isolamento físico V4.6.10
 - `app/metadata-v46-compat.js`
 - `app/extrator-core.js`
 - `app/extrator-ui.js` — fonte-base; a V4.6.10 aplica o patch não bloqueante ao servi-la
+- `app/patches-v4610/metadata-family-safe.jsfrag`
 - `app/patches-v4610/post-json-report.jsfrag`
 - `app/patches-v4610/family-block.jsfrag`
 - `app/patches-v4610/status-block.jsfrag`
-- `executor/tecnicos.py`
-- `executor/impetos.py` — validador legado preservado para histórico
+- `executor/tecnicos.py` — validador legado preservado
+- `executor/tecnicos_v4610.py` — validador ativo orientado pelo banco
+- `executor/impetos.py` — validador legado preservado
 - `executor/impetos_v4610.py` — validador ativo orientado pelo banco
 - `executor/card_dimensions.py`
 - `executor/card_dimensions_apply.py`
