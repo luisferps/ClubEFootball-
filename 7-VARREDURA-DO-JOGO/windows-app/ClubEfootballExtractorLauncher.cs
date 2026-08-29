@@ -12,17 +12,17 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Busca e extração local de dados de futebol")]
 [assembly: AssemblyProduct("Extrator eFootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("4.6.11.0")]
-[assembly: AssemblyFileVersion("4.6.11.0")]
+[assembly: AssemblyVersion("4.6.12.0")]
+[assembly: AssemblyFileVersion("4.6.12.0")]
 
 namespace ClubEfootballWindowsApp
 {
     internal static class Program
     {
-        private const int AppPort = 8775;
-        private const string RuntimeVersion = "4.6.11";
-        private const string AppUrl = "http://127.0.0.1:8775/Extrator-ClubEfootball.html?v=4.6.11";
-        private const string StatusUrl = "http://127.0.0.1:8775/api/runtime-version";
+        private const int AppPort = 8776;
+        private const string RuntimeVersion = "4.6.12";
+        private const string AppUrl = "http://127.0.0.1:8776/Extrator-ClubEfootball.html?v=4.6.12";
+        private const string StatusUrl = "http://127.0.0.1:8776/api/runtime-version";
 
         private static readonly object LogLock = new object();
         private static string LogPath = null;
@@ -191,11 +191,11 @@ namespace ClubEfootballWindowsApp
                 );
             }
 
-            string script = Path.Combine(root, "executor", "servidor_v4610.py");
+            string script = Path.Combine(root, "executor", "servidor_v4612.py");
             string vendor = Path.Combine(root, "executor", "vendor");
             if (!File.Exists(script))
             {
-                throw new InvalidOperationException("executor\\servidor_v4610.py não foi encontrado.");
+                throw new InvalidOperationException("executor\\servidor_v4612.py não foi encontrado.");
             }
 
             bool isPyLauncher = String.Equals(Path.GetFileName(python), "py.exe", StringComparison.OrdinalIgnoreCase);
