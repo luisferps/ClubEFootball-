@@ -1,7 +1,7 @@
 # Manual do Extrator eFootball
 
-**Versão:** 4.6.10 · 29 de agosto de 2026  
-**Estado:** contrato V4.6 ativo; varredura orientada pelo banco e isolada por família; teste integral local da V4.6.10 pendente  
+**Versão:** 4.6.11 · 29 de agosto de 2026  
+**Estado:** contrato V4.6 ativo; varredura orientada pelo banco, isolada por família e com conferência intermediária obrigatória antes de qualquer escrita  
 **Pasta operacional:** `7-VARREDURA-DO-JOGO`
 
 ## Regra estrutural
@@ -12,7 +12,7 @@ O Extrator já possui lógica de extração validada. A V4.6 não muda fórmula,
 
 Onde o código antigo tinha bit, offset, largura, arquivo, tamanho de registro ou cardinalidade escritos diretamente, o caminho V4.6 recebe o valor equivalente das tabelas de `clube_novo` e do pedido ativo de leitura. Primitivas genéricas de CPK, WESYS, little-endian, bitfield e UTF-8 podem permanecer no código; elas não são autoridade semântica.
 
-## Regra de continuidade da varredura — V4.6.10
+## Regra de continuidade da varredura
 
 A varredura não é uma validação “tudo ou nada”.
 
@@ -50,6 +50,51 @@ Só constituem bloqueio estrutural geral:
 
 Mesmo nesses casos, o bloqueio deve identificar as famílias afetadas e preservar os resultados já obtidos.
 
+## Conferência intermediária obrigatória — V4.6.11
+
+A leitura e a escrita são etapas separadas.
+
+```text
+Leitura física e comparação
+        ↓ nenhuma escrita
+Área intermediária de conferência
+        ↓ mostra iguais, novos, alterados, ausentes e duplicados
+Preparação do pacote aprovado
+        ↓ gera review_id temporário e vinculado à fotografia atual
+Confirmação explícita do usuário
+        ↓ somente o escopo mostrado
+Aplicação no clube_novo
+```
+
+Regras:
+
+1. a abertura do Extrator e a varredura nunca gravam automaticamente;
+2. o painel **Conferência antes do banco** mostra as divergências de Metadados, Cartas e relações;
+3. a conferência de Dimensões lista exatamente as tabelas incluídas e as famílias excluídas;
+4. abrir ou atualizar a conferência é uma operação somente leitura;
+5. o servidor gera um `review_id` temporário, válido por 30 minutos e amarrado à fotografia e ao readback atuais;
+6. a aplicação exige o mesmo `review_id`, a marcação de que a conferência foi revisada e a frase exata;
+7. nova leitura invalida a conferência anterior;
+8. conferência usada, vencida ou pertencente a outra fotografia não pode ser aplicada;
+9. família divergente permanece fora do pacote;
+10. nenhuma exclusão de linha é autorizada por esse fluxo.
+
+O botão de Dimensões aplica somente:
+
+- `clube_novo.nacionalidade_jogo`;
+- `clube_novo.clube_jogo`;
+- `clube_novo.liga_jogo`;
+- `clube_novo.tipo_carta_jogo`;
+- vínculos físicos correspondentes em `clube_novo.carta_jogo`.
+
+Esse botão não aplica Ímpetos, Técnicos, Textos, Habilidades nem relações normalizadas de cartas.
+
+### Cartas e relações
+
+A divergência de uma relação de carta não deve aparecer apenas como `HTTP 409`.
+
+Na V4.6.11, o retorno de `card_relations.py` é preservado como relatório revisável. O Extrator continua até gerar o diff das cartas, mostra a família divergente e amostras linha a linha, mas não cria pacote de envio enquanto as relações não forem exatas.
+
 ## Autoridade das referências
 
 As referências físicas ficam nos próprios catálogos/tabelas, entre eles:
@@ -73,8 +118,8 @@ clube_novo: pedido, tabela e catálogo
 Extrator
         ↓ tenta ler tudo e registra cada resultado
 relatório por família
-        ↓ somente famílias exatas podem ser aplicadas
-clube_novo
+        ↓ conferência explícita
+somente famílias exatas podem ser aplicadas
 ```
 
 ## Contrato ativo em 29/08/2026
@@ -97,11 +142,11 @@ A ativação libera leitura e comparação. Ela não constitui aprovação autom
 - `windows-app/ClubEfootballExtractorLauncher.cs`;
 - `windows-app/COMPILAR-APLICATIVO.ps1`.
 
-A V4.6.10 usa:
+A V4.6.11 usa:
 
 - runtime: `executor/servidor_v4610.py`;
-- porta local exclusiva: `8774`;
-- UI servida pelo runtime com o fluxo não bloqueante;
+- porta local exclusiva: `8775`;
+- UI servida pelo runtime com fluxo não bloqueante e painel intermediário;
 - log: `logs/extrator-v46.log`.
 
 Quando o launcher muda, o executável deve ser recompilado. O botão `4-BAIXAR-DO-GITHUB.bat` sincroniza o código e recompila o aplicativo, preservando `config.txt`.
@@ -133,15 +178,19 @@ O `all.str` fica dentro do `dt261_bra_console_win.cpk`.
 
 Dimensões usam `Country.bin`, `Team.bin`, `CompetitionUnit.bin`, `CompetitionEntry.bin`, `Player.bin` e `PlayerDeleteList.bin`, conforme o contrato.
 
+`executor/card_relations.py` continua somente leitura. A V4.6.11 captura seu retorno de conflito como relatório, mostra as famílias divergentes e impede a criação do pacote de cartas até a aprovação integral.
+
 ### Metadados
 
-`app/metadata-v46-runtime.js` preserva a lógica das leituras físicas. Na V4.6.10, `app/patches-v4610/metadata-family-safe.jsfrag` é aplicado pelo servidor ao carregar esse runtime. Habilidades, Ímpetos, Playstyles, Textos, Técnicos, nacionalidades e afinidades são extraídos em blocos isolados: falha física de uma família produz um catálogo de erro e a função continua nas demais.
+`app/metadata-v46-runtime.js` preserva a lógica das leituras físicas. `app/patches-v4610/metadata-family-safe.jsfrag` é aplicado pelo servidor ao carregar esse runtime. Habilidades, Ímpetos, Playstyles, Textos, Técnicos, nacionalidades e afinidades são extraídos em blocos isolados: falha física de uma família produz um catálogo de erro e a função continua nas demais.
 
-`executor/servidor_v46.py` permanece como base compatível. `executor/servidor_v4610.py` aplica o runtime V4.6.10, isola o processo na porta 8774, ativa os validadores orientados pelo banco e serve as versões corrigidas do runtime de metadados e da UI.
+`app/metadados-v46.js` fornece o painel intermediário. Ele recebe os relatórios de Metadados e Cartas, abre a conferência de Dimensões, exige revisão explícita e só então habilita a etapa final.
+
+`executor/servidor_v46.py` permanece como base compatível. `executor/servidor_v4610.py` aplica o runtime V4.6.11, isola o processo na porta 8775, ativa os validadores orientados pelo banco, gera a conferência temporária e valida o `review_id` antes da escrita.
 
 ### Ímpetos
 
-`executor/impetos_v4610.py` substitui, no caminho ativo V4.6.10, a validação legada com cardinalidades congeladas. Em cada execução, ele lê as tabelas:
+`executor/impetos_v4610.py` substitui, no caminho ativo, a validação legada com cardinalidades congeladas. Em cada execução, ele lê as tabelas:
 
 - `impeto_jogo`;
 - `impeto_atributo_jogo`;
@@ -162,7 +211,7 @@ Depois compara o conjunto solicitado com a fotografia física e devolve códigos
 
 ### Textos e demais famílias
 
-Textos e Dimensões são tratados separadamente na UI V4.6.10. Falha ou divergência de uma delas gera aviso e relatório; as demais continuam.
+Textos e Dimensões são tratados separadamente. Falha ou divergência de uma família gera aviso e relatório; as demais continuam.
 
 A aplicação continua manual, selada e restrita às famílias aprovadas.
 
@@ -173,25 +222,31 @@ A aplicação continua manual, selada e restrita às famílias aprovadas.
 3. executar todas as famílias possíveis;
 4. registrar ausentes, novos, alterados, duplicados e erros;
 5. concluir a varredura mesmo com avisos;
-6. bloquear somente a aplicação das famílias divergentes;
-7. revisar o relatório;
-8. aplicar apenas o que estiver aprovado;
-9. somente depois liberar consumidores posteriores.
+6. carregar os resultados na área intermediária;
+7. mostrar as divergências antes de qualquer escrita;
+8. preparar somente o pacote aprovado e gerar `review_id`;
+9. exigir revisão, aceite e frase exata;
+10. aplicar apenas o escopo exibido;
+11. fazer readback posterior;
+12. somente depois liberar consumidores posteriores.
 
-Nenhuma divergência deve ser escondida por fallback. Nenhuma família válida deve ser descartada porque outra falhou.
+Nenhuma divergência deve ser escondida por fallback. Nenhuma família válida deve ser descartada porque outra falhou. Nenhuma escrita pode ocorrer apenas por abrir ou executar a varredura.
 
 ## Arquivos ativos
 
 - `app/leitura-contrato.js`
 - `app/contrato-v46-runtime.js`
-- `app/metadata-v46-runtime.js` — fonte-base servida com isolamento físico V4.6.10
+- `app/metadata-v46-runtime.js` — fonte-base servida com isolamento físico
 - `app/metadata-v46-compat.js`
 - `app/extrator-core.js`
-- `app/extrator-ui.js` — fonte-base; a V4.6.10 aplica o patch não bloqueante ao servi-la
+- `app/extrator-ui.js` — fonte-base servida com patches de continuidade e conferência
+- `app/metadados-v46.js` — painel intermediário obrigatório
 - `app/patches-v4610/metadata-family-safe.jsfrag`
 - `app/patches-v4610/post-json-report.jsfrag`
 - `app/patches-v4610/family-block.jsfrag`
 - `app/patches-v4610/status-block.jsfrag`
+- `app/patches-v4610/card-relations-block.jsfrag`
+- `app/patches-v4610/card-result-block.jsfrag`
 - `executor/tecnicos.py` — validador legado preservado
 - `executor/tecnicos_v4610.py` — validador ativo orientado pelo banco
 - `executor/impetos.py` — validador legado preservado
@@ -218,8 +273,10 @@ A migração termina quando:
 - cada família conclui ou registra seu próprio erro;
 - uma divergência não interrompe famílias independentes;
 - o relatório identifica ausentes, novos, alterados e duplicados;
+- a área intermediária mostra as divergências antes da escrita;
+- pacote algum pode ser aplicado sem `review_id` atual e aceite explícito;
 - somente famílias aprovadas podem ser aplicadas;
-- a leitura integral local foi testada e o resultado foi conferido.
+- a leitura integral local e o novo fluxo de conferência foram testados e conferidos.
 
 ## Regra de documentação
 
