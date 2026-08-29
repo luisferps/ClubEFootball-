@@ -19,8 +19,6 @@ import executor_local as base
 from card_dimensions_apply import apply_card_dimensions, readback_card_dimensions
 
 
-# A V4.5 foi entregue deliberadamente travada. A V4.6 é a entrega posterior
-# explicitamente autorizada para voltar a escrever de forma manual e auditada.
 base.PRODUCTIVE_WRITES_LOCKED = False
 
 LAST_DIMENSIONS: dict | None = None
@@ -64,7 +62,6 @@ class Handler(base.Handler):
             return
         if parsed.path == "/api/card-dimensions/cached-status":
             config = base.load_config()
-            self._reading_contract = base.current_reading_contract(config)
             snapshot = LAST_DIMENSIONS
             self.send_json(HTTPStatus.OK, {
                 "ready": snapshot is not None,
