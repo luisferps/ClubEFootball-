@@ -3,7 +3,7 @@ setlocal
 cd /d "%~dp0"
 
 echo =====================================================
-echo  Extrator eFootball V4.6.9 - reconstruir aplicativo
+echo  Extrator eFootball V4.6.10 - reconstruir aplicativo
 echo =====================================================
 echo.
 
@@ -17,7 +17,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo OK: Extrator eFootball.exe V4.6.9 reconstruido.
+echo OK: Extrator eFootball.exe V4.6.10 reconstruido.
 echo Para uso normal, abra ABRIR-EXTRATOR.cmd.
 pause
 endlocal
