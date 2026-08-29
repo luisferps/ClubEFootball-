@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import threading
+import traceback
 import webbrowser
 from http import HTTPStatus
 from http.server import ThreadingHTTPServer
@@ -18,6 +19,29 @@ from urllib.parse import parse_qs, urlparse
 
 import executor_local as base
 from card_dimensions_apply import apply_card_dimensions, readback_card_dimensions
+
+
+def runtime_log(message: str) -> None:
+    """Vai para stderr; o launcher Windows persiste a saída no log único."""
+    try:
+        print(f"[V4.6.6] {message}", file=base.sys.stderr, flush=True)
+    except Exception:
+        pass
+
+
+def _thread_exception_hook(args: threading.ExceptHookArgs) -> None:
+    try:
+        detail = "".join(
+            traceback.format_exception(args.exc_type, args.exc_value, args.exc_traceback)
+        ).strip()
+        runtime_log(
+            f"EXCECAO-THREAD | {args.thread.name if args.thread else 'sem-thread'} | {detail}"
+        )
+    except Exception:
+        pass
+
+
+threading.excepthook = _thread_exception_hook
 
 
 # O executor base já envia os catálogos referidos diretamente pelos campos do
@@ -93,7 +117,23 @@ def dimensions_apply_allowed(config: dict) -> bool:
 
 
 class Handler(base.Handler):
-    server_version = "ClubEfootballLocal/4.6"
+    server_version = "ClubEfootballLocal/4.6.6"
+
+    def log_message(self, format: str, *args: Any) -> None:
+        try:
+            runtime_log(f"HTTP | {self.client_address[0]} | {format % args}")
+        except Exception:
+            pass
+
+    def send_json(self, status: HTTPStatus | int, payload: Any) -> None:
+        try:
+            code = int(status)
+            if code >= 400:
+                detail = json.dumps(payload, ensure_ascii=False, default=str, separators=(",", ":"))
+                runtime_log(f"HTTP-ERRO | {self.command} {self.path} | status={code} | {detail}")
+        except Exception as error:
+            runtime_log(f"FALHA-AO-REGISTRAR-HTTP | {error}")
+        super().send_json(status, payload)
 
     def _serve_injected_ui(self) -> None:
         html_path = Path(base.ROOT) / "Extrator-ClubEfootball.html"
@@ -137,8 +177,6 @@ class Handler(base.Handler):
             self._serve_injected_ui()
             return
 
-        # Descoberta física é local: primeiro acha o arquivo no Windows, sem
-        # consultar Supabase/contrato. A validação contratual ocorre depois.
         if parsed.path == "/local-sources/status":
             self.send_json(HTTPStatus.OK, base.discover_sources())
             return
@@ -224,6 +262,7 @@ class Handler(base.Handler):
             except (RuntimeError, ValueError, OSError, json.JSONDecodeError) as error:
                 self.send_json(HTTPStatus.BAD_REQUEST, {"error": str(error), "database_write": False})
             except Exception as error:
+                runtime_log("FALHA-FECHADA | " + "".join(traceback.format_exception(type(error), error, error.__traceback__)).strip())
                 self.send_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": f"falha fechada: {error}", "database_write": False})
             finally:
                 DIMENSIONS_LOCK.release()
@@ -237,17 +276,22 @@ def main() -> None:
     port = int(base.os.environ.get("CLUBEF_EXTRACTOR_PORT", "8765"))
     server = ThreadingHTTPServer((host, port), Handler)
     url = f"http://{host}:{port}/Extrator-ClubEfootball.html"
+    runtime_log(f"Servidor iniciado em {url}; raiz={base.ROOT}; config={base.load_config().get('_source')}")
     if base.sys.stdout is not None:
-        print(f"Extrator eFootball V4.6 disponível em {url}")
+        print(f"Extrator eFootball V4.6.6 disponível em {url}")
         print("Fluxo produtivo: Metadados/Dimensões -> Cartas. Escrita continua manual e confirmada.")
     if "--no-browser" not in base.sys.argv:
         threading.Timer(0.8, lambda: webbrowser.open(url)).start()
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        pass
+        runtime_log("Servidor encerrado por KeyboardInterrupt.")
+    except Exception as error:
+        runtime_log("FALHA-SERVIDOR | " + "".join(traceback.format_exception(type(error), error, error.__traceback__)).strip())
+        raise
     finally:
         server.server_close()
+        runtime_log("Servidor local encerrado.")
 
 
 if __name__ == "__main__":
