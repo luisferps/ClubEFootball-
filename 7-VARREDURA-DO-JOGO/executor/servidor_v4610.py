@@ -16,6 +16,7 @@ from tecnicos_v4610 import validate_tecnicos_v4610
 RUNTIME_VERSION = "4.6.10"
 DEFAULT_PORT = 8774
 PATCH_DIR = Path(legacy.base.ROOT) / "app" / "patches-v4610"
+LAST_DIMENSIONS_REPORT: dict | None = None
 
 legacy.RUNTIME_VERSION = RUNTIME_VERSION
 legacy.DEFAULT_PORT = DEFAULT_PORT
@@ -105,6 +106,23 @@ def patched_ui_source() -> str:
     return source + "\n//# sourceURL=/app/extrator-ui-v4610.js\n"
 
 
+def validate_runtime_patches() -> None:
+    metadata_source = patched_metadata_runtime_source()
+    ui_source = patched_ui_source()
+    required = (
+        (metadata_source, "family_errors", "runtime físico por família"),
+        (ui_source, "familyWarnings", "UI por família"),
+        (ui_source, "continue_pipeline", "continuidade do relatório"),
+    )
+    for source, marker, label in required:
+        if marker not in source:
+            raise RuntimeError(f"patch V4.6.10 incompleto: {label} sem {marker}")
+    legacy.runtime_log(
+        "Patches V4.6.10 validados antes da abertura: "
+        f"metadata_js={len(metadata_source)} bytes; ui_js={len(ui_source)} bytes"
+    )
+
+
 class Handler(legacy.Handler):
     server_version = f"ClubEfootballLocal/{RUNTIME_VERSION}"
 
@@ -167,7 +185,88 @@ class Handler(legacy.Handler):
             self.end_headers()
             self.wfile.write(data)
             return
+        if path == "/api/card-dimensions/cached-status":
+            config = legacy.base.load_config()
+            snapshot = legacy.LAST_DIMENSIONS
+            report = LAST_DIMENSIONS_REPORT
+            approved = bool(report and report.get("passed"))
+            self.send_json(
+                HTTPStatus.OK,
+                {
+                    "ready": snapshot is not None,
+                    "approved": approved,
+                    "apply_available": (
+                        approved and legacy.dimensions_apply_allowed(config)
+                    ),
+                    "source_counts": snapshot.get("counts") if snapshot else None,
+                    "validation": report,
+                    "required_confirmation": legacy.REQUIRED_CONFIRMATION,
+                    "database_write": False,
+                },
+            )
+            return
         super()._do_GET()
+
+    def _do_POST(self) -> None:
+        global LAST_DIMENSIONS_REPORT
+        path = urlparse(self.path).path
+
+        if path == "/api/card-dimensions/validate":
+            snapshot = None
+            try:
+                config = legacy.base.load_config()
+                self._reading_contract = legacy.base.current_reading_contract(config)
+                payload = self.read_json()
+                snapshot = payload.get("snapshot")
+                if not isinstance(snapshot, dict):
+                    raise ValueError("a fotografia física de Dimensões não foi recebida")
+                result = legacy.base.current_card_dimensions_validation(snapshot, config)
+                if result.get("source_contract") != snapshot.get("contract"):
+                    raise ValueError("o readback não corresponde à fotografia física recebida")
+
+                legacy.LAST_DIMENSIONS = snapshot
+                LAST_DIMENSIONS_REPORT = result
+                response = {
+                    **result,
+                    "continue_pipeline": True,
+                    "application_blocked": not bool(result.get("passed")),
+                    "snapshot_cached_for_manual_apply": True,
+                }
+                status = HTTPStatus.OK if result.get("passed") else HTTPStatus.CONFLICT
+                self.send_json(status, response)
+            except Exception as error:
+                if isinstance(snapshot, dict):
+                    legacy.LAST_DIMENSIONS = snapshot
+                LAST_DIMENSIONS_REPORT = {
+                    "passed": False,
+                    "continue_pipeline": True,
+                    "application_blocked": True,
+                    "error": str(error),
+                    "database_write": False,
+                }
+                self.send_json(
+                    HTTPStatus.BAD_REQUEST,
+                    LAST_DIMENSIONS_REPORT,
+                )
+            return
+
+        if path == "/api/card-dimensions/apply-cached":
+            if not LAST_DIMENSIONS_REPORT or not LAST_DIMENSIONS_REPORT.get("passed"):
+                self.send_json(
+                    HTTPStatus.CONFLICT,
+                    {
+                        "error": (
+                            "aplicação de Dimensões bloqueada: a família possui "
+                            "divergências ou erro de leitura; as outras famílias "
+                            "continuam disponíveis"
+                        ),
+                        "validation": LAST_DIMENSIONS_REPORT,
+                        "database_write": False,
+                    },
+                )
+                return
+
+        super()._do_POST()
 
 
 def main() -> None:
@@ -178,6 +277,7 @@ def main() -> None:
             str(DEFAULT_PORT),
         )
     )
+    validate_runtime_patches()
     server = legacy.LoggedThreadingHTTPServer((host, port), Handler)
     url = f"http://{host}:{port}/Extrator-ClubEfootball.html"
 
