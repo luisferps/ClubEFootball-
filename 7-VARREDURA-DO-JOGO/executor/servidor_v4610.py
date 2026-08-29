@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 
 import servidor_v46 as legacy
 from impetos_v4610 import validate_impetos_v4610
+from tecnicos_v4610 import validate_tecnicos_v4610
 
 
 RUNTIME_VERSION = "4.6.10"
@@ -19,6 +20,7 @@ PATCH_DIR = Path(legacy.base.ROOT) / "app" / "patches-v4610"
 legacy.RUNTIME_VERSION = RUNTIME_VERSION
 legacy.DEFAULT_PORT = DEFAULT_PORT
 legacy.base.validate_impetos = validate_impetos_v4610
+legacy.base.validate_tecnicos = validate_tecnicos_v4610
 
 
 def _fragment(name: str) -> str:
@@ -36,6 +38,20 @@ def _replace_once(source: str, pattern: str, replacement: str, label: str) -> st
             f"(encontrados={count})"
         )
     return updated
+
+
+def patched_metadata_runtime_source() -> str:
+    source_path = Path(legacy.base.ROOT) / "app" / "metadata-v46-runtime.js"
+    source = source_path.read_text(encoding="utf-8-sig")
+    source = _replace_once(
+        source,
+        r"  async function extractMetadataByFamilyV46\(sourceBytes,sourceDescriptors,log=\(\)=>\{\}\)\{"
+        r"[\s\S]*?\n\n  async function captureValidate",
+        _fragment("metadata-family-safe.jsfrag").rstrip()
+        + "\n\n  async function captureValidate",
+        "extração física isolada por família",
+    )
+    return source + "\n//# sourceURL=/app/metadata-v46-runtime-v4610.js\n"
 
 
 def patched_ui_source() -> str:
@@ -101,6 +117,12 @@ class Handler(legacy.Handler):
         if runtime_marker not in html:
             html = html.replace(core_marker, f"{core_marker}\n  {runtime_marker}")
 
+        original_metadata_runtime = '<script src="app/metadata-v46-runtime.js"></script>'
+        patched_metadata_runtime = (
+            '<script src="/app/metadata-v46-runtime-v4610.js?v=4.6.10"></script>'
+        )
+        html = html.replace(original_metadata_runtime, patched_metadata_runtime)
+
         original_ui = '<script src="app/extrator-ui.js"></script>'
         patched_ui = '<script src="/app/extrator-ui-v4610.js?v=4.6.10"></script>'
         html = html.replace(original_ui, patched_ui)
@@ -126,7 +148,17 @@ class Handler(legacy.Handler):
         self.wfile.write(data)
 
     def _do_GET(self) -> None:
-        if urlparse(self.path).path == "/app/extrator-ui-v4610.js":
+        path = urlparse(self.path).path
+        if path == "/app/metadata-v46-runtime-v4610.js":
+            data = patched_metadata_runtime_source().encode("utf-8")
+            self.send_response(HTTPStatus.OK)
+            self.send_header("Content-Type", "application/javascript; charset=utf-8")
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
+        if path == "/app/extrator-ui-v4610.js":
             data = patched_ui_source().encode("utf-8")
             self.send_response(HTTPStatus.OK)
             self.send_header("Content-Type", "application/javascript; charset=utf-8")
