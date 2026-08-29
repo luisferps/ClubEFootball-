@@ -40,12 +40,9 @@ A rotina ativa de Dimensões usa as referências de `nacionalidade_jogo`, `clube
 
 `app/metadata-v46-runtime.js` preserva a lógica cumulativa existente para habilidades, playstyles, técnicos, nacionalidades, afinidades, ímpetos, efeitos/condições e relações de liga.
 
-`app/metadata-v46-compat.js` existe somente para compatibilidade de dependências antigas e não possui endereço próprio:
+O `executor/servidor_v46.py` amplia o payload de catálogos do pedido ativo e entrega diretamente as linhas reais das tabelas canônicas necessárias aos módulos acessórios, sem copiar bit, offset, largura ou tamanho para o servidor. Entre as tabelas entregues explicitamente estão `estilo_jogo_tecnico`, `afinidade_tecnico_jogo`, `atributo_ordem_otimizador`, `impeto_jogo`, `impeto_atributo_jogo`, `tipo_impeto_jogo`, `impeto_condicao_jogo`, `impeto_condicao_nacionalidade_jogo`, `impeto_condicao_liga_jogo`, `impeto_condicao_classe_jogo`, `impeto_condicao_parametro_faixa_jogo`, `impeto_condicao_liga_membro_jogo` e `posicao_jogo`.
 
-- `dt200` e `dt870_original` não têm fingerprint autoritativo publicado no contrato ativo; sua validação estrutural é feita no consumo pelas referências canônicas;
-- o espelho do tipo de condição é projetado de `tipo_impeto_jogo`;
-- quando as tabelas de alvo de nacionalidade ou liga não vêm no payload do contrato, a projeção temporária recebe `bit/largura` dos campos contratados `impeto.condicao.nacionalidade` e `impeto.condicao.liga`;
-- todas essas projeções são removidas depois da extração e não viram uma segunda autoridade.
+`app/metadata-v46-compat.js` não fabrica mais catálogos nem projeta endereços. Ele apenas mantém a descoberta das fontes históricas `dt200` e `dt870_original`, que ainda não possuem fingerprint autoritativo próprio no contrato ativo, e falha fechado se alguma tabela canônica obrigatória chegar sem as colunas físicas necessárias.
 
 ### Leitor neutro
 
@@ -55,7 +52,7 @@ A rotina ativa de Dimensões usa as referências de `nacionalidade_jogo`, `clube
 
 - `executor/tecnicos.py`: sem `STYLE_BITS`; proficiências e boosts exigem evidência física recebida da fotografia canônica;
 - `executor/card_dimensions.py`: referências de nacionalidade, clube, liga, tipo e vínculo vêm das tabelas canônicas;
-- `executor/impetos.py`: bit/largura do tipo, espelho, alvos, classes, corte, efeito máximo, arquivos e tamanhos são obrigatórios no `field_contract`/fotografia; foram removidos os fallbacks físicos locais de `64/32`, `PlayerBooster.bin` e `CompetitionUnit.bin`;
+- `executor/impetos.py`: bit/largura do tipo, espelho, alvos, classes, corte, efeito máximo, arquivos e tamanhos são obrigatórios no `field_contract`/fotografia; a auditoria final continua até eliminar qualquer fallback semântico residual do código;
 - `executor/card_impetus.py`: endereços dos slots vêm do contrato ativo;
 - `executor/card_relations.py`: resolve chaves pelos catálogos sem decidir endereço de extração.
 
@@ -100,6 +97,7 @@ Nenhuma carga produtiva deve ser feita durante a migração. A ordem é:
 - `executor/card_relations.py`
 - `executor/card_dimensions_apply.py`
 - `executor/executor_local.py`
+- `executor/servidor_v46.py`
 - `Extrator-ClubEfootball.html`
 
 ## Critério de conclusão
