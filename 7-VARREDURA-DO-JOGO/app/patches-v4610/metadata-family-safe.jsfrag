@@ -1,0 +1,246 @@
+  async function extractMetadataByFamilyV46(sourceBytes, sourceDescriptors, log = () => {}) {
+    if (!plan) throw new Error('contrato ativo ainda não foi recebido');
+
+    const required = ['dt870_updated', 'dt200', 'dt870_original', 'dt261_bra'];
+    const cpks = {};
+    const familyErrors = [];
+
+    function failure(name, file, error, extra = {}) {
+      const reason = error && error.message ? error.message : String(error);
+      familyErrors.push({ family: name, reason });
+      log(`AVISO · ${name}: ${reason}. As outras famílias continuarão.`);
+      return {
+        supported: false,
+        status: 'erro_leitura',
+        file,
+        reason,
+        source_policy: 'família isolada; erro não interrompe as demais',
+        records: [],
+        duplicate_ids: [],
+        ...extra
+      };
+    }
+
+    for (const role of required) {
+      if (!sourceBytes[role]) {
+        familyErrors.push({ family: `fonte:${role}`, reason: 'fonte obrigatória ausente' });
+        continue;
+      }
+      try {
+        cpks[role] = extractCpk(sourceBytes[role]);
+      } catch (error) {
+        familyErrors.push({ family: `fonte:${role}`, reason: error.message || String(error) });
+        log(`AVISO · fonte ${role}: ${error.message || error}. Famílias independentes continuarão.`);
+      }
+    }
+
+    let habilidades;
+    try {
+      if (!cpks.dt870_updated) throw new Error('DT870 da atualização indisponível');
+      const skill = await physicalCatalog(cpks, 'dt870_updated', 'catalogo.habilidade.id');
+      habilidades = {
+        supported: true,
+        file: skill.file,
+        source_policy: 'DT870 da atualização',
+        record_size: skill.record_size,
+        id_contract: 'id físico fornecido pelo contrato',
+        records: skill.records.map((record) => fingerprint(record)),
+        duplicate_ids: skill.duplicate_ids
+      };
+      log(`habilidades · ${habilidades.records.length}`);
+    } catch (error) {
+      habilidades = failure('habilidades', 'PlayerSkill.bin', error);
+    }
+
+    let booster;
+    try {
+      for (const role of ['dt200', 'dt870_original', 'dt870_updated']) {
+        if (!cpks[role]) throw new Error(`${role} indisponível para Ímpetos`);
+      }
+      booster = await impetos(cpks);
+      log(`ímpetos · união com procedência: ${booster.records.length}`);
+    } catch (error) {
+      booster = failure('impetos', 'PlayerBooster.bin', error, {
+        contract: 'clubef-impetos-physical-v1',
+        record_size: null,
+        id_contract: 'pedido de clube_novo',
+        liga_membros: [],
+        field_contract: {}
+      });
+    }
+
+    let playstyles;
+    try {
+      if (!cpks.dt200 || !cpks.dt870_updated) {
+        throw new Error('DT200 ou DT870 da atualização indisponível para Playstyles');
+      }
+      const playKey = 'catalogo.playstyle.id';
+      const baseStyle = await physicalCatalog(cpks, 'dt200', playKey);
+      const overlayStyle = await physicalCatalog(cpks, 'dt870_updated', playKey);
+      const overlayById = new Map(overlayStyle.records.map((record) => [record.id, record]));
+      const baseIds = new Set(baseStyle.records.map((record) => record.id));
+      const unsupportedEntries = overlayStyle.records
+        .filter((record) => !baseIds.has(record.id))
+        .map((record) => ({
+          id: record.id,
+          source_role: 'dt870_updated',
+          reason: 'overlay sem registro semântico correspondente no DT200'
+        }));
+      playstyles = {
+        supported: true,
+        file: baseStyle.file,
+        source_policy: 'DT200 é a base semântica; DT870 atualizado é somente overlay',
+        record_size: baseStyle.record_size,
+        id_contract: 'id físico fornecido pelo contrato',
+        records: baseStyle.records.map((record) => fingerprint({
+          id: record.id,
+          semantic_source: 'dt200',
+          base_raw_hex: record.raw_hex,
+          overlay_present: overlayById.has(record.id),
+          overlay_raw_hex: overlayById.get(record.id)?.raw_hex || null
+        })),
+        unsupported_entries: unsupportedEntries,
+        duplicate_ids: []
+      };
+      log(`playstyles · base DT200: ${playstyles.records.length}`);
+    } catch (error) {
+      playstyles = failure('playstyles', 'PlayStyle.bin', error, { unsupported_entries: [] });
+    }
+
+    let textos;
+    try {
+      if (!sourceBytes.dt261_bra) throw new Error('DT261 em português indisponível');
+      textos = await base.extractTextCatalogFromCpk(sourceBytes.dt261_bra);
+      log(`textos · ${textos.records.length}`);
+    } catch (error) {
+      textos = failure('textos', 'all.str', error);
+    }
+
+    let tecnicos;
+    let nacionalidades;
+    let afinidades;
+    try {
+      if (!cpks.dt870_updated) throw new Error('DT870 da atualização indisponível para Técnicos');
+      if (!textos.supported && textos.status === 'erro_leitura') {
+        throw new Error('Textos oficiais indisponíveis para resolver afinidades de Técnico');
+      }
+      const coach = await technicians(cpks, textos);
+      tecnicos = {
+        supported: true,
+        file: 'Coach.bin + Country.bin',
+        source_policy: 'DT870 da atualização; referências físicas canônicas',
+        record_size: fileForField('tecnico.id').tamanho_registro,
+        id_contract: 'u64 do contrato',
+        contract: 'clubef-tecnicos-carga-v4-sobreposicao',
+        records: coach.technicians,
+        duplicate_ids: []
+      };
+      nacionalidades = {
+        supported: true,
+        file: 'Country.bin',
+        source_policy: 'DT870 atualizado; referência canônica',
+        record_size: fileForField('nacionalidade.codigo').tamanho_registro,
+        id_contract: 'código físico do contrato',
+        contract: 'clubef-nacionalidades-v1',
+        records: coach.nationalities,
+        duplicate_ids: []
+      };
+      afinidades = {
+        supported: true,
+        file: 'Coach.bin + all.str',
+        source_policy: 'código físico + rótulo oficial',
+        id_contract: 'afinidade_tecnico_jogo',
+        contract: 'clubef-afinidades-tecnico-v1',
+        records: coach.affinities,
+        duplicate_ids: []
+      };
+      log(`técnicos · ${tecnicos.records.length}; nacionalidades: ${nacionalidades.records.length}; afinidades: ${afinidades.records.length}`);
+    } catch (error) {
+      const reason = error && error.message ? error.message : String(error);
+      tecnicos = failure('tecnicos', 'Coach.bin', error, {
+        contract: 'clubef-tecnicos-carga-v4-sobreposicao'
+      });
+      nacionalidades = {
+        supported: false,
+        status: 'erro_leitura',
+        file: 'Country.bin',
+        reason,
+        source_policy: 'família de Técnicos isolada',
+        contract: 'clubef-nacionalidades-v1',
+        records: [],
+        duplicate_ids: []
+      };
+      afinidades = {
+        supported: false,
+        status: 'erro_leitura',
+        file: 'Coach.bin + all.str',
+        reason,
+        source_policy: 'família de Técnicos isolada',
+        contract: 'clubef-afinidades-tecnico-v1',
+        records: [],
+        duplicate_ids: []
+      };
+    }
+
+    let posicoes;
+    try {
+      posicoes = {
+        supported: true,
+        file: 'Player.bin + catálogo',
+        source_policy: 'clube_novo.posicao_jogo',
+        records: rows('posicao_jogo').map((record) => fingerprint({
+          id: String(record.id),
+          codigo_en: record.codigo_en
+        })),
+        duplicate_ids: []
+      };
+    } catch (error) {
+      posicoes = failure('posicoes', 'Player.bin + catálogo', error);
+    }
+
+    const unsupported = (file, reason, sourcePolicy = null) => ({
+      supported: false,
+      status: 'nao_suportado_nesta_atualizacao',
+      file,
+      reason,
+      source_policy: sourcePolicy,
+      records: [],
+      duplicate_ids: []
+    });
+
+    const efeitos = booster.records.flatMap((record) =>
+      (record.efeitos || []).map((effect) => ({ codigo_impeto: record.id, ...effect }))
+    );
+
+    const catalogs = {
+      habilidades,
+      impetos: booster,
+      playstyles,
+      posicoes,
+      textos,
+      tecnicos,
+      nacionalidades,
+      afinidades_tecnico: afinidades,
+      estilos_ia: unsupported('Player.bin', 'catálogo nominal integral ainda não suportado'),
+      efeitos_de_impeto: {
+        supported: booster.supported !== false,
+        status: booster.status,
+        file: booster.file,
+        contract: booster.contract,
+        reason: booster.reason,
+        records: efeitos,
+        duplicate_ids: []
+      },
+      times_e_vinculos: unsupported('Team.bin + PlayerAssignment.bin', 'layout integral não suportado'),
+      potw: unsupported('PlayerWeekly.bin', 'layout integral não suportado'),
+      habilidade_extra_de_variacao: unsupported('PlayerVariationPrSkill.bin', 'layout integral não suportado')
+    };
+
+    return {
+      contract: 'clubef-physical-metadata-v4',
+      source_policy: 'por família; endereços e pedido de clube_novo',
+      sources: sourceDescriptors,
+      family_errors: familyErrors,
+      catalogs
+    };
+  }
