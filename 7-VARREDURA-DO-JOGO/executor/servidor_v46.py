@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import threading
 import webbrowser
+from datetime import datetime, timezone
 from http import HTTPStatus
 from http.server import ThreadingHTTPServer
 from pathlib import Path
@@ -27,6 +28,8 @@ from card_dimensions_apply import apply_card_dimensions, readback_card_dimension
 # bit/offset/tamanho neste servidor: somente nomes de tabelas e suas chaves de
 # ordenação determinística.
 _BASE_CONTRACT_CATALOGS = base.contract_catalogs
+_BASE_DEFAULT_SOURCE_DEFINITIONS = base.default_source_definitions
+_BASE_INSPECT_SOURCE = base.inspect_source
 _V46_CANONICAL_CATALOGS: dict[str, tuple[str, ...]] = {
     "afinidade_tecnico_jogo": ("codigo_jogo",),
     "atributo_ordem_otimizador": ("indice_otimizador",),
@@ -45,12 +48,7 @@ _V46_CANONICAL_CATALOGS: dict[str, tuple[str, ...]] = {
 
 
 def contract_catalogs_v46(connection: Any, contract: dict[str, Any], sql: Any) -> list[dict[str, Any]]:
-    """Entrega ao Extrator as próprias linhas canônicas usadas pelos acessórios.
-
-    A lógica da extração não muda. O objetivo é somente garantir que, quando um
-    módulo pergunta onde está um dado, a resposta venha da tabela correspondente
-    do clube_novo em vez de uma constante local ou de uma projeção inventada.
-    """
+    """Entrega ao Extrator as próprias linhas canônicas usadas pelos acessórios."""
     catalogs = _BASE_CONTRACT_CATALOGS(connection, contract, sql)
     existing = {(str(item.get("schema")), str(item.get("table"))) for item in catalogs}
     with connection.cursor() as cursor:
@@ -71,7 +69,97 @@ def contract_catalogs_v46(connection: Any, contract: dict[str, Any], sql: Any) -
     return sorted(catalogs, key=lambda item: (str(item.get("schema")), str(item.get("table"))))
 
 
+def default_source_definitions_v46() -> dict[str, dict[str, Any]]:
+    """Mantém as fontes existentes e acrescenta as raízes reais conhecidas do jogo.
+
+    A atualização do eFootball pode guardar dt870_console_win.cpk dentro de uma
+    subpasta numérica de ST\\Download. Por isso a raiz de Download é pesquisada
+    recursivamente. A instalação Steam continua preferindo a pasta cpk direta e
+    usa a raiz do eFootball apenas como recuperação automática.
+    """
+    definitions = _BASE_DEFAULT_SOURCE_DEFINITIONS()
+    program_data = Path(base.os.environ.get("ProgramData", r"C:\ProgramData"))
+    program_files_x86 = Path(base.os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"))
+    program_files = Path(base.os.environ.get("ProgramFiles", r"C:\Program Files"))
+
+    download_root = program_data / "KONAMI" / "eFootball" / "ST" / "Download"
+    steam_roots = [
+        program_files_x86 / "Steam" / "steamapps" / "common" / "eFootball",
+        program_files / "Steam" / "steamapps" / "common" / "eFootball",
+    ]
+    definitions["dt870_updated"]["search_roots"] = [download_root]
+    for role in ("dt200", "dt870_original", "dt261_bra"):
+        definitions[role]["search_roots"] = steam_roots
+    return definitions
+
+
+def _valid_cpk(path: Path) -> bool:
+    try:
+        if not path.is_file():
+            return False
+        with path.open("rb") as handle:
+            return handle.read(4) == b"CPK "
+    except OSError:
+        return False
+
+
+def inspect_source_v46(role: str, definition: dict[str, Any]) -> dict[str, Any]:
+    """Tenta o caminho direto e, se necessário, procura sozinho nas raízes conhecidas."""
+    direct = _BASE_INSPECT_SOURCE(role, definition)
+    if direct.get("found"):
+        direct["discovery_mode"] = "known_path"
+        return direct
+
+    filename = str(definition.get("filename") or "").strip()
+    matches: list[Path] = []
+    invalid: list[dict[str, str]] = list(direct.get("invalid_candidates") or [])
+    if filename:
+        for root_value in definition.get("search_roots") or []:
+            root = Path(root_value)
+            if not root.is_dir():
+                continue
+            try:
+                for path in root.rglob(filename):
+                    if _valid_cpk(path):
+                        matches.append(path)
+                    elif path.is_file():
+                        invalid.append({"location": str(path), "reason": "arquivo não é um CPK válido"})
+            except OSError as error:
+                invalid.append({"location": str(root), "reason": str(error)})
+
+    if matches:
+        # Em ST\\Download podem coexistir versões antigas. A mais recentemente
+        # modificada é a candidata atual; o contrato/fingerprint ainda faz a
+        # validação autoritativa antes da leitura.
+        matches.sort(key=lambda path: path.stat().st_mtime, reverse=True)
+        path = matches[0]
+        stat = path.stat()
+        return {
+            "role": role,
+            "label": definition["label"],
+            "filename": definition["filename"],
+            "purpose": definition["purpose"],
+            "operations": definition["operations"],
+            "found": True,
+            "valid_container": True,
+            "location": str(path),
+            "bytes": stat.st_size,
+            "modified_at": datetime.fromtimestamp(stat.st_mtime, timezone.utc).isoformat(),
+            "discovery_mode": "recursive_known_root",
+            "matches_found": len(matches),
+        }
+
+    return {
+        **direct,
+        "reason": "fonte não encontrada automaticamente nas pastas conhecidas; use seleção manual",
+        "invalid_candidates": invalid,
+        "discovery_mode": "manual_fallback_required",
+    }
+
+
 base.contract_catalogs = contract_catalogs_v46
+base.default_source_definitions = default_source_definitions_v46
+base.inspect_source = inspect_source_v46
 base.PRODUCTIVE_WRITES_LOCKED = False
 
 LAST_DIMENSIONS: dict | None = None
