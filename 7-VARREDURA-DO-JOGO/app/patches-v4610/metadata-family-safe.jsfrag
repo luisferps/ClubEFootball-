@@ -121,9 +121,9 @@
     let afinidades;
     try {
       if (!cpks.dt870_updated) throw new Error('DT870 da atualização indisponível para Técnicos');
-      if (!textos.supported && textos.status === 'erro_leitura') {
-        throw new Error('Textos oficiais indisponíveis para resolver afinidades de Técnico');
-      }
+      // A fotografia de Técnicos continua mesmo quando all.str falha. Nesse
+      // caso, o catálogo canônico ainda fornece as afinidades conhecidas e a
+      // pendência textual fica registrada somente na família Textos.
       const coach = await technicians(cpks, textos);
       tecnicos = {
         supported: true,
@@ -148,7 +148,7 @@
       afinidades = {
         supported: true,
         file: 'Coach.bin + all.str',
-        source_policy: 'código físico + rótulo oficial',
+        source_policy: 'código físico + rótulo oficial quando disponível',
         id_contract: 'afinidade_tecnico_jogo',
         contract: 'clubef-afinidades-tecnico-v1',
         records: coach.affinities,
