@@ -4,7 +4,7 @@
 
 ## Regra operacional
 
-O uso normal do Extrator não exige compilação.
+Depois de uma atualização de código, compile uma vez o EXE desktop. O uso diário seguinte não exige nova compilação.
 
 ### Atualizar a pasta
 
@@ -17,12 +17,12 @@ Execute, na pasta principal:
 O botão deve somente:
 
 1. baixar o estado atual de `main`;
-2. substituir os arquivos versionados da pasta pelo conteúdo atual do GitHub;
-3. preservar o `config.txt` local;
+2. avançar somente quando os arquivos locais não conflitam com `main`;
+3. preservar `config.txt`, `2-MOTORES\config.txt` e `configuracao.local.json` sem copiá-los ou regravá-los;
 4. registrar o commit instalado;
 5. terminar sem compilar e sem abrir o Extrator.
 
-Ele não deve listar centenas de arquivos em paginador, não deve iniciar o motor e não deve executar o compilador do EXE.
+Ele não deve listar centenas de arquivos em paginador, não deve iniciar o motor, não deve executar o compilador do EXE e não deve usar `git reset --hard`.
 
 ### Abrir o Extrator
 
@@ -32,9 +32,9 @@ Execute:
 7-VARREDURA-DO-JOGO\ABRIR-EXTRATOR.cmd
 ```
 
-O fluxo normal chama `INICIAR-EXTRATOR-V46.cmd`, que inicia diretamente o runtime Python `executor/servidor_v4612.py` e abre a interface no Microsoft Edge. Nenhuma compilação ocorre nessa abertura.
+O fluxo normal abre o EXE desktop V5. Ele cria uma janela WinForms e inicia a leitura pesada em worker separado; não abre Microsoft Edge, Chrome, `localhost` ou a página HTML.
 
-O arquivo `COMPILAR-EXTRATOR-V46.cmd` permanece apenas para manutenção opcional do EXE antigo e não faz parte do uso diário.
+Quando o código for atualizado, execute uma vez `COMPILAR-EXTRATOR-V46.cmd`. O compilador gera o EXE V5; `ABRIR-EXTRATOR.cmd` recusa abrir um EXE web V4 anterior.
 
 ## Segurança
 

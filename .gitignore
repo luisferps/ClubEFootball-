@@ -16,9 +16,10 @@ _ULTIMO-BAIXAR-DO-GITHUB.txt
 graphify-out/
 checkpoints/
 7-VARREDURA-DO-JOGO/logs/
+7-VARREDURA-DO-JOGO/artefatos/desktop/
 
 # artefatos compilados locais — o código-fonte é a referência.
-# O botão 4 recompila o Extrator V4.6 depois de sincronizar o GitHub.
+# O botão 4 apenas sincroniza arquivos; ele nunca compila o Extrator.
 7-VARREDURA-DO-JOGO/Extrator eFootball.exe
 7-VARREDURA-DO-JOGO/Extrator eFootball.novo.exe
 

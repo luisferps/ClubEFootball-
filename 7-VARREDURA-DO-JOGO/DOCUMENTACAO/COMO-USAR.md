@@ -1,18 +1,15 @@
-# Como usar o Extrator eFootball V4.6
+# Como usar o Extrator eFootball Desktop V5
 
-1. Abra a pasta **7-VARREDURA-DO-JOGO** e execute **INICIAR-EXTRATOR-V46.cmd**. Nesta correção, o `Extrator eFootball.exe` ainda é o binário preservado da V4.5.
-2. Aguarde a localização das fontes e a comparação automática.
-3. Deixe a aba/painel de **Metadados** terminar a leitura física de nacionalidade, clube, liga e tipo de carta.
-4. No painel **Etapa 1 · Metadados antes dos cards**, clique em **Aplicar metadados e vínculos**. Confirme a operação. O executor grava os catálogos primeiro e só depois os vínculos dos cards; nenhuma linha é apagada automaticamente.
-5. Compare os metadados novamente. Se houver card novo que ainda não existia na tabela, ele pode aparecer como vínculo pendente até a etapa de cards.
-6. Revise o diff de cards e use **OK — preparar envio ao clube_novo** para novas/alteradas. Aguarde o preflight, marque a conferência, digite a frase da execução e aplique.
-7. Se a carga inseriu cards que estavam pendentes de vínculo, execute novamente a reconciliação de metadados/vínculos.
-8. Só considere o Extrator concluído quando os cards destinados aos motores estiverem completos ou quando uma ausência estiver registrada como ausência legítima do próprio jogo.
+1. Execute `4-BAIXAR-DO-GITHUB.bat` somente para sincronizar os arquivos. Ele não compila, não abre o Extrator e não toca em `config.txt` nem em `configuracao.local.json`.
+2. Depois de uma atualização de código, execute uma vez `7-VARREDURA-DO-JOGO\COMPILAR-EXTRATOR-V46.cmd` para gerar o EXE desktop V5.
+3. Abra `7-VARREDURA-DO-JOGO\ABRIR-EXTRATOR.cmd` e clique em **INICIAR VARREDURA**.
+4. A janela permanece disponível enquanto o worker separado lê as fontes. Acompanhe Banco, Fontes, Progresso e o estado de cada família.
+5. Use **VER DIVERGÊNCIAS** para abrir o resultado local da execução. Itens iguais, novos, alterados, ausentes, duplicados e erros permanecem separados por família.
 
-A ordem operacional é:
+Esta versão é exclusivamente de leitura e comparação:
 
-`METADADOS -> VÍNCULOS -> CARDS -> READBACK -> OTIMIZADOR -> BONIFICADOR`
+`pedido canônico do banco -> leitura física -> comparação -> relatório local`
 
-Não selecione CSV ou JSON manualmente. As fontes físicas são lidas pelo próprio Extrator, e a conexão segura já existente é usada pelo executor local. Nenhuma senha vai para o HTML/JavaScript.
+Não há botão, endpoint ou fluxo de aplicação na interface desktop. `database_write=false` acompanha o worker e seus resultados. Uma família com divergência ou erro é reportada e não cancela as famílias seguintes. Sem contrato canônico, fonte física ou conexão read-only, a execução falha fechada antes de ler ou alterar qualquer dado.
 
-Se alguma fonte, estrutura, chave, FK ou prova física não conferir, a operação deve terminar como **bloqueada**. Não preencha clube, liga, nacionalidade, tipo, ímpeto ou outro insumo por suposição.
+Não use o antigo servidor/HTML diretamente. A V5 não abre Edge, Chrome, localhost ou a interface web.
