@@ -3,10 +3,10 @@
 /**
  * Compatibilidade transitória do runtime V4.6.
  *
- * Não contém endereço físico e não fabrica catálogos. O servidor V4.6 entrega
- * diretamente as linhas das tabelas canônicas do clube_novo. Esta camada só
- * mantém a compatibilidade de descoberta das duas fontes históricas que ainda
- * não possuem fingerprint próprio no contrato ativo.
+ * Não contém endereço físico e não fabrica catálogos. O servidor entrega
+ * diretamente as linhas das tabelas canônicas do clube_novo. Na V4.6.10,
+ * dependências de catálogo são conferidas dentro de cada família; uma falha de
+ * Ímpetos, por exemplo, não pode impedir Textos, Técnicos ou Dimensões.
  */
 (function installMetadataV46Compat(global) {
   const core = global.CLUBEF_CORE;
@@ -37,6 +37,8 @@
     return rows;
   }
 
+  // Mantida para diagnóstico pontual. Não é mais executada como porteira
+  // global, pois reúne dependências de famílias independentes.
   function validateCanonicalPayload(plan) {
     requireColumns(plan, 'impeto_jogo', ['arquivo_catalogo', 'tamanho_registro', 'bit_codigo', 'largura_codigo']);
     requireColumns(plan, 'impeto_atributo_jogo', ['arquivo_origem', 'fonte_origem', 'bit_delta', 'largura_delta']);
@@ -59,7 +61,6 @@
 
   async function validateSourceWithoutInventingAddress(bytes, plan, role) {
     reader.requirePlan(plan);
-    validateCanonicalPayload(plan);
     currentPlan = plan;
     const requested = (plan.arquivos || []).filter((file) => file.papel_fonte === role && file.obrigatorio);
     if (requested.length) return previousValidate(bytes, plan, role);
@@ -80,13 +81,15 @@
 
   async function extractMetadataWithCanonicalDependencies(sourceBytes, sourceDescriptors, log) {
     if (!currentPlan) throw new Error('contrato ativo não foi recebido antes dos metadados');
-    validateCanonicalPayload(currentPlan);
+    // Cada família do runtime V4.6.10 consulta e valida somente os catálogos
+    // de que precisa. O erro é registrado no relatório daquela família.
     return previousExtractMetadata(sourceBytes, sourceDescriptors, log);
   }
 
   global.CLUBEF_CORE = Object.freeze({
     ...core,
     validateSourceByContract: validateSourceWithoutInventingAddress,
-    extractMetadataByFamily: extractMetadataWithCanonicalDependencies
+    extractMetadataByFamily: extractMetadataWithCanonicalDependencies,
+    validateCanonicalMetadataPayload: validateCanonicalPayload
   });
 })(globalThis);
