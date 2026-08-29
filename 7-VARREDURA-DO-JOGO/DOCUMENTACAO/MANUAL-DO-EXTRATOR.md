@@ -1,6 +1,6 @@
 # Manual do Extrator eFootball
 
-**Versão:** 4.6 · 29 de agosto de 2026  
+**Versão:** 4.6.2 · 29 de agosto de 2026  
 **Estado:** contrato V4.6 ativo para leitura e validação controlada; teste integral local ainda pendente  
 **Pasta operacional:** `Clubefootball V4\7-VARREDURA-DO-JOGO`
 
@@ -49,37 +49,36 @@ Fingerprints selados:
 
 Após a ativação, `clube_novo.obter_pedido_leitura_contrato_ativo()` passou a devolver o pedido `r1` com os 12 arquivos e os 214 campos. A ativação libera **leitura e validação**; ela não constitui aprovação do resultado de uma nova extração nem substitui o teste integral local.
 
-## Distribuição e executável Windows
+## Aplicativo Windows e executável oficial
 
-O arquivo `Extrator eFootball.exe` é **artefato compilado local**, não fonte de verdade do projeto. Em 29/08/2026 foi identificado que uma cópia compilada antiga permanecia versionada no GitHub e era restaurada por `git reset --hard` durante o botão `4-BAIXAR-DO-GITHUB.bat`, podendo fazer o usuário executar uma versão anterior mesmo com o código-fonte V4.6 atualizado.
+`7-VARREDURA-DO-JOGO/Extrator eFootball.exe` é o aplicativo Windows oficial entregue ao usuário, com sua identidade visual e ícone. Ele não deve ser removido do projeto sem autorização explícita. O código-fonte do launcher fica em `windows-app/ClubEfootballExtractorLauncher.cs` e a rotina de compilação em `windows-app/COMPILAR-APLICATIVO.ps1`.
 
-A correção permanente é:
+Quando o código do launcher é alterado, o executável deve ser recompilado para incorporar a versão nova. O botão `4-BAIXAR-DO-GITHUB.bat` é responsável por sincronizar o código e recompilar o aplicativo na máquina Windows, preservando o ícone oficial.
 
-- `7-VARREDURA-DO-JOGO/Extrator eFootball.exe` não é mais versionado e está no `.gitignore`;
-- `4-BAIXAR-DO-GITHUB.bat` sincroniza e confere `origin/main` e, em seguida, recompila obrigatoriamente o executável a partir de `windows-app/ClubEfootballExtractorLauncher.cs` usando `windows-app/COMPILAR-APLICATIVO.ps1`;
-- antes da compilação, qualquer executável local anterior é removido, impedindo que uma falha deixe uma versão velha utilizável silenciosamente;
-- o botão 4 só informa sucesso completo quando GitHub e `HEAD` local conferem **e** o novo executável foi gerado;
-- se a compilação falhar, a mensagem deixa explícito que o código foi baixado mas o Extrator não está pronto para uso.
+## Descoberta automática das fontes físicas — V4.6.2
 
-Assim, baixar do GitHub nunca mais deve fazer o aplicativo regredir para um binário antigo. **Código-fonte V4.6 atual + compilação local posterior ao download** é o fluxo oficial.
+O fluxo normal **não pede ao usuário para localizar CPKs**. A partir da V4.6.2, a descoberta acontece também no próprio aplicativo Windows, antes de iniciar o servidor Python. Isso elimina a dependência de o usuário abrir o `.cmd` e evita que o EXE inicie o runtime sem informar as fontes que já existem no computador.
 
-## Descoberta automática das fontes físicas
+O aplicativo procura automaticamente nestas raízes confirmadas:
 
-O fluxo normal não exige que o usuário procure CPKs manualmente. A descoberta automática agora pertence ao próprio `executor/servidor_v46.py`, portanto funciona mesmo quando o Extrator é aberto sem depender das variáveis definidas pelo launcher `.cmd`.
+- atualização do jogo: `C:\ProgramData\KONAMI\eFootball\ST\Download`;
+- instalação Steam: `C:\Program Files (x86)\Steam\steamapps\common\eFootball`;
+- variante adicional: `C:\Program Files\Steam\steamapps\common\eFootball`.
 
-Fontes padrão atuais:
+Arquivos procurados:
 
-- DT870 da atualização: raiz `C:\ProgramData\KONAMI\eFootball\ST\Download`, incluindo pesquisa recursiva por `dt870_console_win.cpk` em subpastas;
-- DT200 base: `C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt200_console_all.cpk`;
-- DT870 original: `C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt870_console_win.cpk`;
-- textos em português: `C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt261_bra_console_win.cpk`;
-- a variante de Steam em `C:\Program Files\Steam\steamapps\common\eFootball` também é pesquisada.
+- DT870 da atualização: `dt870_console_win.cpk` dentro de `C:\ProgramData\KONAMI\eFootball\ST\Download`, incluindo subpastas;
+- DT200 base: `cpk\dt200_console_all.cpk` na instalação Steam;
+- DT870 original: `cpk\dt870_console_win.cpk` na instalação Steam;
+- textos em português: `cpk\dt261_bra_console_win.cpk` na instalação Steam.
 
-O `all.str` **não é um arquivo que o usuário precisa localizar solto no Windows**. Ele fica dentro do `dt261_bra_console_win.cpk`; o Extrator abre esse CPK e extrai/consulta `all.str` conforme a lógica já existente.
+A busca testa primeiro o caminho direto e depois pesquisa recursivamente pelo nome do arquivo dentro da raiz. Quando encontra, o EXE entrega os caminhos ao servidor pelas variáveis `CLUBEF_SOURCE_DT870_UPDATED`, `CLUBEF_SOURCE_DT200`, `CLUBEF_SOURCE_DT870_ORIGINAL` e `CLUBEF_SOURCE_DT261_BRA`. O servidor mantém sua própria descoberta como segunda camada. **Seleção manual é somente último recurso quando o arquivo realmente não existe em nenhuma raiz conhecida.**
 
-A descoberta física responde somente à pergunta **onde está o arquivo**. Ela não aprova a fonte por assinatura local simplificada. Depois de localizar o CPK, o runtime recebe os bytes e valida fingerprint, tamanho e contrato antes de considerar a fonte pronta. Isso evita o falso `NÃO ENCONTRADO` causado pela antiga pré-validação dos quatro primeiros bytes do contêiner.
+A V4.6.2 usa a porta local `8767`, isolando esta execução das versões anteriores que possam ter permanecido em segundo plano.
 
-Ao iniciar o servidor V4.6, o terminal também imprime as quatro fontes detectadas. A seleção manual permanece apenas como recuperação se a busca automática realmente não encontrar o arquivo.
+O `all.str` **não é um arquivo que o usuário precisa localizar solto no Windows**. Ele fica dentro do `dt261_bra_console_win.cpk`; o Extrator abre esse CPK e consulta `all.str` conforme a lógica já existente.
+
+A descoberta física responde somente à pergunta **onde está o arquivo**. A validade semântica da leitura continua sendo decidida pelo contrato, fingerprints e referências canônicas.
 
 ## Caminhos ativos V4.6
 
@@ -154,6 +153,7 @@ Ativar o contrato não significa aceitar automaticamente uma nova carga. O prime
 - `INICIAR-EXTRATOR-V46.cmd`
 - `windows-app/ClubEfootballExtractorLauncher.cs`
 - `windows-app/COMPILAR-APLICATIVO.ps1`
+- `Extrator eFootball.exe`
 - `Extrator-ClubEfootball.html`
 
 ## Critério de conclusão
