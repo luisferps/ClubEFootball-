@@ -51,20 +51,21 @@ Após a ativação, `clube_novo.obter_pedido_leitura_contrato_ativo()` passou a 
 
 ## Descoberta automática das fontes físicas
 
-O fluxo normal não exige que o usuário procure CPKs manualmente. Ao abrir o Extrator V4.6 pelo `INICIAR-EXTRATOR-V46.cmd`, o launcher informa automaticamente ao executor os caminhos padrão da instalação oficial no Windows quando os arquivos existem.
+O fluxo normal não exige que o usuário procure CPKs manualmente. A descoberta automática agora pertence ao próprio `executor/servidor_v46.py`, portanto funciona mesmo quando o Extrator é aberto sem depender das variáveis definidas pelo launcher `.cmd`.
 
 Fontes padrão atuais:
 
-- DT870 da atualização: `C:\ProgramData\KONAMI\eFootball\ST\Download\dt870_console_win.cpk`;
+- DT870 da atualização: raiz `C:\ProgramData\KONAMI\eFootball\ST\Download`, incluindo pesquisa recursiva por `dt870_console_win.cpk` em subpastas;
 - DT200 base: `C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt200_console_all.cpk`;
 - DT870 original: `C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt870_console_win.cpk`;
-- textos em português: `C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt261_bra_console_win.cpk`.
+- textos em português: `C:\Program Files (x86)\Steam\steamapps\common\eFootball\cpk\dt261_bra_console_win.cpk`;
+- a variante de Steam em `C:\Program Files\Steam\steamapps\common\eFootball` também é pesquisada.
 
 O `all.str` **não é um arquivo que o usuário precisa localizar solto no Windows**. Ele fica dentro do `dt261_bra_console_win.cpk`; o Extrator abre esse CPK e extrai/consulta `all.str` conforme a lógica já existente.
 
-Se as variáveis padrão do Windows não estiverem disponíveis ao processo, o launcher também tenta diretamente os mesmos caminhos absolutos em `C:`. Somente se a fonte realmente não existir nesses locais o fluxo deve oferecer recuperação manual.
+A descoberta física responde somente à pergunta **onde está o arquivo**. Ela não aprova a fonte por assinatura local simplificada. Depois de localizar o CPK, o runtime recebe os bytes e valida fingerprint, tamanho e contrato antes de considerar a fonte pronta. Isso evita o falso `NÃO ENCONTRADO` causado pela antiga pré-validação dos quatro primeiros bytes do contêiner.
 
-A descoberta automática é parte do comportamento normal do Extrator e não deve ser removida por mudanças futuras. O botão de seleção manual é fallback, não fluxo principal.
+Ao iniciar o servidor V4.6, o terminal também imprime as quatro fontes detectadas. A seleção manual permanece apenas como recuperação se a busca automática realmente não encontrar o arquivo.
 
 ## Caminhos ativos V4.6
 
