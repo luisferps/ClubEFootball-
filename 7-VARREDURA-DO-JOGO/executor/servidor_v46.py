@@ -15,7 +15,7 @@ from http.server import ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
-import servidor_local as base
+import executor_local as base
 from card_dimensions_apply import apply_card_dimensions, readback_card_dimensions
 
 
@@ -88,8 +88,6 @@ class Handler(base.Handler):
                 if not isinstance(snapshot, dict):
                     raise ValueError("a fotografia física de Dimensões não foi recebida")
                 result = base.current_card_dimensions_validation(snapshot, config)
-                # A fotografia só é guardada depois de passar pelo comparador estrutural.
-                # Divergência com o banco é justamente o que a aplicação deve corrigir.
                 if result.get("source_contract") != snapshot.get("contract"):
                     raise ValueError("o readback não corresponde à fotografia física recebida")
                 LAST_DIMENSIONS = snapshot
