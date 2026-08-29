@@ -1,7 +1,7 @@
 # Manual do Extrator eFootball
 
 **Versão:** 4.6 · 29 de agosto de 2026  
-**Estado da entrega:** migração para contrato de leitura como autoridade física; execução produtiva permanece bloqueada até a migração integral e o teste read-only  
+**Estado da entrega:** migração de referências físicas fixas para referências fornecidas pelos próprios catálogos do `clube_novo`; execução produtiva permanece bloqueada até a auditoria integral e o teste read-only  
 **Pasta operacional:** `Clubefootball V4\7-VARREDURA-DO-JOGO`
 
 ## 1. Finalidade
@@ -14,32 +14,44 @@ EXTRATOR -> OTIMIZADOR -> BONIFICADOR
 
 Regra central da arquitetura V4.6:
 
-> **O contrato determina onde e como ler. O Extrator somente valida e extrai.**
+> **A tabela/catálogo canônico diz onde está o dado. O Extrator somente valida, lê e devolve.**
 
-O Extrator não é autoridade para endereço físico de dado do jogo. Ele pode conhecer primitivas genéricas de leitura (inteiro little-endian, bitfield, texto UTF-8, descompressão e parsing de CPK), mas não deve decidir por conta própria em qual offset/bit um campo semântico está.
+A lógica do Extrator não muda. A mudança V4.6 é somente de referência física: onde antes um módulo continha `bit`, `offset`, `largura`, `arquivo` ou `tamanho_registro` escrito diretamente no código, ele passa a receber o valor equivalente das tabelas do `clube_novo`.
+
+O Extrator pode conhecer primitivas genéricas de leitura (inteiro little-endian, bitfield, texto UTF-8, descompressão e parsing de CPK), mas não deve decidir por conta própria em qual endereço físico um dado semântico está.
 
 ## 2. Autoridade de leitura
 
-Antes de uma leitura produtiva, o Extrator recebe o contrato ativo do banco. O contrato deve informar, conforme a família:
+Os próprios catálogos e tabelas normalizadas do `clube_novo` armazenam a referência física de seus dados. Exemplos:
 
-- arquivo/fonte;
-- fingerprint SHA-256 esperado;
-- tamanho de registro e estrutura esperada;
-- chave canônica do campo;
-- offset de byte ou bit inicial;
-- largura;
-- tipo de leitura;
-- transformação permitida;
-- estado da prova do campo;
-- catálogos/requisitos necessários.
+- `atributo_jogo`: bit, largura, arquivo e endereço;
+- `habilidade_jogo`: bit na carta, arquivo e endereço;
+- `playstyle`: bit, arquivo, endereço e slot;
+- `posicao_jogo`: bit de aptidão e endereço;
+- `impeto_jogo`: arquivo, tamanho de registro, bit/largura do código e registros por fonte;
+- `impeto_atributo_jogo`: bit/largura do delta, registro, arquivo, fonte e endereço;
+- `tecnico_jogo`, `tecnico_estilo_jogo` e `tecnico_atributo_jogo`: arquivo, registro, bit/largura, hash e confirmação;
+- `nacionalidade_jogo`, `clube_jogo` e `liga_jogo`: arquivo, registro, tamanho, offsets, larguras, hashes e contrato de extração.
 
-O leitor neutro é `app/leitura-contrato.js`. Ele valida o pedido, o fingerprint físico e o tamanho do arquivo antes de decodificar os campos autorizados.
+O contrato ativo continua sendo o selo da execução: define versão autorizada, arquivos, fingerprints, campos e catálogos participantes. O executor local já carrega por `row_to_json` as linhas completas dos catálogos solicitados e as entrega ao Extrator em `catalogos`.
 
-Se o contrato não descreve/prova um campo necessário, a leitura deve falhar fechada. Não existe fallback produtivo para endereço antigo.
+A hierarquia operacional é:
+
+```text
+TABELA/CATÁLOGO clube_novo
+        ↓ fornece referência física
+CONTRATO ATIVO
+        ↓ sela versão/fingerprint e conjunto permitido
+EXTRATOR + MÓDULOS ACESSÓRIOS
+        ↓ executam a mesma lógica já existente
+VALOR EXTRAÍDO
+```
+
+Se a tabela/catálogo não fornecer referência válida/confirmada para um item, a leitura correspondente deve falhar fechada. Não existe fallback produtivo para um endereço antigo escrito no código.
 
 ## 3. Por que essa regra existe
 
-Uma atualização do jogo pode deslocar um campo sem alterar outros. Com milhares de valores, uma leitura no endereço antigo pode produzir um número aparentemente válido e mascarar o erro. Esse valor contaminaria cards, Otimizador e Bonificador.
+Uma atualização do jogo pode deslocar um único campo sem alterar os demais. Com milhares de valores, uma leitura no endereço antigo pode produzir um número aparentemente válido e mascarar o erro. Esse valor contaminaria cards, Otimizador e Bonificador.
 
 Por isso:
 
@@ -47,13 +59,14 @@ Por isso:
 - endereço antigo não é tentativa alternativa;
 - banco legado não completa byte desconhecido;
 - valor plausível não é prova de leitura correta;
-- uma família bloqueada não é liberada porque outras famílias passaram.
+- uma família bloqueada não é liberada porque outras famílias passaram;
+- todos os módulos acessórios devem consumir as mesmas referências canônicas do Extrator principal.
 
 ## 4. Estado da migração em 29/08/2026
 
-A migração anterior estava parcialmente implementada, mas não integralmente concluída.
+A migração anterior estava parcialmente implementada. Em 29/08/2026 a regra foi fechada de forma mais simples: **preservar a lógica existente e substituir apenas a origem das referências físicas**.
 
-Já usam o contrato em partes relevantes do fluxo:
+Já usam o caminho contratual em partes relevantes do fluxo:
 
 - atributos do card;
 - habilidades;
@@ -61,23 +74,26 @@ Já usam o contrato em partes relevantes do fluxo:
 - aptidões;
 - corpo;
 - slots de ímpeto;
+- dados básicos do card no runtime V4.6;
 - validação do selo/fingerprint do pedido de leitura.
 
-Foi adicionada em 29/08/2026 a camada `app/contrato-v46-runtime.js`, que inicia a retirada dos dados básicos do card do caminho antigo. Ela resolve campos por `chave_campo` no contrato e não contém offsets físicos próprios.
+Foram corrigidos também módulos acessórios:
 
-O `app/leitura-contrato.js` também foi endurecido para exigir `tamanho_registro` em qualquer arquivo `wesys_raw`; assim uma leitura tabular não pode avançar sem a cardinalidade física declarada pelo contrato.
+- `executor/tecnicos.py`: removida a tabela local de bits das proficiências; bit/largura passam a ser exigidos da fotografia contratual/canônica;
+- `executor/impetos.py`: removidos números físicos duplicados para catálogo, condições, parâmetros, alvos e membros; o módulo usa as próprias linhas canônicas do `clube_novo` como referência física;
+- `executor/card_dimensions.py`: removidos endereços locais de nacionalidade, clube, liga, tipo e proveniência de vínculo; o comparador usa as referências das tabelas correspondentes.
 
-Ainda existem trechos legados em `app/extrator-core.js` com constantes/endereço físico hardcoded, principalmente em Dimensões e em alguns catálogos. Esses trechos são dívida de migração e **não podem ser considerados autoridade produtiva depois da V4.6**.
+O `app/leitura-contrato.js` exige fingerprint e tamanho de registro contratados antes da leitura.
 
-Enquanto essa retirada não terminar e não houver teste read-only aprovado, o contrato produtivo permanece bloqueado.
+Ainda existem trechos do `app/extrator-core.js` e rotinas de extração auxiliares que precisam ser auditados para garantir que nenhum endereço semântico residual permaneça como autoridade local. Até essa auditoria terminar, a escrita produtiva permanece bloqueada.
 
 ## 5. Regra para dados básicos do card
 
-Nome, posição, altura, peso, idade, pé, forma, resistência a lesão, nacionalidade e demais campos básicos devem ser resolvidos pelo contrato.
+Nome, posição, altura, peso, idade, pé, forma, resistência a lesão, nacionalidade e demais campos básicos devem usar a referência entregue pelo banco/contrato, nunca uma cópia local do endereço.
 
-O runtime V4.6 procura as chaves canônicas no pedido ativo e usa o leitor neutro para decodificá-las. O código do runtime não define o endereço desses campos.
+Os campos novos da V4 — especialmente nacionalidade, clube e liga — seguem a mesma regra dos antigos: a lógica de leitura é a mesma; apenas o endereço vem da tabela/catálogo correspondente.
 
-Transformações semânticas simples só podem ser aplicadas quando estiverem declaradas no contrato ou forem tradução de apresentação que não altere o endereço físico.
+Transformações semânticas simples só podem ser aplicadas quando estiverem declaradas na referência/contrato ou forem tradução de apresentação que não altere o endereço físico.
 
 ## 6. Metadados e Dimensões
 
@@ -95,25 +111,29 @@ READBACK
 
 Nacionalidade, clube, liga e tipo de carta precisam ser coletados antes de liberar os cards para os motores.
 
-O módulo de aplicação segura de dimensões continua separado da leitura. Ele só poderá gravar depois que a fotografia física tiver sido produzida pelo caminho contratual aprovado.
+`executor/card_dimensions.py` preserva a comparação já existente, mas não fabrica mais `Player.bin`, `Country.bin`, bit de subtipo ou offsets como autoridade local. Esses valores são obtidos das linhas das tabelas `carta_jogo`, `nacionalidade_jogo`, `clube_jogo`, `liga_jogo` e `tipo_carta_jogo`.
 
-Nenhum catálogo ou vínculo ausente é apagado automaticamente.
+O módulo de aplicação segura de dimensões continua separado da leitura. Nenhum catálogo ou vínculo ausente é apagado automaticamente.
 
 ## 7. Ímpetos
 
 Ímpetos vêm dos arquivos físicos do próprio jogo. O fluxo antigo de site externo não é fonte oficial do V4.
 
-Os slots do card já possuem leitura contratual. Efeitos, condições, alvos, faixas e relações de competição que ainda contenham endereço hardcoded no caminho operacional devem ser migrados antes de o consumidor ser liberado.
+`executor/impetos.py` mantém as mesmas comparações, contagens e validações, mas os endereços físicos usados como referência agora vêm de `impeto_jogo`, `impeto_atributo_jogo`, `impeto_condicao_jogo`, `impeto_condicao_parametro_faixa_jogo`, `impeto_condicao_nacionalidade_jogo`, `impeto_condicao_liga_jogo`, `impeto_condicao_classe_jogo` e `impeto_condicao_liga_membro_jogo`.
+
+Os slots do card continuam usando a leitura contratual já implementada.
 
 ## 8. Boxes/coleções
 
 O V4 não deve usar o coletor antigo de site como autoridade de box.
 
-Há evidência e código físico relacionados a `PlayerVariationDetail.bin`, mas a documentação anterior dizia de forma ampla que a relação card-box já fazia parte integral do contrato produtivo. Essa afirmação fica corrigida: **box só é considerada pronta quando sua chave, endereço, cardinalidade e prova estiverem presentes no contrato ativo e forem consumidos pelo leitor contratual**. Até lá, a família permanece bloqueada para uso produtivo.
+Há evidência física relacionada a `PlayerVariationDetail.bin`, mas box só é considerada pronta quando sua chave, endereço, cardinalidade e prova estiverem representados no catálogo/contrato ativo e forem consumidos pelo leitor. Até lá, a família permanece bloqueada para uso produtivo.
 
 ## 9. Técnicos
 
-`Coach.bin` é a fonte física dos técnicos. Qualquer campo de técnico cujo endereço ainda esteja codificado diretamente no extrator precisa ser migrado para o contrato antes de ser considerado parte da arquitetura final.
+`Coach.bin` é a fonte física dos técnicos, mas o endereço de cada campo não pertence ao código do validador.
+
+`executor/tecnicos.py` não mantém mais `STYLE_BITS`. Proficiências e boosts exigem bit/largura fornecidos pela fotografia canônica; as relações de técnico no banco armazenam arquivo, registro, bit, largura e hash.
 
 Link-up permanece fora do contrato enquanto sua semântica/cardinalidade não estiver comprovada.
 
@@ -125,7 +145,7 @@ Textos oficiais vêm de `all.str` no `dt261_bra`. A chave canônica é seção +
 
 A escrita nunca é feita diretamente pelo navegador. O servidor local concentra credenciais e só pode operar contra `clube_novo`.
 
-Mesmo existindo os módulos de aplicação V4.6, **nenhuma carga produtiva deve ser executada enquanto a migração contratual de leitura estiver incompleta**.
+Nenhuma carga produtiva deve ser executada enquanto a auditoria de referências físicas estiver incompleta.
 
 Após a migração:
 
@@ -156,10 +176,13 @@ Nenhum card segue para os motores com falta causada por coleta incompleta.
 
 ## 13. Arquivos relevantes da V4.6
 
-- `app/leitura-contrato.js` — leitor neutro; endereço vem do contrato;
-- `app/contrato-v46-runtime.js` — runtime contratual para substituir leituras semânticas hardcoded;
-- `app/extrator-core.js` — núcleo atual; ainda contém dívida de migração que deve ser eliminada do caminho produtivo;
-- `executor/card_dimensions_apply.py` — aplicação segura de catálogos/vínculos, posterior à leitura aprovada;
+- `app/leitura-contrato.js` — leitor neutro; executa primitivas de leitura;
+- `app/contrato-v46-runtime.js` — runtime contratual dos cards;
+- `app/extrator-core.js` — núcleo existente; lógica deve ser preservada e referências fixas residuais substituídas;
+- `executor/tecnicos.py` — validação de técnicos guiada por referência canônica;
+- `executor/impetos.py` — validação de ímpetos guiada pelas tabelas canônicas;
+- `executor/card_dimensions.py` — validação de dimensões guiada pelas tabelas canônicas;
+- `executor/card_dimensions_apply.py` — aplicação segura posterior à leitura aprovada;
 - `executor/servidor_v46.py` — servidor local V4.6;
 - `app/metadados-v46.js` — painel da etapa de metadados;
 - `INICIAR-EXTRATOR-V46.cmd` — iniciador direto da V4.6;
@@ -169,11 +192,11 @@ Nenhum card segue para os motores com falta causada por coleta incompleta.
 
 A migração só é considerada concluída quando uma auditoria do caminho produtivo provar que:
 
-- nenhum campo semântico depende de offset/bit hardcoded no Extrator;
-- todo arquivo tabular tem cardinalidade/tamanho definido pelo contrato;
-- todo campo consumido está aprovado no contrato;
+- nenhum campo semântico depende de offset/bit hardcoded no Extrator ou em módulos acessórios;
+- toda referência física aplicável vem da tabela/catálogo correspondente do `clube_novo`;
 - todo arquivo exigido passa pelo fingerprint contratado;
 - não há fallback para mapa/endereço antigo;
+- a lógica de cálculo e extração permanece inalterada;
 - a leitura integral read-only reproduz a referência aprovada ou toda divergência foi explicada e aprovada.
 
 Constantes puramente genéricas de formato (por exemplo, estruturas CPK/WESYS) podem permanecer no código desde que não indiquem a localização semântica de um dado do jogo.
