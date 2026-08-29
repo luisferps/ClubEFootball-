@@ -12,16 +12,17 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Busca e extração local de dados de futebol")]
 [assembly: AssemblyProduct("Extrator eFootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("4.6.6.0")]
-[assembly: AssemblyFileVersion("4.6.6.0")]
+[assembly: AssemblyVersion("4.6.7.0")]
+[assembly: AssemblyFileVersion("4.6.7.0")]
 
 namespace ClubEfootballWindowsApp
 {
     internal static class Program
     {
-        private const int AppPort = 8770;
-        private const string AppUrl = "http://127.0.0.1:8770/Extrator-ClubEfootball.html";
-        private const string StatusUrl = "http://127.0.0.1:8770/api/status";
+        private const int AppPort = 8771;
+        private const string RuntimeVersion = "4.6.7";
+        private const string AppUrl = "http://127.0.0.1:8771/Extrator-ClubEfootball.html?v=4.6.7";
+        private const string StatusUrl = "http://127.0.0.1:8771/api/runtime-version";
 
         private static readonly object LogLock = new object();
         private static string LogPath = null;
@@ -35,20 +36,21 @@ namespace ClubEfootballWindowsApp
 
             string root = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
             InitializeLog(root);
-            Log("=== Extrator eFootball V4.6.6 iniciado ===");
+            Log("=== Extrator eFootball V" + RuntimeVersion + " iniciado ===");
             Log("Diretório raiz: " + root);
+            Log("Porta exclusiva desta versão: " + AppPort);
 
             try
             {
                 if (!ServerReady())
                 {
-                    Log("Servidor local ainda não está disponível; iniciando executor Python.");
+                    Log("Runtime V" + RuntimeVersion + " ainda não está disponível; iniciando executor Python.");
                     StartHiddenExecutor(root);
                     WaitForServer();
                 }
                 else
                 {
-                    Log("Servidor local já estava disponível na porta " + AppPort + ".");
+                    Log("Runtime V" + RuntimeVersion + " já estava disponível na porta " + AppPort + ".");
                 }
 
                 string edge = FindEdge();
@@ -60,12 +62,12 @@ namespace ClubEfootballWindowsApp
                 Log("Microsoft Edge: " + edge);
                 ProcessStartInfo browser = new ProcessStartInfo();
                 browser.FileName = edge;
-                browser.Arguments = "--app=\"" + AppUrl + "\" --start-maximized --no-first-run --disable-features=msEdgeSidebarV2";
+                browser.Arguments = "--app=\"" + AppUrl + "\" --start-maximized --no-first-run --disable-http-cache --disable-features=msEdgeSidebarV2";
                 browser.WorkingDirectory = root;
                 browser.UseShellExecute = false;
                 browser.CreateNoWindow = true;
                 Process.Start(browser);
-                Log("Interface aberta em " + AppUrl);
+                Log("Interface V" + RuntimeVersion + " aberta em " + AppUrl);
             }
             catch (Exception error)
             {
@@ -119,24 +121,32 @@ namespace ClubEfootballWindowsApp
                 using (WebClient client = new WebClient())
                 {
                     client.Proxy = null;
-                    string status = client.DownloadString(StatusUrl);
-                    return status.Contains("\"online\": true") || status.Contains("\"online\":true");
+                    client.Headers[HttpRequestHeader.CacheControl] = "no-cache";
+                    string status = client.DownloadString(StatusUrl + "?t=" + DateTime.UtcNow.Ticks);
+                    bool online = status.Contains("\"online\": true") || status.Contains("\"online\":true");
+                    bool version = status.Contains("\"version\": \"" + RuntimeVersion + "\"") ||
+                                   status.Contains("\"version\":\"" + RuntimeVersion + "\"");
+                    if (!online || !version)
+                    {
+                        Log("Resposta de runtime incompatível: " + status);
+                    }
+                    return online && version;
                 }
             }
             catch (Exception error)
             {
-                Log("Status local indisponível: " + error.Message);
+                Log("Runtime V" + RuntimeVersion + " indisponível: " + error.Message);
                 return false;
             }
         }
 
         private static void WaitForServer()
         {
-            for (int attempt = 0; attempt < 150; attempt++)
+            for (int attempt = 0; attempt < 200; attempt++)
             {
                 if (ServerReady())
                 {
-                    Log("Servidor local respondeu após " + (attempt + 1) + " tentativa(s).");
+                    Log("Runtime V" + RuntimeVersion + " respondeu após " + (attempt + 1) + " tentativa(s).");
                     return;
                 }
 
@@ -147,7 +157,7 @@ namespace ClubEfootballWindowsApp
                         if (ServerProcess.HasExited)
                         {
                             int code = ServerProcess.ExitCode;
-                            Log("Executor Python encerrou antes do servidor responder. ExitCode=" + code);
+                            Log("Executor Python encerrou antes do runtime responder. ExitCode=" + code);
                             throw new InvalidOperationException(
                                 "O executor local encerrou antes de iniciar (código " + code + "). Veja o log para o erro real."
                             );
@@ -167,7 +177,7 @@ namespace ClubEfootballWindowsApp
             }
 
             throw new InvalidOperationException(
-                "O executor local V4.6.6 não respondeu em 30 segundos. Veja o log para o erro real."
+                "O executor local V" + RuntimeVersion + " não respondeu em 40 segundos. Veja o log para o erro real."
             );
         }
 
@@ -177,7 +187,7 @@ namespace ClubEfootballWindowsApp
             if (python == null)
             {
                 throw new InvalidOperationException(
-                    "Python não foi encontrado. O EXE agora procura python.exe/py.exe também no PATH."
+                    "Python não foi encontrado. O EXE procura python.exe e py.exe também no PATH."
                 );
             }
 
@@ -204,7 +214,9 @@ namespace ClubEfootballWindowsApp
             server.RedirectStandardOutput = true;
             server.RedirectStandardError = true;
             server.EnvironmentVariables["PYTHONPATH"] = vendor;
+            server.EnvironmentVariables["PYTHONUNBUFFERED"] = "1";
             server.EnvironmentVariables["CLUBEF_EXTRACTOR_PORT"] = AppPort.ToString();
+            server.EnvironmentVariables["CLUBEF_EXTRACTOR_RUNTIME_VERSION"] = RuntimeVersion;
             server.EnvironmentVariables["CLUBEF_EXTRACTOR_LOG"] = LogPath;
             server.EnvironmentVariables.Remove("CLUBEF_SOURCE_DT870_UPDATED");
             server.EnvironmentVariables.Remove("CLUBEF_SOURCE_DT200");
@@ -237,7 +249,7 @@ namespace ClubEfootballWindowsApp
             ServerProcess = process;
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
-            Log("Executor Python iniciado. PID=" + process.Id);
+            Log("Executor Python V" + RuntimeVersion + " iniciado. PID=" + process.Id);
         }
 
         private static string FindPythonExecutable()
