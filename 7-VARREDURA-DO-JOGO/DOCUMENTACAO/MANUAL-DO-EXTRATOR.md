@@ -1,7 +1,7 @@
 # Manual do Extrator eFootball
 
-**Versão:** 4.6.11 · 29 de agosto de 2026  
-**Estado:** contrato V4.6 ativo; varredura orientada pelo banco, isolada por família e com conferência intermediária obrigatória antes de qualquer escrita  
+**Versão:** 4.6.12 · 29 de agosto de 2026  
+**Estado:** contrato V4.6 ativo; varredura orientada pelo banco, isolada por família, responsiva e com conferência intermediária obrigatória antes de qualquer escrita  
 **Pasta operacional:** `7-VARREDURA-DO-JOGO`
 
 ## Regra estrutural
@@ -50,7 +50,27 @@ Só constituem bloqueio estrutural geral:
 
 Mesmo nesses casos, o bloqueio deve identificar as famílias afetadas e preservar os resultados já obtidos.
 
-## Conferência intermediária obrigatória — V4.6.11
+## Regra de responsividade — V4.6.12
+
+A leitura física de dezenas de milhares de cartas não pode monopolizar a thread visual do navegador.
+
+A V4.6.12 preserva a mesma lógica e os mesmos resultados da extração, mas divide o trabalho pesado em lotes cooperativos. Entre os lotes, o Extrator devolve o controle ao Microsoft Edge para que a interface continue pintando o progresso, aceitando rolagem e respondendo ao Windows.
+
+Foram tornadas cooperativas, sem alterar a semântica:
+
+- desofuscação e abertura WESYS;
+- decodificação contratual de `Player.bin` e arquivos relacionados;
+- composição das 43 mil cartas;
+- leitura de slots, atributos, relações e corpo;
+- geração das linhas canônicas e do CSV de comparação;
+- comparação das cartas com a fotografia do banco;
+- leitura e validação de nacionalidade, clube, liga, tipo e vínculos.
+
+O leitor contratual também passou a separar previamente campos diretos e campos derivados por máscara, evitando refazer o mesmo filtro para cada registro.
+
+A mudança é exclusivamente operacional: bits, offsets, transformações, cardinalidades solicitadas, valores produzidos e regras de bloqueio continuam vindo do contrato e dos catálogos canônicos. A responsividade não autoriza pular registros nem reduzir a leitura.
+
+## Conferência intermediária obrigatória — V4.6.11+
 
 A leitura e a escrita são etapas separadas.
 
@@ -93,7 +113,7 @@ Esse botão não aplica Ímpetos, Técnicos, Textos, Habilidades nem relações 
 
 A divergência de uma relação de carta não deve aparecer apenas como `HTTP 409`.
 
-Na V4.6.11, o retorno de `card_relations.py` é preservado como relatório revisável. O Extrator continua até gerar o diff das cartas, mostra a família divergente e amostras linha a linha, mas não cria pacote de envio enquanto as relações não forem exatas.
+Na V4.6.12, o retorno de `card_relations.py` permanece preservado como relatório revisável. O Extrator continua até gerar o diff das cartas, mostra a família divergente e amostras linha a linha, mas não cria pacote de envio enquanto as relações não forem exatas.
 
 ## Autoridade das referências
 
@@ -142,10 +162,11 @@ A ativação libera leitura e comparação. Ela não constitui aprovação autom
 - `windows-app/ClubEfootballExtractorLauncher.cs`;
 - `windows-app/COMPILAR-APLICATIVO.ps1`.
 
-A V4.6.11 usa:
+A V4.6.12 usa:
 
-- runtime: `executor/servidor_v4610.py`;
-- porta local exclusiva: `8775`;
+- runtime: `executor/servidor_v4612.py`;
+- porta local exclusiva: `8776`;
+- leitor contratual e núcleo servidos com lotes cooperativos;
 - UI servida pelo runtime com fluxo não bloqueante e painel intermediário;
 - log: `logs/extrator-v46.log`.
 
@@ -178,7 +199,7 @@ O `all.str` fica dentro do `dt261_bra_console_win.cpk`.
 
 Dimensões usam `Country.bin`, `Team.bin`, `CompetitionUnit.bin`, `CompetitionEntry.bin`, `Player.bin` e `PlayerDeleteList.bin`, conforme o contrato.
 
-`executor/card_relations.py` continua somente leitura. A V4.6.11 captura seu retorno de conflito como relatório, mostra as famílias divergentes e impede a criação do pacote de cartas até a aprovação integral.
+`executor/card_relations.py` continua somente leitura. A V4.6.12 captura seu retorno de conflito como relatório, mostra as famílias divergentes e impede a criação do pacote de cartas até a aprovação integral.
 
 ### Metadados
 
@@ -186,7 +207,7 @@ Dimensões usam `Country.bin`, `Team.bin`, `CompetitionUnit.bin`, `CompetitionEn
 
 `app/metadados-v46.js` fornece o painel intermediário. Ele recebe os relatórios de Metadados e Cartas, abre a conferência de Dimensões, exige revisão explícita e só então habilita a etapa final.
 
-`executor/servidor_v46.py` permanece como base compatível. `executor/servidor_v4610.py` aplica o runtime V4.6.11, isola o processo na porta 8775, ativa os validadores orientados pelo banco, gera a conferência temporária e valida o `review_id` antes da escrita.
+`executor/servidor_v46.py` permanece como base compatível. `executor/servidor_v4610.py` preserva o fluxo não bloqueante e a conferência da V4.6.11. `executor/servidor_v4612.py` adiciona a camada de responsividade, isola o processo na porta 8776 e mantém a validação do `review_id` antes da escrita.
 
 ### Ímpetos
 
@@ -219,7 +240,7 @@ A aplicação continua manual, selada e restrita às famílias aprovadas.
 
 1. consultar o contrato e os catálogos;
 2. localizar as fontes;
-3. executar todas as famílias possíveis;
+3. executar todas as famílias possíveis em lotes cooperativos;
 4. registrar ausentes, novos, alterados, duplicados e erros;
 5. concluir a varredura mesmo com avisos;
 6. carregar os resultados na área intermediária;
@@ -234,12 +255,13 @@ Nenhuma divergência deve ser escondida por fallback. Nenhuma família válida d
 
 ## Arquivos ativos
 
-- `app/leitura-contrato.js`
+- `app/leitura-contrato.js` — fonte-base servida com decodificação cooperativa na V4.6.12
 - `app/contrato-v46-runtime.js`
 - `app/metadata-v46-runtime.js` — fonte-base servida com isolamento físico
 - `app/metadata-v46-compat.js`
-- `app/extrator-core.js`
-- `app/extrator-ui.js` — fonte-base servida com patches de continuidade e conferência
+- `app/extrator-core.js` — fonte-base servida com operações cooperativas na V4.6.12
+- `app/extrator-ui.js` — fonte-base servida com patches de continuidade, conferência e responsividade
+- `app/revisao-intermediaria.js` — revisão do comparador normal e responsivo
 - `app/metadados-v46.js` — painel intermediário obrigatório
 - `app/patches-v4610/metadata-family-safe.jsfrag`
 - `app/patches-v4610/post-json-report.jsfrag`
@@ -258,6 +280,7 @@ Nenhuma divergência deve ser escondida por fallback. Nenhuma família válida d
 - `executor/executor_local.py`
 - `executor/servidor_v46.py`
 - `executor/servidor_v4610.py`
+- `executor/servidor_v4612.py`
 - `INICIAR-EXTRATOR-V46.cmd`
 - `windows-app/ClubEfootballExtractorLauncher.cs`
 - `windows-app/COMPILAR-APLICATIVO.ps1`
@@ -273,10 +296,11 @@ A migração termina quando:
 - cada família conclui ou registra seu próprio erro;
 - uma divergência não interrompe famílias independentes;
 - o relatório identifica ausentes, novos, alterados e duplicados;
+- a interface continua respondendo durante a leitura integral;
 - a área intermediária mostra as divergências antes da escrita;
 - pacote algum pode ser aplicado sem `review_id` atual e aceite explícito;
 - somente famílias aprovadas podem ser aplicadas;
-- a leitura integral local e o novo fluxo de conferência foram testados e conferidos.
+- a leitura integral local e o fluxo de conferência foram testados e conferidos.
 
 ## Regra de documentação
 
