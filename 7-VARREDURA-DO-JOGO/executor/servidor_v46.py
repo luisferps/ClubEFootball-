@@ -1,8 +1,8 @@
-"""Servidor operacional do Extrator eFootball V4.6.7.
+"""Servidor operacional do Extrator eFootball V4.6.8.
 
 Estende o servidor base sem duplicar sua lógica. Esta versão usa uma porta
-exclusiva, valida a própria versão de runtime e registra falhas de transporte,
-exceções HTTP e erros do navegador em um log persistente.
+exclusiva, valida a própria versão de runtime e registra diretamente em disco
+falhas de transporte, exceções HTTP, erros do banco e erros do navegador.
 """
 
 from __future__ import annotations
@@ -11,7 +11,9 @@ import json
 import os
 import threading
 import traceback
+import uuid
 import webbrowser
+from datetime import datetime
 from http import HTTPStatus
 from http.server import ThreadingHTTPServer
 from pathlib import Path
@@ -22,16 +24,88 @@ import executor_local as base
 from card_dimensions_apply import apply_card_dimensions, readback_card_dimensions
 
 
-RUNTIME_VERSION = "4.6.7"
-DEFAULT_PORT = 8771
+RUNTIME_VERSION = "4.6.8"
+DEFAULT_PORT = 8772
+LOG_LOCK = threading.Lock()
+
+
+def diagnostic_log_path() -> Path:
+    configured = os.environ.get("CLUBEF_EXTRACTOR_LOG")
+    if configured:
+        return Path(configured)
+    return Path(base.ROOT) / "logs" / "extrator-v46.log"
 
 
 def runtime_log(message: str) -> None:
-    """Escreve em stderr; o launcher Windows persiste a saída no log único."""
+    """Persiste o log no próprio processo Python, mesmo após o launcher fechar."""
+    line = (
+        f"{datetime.now().astimezone().isoformat(timespec='milliseconds')}"
+        f" | PY | [V{RUNTIME_VERSION}] {message}\n"
+    )
+    written = False
     try:
-        print(f"[V{RUNTIME_VERSION}] {message}", file=base.sys.stderr, flush=True)
+        path = diagnostic_log_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with LOG_LOCK:
+            with path.open("a", encoding="utf-8", newline="") as handle:
+                handle.write(line)
+                handle.flush()
+        written = True
     except Exception:
         pass
+
+    # O stderr fica como contingência. Quando a gravação direta funcionou,
+    # não duplicamos a mesma linha no arquivo que o launcher também acompanha.
+    if not written or os.environ.get("CLUBEF_EXTRACTOR_DEBUG_STDERR") == "1":
+        try:
+            print(line.rstrip("\n"), file=base.sys.stderr, flush=True)
+        except Exception:
+            pass
+
+
+def read_log_tail(max_lines: int = 350, max_chars: int = 80_000) -> str:
+    path = diagnostic_log_path()
+    try:
+        if not path.is_file():
+            return f"Log ainda não existe: {path}"
+        text = path.read_text(encoding="utf-8", errors="replace")
+        lines = text.splitlines()[-max_lines:]
+        tail = "\n".join(lines)
+        return tail[-max_chars:]
+    except Exception as error:
+        return f"Não foi possível ler o log {path}: {type(error).__name__}: {error}"
+
+
+def database_probe() -> dict[str, Any]:
+    """Testa apenas conexão e leitura; nunca executa escrita."""
+    try:
+        dsn = base.connection_string()
+        if not dsn:
+            return {
+                "configured": False,
+                "ok": False,
+                "error": "conexão PostgreSQL não foi montada a partir do config.txt e do ambiente do Windows",
+            }
+        psycopg, _, _ = base.import_psycopg()
+        with psycopg.connect(dsn, connect_timeout=8) as connection:
+            connection.read_only = True
+            with connection.cursor() as cursor:
+                cursor.execute("select current_database(), current_user, current_setting('transaction_read_only')")
+                database, user, read_only = cursor.fetchone()
+        return {
+            "configured": True,
+            "ok": True,
+            "database": database,
+            "user": user,
+            "transaction_read_only": read_only,
+        }
+    except Exception as error:
+        return {
+            "configured": True,
+            "ok": False,
+            "error_type": type(error).__name__,
+            "error": str(error),
+        }
 
 
 def _thread_exception_hook(args: threading.ExceptHookArgs) -> None:
@@ -57,7 +131,10 @@ class LoggedThreadingHTTPServer(ThreadingHTTPServer):
     def handle_error(self, request: Any, client_address: Any) -> None:
         detail = traceback.format_exc().strip()
         runtime_log(f"EXCECAO-REQUISICAO | cliente={client_address} | {detail}")
-        super().handle_error(request, client_address)
+        try:
+            super().handle_error(request, client_address)
+        except Exception as error:
+            runtime_log(f"EXCECAO-AO-EXIBIR-ERRO | {type(error).__name__}: {error}")
 
 
 _BASE_CONTRACT_CATALOGS = base.contract_catalogs
@@ -121,28 +198,16 @@ def dimensions_apply_allowed(config: dict) -> bool:
     )
 
 
-def diagnostic_log_path() -> Path:
-    configured = os.environ.get("CLUBEF_EXTRACTOR_LOG")
-    if configured:
-        return Path(configured)
-    return Path(base.ROOT) / "logs" / "extrator-v46.log"
-
-
-def read_log_tail(max_lines: int = 350, max_chars: int = 80_000) -> str:
-    path = diagnostic_log_path()
-    try:
-        if not path.is_file():
-            return f"Log ainda não existe: {path}"
-        text = path.read_text(encoding="utf-8", errors="replace")
-        lines = text.splitlines()[-max_lines:]
-        tail = "\n".join(lines)
-        return tail[-max_chars:]
-    except Exception as error:
-        return f"Não foi possível ler o log {path}: {type(error).__name__}: {error}"
-
-
 class Handler(base.Handler):
     server_version = f"ClubEfootballLocal/{RUNTIME_VERSION}"
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self._response_started = False
+        super().__init__(*args, **kwargs)
+
+    def send_response(self, code: int, message: str | None = None) -> None:
+        self._response_started = True
+        super().send_response(code, message)
 
     def log_message(self, format: str, *args: Any) -> None:
         try:
@@ -160,6 +225,37 @@ class Handler(base.Handler):
             runtime_log(f"FALHA-AO-REGISTRAR-HTTP | {error}")
         super().send_json(status, payload)
 
+    def _unhandled(self, method: str, error: BaseException) -> None:
+        ticket = uuid.uuid4().hex[:12]
+        detail = "".join(
+            traceback.format_exception(type(error), error, error.__traceback__)
+        ).strip()
+        runtime_log(
+            f"{method}-FALHA-NAO-TRATADA | ticket={ticket} | rota={self.path} | "
+            f"cliente={getattr(self, 'client_address', None)} | {detail}"
+        )
+
+        if isinstance(error, (BrokenPipeError, ConnectionResetError, ConnectionAbortedError)):
+            return
+        if self._response_started:
+            return
+        try:
+            self.send_json(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                {
+                    "error": (
+                        f"falha fechada [{ticket}]: {type(error).__name__}: {error}"
+                    ),
+                    "diagnostic_ticket": ticket,
+                    "database_write": False,
+                },
+            )
+        except Exception as response_error:
+            runtime_log(
+                f"{method}-FALHA-AO-RESPONDER | ticket={ticket} | "
+                f"{type(response_error).__name__}: {response_error}"
+            )
+
     def _serve_injected_ui(self) -> None:
         html_path = Path(base.ROOT) / "Extrator-ClubEfootball.html"
         html = html_path.read_text(encoding="utf-8-sig")
@@ -173,7 +269,7 @@ class Handler(base.Handler):
         if bridge_marker not in html:
             html = html.replace(ui_marker, f"{bridge_marker}\n  {ui_marker}")
 
-        diagnostic_marker = '<script src="/app/diagnostico-v467.js"></script>'
+        diagnostic_marker = '<script src="/app/diagnostico-v467.js?v=4.6.8"></script>'
         if diagnostic_marker not in html:
             html = html.replace(ui_marker, f"{diagnostic_marker}\n  {ui_marker}")
 
@@ -206,9 +302,16 @@ class Handler(base.Handler):
             runtime_log(f"ARQUIVO-FIM | role={role} | bytes_enviados={total}")
         except (ValueError, FileNotFoundError, OSError) as error:
             runtime_log(f"ARQUIVO-ERRO | role={role} | {type(error).__name__}: {error}")
-            self.send_json(HTTPStatus.NOT_FOUND, {"error": str(error), "database_write": False})
+            if not self._response_started:
+                self.send_json(HTTPStatus.NOT_FOUND, {"error": str(error), "database_write": False})
 
     def do_GET(self) -> None:
+        try:
+            self._do_GET()
+        except Exception as error:
+            self._unhandled("GET", error)
+
+    def _do_GET(self) -> None:
         parsed = urlparse(self.path)
         if parsed.path in {"/", "/Extrator-ClubEfootball.html"}:
             self._serve_injected_ui()
@@ -244,6 +347,7 @@ class Handler(base.Handler):
                 "root": str(base.ROOT),
                 "config_source": config_source,
                 "connection_source": connection_source,
+                "database_probe": database_probe(),
                 "log_path": str(diagnostic_log_path()),
                 "log_tail": read_log_tail(),
                 "database_write": False,
@@ -272,6 +376,12 @@ class Handler(base.Handler):
         super().do_GET()
 
     def do_POST(self) -> None:
+        try:
+            self._do_POST()
+        except Exception as error:
+            self._unhandled("POST", error)
+
+    def _do_POST(self) -> None:
         global LAST_DIMENSIONS
         path = urlparse(self.path).path
 
@@ -283,7 +393,10 @@ class Handler(base.Handler):
                 self.send_json(HTTPStatus.OK, {"logged": True, "database_write": False})
             except Exception as error:
                 runtime_log(f"CLIENTE-LOG-ERRO | {type(error).__name__}: {error}")
-                self.send_json(HTTPStatus.BAD_REQUEST, {"logged": False, "error": str(error), "database_write": False})
+                self.send_json(
+                    HTTPStatus.BAD_REQUEST,
+                    {"logged": False, "error": str(error), "database_write": False},
+                )
             return
 
         if path == "/api/card-dimensions/validate":
@@ -306,7 +419,10 @@ class Handler(base.Handler):
 
         if path == "/api/card-dimensions/apply-cached":
             if not DIMENSIONS_LOCK.acquire(blocking=False):
-                self.send_json(HTTPStatus.CONFLICT, {"error": "uma aplicação de metadados já está em andamento"})
+                self.send_json(
+                    HTTPStatus.CONFLICT,
+                    {"error": "uma aplicação de metadados já está em andamento"},
+                )
                 return
             try:
                 config = base.load_config()
@@ -318,7 +434,9 @@ class Handler(base.Handler):
                     raise PermissionError("aplicação manual de Dimensões não está habilitada")
                 snapshot = LAST_DIMENSIONS
                 if snapshot is None:
-                    raise ValueError("execute primeiro a comparação de Metadados para gerar a fotografia física")
+                    raise ValueError(
+                        "execute primeiro a comparação de Metadados para gerar a fotografia física"
+                    )
 
                 psycopg, sql, _ = base.import_psycopg()
                 dsn = base.connection_string()
@@ -345,10 +463,21 @@ class Handler(base.Handler):
             except PermissionError as error:
                 self.send_json(HTTPStatus.FORBIDDEN, {"error": str(error), "database_write": False})
             except (RuntimeError, ValueError, OSError, json.JSONDecodeError) as error:
-                self.send_json(HTTPStatus.BAD_REQUEST, {"error": str(error), "database_write": False})
+                self.send_json(
+                    HTTPStatus.BAD_REQUEST,
+                    {"error": str(error), "database_write": False},
+                )
             except Exception as error:
-                runtime_log("FALHA-FECHADA | " + "".join(traceback.format_exception(type(error), error, error.__traceback__)).strip())
-                self.send_json(HTTPStatus.INTERNAL_SERVER_ERROR, {"error": f"falha fechada: {error}", "database_write": False})
+                runtime_log(
+                    "FALHA-FECHADA | "
+                    + "".join(
+                        traceback.format_exception(type(error), error, error.__traceback__)
+                    ).strip()
+                )
+                self.send_json(
+                    HTTPStatus.INTERNAL_SERVER_ERROR,
+                    {"error": f"falha fechada: {error}", "database_write": False},
+                )
             finally:
                 DIMENSIONS_LOCK.release()
             return
@@ -366,11 +495,15 @@ def main() -> None:
     except Exception as error:
         config_source = f"erro: {type(error).__name__}: {error}"
     runtime_log(
-        f"Servidor iniciado em {url}; pid={os.getpid()}; raiz={base.ROOT}; config={config_source}; log={diagnostic_log_path()}"
+        f"Servidor iniciado em {url}; pid={os.getpid()}; raiz={base.ROOT}; "
+        f"config={config_source}; log={diagnostic_log_path()}"
     )
     if base.sys.stdout is not None:
         print(f"Extrator eFootball V{RUNTIME_VERSION} disponível em {url}")
-        print("Fluxo produtivo: Metadados/Dimensões -> Cartas. Escrita continua manual e confirmada.")
+        print(
+            "Fluxo produtivo: Metadados/Dimensões -> Cartas. "
+            "Escrita continua manual e confirmada."
+        )
     if "--no-browser" not in base.sys.argv:
         threading.Timer(0.8, lambda: webbrowser.open(url)).start()
     try:
@@ -378,7 +511,12 @@ def main() -> None:
     except KeyboardInterrupt:
         runtime_log("Servidor encerrado por KeyboardInterrupt.")
     except Exception as error:
-        runtime_log("FALHA-SERVIDOR | " + "".join(traceback.format_exception(type(error), error, error.__traceback__)).strip())
+        runtime_log(
+            "FALHA-SERVIDOR | "
+            + "".join(
+                traceback.format_exception(type(error), error, error.__traceback__)
+            ).strip()
+        )
         raise
     finally:
         server.server_close()
