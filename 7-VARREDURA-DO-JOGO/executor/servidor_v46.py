@@ -1,4 +1,4 @@
-"""Servidor operacional do Extrator eFootball V4.6.8.
+"""Servidor operacional do Extrator eFootball V4.6.9.
 
 Estende o servidor base sem duplicar sua lógica. Esta versão usa uma porta
 exclusiva, valida a própria versão de runtime e registra diretamente em disco
@@ -17,16 +17,21 @@ from datetime import datetime
 from http import HTTPStatus
 from http.server import ThreadingHTTPServer
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from urllib.parse import parse_qs, urlparse
 
 import executor_local as base
 from card_dimensions_apply import apply_card_dimensions, readback_card_dimensions
 
 
-RUNTIME_VERSION = "4.6.8"
-DEFAULT_PORT = 8772
+RUNTIME_VERSION = "4.6.9"
+DEFAULT_PORT = 8773
 LOG_LOCK = threading.Lock()
+
+# executor_local.reading_contract_seal usa typing.cast. A importação faltante
+# fazia qualquer resposta selada morrer depois de ler o banco. Instalamos o
+# símbolo no módulo-base antes de atender a primeira requisição.
+base.cast = cast
 
 
 def diagnostic_log_path() -> Path:
@@ -269,7 +274,7 @@ class Handler(base.Handler):
         if bridge_marker not in html:
             html = html.replace(ui_marker, f"{bridge_marker}\n  {ui_marker}")
 
-        diagnostic_marker = '<script src="/app/diagnostico-v467.js?v=4.6.8"></script>'
+        diagnostic_marker = '<script src="/app/diagnostico-v467.js?v=4.6.9"></script>'
         if diagnostic_marker not in html:
             html = html.replace(ui_marker, f"{diagnostic_marker}\n  {ui_marker}")
 
