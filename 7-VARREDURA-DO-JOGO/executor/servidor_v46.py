@@ -45,9 +45,13 @@ class Handler(base.Handler):
     def _serve_injected_ui(self) -> None:
         html_path = Path(base.ROOT) / "Extrator-ClubEfootball.html"
         html = html_path.read_text(encoding="utf-8-sig")
-        marker = '<script src="/app/metadados-v46.js" defer></script>'
-        if marker not in html:
-            html = html.replace("</body>", f"  {marker}\n</body>")
+        core_marker = '<script src="app/extrator-core.js"></script>'
+        runtime_marker = '<script src="app/contrato-v46-runtime.js"></script>'
+        if runtime_marker not in html:
+            html = html.replace(core_marker, f"{core_marker}\n  {runtime_marker}")
+        metadata_marker = '<script src="/app/metadados-v46.js" defer></script>'
+        if metadata_marker not in html:
+            html = html.replace("</body>", f"  {metadata_marker}\n</body>")
         data = html.encode("utf-8")
         self.send_response(HTTPStatus.OK)
         self.send_header("Content-Type", "text/html; charset=utf-8")
