@@ -21,15 +21,8 @@ import executor_local as base
 from card_dimensions_apply import apply_card_dimensions, readback_card_dimensions
 
 
-# O executor base já envia os catálogos referidos diretamente pelos campos do
-# contrato. Algumas tabelas físicas são consumidas por módulos acessórios sem
-# aparecer como catálogo de tradução em um campo específico. Na V4.6 elas são
-# acrescentadas ao mesmo payload, diretamente do clube_novo. Não há cópia de
-# bit/offset/tamanho neste servidor: somente nomes de tabelas e suas chaves de
-# ordenação determinística.
 _BASE_CONTRACT_CATALOGS = base.contract_catalogs
 _BASE_DEFAULT_SOURCE_DEFINITIONS = base.default_source_definitions
-_BASE_INSPECT_SOURCE = base.inspect_source
 _V46_CANONICAL_CATALOGS: dict[str, tuple[str, ...]] = {
     "afinidade_tecnico_jogo": ("codigo_jogo",),
     "atributo_ordem_otimizador": ("indice_otimizador",),
@@ -70,13 +63,7 @@ def contract_catalogs_v46(connection: Any, contract: dict[str, Any], sql: Any) -
 
 
 def default_source_definitions_v46() -> dict[str, dict[str, Any]]:
-    """Mantém as fontes existentes e acrescenta as raízes reais conhecidas do jogo.
-
-    A atualização do eFootball pode guardar dt870_console_win.cpk dentro de uma
-    subpasta numérica de ST\\Download. Por isso a raiz de Download é pesquisada
-    recursivamente. A instalação Steam continua preferindo a pasta cpk direta e
-    usa a raiz do eFootball apenas como recuperação automática.
-    """
+    """Acrescenta ao executor as raízes reais conhecidas da instalação Windows."""
     definitions = _BASE_DEFAULT_SOURCE_DEFINITIONS()
     program_data = Path(base.os.environ.get("ProgramData", r"C:\ProgramData"))
     program_files_x86 = Path(base.os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"))
@@ -87,50 +74,73 @@ def default_source_definitions_v46() -> dict[str, dict[str, Any]]:
         program_files_x86 / "Steam" / "steamapps" / "common" / "eFootball",
         program_files / "Steam" / "steamapps" / "common" / "eFootball",
     ]
+
+    # Candidatos diretos conhecidos. Eles independem do launcher .cmd.
+    definitions["dt870_updated"]["candidates"] = [
+        download_root / "dt870_console_win.cpk",
+        *[Path(value) for value in definitions["dt870_updated"].get("candidates", [])],
+    ]
     definitions["dt870_updated"]["search_roots"] = [download_root]
-    for role in ("dt200", "dt870_original", "dt261_bra"):
+
+    direct_names = {
+        "dt200": "dt200_console_all.cpk",
+        "dt870_original": "dt870_console_win.cpk",
+        "dt261_bra": "dt261_bra_console_win.cpk",
+    }
+    for role, filename in direct_names.items():
+        explicit = [root / "cpk" / filename for root in steam_roots]
+        definitions[role]["candidates"] = explicit + [Path(value) for value in definitions[role].get("candidates", [])]
         definitions[role]["search_roots"] = steam_roots
     return definitions
 
 
-def _valid_cpk(path: Path) -> bool:
-    try:
-        if not path.is_file():
-            return False
-        with path.open("rb") as handle:
-            return handle.read(4) == b"CPK "
-    except OSError:
-        return False
-
-
 def inspect_source_v46(role: str, definition: dict[str, Any]) -> dict[str, Any]:
-    """Tenta o caminho direto e, se necessário, procura sozinho nas raízes conhecidas."""
-    direct = _BASE_INSPECT_SOURCE(role, definition)
-    if direct.get("found"):
-        direct["discovery_mode"] = "known_path"
-        return direct
+    """Localiza o arquivo físico; a validação autoritativa fica no contrato.
 
+    O executor antigo recusava a fonte antes mesmo da validação contratual com
+    base apenas nos quatro bytes iniciais do contêiner. Isso fazia arquivos reais
+    existentes aparecerem como 'não encontrados'. Aqui a descoberta responde só
+    à pergunta 'onde está o arquivo?'. Depois de servido, o runtime valida
+    fingerprint/tamanho/contrato antes de considerar a fonte pronta.
+    """
     filename = str(definition.get("filename") or "").strip()
     matches: list[Path] = []
-    invalid: list[dict[str, str]] = list(direct.get("invalid_candidates") or [])
+    seen: set[str] = set()
+    errors: list[dict[str, str]] = []
+
+    def add(path_value: Any) -> None:
+        path = Path(path_value)
+        key = str(path).lower()
+        if key in seen:
+            return
+        seen.add(key)
+        try:
+            if path.is_file():
+                matches.append(path)
+        except OSError as error:
+            errors.append({"location": str(path), "reason": str(error)})
+
+    for candidate in definition.get("candidates") or []:
+        add(candidate)
+
     if filename:
         for root_value in definition.get("search_roots") or []:
             root = Path(root_value)
-            if not root.is_dir():
-                continue
             try:
+                if not root.is_dir():
+                    continue
+                # Primeiro o local normal da Steam; depois busca recursiva para
+                # ST\\Download e instalações fora da estrutura mais comum.
+                add(root / "cpk" / filename)
+                add(root / filename)
                 for path in root.rglob(filename):
-                    if _valid_cpk(path):
-                        matches.append(path)
-                    elif path.is_file():
-                        invalid.append({"location": str(path), "reason": "arquivo não é um CPK válido"})
+                    add(path)
             except OSError as error:
-                invalid.append({"location": str(root), "reason": str(error)})
+                errors.append({"location": str(root), "reason": str(error)})
 
     if matches:
-        # Em ST\\Download podem coexistir versões antigas. A mais recentemente
-        # modificada é a candidata atual; o contrato/fingerprint ainda faz a
-        # validação autoritativa antes da leitura.
+        # Para o DT870 atualizado podem coexistir cópias históricas; a mais nova
+        # é tentada primeiro. O fingerprint do contrato ainda decide se ela vale.
         matches.sort(key=lambda path: path.stat().st_mtime, reverse=True)
         path = matches[0]
         stat = path.stat()
@@ -145,14 +155,20 @@ def inspect_source_v46(role: str, definition: dict[str, Any]) -> dict[str, Any]:
             "location": str(path),
             "bytes": stat.st_size,
             "modified_at": datetime.fromtimestamp(stat.st_mtime, timezone.utc).isoformat(),
-            "discovery_mode": "recursive_known_root",
+            "discovery_mode": "filesystem_known_root",
             "matches_found": len(matches),
         }
 
     return {
-        **direct,
+        "role": role,
+        "label": definition["label"],
+        "filename": definition["filename"],
+        "purpose": definition["purpose"],
+        "operations": definition["operations"],
+        "found": False,
+        "valid_container": False,
         "reason": "fonte não encontrada automaticamente nas pastas conhecidas; use seleção manual",
-        "invalid_candidates": invalid,
+        "invalid_candidates": errors,
         "discovery_mode": "manual_fallback_required",
     }
 
@@ -298,6 +314,10 @@ def main() -> None:
     if base.sys.stdout is not None:
         print(f"Extrator eFootball V4.6 disponível em {url}")
         print("Fluxo produtivo: Metadados/Dimensões -> Cartas. Escrita continua manual e confirmada.")
+        discovery = base.discover_sources()
+        print("Fontes físicas detectadas:")
+        for role, source in discovery.get("sources", {}).items():
+            print(f"  {role}: {source.get('location') if source.get('found') else 'NÃO ENCONTRADO'}")
     if "--no-browser" not in base.sys.argv:
         threading.Timer(0.8, lambda: webbrowser.open(url)).start()
     try:
