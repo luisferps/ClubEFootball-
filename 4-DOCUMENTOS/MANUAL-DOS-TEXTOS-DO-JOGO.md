@@ -131,3 +131,11 @@ confirmou 11.679 registros, 11.679 chaves únicas e zero duplicidade após a ins
 - A semântica completa de todas as 188 seções não foi inferida. Isso não impede a carga do dicionário, mas impede atribuir função a uma seção sem prova.
 - Catálogos futuros de técnicos e Link-up não foram modelados nesta frente.
 - Consumidores de tela ainda precisam migrar suas consultas para as FKs centrais; nenhum nome embutido foi removido fora do Extrator nesta tarefa.
+
+## Regra de envelope do Extrator — 29/08/2026
+
+No pedido tipado, a identidade da entrada de texto continua exclusivamente
+`(secao,id_texto)`. `texto` é conteúdo de apresentação, nunca chave de união ou
+sobrescrita. O envelope preserva essa chave, o conteúdo, o tipo, a procedência
+física e os fingerprints; rótulos resolvidos em outros catálogos permanecem
+derivações de leitura sem substituir a chave oficial.

@@ -1,0 +1,3869 @@
+{
+  "schema": "clubef-investigacao-ponte-rotulos-especiais-categoria0-v1",
+  "generated_at": "2026-08-30T08:07:29.607Z",
+  "read_only": true,
+  "executable_scanned": false,
+  "source": {
+    "path": "C:\\ProgramData\\KONAMI\\eFootball\\ST\\Download\\dt870_console_win.cpk",
+    "sha256": "44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5",
+    "entries": 96
+  },
+  "dictionary_anchors": [
+    {
+      "code": 250,
+      "text_id": 116,
+      "label": "Controle de bola"
+    },
+    {
+      "code": 261,
+      "text_id": 152,
+      "label": "Agressividade"
+    },
+    {
+      "code": 263,
+      "text_id": 94,
+      "label": "Velocidade"
+    },
+    {
+      "code": 265,
+      "text_id": 150,
+      "label": "Contato físico"
+    },
+    {
+      "code": 266,
+      "text_id": 149,
+      "label": "Equilíbrio"
+    },
+    {
+      "code": 267,
+      "text_id": 40,
+      "label": "Salto"
+    }
+  ],
+  "physical_player_booster_records": [
+    {
+      "code": 250,
+      "record": 200,
+      "category": 0,
+      "type_raw": 0,
+      "record_sha256": "249dd7fc64f32d0471ccf58a4d588ec0aa467fd616e3ef9b8014fa16d40416a6",
+      "raw_hex": "0000000000000000050000000000fa00000000000000000000006000000000000000600000050000",
+      "text_anchor": {
+        "section": "E5W",
+        "section_idx": 43,
+        "text_id": 116,
+        "label": "Controle de bola"
+      },
+      "exact_text_id_u8_offsets_in_record": [],
+      "exact_section_text_u8_offsets_in_record": [],
+      "exact_section_text_u16le_offsets_in_record": []
+    },
+    {
+      "code": 261,
+      "record": 201,
+      "category": 0,
+      "type_raw": 0,
+      "record_sha256": "c00ccd4dc0d1764432149f6d14424b1ff563cf332691dfe5b105630da2f42c53",
+      "raw_hex": "00000000000000000500000000000501000000000018000000006000000000000000000000050000",
+      "text_anchor": {
+        "section": "E5W",
+        "section_idx": 43,
+        "text_id": 152,
+        "label": "Agressividade"
+      },
+      "exact_text_id_u8_offsets_in_record": [],
+      "exact_section_text_u8_offsets_in_record": [],
+      "exact_section_text_u16le_offsets_in_record": []
+    },
+    {
+      "code": 263,
+      "record": 202,
+      "category": 0,
+      "type_raw": 0,
+      "record_sha256": "62e53c0a727bfe97fbef3ae4bd7668be754579a41ab4d2a67e19b8d29f4f27ca",
+      "raw_hex": "00000000000000000500000000000701000000000000600000006000000000000000000000050000",
+      "text_anchor": {
+        "section": "E5W",
+        "section_idx": 43,
+        "text_id": 94,
+        "label": "Velocidade"
+      },
+      "exact_text_id_u8_offsets_in_record": [],
+      "exact_section_text_u8_offsets_in_record": [],
+      "exact_section_text_u16le_offsets_in_record": []
+    },
+    {
+      "code": 265,
+      "record": 203,
+      "category": 0,
+      "type_raw": 0,
+      "record_sha256": "ccc717d0641ba75368137167206be9142e89a2bf53366f26cf596558491f971f",
+      "raw_hex": "00000000000000000500000000000901000000000000030000006000000000000000000000050000",
+      "text_anchor": {
+        "section": "E5W",
+        "section_idx": 43,
+        "text_id": 150,
+        "label": "Contato físico"
+      },
+      "exact_text_id_u8_offsets_in_record": [],
+      "exact_section_text_u8_offsets_in_record": [],
+      "exact_section_text_u16le_offsets_in_record": []
+    },
+    {
+      "code": 266,
+      "record": 204,
+      "category": 0,
+      "type_raw": 0,
+      "record_sha256": "5012ac3d288d22dab1ff2db8d61843126e133076ac17e6677163be6c81e803cc",
+      "raw_hex": "00000000000000000500000000000a010000c0000000000000006000000000000000000000050000",
+      "text_anchor": {
+        "section": "E5W",
+        "section_idx": 43,
+        "text_id": 149,
+        "label": "Equilíbrio"
+      },
+      "exact_text_id_u8_offsets_in_record": [],
+      "exact_section_text_u8_offsets_in_record": [],
+      "exact_section_text_u16le_offsets_in_record": []
+    },
+    {
+      "code": 267,
+      "record": 205,
+      "category": 0,
+      "type_raw": 0,
+      "record_sha256": "4c078e1949fa53e15e329b3c7d70d0ce30f5ece6c898725459761794ede9ca94",
+      "raw_hex": "00000000000000000500000000000b01000000000600000000006000000000000000000000050000",
+      "text_anchor": {
+        "section": "E5W",
+        "section_idx": 43,
+        "text_id": 40,
+        "label": "Salto"
+      },
+      "exact_text_id_u8_offsets_in_record": [],
+      "exact_section_text_u8_offsets_in_record": [],
+      "exact_section_text_u16le_offsets_in_record": []
+    }
+  ],
+  "files_with_numeric_or_label_candidates": [
+    {
+      "file": "108_DEF_1st_realUni.bin",
+      "layer": "decoded",
+      "size": 92,
+      "anchor_hits": [
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                7
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "70_ADD.awb",
+      "layer": "packed",
+      "size": 2267880,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "code_text",
+              "offsets": [
+                105761,
+                143502,
+                386265,
+                471402,
+                664932,
+                704482,
+                705877,
+                790225,
+                802071,
+                1057601,
+                1078142,
+                1240828,
+                1243306,
+                1284176,
+                1445376,
+                1682316,
+                1734208,
+                1849353,
+                1873436,
+                1909239
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_code",
+              "offsets": [
+                68619,
+                131303,
+                169192,
+                248247,
+                284651,
+                301856,
+                346286,
+                522291,
+                570999,
+                584013,
+                671761,
+                679377,
+                739459,
+                750871,
+                780347,
+                869621,
+                914947,
+                933089,
+                938326,
+                955233
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                673642,
+                944217,
+                1022303,
+                1167238,
+                1350613,
+                1411658,
+                1477689,
+                1633116,
+                1665709,
+                1675037,
+                1677779,
+                1701609,
+                1711106,
+                1764309,
+                1790088,
+                1808151,
+                1895900,
+                1961878,
+                1981908,
+                2131889
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                1914,
+                36374,
+                149418,
+                170248,
+                189851,
+                218415,
+                266911,
+                337991,
+                433680,
+                458683,
+                461003,
+                1151542,
+                1264586,
+                1315731,
+                1455766,
+                1608739,
+                1615529,
+                1688473,
+                1828600,
+                1852917
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                64908,
+                68262,
+                98722,
+                139497,
+                326000,
+                483372,
+                595802,
+                638028,
+                807995,
+                976051,
+                1076717,
+                1253819,
+                1427068,
+                1489681,
+                1524151,
+                1675513,
+                1921730,
+                1996735,
+                2100506,
+                2208855
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                441752,
+                659472,
+                1099548,
+                1102487,
+                1165294,
+                1179908,
+                1361142,
+                1410804,
+                1577855,
+                1609274,
+                1750263,
+                1763558,
+                1845366,
+                1862121,
+                1939601,
+                2098181,
+                2193197
+              ]
+            },
+            {
+              "width": 2,
+              "layout": "text_code",
+              "offsets": [
+                883041
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                1989,
+                18453,
+                150042,
+                288456,
+                300995,
+                371791,
+                534654,
+                551809,
+                640718,
+                740448,
+                952736,
+                1027758,
+                1035522,
+                1075001,
+                1097689,
+                1180076,
+                1362294,
+                1422186,
+                1423030,
+                1475588
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                47137,
+                74936,
+                322931,
+                437312,
+                510038,
+                746921,
+                775186,
+                792138,
+                809319,
+                1035523,
+                1062371,
+                1150664,
+                1192660,
+                1444934,
+                1710402,
+                1817724,
+                1856666,
+                1872682,
+                2076801,
+                2238394
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                224009,
+                299453,
+                307408,
+                524924,
+                601286,
+                896711,
+                913799,
+                1227554,
+                1356613,
+                1478947,
+                1848136,
+                1962759,
+                1986872,
+                2123439,
+                2141340,
+                2149610
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                88996,
+                268188,
+                292036,
+                546219,
+                549368,
+                602320,
+                661643,
+                828879,
+                886477,
+                888575,
+                896710,
+                1099987,
+                1143986,
+                1342361,
+                1358721,
+                1407747,
+                1525547,
+                1782674,
+                1820984,
+                2026079
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                9012,
+                120478,
+                131596,
+                161795,
+                171882,
+                233285,
+                287012,
+                288401,
+                487797,
+                544141,
+                843150,
+                910759,
+                1061549,
+                1306355,
+                1392717,
+                1437559,
+                1656556,
+                1691573,
+                1706038,
+                1771987
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                65456,
+                80249,
+                97034,
+                262997,
+                327259,
+                560745,
+                587844,
+                594309,
+                976678,
+                1120274,
+                1127080,
+                1319338,
+                1354576,
+                1530925,
+                1585898,
+                1707589,
+                1708221
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                2689,
+                4710,
+                512095,
+                626838,
+                784943,
+                1042327,
+                1072878,
+                1087709,
+                1202559,
+                1230585,
+                1241490,
+                1306092,
+                1387056,
+                1480184,
+                1488928,
+                1598584,
+                1658037,
+                1794057,
+                1838559,
+                1909096
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                33463,
+                149499,
+                164933,
+                190183,
+                220894,
+                266437,
+                332180,
+                344508,
+                435898,
+                453315,
+                475639,
+                534653,
+                655511,
+                663778,
+                673641,
+                1217132,
+                1226345,
+                1264667,
+                1361410,
+                1491778
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "Boots.bin",
+      "layer": "packed",
+      "size": 835,
+      "anchor_hits": [
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                594
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                595
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "BootsList.bin",
+      "layer": "packed",
+      "size": 142741,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "code_text",
+              "offsets": [
+                28084
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_code",
+              "offsets": [
+                69233,
+                128810
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                1170,
+                50950
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                106861
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                16769,
+                99648,
+                121353
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                74153,
+                128318
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                56925,
+                61308,
+                74844
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                127008
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                31727,
+                40502,
+                79883
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                36235,
+                66111,
+                132286,
+                132925
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                28299,
+                89149,
+                109603
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                10336,
+                123886
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                34758,
+                59867,
+                81802,
+                127109
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                4321,
+                47645,
+                114564,
+                134138
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "BootsList.bin",
+      "layer": "decoded",
+      "size": 689200,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "code_text",
+              "offsets": [
+                198288
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                133632,
+                378752
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                402096
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                177168
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                133472
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                30032
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                133888
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                130768
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "CategoryTeamList.bin",
+      "layer": "packed",
+      "size": 10684,
+      "anchor_hits": [
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                9692
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                3258
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "CategoryTeamList.bin",
+      "layer": "decoded",
+      "size": 30456,
+      "anchor_hits": [
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 4,
+              "layout": "text_code",
+              "offsets": [
+                3276
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "City.bin",
+      "layer": "packed",
+      "size": 6050,
+      "anchor_hits": [
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                969
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                4708
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                2367
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "Coach.bin",
+      "layer": "packed",
+      "size": 70958,
+      "anchor_hits": [
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                36147
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                36460,
+                48134
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                7264,
+                32072,
+                66832
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                5432,
+                15193
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                56824
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                20075,
+                54523
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                21646
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                8785
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "Coach.bin",
+      "layer": "decoded",
+      "size": 260128,
+      "anchor_hits": [
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                51772
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                104570
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "CoachVariationDetail.bin",
+      "layer": "packed",
+      "size": 1230,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "code_text",
+              "offsets": [
+                210
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "CompetitionEntry.bin",
+      "layer": "packed",
+      "size": 3080,
+      "anchor_hits": [
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                653
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "CompetitionTournamentDetail.bin",
+      "layer": "packed",
+      "size": 5238,
+      "anchor_hits": [
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                4096
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                2739
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "CompetitionUnit.bin",
+      "layer": "packed",
+      "size": 7550,
+      "anchor_hits": [
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                5282
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                4072
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "Country.bin",
+      "layer": "packed",
+      "size": 30067,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                17500
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                26157
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                10617
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                6953
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                2287,
+                2872
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "Derby.bin",
+      "layer": "packed",
+      "size": 9210,
+      "anchor_hits": [
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                982
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "Derby.bin",
+      "layer": "decoded",
+      "size": 21540,
+      "anchor_hits": [
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 4,
+              "layout": "section_text",
+              "offsets": [
+                1464
+              ]
+            },
+            {
+              "width": 4,
+              "layout": "text_section",
+              "offsets": [
+                1536
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "GloveList.bin",
+      "layer": "packed",
+      "size": 4595,
+      "anchor_hits": [
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                1824
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                3535
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "Player.bin",
+      "layer": "packed",
+      "size": 4227110,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text_code",
+              "offsets": [
+                1571577
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "code_text",
+              "offsets": [
+                2374,
+                193049,
+                257660,
+                262051,
+                364836,
+                376768,
+                398014,
+                424447,
+                433211,
+                468355,
+                576875,
+                614683,
+                618780,
+                687555,
+                773558,
+                774156,
+                775807,
+                800894,
+                925922,
+                1031520
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_code",
+              "offsets": [
+                37116,
+                131567,
+                135422,
+                237118,
+                289206,
+                376809,
+                551196,
+                596925,
+                621267,
+                677005,
+                739665,
+                794737,
+                820144,
+                892638,
+                924543,
+                929685,
+                1017737,
+                1031943,
+                1225586,
+                1270004
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                106395,
+                106436,
+                106605,
+                166927,
+                242729,
+                247614,
+                310990,
+                421066,
+                438814,
+                519094,
+                581761,
+                649306,
+                651641,
+                694279,
+                916844,
+                944489,
+                1044922,
+                1266928,
+                1324701,
+                1357389
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                102848,
+                148040,
+                165409,
+                192749,
+                370507,
+                456575,
+                611611,
+                615835,
+                635872,
+                793536,
+                911543,
+                1010032,
+                1080156,
+                1126236,
+                1157520,
+                1322548,
+                1446083,
+                1452920,
+                1510506,
+                1547373
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                22519,
+                27163,
+                123052,
+                168416,
+                194555,
+                194898,
+                202209,
+                235557,
+                302823,
+                316819,
+                498736,
+                515268,
+                537584,
+                588777,
+                622807,
+                715792,
+                751631,
+                785615,
+                854545,
+                958357
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                50487,
+                54816,
+                89952,
+                97124,
+                216781,
+                218690,
+                261294,
+                325803,
+                569474,
+                591038,
+                608192,
+                667765,
+                705564,
+                745477,
+                793195,
+                815695,
+                858866,
+                1109056,
+                1134089,
+                1146271
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                19671,
+                56959,
+                177292,
+                177973,
+                182254,
+                226170,
+                246321,
+                267474,
+                350505,
+                397112,
+                447076,
+                496091,
+                554122,
+                715200,
+                790500,
+                884276,
+                901692,
+                907815,
+                986378,
+                1067945
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                41340,
+                99323,
+                374215,
+                506206,
+                556622,
+                602927,
+                691515,
+                705652,
+                853705,
+                894206,
+                907608,
+                942200,
+                1091600,
+                1194127,
+                1197826,
+                1337644,
+                1349261,
+                1412113,
+                1423160,
+                1428089
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                7493,
+                30926,
+                84060,
+                228737,
+                292007,
+                386195,
+                407864,
+                433071,
+                473727,
+                566949,
+                694818,
+                925782,
+                1062926,
+                1066330,
+                1179180,
+                1480336,
+                1498933,
+                1676312,
+                1718584,
+                1812109
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                43585,
+                43625,
+                377379,
+                492622,
+                499331,
+                552646,
+                591971,
+                652958,
+                724057,
+                739145,
+                843340,
+                882160,
+                893569,
+                972896,
+                1053744,
+                1103117,
+                1347590,
+                1380823,
+                1394270,
+                1405970
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                28816,
+                92085,
+                215772,
+                308505,
+                482769,
+                487933,
+                568848,
+                825136,
+                867858,
+                978067,
+                1020356,
+                1130665,
+                1162507,
+                1308094,
+                1505648,
+                1544625,
+                1555495,
+                1706987,
+                1786547,
+                1919333
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                8679,
+                79439,
+                153714,
+                220152,
+                367827,
+                568549,
+                654932,
+                719887,
+                852356,
+                864114,
+                888000,
+                1002361,
+                1082403,
+                1093883,
+                1302194,
+                1324587,
+                1419628,
+                1938523,
+                1987856,
+                2027914
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                42515,
+                76308,
+                256128,
+                408488,
+                450512,
+                586586,
+                630928,
+                704648,
+                719224,
+                765544,
+                782149,
+                876672,
+                972840,
+                1046902,
+                1050542,
+                1314175,
+                1341179,
+                1479629,
+                1548401,
+                1583315
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                31897,
+                38751,
+                85165,
+                239405,
+                280029,
+                291238,
+                372498,
+                395780,
+                548672,
+                558232,
+                570902,
+                582256,
+                621725,
+                852954,
+                855059,
+                917295,
+                1007139,
+                1067253,
+                1099379,
+                1151730
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "Player.bin",
+      "layer": "decoded",
+      "size": 17230000,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "code_text",
+              "offsets": [
+                4957208
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                12487648
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                3340808,
+                9468808,
+                12665647
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                10052408,
+                12822848,
+                12883663,
+                13267663,
+                13883248,
+                15306064,
+                17110863
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                12349268,
+                12498067,
+                13062064,
+                14596463
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                2581661,
+                4429208,
+                12290463,
+                12548463,
+                12624865,
+                12707665
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                2187260,
+                2596862,
+                3336808,
+                12064463
+              ]
+            },
+            {
+              "width": 4,
+              "layout": "text_section",
+              "offsets": [
+                8590831,
+                8696031
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                269660,
+                620448,
+                713260,
+                750808,
+                12001249,
+                12236863,
+                13332848,
+                13465263,
+                13705263,
+                14363261,
+                15785261
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                192058,
+                2208064,
+                3347208,
+                9153664,
+                11907662,
+                11909262,
+                11935662,
+                12001250,
+                12027662,
+                12343662,
+                12458450,
+                13043650,
+                13400058,
+                13454062,
+                13634062,
+                13831650,
+                13840862,
+                13890862,
+                14698862,
+                14701250
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                194848,
+                2842863,
+                13863263,
+                15040048,
+                15069648
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                13146050,
+                14888462,
+                15084463,
+                16091250,
+                16511663,
+                17186050
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                3269208,
+                13234060,
+                13298863,
+                13714860
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                124064,
+                128843,
+                209243,
+                544843,
+                2514860,
+                6368860,
+                9184060,
+                11999660,
+                12077243,
+                12491643,
+                12581663,
+                13156043,
+                15086468,
+                15172843,
+                15306063,
+                15379664,
+                15573668,
+                15631643
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "PlayerAppearance.bin",
+      "layer": "packed",
+      "size": 1154513,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "code_text",
+              "offsets": [
+                14612,
+                114311,
+                132455,
+                177135,
+                190084,
+                191341,
+                192206,
+                323535,
+                326395,
+                602466,
+                847357,
+                900475,
+                923674,
+                998429,
+                1088767,
+                1099652
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_code",
+              "offsets": [
+                12636,
+                14168,
+                39794,
+                111151,
+                134131,
+                189111,
+                225750,
+                372153,
+                409611,
+                420417,
+                547039,
+                563966,
+                646320,
+                674878,
+                993098,
+                1091024,
+                1110486
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                3039,
+                20836,
+                104788,
+                115345,
+                333897,
+                381827,
+                606357,
+                682919,
+                709481,
+                731115,
+                932574,
+                957904,
+                960634
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                295178,
+                352038,
+                404116,
+                481729,
+                488441,
+                492719,
+                496185,
+                554978,
+                635753,
+                640212,
+                670834,
+                671484,
+                698668,
+                797763,
+                953818,
+                958470,
+                1036538,
+                1053014,
+                1058970,
+                1107987
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                68542,
+                87921,
+                119556,
+                432527,
+                453344,
+                453898,
+                468143,
+                488848,
+                626412,
+                668947,
+                782717,
+                809660,
+                941652
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                58004,
+                102132,
+                134142,
+                156521,
+                248188,
+                338233,
+                354152,
+                369183,
+                575492,
+                593668,
+                698615,
+                729866,
+                745290,
+                770134,
+                796789,
+                1025885
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                144822,
+                316862,
+                536622,
+                606157,
+                686116,
+                823836,
+                1010110,
+                1150429
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                16343,
+                53825,
+                97654,
+                203751,
+                229314,
+                235458,
+                246612,
+                371246,
+                428031,
+                545490,
+                579686,
+                600465,
+                648192,
+                766648,
+                766932,
+                791139,
+                797430,
+                920016,
+                1054298,
+                1113325
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                177052,
+                284388,
+                303045,
+                303653,
+                315903,
+                330606,
+                389747,
+                462285,
+                516822,
+                607564,
+                643294,
+                673747,
+                710745,
+                827592,
+                1019168,
+                1050817,
+                1095581,
+                1101782
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                4766,
+                50700,
+                139908,
+                225753,
+                226948,
+                228687,
+                281280,
+                423264,
+                493239,
+                512545,
+                566766,
+                584853,
+                648703,
+                678824,
+                762769,
+                802235,
+                812399,
+                913724,
+                940156,
+                1019973
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                154855,
+                248966,
+                339345,
+                343402,
+                396259,
+                482894,
+                542190,
+                559776,
+                655911,
+                729867,
+                845288,
+                1012711,
+                1023401
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                25234,
+                41750,
+                50266,
+                101578,
+                236461,
+                273014,
+                305556,
+                317157,
+                317857,
+                350847,
+                360511,
+                481336,
+                490493,
+                723593,
+                728890,
+                861000,
+                875774,
+                945875,
+                965743,
+                1008127
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                46709,
+                127977,
+                169279,
+                205960,
+                277398,
+                324130,
+                352526,
+                453530,
+                557729,
+                559651,
+                563440,
+                625145,
+                680015,
+                780808,
+                841567,
+                859529,
+                928696,
+                1102008,
+                1119842
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                21299,
+                177441,
+                301462,
+                307758,
+                334302,
+                339250,
+                503005,
+                596785,
+                654449,
+                787964,
+                908800,
+                984299,
+                1022586,
+                1034978,
+                1053768,
+                1117461
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "PlayerAppearance.bin",
+      "layer": "decoded",
+      "size": 2756800,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "code_text",
+              "offsets": [
+                793152
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                1191385,
+                1844772
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                82531,
+                343139,
+                534528,
+                823572,
+                941716,
+                1039124,
+                1303393,
+                1515008
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                1371687,
+                1608384
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                1022040,
+                2132568,
+                2695512,
+                2704152,
+                2750232
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                708672
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                533888
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                120128,
+                1320423
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                385955,
+                535552,
+                1061667,
+                1304422
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                1207203
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                523072,
+                1757475
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                1063,
+                279528
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "PlayerAssignment.bin",
+      "layer": "packed",
+      "size": 186859,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "code_text",
+              "offsets": [
+                120659,
+                124368,
+                161328,
+                175293
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_code",
+              "offsets": [
+                34877,
+                81146,
+                100909
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                116777,
+                166414
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                20318,
+                48585,
+                148233,
+                183307
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                27648,
+                84433,
+                97676,
+                165042,
+                165086
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                65208,
+                113808,
+                155440
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                127713,
+                168896
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                13149,
+                47091,
+                101240,
+                103302,
+                167376
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                48721,
+                105718
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                92769,
+                97943,
+                164737
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                16081,
+                36309,
+                57208,
+                97944,
+                141864,
+                151016,
+                166428
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                12291,
+                95855,
+                140139,
+                184497
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                123794
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                18043,
+                166842
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "PlayerAssignment.bin",
+      "layer": "decoded",
+      "size": 557280,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "code_text",
+              "offsets": [
+                212672,
+                331008
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                129428,
+                291984,
+                495980
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                23528,
+                326888
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                90644,
+                235872,
+                405368
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                420584
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                135848,
+                476256
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                47624
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                480432
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                109628,
+                190748,
+                229880
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "PlayerBooster.bin",
+      "layer": "packed",
+      "size": 2880,
+      "anchor_hits": [
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                2870
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "PlayerDeleteList.bin",
+      "layer": "packed",
+      "size": 12691,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                11569
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "PlayerDeleteList.bin",
+      "layer": "decoded",
+      "size": 60800,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                51080
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                14096
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "PlayerSkill.bin",
+      "layer": "packed",
+      "size": 255,
+      "anchor_hits": [
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                121
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "PlayerVariationDetail.bin",
+      "layer": "packed",
+      "size": 88577,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "code_text",
+              "offsets": [
+                650,
+                9987,
+                50905
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                16522,
+                28067
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                21725
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                45398,
+                54565
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                19780
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                25973,
+                68383
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                286,
+                16379,
+                63544
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                46191
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                82586
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                50238,
+                59130
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                14557,
+                29379
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "PlayerVariationPrSkill.bin",
+      "layer": "packed",
+      "size": 44054,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                41865
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                15631
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                1073
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                34516
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                5358
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                8522
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                18746
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "PlayerWeekly.bin",
+      "layer": "packed",
+      "size": 77856,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                431,
+                3903
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                3019,
+                26722,
+                37091
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                38942
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                20135,
+                25659,
+                49998
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                56972
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                36752
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                40577
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                805
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                21610,
+                76305
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "PlayerWeekly.bin",
+      "layer": "decoded",
+      "size": 234096,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                21440,
+                177976
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                178552
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                74336
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                177624
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                80960
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                178520
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                178504
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                101280,
+                164520
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                176760
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "Stadium.bin",
+      "layer": "packed",
+      "size": 1947,
+      "anchor_hits": [
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                645
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "Tactics.bin",
+      "layer": "packed",
+      "size": 7891,
+      "anchor_hits": [
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                113
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                1763
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "TacticsFormation.bin",
+      "layer": "packed",
+      "size": 49885,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_code",
+              "offsets": [
+                15090,
+                17860
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                22706,
+                40300
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                9373,
+                44064
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                34265,
+                37556
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                34251,
+                42461
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                16004,
+                31104
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                13643,
+                22870,
+                45774
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                9245,
+                11724
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "TacticsFormation.bin",
+      "layer": "decoded",
+      "size": 252912,
+      "anchor_hits": [
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                7256,
+                7388,
+                7916,
+                8048,
+                8576,
+                10292,
+                10424,
+                15176,
+                17288,
+                17420,
+                20324,
+                20456,
+                20588,
+                20720,
+                20852,
+                20984,
+                21380,
+                21512,
+                23624,
+                23756
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "Team.bin",
+      "layer": "packed",
+      "size": 106758,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_code",
+              "offsets": [
+                90724
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                495,
+                63641
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                34383,
+                106173
+              ]
+            }
+          ]
+        },
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                85927
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                27749,
+                70355
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                58770
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                38491
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                59014
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                34577,
+                56062
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                75717
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                62500
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "Team.bin",
+      "layer": "decoded",
+      "size": 1569600,
+      "anchor_hits": [
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 4,
+              "layout": "section_text",
+              "offsets": [
+                1113668,
+                1123268,
+                1379268
+              ]
+            },
+            {
+              "width": 4,
+              "layout": "text_section",
+              "offsets": [
+                1113672,
+                1123272,
+                1379272
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "UniColor.bin",
+      "layer": "packed",
+      "size": 17848,
+      "anchor_hits": [
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                2798,
+                17674
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                1711,
+                9247
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                17673
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "UniColor.bin",
+      "layer": "decoded",
+      "size": 82296,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                13371
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                24418
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                1726,
+                19916,
+                19924,
+                19932,
+                23825
+              ]
+            },
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                13116,
+                13124,
+                20172,
+                20180,
+                20255,
+                22210
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "bf45a94e395d62e3c2832ddd1d1bbe1deafcd02eb56c5ec96e04d28a7e459039",
+      "layer": "packed",
+      "size": 229,
+      "anchor_hits": [
+        {
+          "code": 261,
+          "text_id": 152,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                115
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    },
+    {
+      "file": "filenameConvTable.csv",
+      "layer": "packed",
+      "size": 28525,
+      "anchor_hits": [
+        {
+          "code": 250,
+          "text_id": 116,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_code",
+              "offsets": [
+                26111
+              ]
+            }
+          ]
+        },
+        {
+          "code": 263,
+          "text_id": 94,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "section_text",
+              "offsets": [
+                13940
+              ]
+            }
+          ]
+        },
+        {
+          "code": 265,
+          "text_id": 150,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                13908
+              ]
+            }
+          ]
+        },
+        {
+          "code": 266,
+          "text_id": 149,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                21129
+              ]
+            }
+          ]
+        },
+        {
+          "code": 267,
+          "text_id": 40,
+          "hits": [
+            {
+              "width": 1,
+              "layout": "text_section",
+              "offsets": [
+                3622
+              ]
+            }
+          ]
+        }
+      ],
+      "label_hits": []
+    }
+  ],
+  "common_structured_layouts_covering_all_six": [],
+  "conclusion": "ponte_fisica_texto_codigo_nao_encontrada_no_dt870_atualizado",
+  "boundary": "rótulos operacionais permanecem apresentação; secao_texto/id_texto continuam nulos e a pendência continua ativa"
+}

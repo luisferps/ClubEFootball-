@@ -1,0 +1,9 @@
+{
+  "created_at": "2026-08-29T20:43:01.9444235-03:00",
+  "files": [
+    "executor/desktop_physical_worker.js",
+    "app/contrato-v46-runtime.js",
+    "app/metadata-v46-runtime.js"
+  ],
+  "scope": "Rollback da migração de fontes por família e selo tipado; sem dados de jogo ou banco."
+}

@@ -1,0 +1,52 @@
+{
+  "test": "reconciliacao_historica_fail_closed",
+  "passed": true,
+  "database_write": false,
+  "domain_write": false,
+  "assertions": {
+    "historical_not_new": true,
+    "historical_not_removed": true,
+    "historical_not_altered": true,
+    "historical_not_reconciled": true,
+    "historical_review_alert": true
+  },
+  "classification": {
+    "new": [],
+    "removed": [],
+    "altered": [],
+    "repeated": [],
+    "invalid": [],
+    "conditions": {
+      "new": [],
+      "removed": [],
+      "altered": []
+    },
+    "historical_unresolved": [
+      {
+        "classificacao": "historico_deslocado_sem_prova_semantica",
+        "escopo": "catalogo_historico",
+        "chave_canonica": {
+          "codigo_impeto": 204
+        },
+        "codigo_bruto_observado": 203,
+        "vinculo_banco": {
+          "codigo_jogo": 204,
+          "registro_dt200": null,
+          "registro_dt870_steam": 81,
+          "registro_dt870_atualizacao": null
+        },
+        "procedencia_fisica": {
+          "papel_fonte": "dt870_original",
+          "registro": 80,
+          "numero_registro": 81,
+          "registro_sha256": "historical-record-sha",
+          "arquivo_sha256": "historical-file-sha"
+        },
+        "fonte_fisica_comprovada": true,
+        "reconciliado": false,
+        "motivo": "o registro e o código bruto foram comprovados, mas o layout legado não possui decodificador validado para condição, alvos, efeitos e faixas"
+      }
+    ]
+  },
+  "result": "divergencias_diagnosticadas"
+}

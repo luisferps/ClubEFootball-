@@ -1,0 +1,184 @@
+{
+  "schema": "clubef-readback-ponte-categoria16-defesaca-v1",
+  "verified_at": "2026-08-30T07:26:40.435467+00:00",
+  "transaction_read_only": true,
+  "evidence_sha256": "9e5d83f5481b905af50d7dfe00ead9e06d9ad4bcf31e149fa5320bfa677174d9",
+  "updated_columns": [
+    "clube_novo.impeto_jogo.secao_texto",
+    "clube_novo.impeto_jogo.id_texto"
+  ],
+  "rows": [
+    {
+      "codigo_jogo": 67,
+      "nome_pt": null,
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "nome_pt; id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 73,
+      "nome_pt": "Defesaça",
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 79,
+      "nome_pt": "Defesaça",
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 85,
+      "nome_pt": "Defesaça",
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 91,
+      "nome_pt": null,
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "nome_pt; id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 118,
+      "nome_pt": "Defesaça",
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 315,
+      "nome_pt": "Defesaça",
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 360,
+      "nome_pt": "Defesaça",
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 381,
+      "nome_pt": "Defesaça",
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 411,
+      "nome_pt": "Defesaça",
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 420,
+      "nome_pt": "Defesaça",
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 455,
+      "nome_pt": "Defesaça",
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 464,
+      "nome_pt": "Defesaça",
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 490,
+      "nome_pt": "Defesaça",
+      "secao_texto": "Any3W",
+      "id_texto": 65,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    }
+  ],
+  "resolved_text": {
+    "secao": "Any3W",
+    "id_texto": 65,
+    "texto": "Defesaça",
+    "arquivo": "all.str",
+    "cpk": "dt261_bra_console_win.cpk",
+    "entrada_offset": 265748,
+    "texto_offset": 276934,
+    "fonte_cpk_sha256": "2419045a081a151f8a0cdcc70a9ca0c4ca1ca265b8467b9c182623baa05338db",
+    "fonte_arquivo_sha256": "306741adab8376ed64620b618ae9721d316ae548b126419730b9bd5ff5f525a9"
+  },
+  "resolved_join_count": 14,
+  "resolved_join_sample": [
+    [
+      67,
+      "Defesaça",
+      "Any3W",
+      65
+    ],
+    [
+      73,
+      "Defesaça",
+      "Any3W",
+      65
+    ],
+    [
+      79,
+      "Defesaça",
+      "Any3W",
+      65
+    ],
+    [
+      85,
+      "Defesaça",
+      "Any3W",
+      65
+    ],
+    [
+      91,
+      "Defesaça",
+      "Any3W",
+      65
+    ]
+  ],
+  "carta_impeto_jogo": {
+    "rows": 3748,
+    "md5": "2b78ded34a46ab83e84570ba5578dd4f"
+  },
+  "carta_impeto_jogo_unchanged": true,
+  "domain_tables_touched": [
+    "clube_novo.impeto_jogo"
+  ],
+  "untouched": [
+    "clube_novo.carta_impeto_jogo",
+    "jogo",
+    "motor",
+    "UI",
+    "legado"
+  ],
+  "unresolved_current_records": 36
+}

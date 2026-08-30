@@ -31,6 +31,7 @@
       if (!field || typeof field.chave_campo !== 'string' || !field.chave_campo || !files.has(field.arquivo_id)) throw new Error('campo sem arquivo canônico no pedido');
       if (!SUPPORTED_READERS.has(field.tipo_leitura)) throw new Error(`tipo de leitura não suportado: ${field.tipo_leitura}`);
       if (field.status_base !== 'comprovado' && field.status_base !== 'convencao_aprovada') throw new Error(`campo sem base aceita: ${field.chave_campo}`);
+      if (typeof field.chave_familia !== 'string' || !field.chave_familia || typeof field.expected_type !== 'string' || !field.expected_type || typeof field.normalizador_id !== 'string' || !field.normalizador_id || !field.schema_payload || typeof field.schema_payload !== 'object' || !field.identidade_estavel || typeof field.identidade_estavel !== 'object') throw new Error(`campo sem semântica tipada: ${field.chave_campo}`);
       if (fields.has(field.chave_campo)) throw new Error(`campo duplicado no pedido: ${field.chave_campo}`);
       fields.set(field.chave_campo, field);
     }
@@ -95,6 +96,15 @@
     if (transform.enum && typeof transform.enum === 'object') return transform.enum[String(raw)] ?? raw;
     return raw;
   }
+  function assertExpectedType(value, field) {
+    if (value == null) return value;
+    const type = field.expected_type;
+    if (type === 'integer' && !Number.isInteger(value)) throw new Error(`normalização não produziu inteiro: ${field.chave_campo}`);
+    if (type === 'boolean' && typeof value !== 'boolean' && !Number.isInteger(value)) throw new Error(`normalização não produziu booleano: ${field.chave_campo}`);
+    if (type === 'string' && typeof value !== 'string') throw new Error(`normalização não produziu texto: ${field.chave_campo}`);
+    if (type === 'foreign_key' && !(Number.isInteger(value) || typeof value === 'string')) throw new Error(`normalização não produziu FK estável: ${field.chave_campo}`);
+    return value;
+  }
   async function sha256(bytes) {
     const hash = await crypto.subtle.digest('SHA-256', bytes);
     return Array.from(new Uint8Array(hash), (item) => item.toString(16).padStart(2, '0')).join('');
@@ -118,9 +128,21 @@
     const records = [];
     for (let base = 0, recordIndex = 0; base < bytes.length; base += file.tamanho_registro, recordIndex += 1) {
       const values = {};
-      for (const field of fields.filter((item) => item.tipo_leitura !== 'id_mask')) values[field.chave_campo] = transformed(rawValue(bytes, base, field, values), field);
-      for (const field of fields.filter((item) => item.tipo_leitura === 'id_mask')) values[field.chave_campo] = transformed(rawValue(bytes, base, field, values), field);
-      records.push({ record_index: recordIndex, values });
+      const envelope = [];
+      for (const field of fields) {
+        if (field.tipo_leitura === 'id_mask') continue;
+        const raw = rawValue(bytes, base, field, values);
+        const normalized = assertExpectedType(transformed(raw, field), field);
+        values[field.chave_campo] = normalized;
+        envelope.push({ chave_campo:field.chave_campo, familia:field.chave_familia, bruto:raw, normalizado:normalized, tipo_esperado:field.expected_type, normalizador:{id:field.normalizador_id,versao:field.versao_normalizador}, identidade:field.identidade_estavel, fk_destino:field.fk_destino || null, proveniencia:{arquivo:fileName,sha256_arquivo:actualHash,registro:recordIndex,tipo_leitura:field.tipo_leitura,byte_offset:field.byte_offset ?? null,bit_inicio:field.bit_inicio ?? null,largura_bits:field.largura_bits ?? null,largura_bytes:field.largura_bytes ?? null} });
+      }
+      for (const field of fields.filter((item) => item.tipo_leitura === 'id_mask')) {
+        const raw = rawValue(bytes, base, field, values);
+        const normalized = assertExpectedType(transformed(raw, field), field);
+        values[field.chave_campo] = normalized;
+        envelope.push({ chave_campo:field.chave_campo, familia:field.chave_familia, bruto:raw, normalizado:normalized, tipo_esperado:field.expected_type, normalizador:{id:field.normalizador_id,versao:field.versao_normalizador}, identidade:field.identidade_estavel, fk_destino:field.fk_destino || null, proveniencia:{arquivo:fileName,sha256_arquivo:actualHash,registro:recordIndex,tipo_leitura:field.tipo_leitura,byte_offset:field.byte_offset ?? null,bit_inicio:field.bit_inicio ?? null,largura_bits:field.largura_bits ?? null,largura_bytes:field.largura_bytes ?? null} });
+      }
+      records.push({ record_index: recordIndex, values, envelope });
     }
     return { selo: Object.fromEntries(SEAL_KEYS.map((key) => [key, plan[key]])), arquivo: fileName, sha256_arquivo: actualHash, tamanho_registro: file.tamanho_registro, records };
   }

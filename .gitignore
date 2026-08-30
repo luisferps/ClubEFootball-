@@ -3,6 +3,11 @@ node_modules
 # ⛔ A CHAVE NUNCA SOBE. Regra do Luis, em toda sessão.
 config.txt
 *.key
+*.pem
+*.secret
+*.secrets
+credenciais.local.*
+configuracao.local.*
 .env
 .env.*
 7-VARREDURA-DO-JOGO/configuracao.local.json

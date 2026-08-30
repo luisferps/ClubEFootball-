@@ -1,0 +1,6 @@
+begin;
+alter table clube_novo.contrato_leitura_envelope_mapeamento drop constraint if exists contrato_leitura_envelope_mapeamento_membro_unico;
+alter table clube_novo.contrato_leitura_envelope_mapeamento drop column if exists grupo_repeticao;
+alter table clube_novo.contrato_leitura_envelope_mapeamento drop column if exists ordem_regra;
+alter table clube_novo.contrato_leitura_envelope_mapeamento add constraint contrato_leitura_envelope_mapeamento_destino_id_coluna_destino_key unique(destino_id,coluna_destino);
+commit;

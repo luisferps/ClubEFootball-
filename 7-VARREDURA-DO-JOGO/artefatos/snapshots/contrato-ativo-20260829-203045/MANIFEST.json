@@ -1,0 +1,18 @@
+{
+  "created_at": "2026-08-29T23:30:46.1851095Z",
+  "root": "C:\\Users\\Luis Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main",
+  "restore": "Copy files from this folder over 7-VARREDURA-DO-JOGO; apply git-diff-preexistente.patch only to recover pre-existing work.",
+  "git_head": "a29b11c1c3e95d6a0ff3cfc5cd7aeedc5a923ff2",
+  "files": [
+    "executor\\executor_local.py",
+    "executor\\desktop_worker.py",
+    "executor\\desktop_physical_worker.js",
+    "app\\leitura-contrato.js",
+    "app\\contrato-v46-runtime.js",
+    "app\\metadata-v46-runtime.js",
+    "app\\extrator-core.js",
+    "app\\mapeamento-fisico.js",
+    "app\\extrator-ui.js",
+    "app\\metadados-v46.js"
+  ]
+}

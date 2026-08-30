@@ -219,7 +219,19 @@
   async function validateSourceByContract(bytes, readingContract, role) {
     const index = CONTRACT_READER.requirePlan(readingContract);
     const requested = [...index.files.values()].filter((file) => file.papel_fonte === role && file.obrigatorio);
-    if (!requested.length) throw new Error(`o contrato ativo não solicita arquivos para a fonte ${role}`);
+    const locator = (readingContract.localizadores_fontes || []).find((item) => item && item.papel_fonte === role && Number(item.ordem) === 1);
+    if (!locator) throw new Error(`o contrato ativo não declara localizador para a fonte ${role}`);
+    const cpkHash = await sha256(bytes);
+    if (locator.sha256_cpk && cpkHash !== String(locator.sha256_cpk).toLowerCase()) throw new Error(`fingerprint do CPK divergente: ${role}`);
+    if (!requested.length) {
+      return {
+        contract: Object.fromEntries(CONTRACT_READER.SEAL_KEYS.map((key) => [key, readingContract[key]])),
+        role,
+        cpk_sha256: cpkHash,
+        files: [],
+        database_write: false
+      };
+    }
     const cpk = extractCpk(bytes);
     const verified = [];
     for (const file of requested) {
@@ -232,7 +244,7 @@
     return {
       contract: Object.fromEntries(CONTRACT_READER.SEAL_KEYS.map((key) => [key, readingContract[key]])),
       role,
-      cpk_sha256: await sha256(bytes),
+      cpk_sha256: cpkHash,
       files: verified,
       database_write: false
     };
@@ -295,23 +307,76 @@
     if (!file || Object.values(fields).flat().some((field) => field.arquivo_id !== file.arquivo_id)) throw new Error('relações de carta em arquivo divergente do contrato');
     const catalog = (table) => (readingContract.catalogos || []).find((item) => item.schema === 'clube_novo' && item.table === table)?.rows;
     const skillNames = new Map((catalog('habilidade_jogo') || []).map((row) => [Number(row.skill_id), row.nome_en]));
-    const aiNames = new Map((catalog('estilo_ia') || []).map((row) => [Number(row.bit), row.nome_en]));
-    if (!skillNames.size || !aiNames.size) throw new Error('catálogos de habilidade/estilo IA ausentes do pedido');
+    // O catálogo de nomes é estritamente de apresentação. A identidade física
+    // de estilo IA é sempre o bit declarado pelo contrato; a ausência de uma
+    // enumeração completa não pode ser mascarada por um nome local.
+    const aiNames = new Map((catalog('estilo_ia') || []).map((row) => [Number(row.bit), row.nome_en]).filter(([bit]) => Number.isInteger(bit)));
+    if (!skillNames.size) throw new Error('catálogo de habilidade ausente do pedido');
+    const skillMappings = (readingContract.mapeamentos_envelope || [])
+      .filter((mapping) => mapping && mapping.status === 'comprovado' && mapping.grupo_repeticao === 'habilidades_player_bin');
+    if (!skillMappings.length) throw new Error('pedido sem membros físicos comprovados de habilidades');
+    const mappedSkillFields = skillMappings.map((mapping) => {
+      const rule = mapping.regra_decomposicao || {};
+      const match = /^skill_id=(\d+)$/.exec(String(rule.chave || ''));
+      const skillId = match ? Number(match[1]) : NaN;
+      const bit = Number(rule.bit);
+      const width = Number(rule.largura);
+      if (mapping.artefato_fisico !== 'cartas_fisicas' || mapping.coluna_fisica !== 'habilidades' ||
+          rule.tipo !== 'lista_filtrada_bit' || !Number.isInteger(mapping.campo_id) ||
+          !Number.isInteger(mapping.ordem_regra) || !Number.isInteger(skillId) ||
+          !Number.isInteger(bit) || !Number.isInteger(width) || width <= 0) {
+        throw new Error('membro de habilidade inválido no pedido de envelope');
+      }
+      const matches = fields.skills.filter((field) => Number(field.bit_inicio) === bit &&
+        Number(field.largura_bits) === width && Number(field.transformacao?.skill_id) === skillId);
+      if (matches.length !== 1) throw new Error(`mapeamento físico de habilidade sem campo único: campo_id ${mapping.campo_id}`);
+      return { mapping, field: matches[0], skillId, bit, width };
+    });
+    if (mappedSkillFields.length !== fields.skills.length || new Set(mappedSkillFields.map((item) => item.field.chave_campo)).size !== fields.skills.length) {
+      throw new Error('cobertura de membros físicos de habilidades incompleta ou duplicada');
+    }
     const cpk = extractCpk(bytes), packed = cpk[file.arquivo];
     if (!packed) throw new Error(`${file.arquivo} não foi encontrado na fonte do contrato`);
     const selected = ['carta.id', ...Object.values(fields).flat().map((field) => field.chave_campo)];
     const decoded = await CONTRACT_READER.decodeFile(readingContract, file.arquivo, await unpackWesys(packed), selected);
     return new Map(decoded.records.map((record) => {
       const value = record.values;
-      const skillFields = fields.skills.filter((field) => value[field.chave_campo]);
+      const skillFields = mappedSkillFields.filter((item) => value[item.field.chave_campo]);
       const aiFields = fields.ai.filter((field) => value[field.chave_campo]);
-      const skills = skillFields.map((field) => skillNames.get(Number(field.transformacao?.skill_id)));
-      const ai = aiFields.map((field) => aiNames.get(Number(field.transformacao?.bit_estilo_ia)));
-      if (skills.some((name) => !name) || ai.some((name) => !name)) {
-        throw new Error(`o catálogo do contrato não traduz todas as relações da carta ${value['carta.id']}`);
+      const skills = skillFields.map((item) => skillNames.get(item.skillId));
+      const habilidades_fisicas = skillFields.map((item) => ({
+        campo_id: item.mapping.campo_id, skill_id: item.skillId,
+        bit: item.bit, largura: item.width, ativo: true, ordem: item.mapping.ordem_regra,
+        registro: record.record_index, arquivo: file.arquivo, hash: decoded.sha256_arquivo,
+        procedencia: item.mapping.proveniencia
+      }));
+      const estilos_ia_fisicos = aiFields.map((field) => {
+        const bit = Number(field.transformacao?.bit_estilo_ia);
+        const largura = Number(field.largura_bits);
+        if (!Number.isInteger(bit) || !Number.isInteger(largura) || largura <= 0) {
+          throw new Error(`campo físico de estilo IA inválido no contrato: ${field.chave_campo}`);
+        }
+        return {
+          chave_campo: field.chave_campo, bit, largura, ativo: true,
+          registro: record.record_index, arquivo: file.arquivo, hash: decoded.sha256_arquivo,
+          procedencia: {
+            contrato: readingContract.versao_contrato || null,
+            fingerprint_contrato: readingContract.fingerprint_contrato || null,
+            arquivo_id: field.arquivo_id,
+            bit_inicio: Number(field.bit_inicio),
+            largura_bits: largura,
+            origem_declarada: field.proveniencia || null
+          }
+        };
+      });
+      const ai = estilos_ia_fisicos
+        .map((item) => aiNames.get(item.bit))
+        .filter((name) => typeof name === 'string' && name.length > 0);
+      if (skills.some((name) => !name)) {
+        throw new Error(`o catálogo do contrato não traduz todas as habilidades da carta ${value['carta.id']}`);
       }
       const aptitudes = Object.fromEntries(fields.positions.map((field) => [field.transformacao?.codigo_en, value[field.chave_campo]]));
-      return [String(value['carta.id']), { skills, ai, aptitudes }];
+      return [String(value['carta.id']), { skills, habilidades_fisicas, ai, estilos_ia_fisicos, aptitudes }];
     }));
   }
 
@@ -615,7 +680,11 @@
       card.overall = calculateOverall(card.attrs, card.position);
       const relations = contractRelations.get(String(card.card_id));
       if (!relations) throw new Error(`o contrato não retornou relações para ${card.card_id}`);
-      card.skills = relations.skills; card.ai_styles = relations.ai; card.aptitudes = relations.aptitudes;
+      card.skills = relations.skills;
+      card.habilidades_fisicas = relations.habilidades_fisicas;
+      card.ai_styles = relations.ai;
+      card.estilos_ia_fisicos = relations.estilos_ia_fisicos;
+      card.aptitudes = relations.aptitudes;
       const body = contractBodies.get(String(card.card_id));
       if (!body) throw new Error(`o contrato não retornou corpo para ${card.card_id}`);
       card.corpo = [card.height, ...body];
@@ -984,9 +1053,6 @@
     return true;
   }
   function cardToRow(card) {
-    const weakUsage = { 'Almost Never': 0, Rarely: 1, Occasionally: 2, Regularly: 3 };
-    const weakAccuracy = { Low: 0, Medium: 1, High: 2, 'Very High': 3 };
-    const form = { Inconsistent: 0, Standard: 1, Unwavering: 2 };
     const row = {
       card_id: card.card_id,
       tipo: card.tipo,
@@ -1003,10 +1069,13 @@
       peso: String(card.weight),
       idade: String(card.age),
       nacionalidade: card.nationality || '',
-      pe_ruim_uso: weakUsage[card.weak_foot_usage] == null ? '' : String(weakUsage[card.weak_foot_usage]),
-      pe_ruim_precisao: weakAccuracy[card.weak_foot_accuracy] == null ? '' : String(weakAccuracy[card.weak_foot_accuracy]),
+      // O runtime V46 já normaliza estes três campos pelo contrato como
+      // códigos numéricos. A exportação não pode reinterpretá-los como os
+      // rótulos do leitor legado, pois isso apagaria valores válidos.
+      pe_ruim_uso: card.weak_foot_usage == null ? '' : String(card.weak_foot_usage),
+      pe_ruim_precisao: card.weak_foot_accuracy == null ? '' : String(card.weak_foot_accuracy),
       resistencia_lesao: card.injury,
-      forma: form[card.form] == null ? '' : String(form[card.form]),
+      forma: card.form == null ? '' : String(card.form),
       impeto_s1: card.booster_primary.state === 'preench' ? String(card.booster_primary.id) : '',
       impeto_s2_cond: card.booster_conditional.state === 'preench' ? String(card.booster_conditional.id) : '',
       vaga_s1: String(card.booster_primary.state === 'vaga'),
@@ -1147,11 +1216,11 @@
       }
       const coach = await unpackWesys(cpk['Coach.bin']);
       const country = await unpackWesys(cpk['Country.bin']);
-      if (coach.length % 176 !== 0 || coach.length / 176 !== 1478) {
-        throw new Error('Coach.bin do DT870 atualizado não respeita 1.478 registros de 176 bytes.');
+      if (coach.length % 176 !== 0) {
+        throw new Error('Coach.bin do DT870 atualizado não respeita o layout de registros declarado.');
       }
-      if (country.length % 1488 !== 0 || country.length / 1488 !== 214) {
-        throw new Error('Country.bin do DT870 atualizado não respeita 214 registros de 1.488 bytes.');
+      if (country.length % 1488 !== 0) {
+        throw new Error('Country.bin do DT870 atualizado não respeita o layout de registros declarado.');
       }
     }
     if (role === 'dt870_original' && players.length % 392 !== 0) {
@@ -1198,8 +1267,8 @@
     if (!cpk['Coach.bin'] || !cpk['Country.bin']) throw new Error('Coach.bin ou Country.bin ausente no DT870 atualizado.');
     const coach = await unpackWesys(cpk['Coach.bin']);
     const country = await unpackWesys(cpk['Country.bin']);
-    if (coach.length % 176 !== 0 || coach.length / 176 !== 1478) throw new Error('Coach.bin atual não contém 1.478 registros de 176 bytes.');
-    if (country.length % 1488 !== 0 || country.length / 1488 !== 214) throw new Error('Country.bin atual não contém 214 registros de 1.488 bytes.');
+    if (coach.length % 176 !== 0) throw new Error('Coach.bin atual não respeita o layout declarado.');
+    if (country.length % 1488 !== 0) throw new Error('Country.bin atual não respeita o layout declarado.');
     const coachHash = await sha256(coach);
     const countryHash = await sha256(country);
     const nationalities = [];
@@ -1662,7 +1731,20 @@
       log(`${name}: ${records.length}`);
     }
     catalogs.posicoes = { file: 'Player.bin + mapeamento físico', records: Object.entries(K.POSITION_NAMES).map(([id, codigo_en]) => ({ id: String(id), codigo_en, fingerprint: stableJson({ id: String(id), codigo_en }) })) };
-    catalogs.estilos_ia = { file: 'Player.bin + mapeamento físico', records: Object.entries(K.AI_PLAYING_STYLES).map(([nome_en, id]) => ({ id: String(id), nome_en, fingerprint: stableJson({ id: String(id), nome_en }) })) };
+    // Sem enumeração física integral, este caminho legado não pode transformar
+    // o mapa local em catálogo. O runtime V5 expõe apenas a projeção física
+    // observada por carta e sinaliza membros fora dela para revisão.
+    catalogs.estilos_ia = {
+      file: 'Player.bin',
+      supported: false,
+      coverage_state: 'observado_nas_cartas_monitorado',
+      coverage_complete: false,
+      application_eligible: false,
+      identity: 'bit físico + procedência por carta',
+      monitoring: 'membro físico fora da projeção observada gera alerta; não cria catálogo ou rótulo',
+      records: [],
+      duplicate_ids: []
+    };
     return { contract: 'clubef-physical-metadata-v3', source, catalogs };
   }
   function compareMetadata(current, baseline) {

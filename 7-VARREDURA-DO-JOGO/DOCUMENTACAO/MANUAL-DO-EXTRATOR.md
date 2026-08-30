@@ -162,15 +162,100 @@ A ativação libera leitura e comparação. Ela não constitui aprovação autom
 - `windows-app/ClubEfootballExtractorLauncher.cs`;
 - `windows-app/COMPILAR-APLICATIVO.ps1`.
 
-A V4.6.12 usa:
+A versão operacional é V5.0.0. O único fluxo de abertura é
+`ABRIR-EXTRATOR.cmd` -> `Extrator eFootball.exe` V5.0.0 ->
+`executor/desktop_worker.py`. O launcher cria uma pasta única em
+`artefatos/desktop/`, chama o worker com `--root`, `--run-dir` e `--cancel`,
+e mostra os eventos JSON de progresso. Ele não abre navegador, localhost nem
+servidor HTTP.
 
-- runtime: `executor/servidor_v4612.py`;
-- porta local exclusiva: `8776`;
-- leitor contratual e núcleo servidos com lotes cooperativos;
-- UI servida pelo runtime com fluxo não bloqueante e painel intermediário;
-- log: `logs/extrator-v46.log`.
+O launcher também envia `--protocol-version 5.0.0`. O worker declara a mesma
+versão e falha fechada antes de abrir banco ou fonte se o selo for diferente;
+assim EXE, launcher e runtime não podem operar misturados.
 
-Quando o launcher muda, o executável deve ser recompilado. O botão `4-BAIXAR-DO-GITHUB.bat` sincroniza o código e recompila o aplicativo, preservando `config.txt`.
+O worker recebe o pedido selado em transação somente leitura, cria
+`pedido-leitura.json`, `fontes.json`, `baseline-cartas.csv`, as fotografias
+físicas, `resultado-normalizado.json` e `resultado.json`. Todo evento e
+resultado registra `database_write: false`; o worker devolve o resultado
+normalizado ao fluxo de `clube_novo`, sem criar uma carga manual paralela.
+
+### Leitura humana e rastreabilidade por execução
+
+Depois de gravar o `resultado.json`, o worker gera, na mesma pasta
+`artefatos/desktop/run-...`, o `resultado.html` e o
+`manifesto-execucao.json`. O botão **VER DIVERGÊNCIAS** abre apenas o HTML no
+navegador padrão; ele nunca abre o JSON técnico no Bloco de Notas. O HTML é
+permanentemente **humano-primeiro**: mostra primeiro cartas/jogadores,
+habilidades, estilos de IA, posições, atributos, clubes, ligas,
+nacionalidades, técnicos, textos e ímpetos com os rótulos já disponíveis nos
+artefatos da própria execução. Esses rótulos são obtidos somente depois da
+comparação, por consulta exata da chave canônica já presente no resultado; um
+nome nunca identifica, une ou altera registros.
+
+A página começa pelo resumo e organiza os exemplos em grupos fechados de dados
+do jogo e, dentro deles, pelo tipo de mudança. Cada grupo mostra dez exemplos
+por vez e libera os próximos sob demanda, para abrir rapidamente mesmo quando
+o resultado técnico é grande. Dados sem rótulo de jogo aparecem sob
+**Informações técnicas para investigar**, também fechados por padrão. IDs,
+chaves, bits, hashes, arquivos, offsets, valores brutos e demais diagnóstico
+ficam exclusivamente no expansível **Detalhes técnicos** de cada exemplo. As
+contagens vêm da varredura integral do resultado salvo; o limite é somente de
+apresentação, explicitado na página.
+
+O manifesto preserva `execution_id`, data, versão do programa, selo do pedido,
+fingerprints de contrato/fontes, estado por família e nomes dos artefatos. A
+renderização é local e somente leitura: não relê o jogo, não consulta o banco
+e não altera dados de domínio.
+
+## Prontidão de sincronização integral
+
+`resultado.json` contém `sync_readiness`, calculado contra as famílias
+obrigatórias do próprio pedido. Para cada chave de família, o gate exige:
+
+- contrato completo de leitor, schema de saída e normalizador versionado;
+- campos com tipo, identidade estável, schema de envelope e prova física ou
+  `convencao_aprovada` rastreável;
+- fotografia física concluída;
+- fotografia, comparação e classificação por chave canônica/procedência
+  concluídas; uma comparação informa integridade técnica, mas não aceita nem
+  rejeita alteração de conteúdo por contagem.
+
+Uma única família ausente, pendente ou com violação técnica torna o resultado
+integral `incomplete`. Divergência de conteúdo é classificada como `novo`,
+`removido`, `alterado`, `repetido` ou `inválido`, com chave e procedência; não
+é decisão de busca do Extrator. O estado de Dimensões não libera Cartas,
+Relações, Ímpetos, Técnicos, Textos nem Catálogos.
+
+O pedido define o que deve ser lido e a leitura sempre percorre tudo que ele
+declara. Diagnósticos não selecionam registros, não aguardam autorização nem
+se tornam uma seleção manual de dados. O worker atual não contém aplicador de dados do
+jogo; a fronteira de escrita permanece bloqueada para impedir schema errado,
+mas o resultado normalizado e selado está pronto para retorno ao fluxo de
+`clube_novo`.
+
+## Varredura integral, sem teto de cardinalidade — 29/08/2026
+
+O pedido define **endereços, layout, leitor, tipo, catálogo e procedência**;
+nunca define quantos registros o leitor pode ler. Para cada arquivo/campo
+solicitado, o leitor percorre integralmente o conteúdo físico atual conforme o
+layout declarado. Isso vale para cartas e seus atributos, corpo, posições,
+habilidades, estilos, nacionalidades, clubes, ligas, tipos, textos, técnicos,
+ímpetos, efeitos, condições, faixas, membros, classes e demais relações.
+
+Contagem anterior, snapshot e expectativa versionada são somente observações
+posteriores no relatório por chave/procedência. Não filtram, truncam, rejeitam
+nem selecionam registros durante a leitura. Uma atualização com menos ou mais
+linhas gera diagnóstico por chave/procedência; não é mascarada pelo runtime.
+
+`executor/servidor_v4612.py` e `executor/servidor_v4612_hotfix.py` são
+entradas históricas aposentadas. Elas não executam patches textuais de UI nem
+iniciam uma varredura. Atalhos `INICIAR-EXTRATOR-V46.cmd` apenas encaminham
+para `ABRIR-EXTRATOR.cmd` por compatibilidade.
+
+Quando `ClubEfootballExtractorLauncher.cs` ou `desktop_worker.py` mudar,
+execute `windows-app/COMPILAR-APLICATIVO.ps1` para instalar o EXE V5.0.0
+correspondente. O botão `4-BAIXAR-DO-GITHUB.bat` sincroniza o código e
+recompila o aplicativo, preservando `config.txt`.
 
 ## Descoberta automática das fontes físicas
 
@@ -201,13 +286,27 @@ Dimensões usam `Country.bin`, `Team.bin`, `CompetitionUnit.bin`, `CompetitionEn
 
 `executor/card_relations.py` continua somente leitura. A V4.6.12 captura seu retorno de conflito como relatório, mostra as famílias divergentes e impede a criação do pacote de cartas até a aprovação integral.
 
+#### Estilos de IA: projeção observada e monitorada
+
+Os bits de Estilo IA que já aparecem fisicamente em `Player.bin` são uma
+**projeção observada**, nunca a alegação de um catálogo mestre completo. A
+identidade da relação é sempre `card_id` + bit físico, com registro, arquivo e
+hash de procedência; o rótulo vindo de `clube_novo.estilo_ia` serve apenas à
+apresentação. Um membro físico ativo fora da projeção produz alerta de revisão
+por carta/procedência, não cria catálogo nem infere nome, e mantém somente a
+relação afetada sem aplicação. As demais famílias continuam sua leitura e
+comparação normal.
+
 ### Metadados
 
 `app/metadata-v46-runtime.js` preserva a lógica das leituras físicas. `app/patches-v4610/metadata-family-safe.jsfrag` é aplicado pelo servidor ao carregar esse runtime. Habilidades, Ímpetos, Playstyles, Textos, Técnicos, nacionalidades e afinidades são extraídos em blocos isolados: falha física de uma família produz um catálogo de erro e a função continua nas demais.
 
 `app/metadados-v46.js` fornece o painel intermediário. Ele recebe os relatórios de Metadados e Cartas, abre a conferência de Dimensões, exige revisão explícita e só então habilita a etapa final.
 
-`executor/servidor_v46.py` permanece como base compatível. `executor/servidor_v4610.py` preserva o fluxo não bloqueante e a conferência da V4.6.11. `executor/servidor_v4612.py` adiciona a camada de responsividade, isola o processo na porta 8776 e mantém a validação do `review_id` antes da escrita.
+`executor/servidor_v46.py`, `executor/servidor_v4610.py` e
+`executor/servidor_v4612.py` permanecem somente como referência histórica;
+não são runtime, endpoint nem autoridade operacional. A execução atual é
+inteiramente pelo worker desktop V5 e mantém a escrita produtiva bloqueada.
 
 ### Ímpetos
 
@@ -225,6 +324,87 @@ Dimensões usam `Country.bin`, `Team.bin`, `CompetitionUnit.bin`, `CompetitionEn
 - `impeto_condicao_liga_membro_jogo`.
 
 Depois compara o conjunto solicitado com a fotografia física e devolve códigos ausentes, novos, alterados e duplicados. O retorno inclui `continue_pipeline=true`; divergência bloqueia a aplicação de Ímpetos, não a continuação da varredura.
+
+#### Rótulo apresentado pelo jogo — 30/08/2026
+
+O código de Ímpeto continua sendo a identidade técnica e a origem de cada slot
+é sempre o `Player.bin` físico. O nome exibido ao usuário é outra evidência: o
+Extrator só o mostra quando o pedido da própria execução declara a FK exata
+`codigo_impeto -> secao_texto + id_texto` e essa chave existe em `all.str` com
+arquivo, CPK e fingerprints físicos válidos. O relatório nunca usa
+`impeto_jogo.nome_pt` ou `nome_en` históricos como substituto dessa ligação e
+nunca fabrica um texto a partir dos efeitos.
+
+Sem a FK física, a apresentação humana fica explicitamente como **“rótulo do
+jogo ainda não comprovado”**; o código, a condição, os efeitos e a procedência
+continuam recolhidos em **Detalhes técnicos**. Para a carta Vózinha
+`106799462259226`, o slot físico 1 é o código `79` e os quatro bônus de
+goleiro `+3` foram lidos corretamente de `PlayerBooster.bin`, mas o pedido
+vigente deixa `secao_texto` e `id_texto` nulos. Assim, o Extrator não reaproveita
+o rótulo histórico “Defesaça” nem monta “Defesa +3” por inferência; a ligação
+oficial de texto precisa ser declarada e comprovada antes de aparecer no
+relatório.
+
+Há um segundo estado, deliberadamente distinto da prova do dicionário:
+**rótulo operacional monitorado**. Ele só é usado quando `clube_novo.impeto_jogo`
+traz simultaneamente um `nome_pt` revisado e o marcador
+`rotulo_operacional_monitorado` em `falta_o_que`. Nesse estado o relatório
+mostra o nome humano, mas conserva visível que a ponte oficial
+`secao_texto/id_texto` ainda está pendente; o rótulo jamais é descrito como
+físico nem participa da identidade do Ímpeto.
+
+Os códigos `96`, `101`, `132`, `133`, `170`, `171` e `208` usam esse estado
+para **Pacote total**. A base da revisão é o mesmo conjunto físico de 26
+atributos e a confirmação visual do nome. O efeito não é `+3` fixo: os sete
+códigos continuam condicionais, com faixas `1–13 = +1`, `14–19 = +2` e
+`20–23 = +3`. A categoria especial `0` não pertence a essa associação. Uma
+execução futura deve continuar alertando sobre a ponte textual oficial ausente,
+sem preencher `secao_texto` ou `id_texto` por inferência.
+
+Os 14 especiais de categoria física `0` usam um estado operacional ainda mais
+explícito: `rotulo_operacional_confirmado_usuario`. Os códigos `56`, `57`,
+`58`, `134`, `135`, `142`, `143` e `144` conservam os nomes exclusivos
+confirmados individualmente; os códigos `250`, `261`, `263`, `265`, `266` e
+`267` exibem, como rótulo operacional, o único atributo físico `+6` de cada
+registro. Essa apresentação não cria identidade textual. Todos continuam com
+`secao_texto` e `id_texto` nulos, `pode_rodar=false` e a pendência
+`ponte_fisica_texto_codigo_pendente`. O código `261` pertence ao pacote de
+atualização e é mantido no catálogo para monitoramento, mas Maeda Daizen não é
+apresentado como carta lançada na fotografia atual.
+
+O teste físico do DT870 atualizado (CPK SHA-256
+`44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5`)
+localizou os seis registros de atributo nos índices `200–205`, porém não
+encontrou em seus 40 bytes, nem nas demais 96 entradas do CPK, um layout comum
+`codigo_impeto -> secao/id_texto`. Os oito nomes exclusivos também não aparecem
+como strings nesse CPK. Por isso a execução diária mostra os rótulos como
+operacionais e continua alertando sobre a ponte, em vez de convertê-los em
+texto físico comprovado.
+
+#### DT870 Steam histórico: reconciliação fail-closed — 30/08/2026
+
+O `PlayerBooster.bin` do DT870 Steam antigo não é decodificado com o layout
+semântico da atualização atual. A fonte física observada contém prefixo de 24
+bytes e 165 blocos de 40 bytes; os códigos e hashes de cada bloco são
+preservados em `historical_source`, mas essa fonte não participa da união
+canônica por código e não fornece condição, alvo, efeito ou faixa enquanto não
+existir um decodificador legado fisicamente comprovado.
+
+Os 22 registros candidatos ao deslocamento histórico foram relidos pelo número
+de registro e hash: em todos, o código bruto é uma unidade menor que o código
+histórico registrado. Esse padrão isolado não prova identidade semântica e não
+autoriza uma regra global `+1`; há colisões com variantes atuais reais. O
+validador os classifica separadamente como
+`historico_deslocado_sem_prova_semantica`: não são escondidos, reconciliados ou
+misturados às categorias novo/removido/alterado. A revisão de Ímpetos permanece
+pendente apenas para esses registros, e nenhuma linha de domínio é modificada.
+
+O caminho V5 não carrega mais `app/catalog-source-map.js`; o mapa local antigo
+de índices não é autoridade operacional. O teste read-only confirmou 412
+registros canônicos formados apenas por DT200/DT870 atualizado, zero registro
+canônico com origem DT870 Steam, 165 registros históricos preservados e os 22
+candidatos reproduzidos exatamente por código bruto, número de registro e
+SHA-256.
 
 ### Técnicos
 
@@ -305,3 +485,207 @@ A migração termina quando:
 ## Regra de documentação
 
 Toda implementação, alteração ou exclusão no V4 deve atualizar este manual no mesmo conjunto de trabalho. Código e documentação divergentes são pendência, não conclusão.
+
+## Pedido tipado e identidade de logística — 29/08/2026
+
+O pedido novo é obtido somente por `clube_novo.obter_pedido_leitura_tipado_ativo()`.
+Ele contém famílias, localizadores de fontes, leitor/versionamento, schema de
+payload, tipo esperado, normalizador/versionamento, identidade, FK, nulidade,
+serialização e expectativas versionadas. O desktop não escolhe caminho Steam,
+papel de fonte, offset, enumeração ou prioridade: se uma fonte/família não estiver
+no pedido, registra o estado e continua as independentes.
+
+Todo registro físico é entregue no envelope `envelope_campo_v1`: valor bruto,
+valor normalizado, tipo esperado, normalizador, identidade/FK e arquivo/hash/
+registro/campo de origem. A chave de comparação é exclusivamente a identidade
+canônica; rótulos legíveis são derivados por catálogo em apresentação e não servem
+para identificar, unir, substituir ou carregar. A camada foi aplicada sem carga de
+dados do jogo; a escrita produtiva permanece bloqueada.
+
+## Política de revisão no contrato — 29/08/2026
+
+Esta seção foi substituída pelo fluxo banco → leitura → resultado normalizado.
+O pedido ativo não contém política de aprovação manual: divergências continuam
+visíveis como diagnóstico, mas nunca interferem no universo físico solicitado.
+
+## Fontes físicas e catálogos declarados — R2, 29/08/2026
+
+O pedido tipado emite `papeis_fonte`, `precedencia_fontes` e
+`catalogos_requeridos` por família. `dt200`, `dt870_original` e
+`dt870_updated` são selados pelo SHA-256 do CPK informado pelo localizador do
+banco; `dt261_bra` não é implícito e só é aberto pela família de Textos.
+Precedência preserva procedência de comparação, não autoriza substituir fonte.
+
+Mesmo uma fonte sem campo materializado é validada pelo hash do CPK, sem
+inventar layout. Dependências auxiliares, como condições de Ímpeto, vêm no
+pedido; ausentes nele fazem a família falhar fechada. A saída inclui selo de
+fonte + contrato + payload por família.
+
+## Catálogos e Cartas canônicos — 29/08/2026
+
+`clube_novo.contrato_leitura_catalogo_fisico` cobre os 23 catálogos pedidos
+na execução atual. Cinco têm chave física direta (`habilidade_jogo`,
+`playstyle`, `posicao_jogo`, `nacionalidade_jogo` e
+`afinidade_tecnico_jogo`); os demais declaram explicitamente qual validação
+normalizada de Relações, Dimensões, Técnicos, Textos ou Ímpetos lhes dá
+cobertura. O executor não guarda lista paralela: ausência, chave repetida ou
+dependência não íntegra é `inválido` no resultado normalizado.
+
+`clube_novo.contrato_leitura_projecao_cartas` declara a fonte física e a
+coluna de destino para cada campo de Carta. O executor cria um baseline interno
+somente leitura com essas colunas e compara por `card_id`; FKs de clube, liga,
+nacionalidade, tipo e indisponibilidade são lidas de `dimensoes-fisicas.json`.
+`box`, títulos e rótulos legíveis não participam de identidade nem de carga;
+continuam no CSV público apenas para apresentação. A migração e rollback
+cumulativos estão em `4-DOCUMENTOS/EXTRATOR/SQL/APLICAR-CATALOGO-FISICO-CONTRATO-V1.sql`
+e `ROLLBACK-CATALOGO-FISICO-CONTRATO-V1.sql`.
+
+O smoke integral read-only `preparacao-carga-integral-4-20260829-215407`
+confirmou 43.072 Cartas sem diferença canônica, os 23 catálogos cobertos sem
+novo/removido/alterado/repetido/inválido e nenhum `database_write`. O manifesto
+normalizado é `f3c1806b09625d9c9472640160098d6effc9dce393e68f3c4dadcb2d3f3c66f0`.
+As divergências classificadas de Relações e do catálogo de Ímpetos seguem como
+diagnóstico do resultado; não suspendem a próxima leitura e não promovem
+alteração automática de dados.
+
+## Correção de fluxo — banco → leitura → resultado normalizado — 29/08/2026
+
+O pedido ativo não contém mais `politica_revisao`, `cobertura_aprovada` nem
+`carga_autorizada`. `clube_novo` declara campos, fontes, leitores, tipos,
+normalizadores e FKs; o Extrator lê integralmente esses endereços e devolve um
+`resultado-normalizado.json` selado por contrato, fonte e payload. As
+divergências são diagnóstico de mudança, nunca um bloqueio de leitura ou uma
+decisão externa sobre o que buscar. A migração reversível desta correção é
+`4-DOCUMENTOS/EXTRATOR/SQL/APLICAR-FLUXO-SINCRONIZACAO-CONTRATO-V1.sql`.
+
+### Retificação urgente — aprovação interna do Extrator
+
+A aprovação não foi removida: `clube_novo` volta a fornecer
+`politica_revisao`, e o worker produz `pacote-revisao.json`. A UI/fluxo do
+próprio Extrator apresenta esse pacote ao usuário e registra o aceite antes de
+qualquer aplicação posterior ao `clube_novo`. O gate controla exclusivamente a
+aplicação; não seleciona nem suspende a leitura integral. Migração:
+`APLICAR-APROVACAO-INTERNA-EXTRATOR-V1.sql`.
+
+## Aplicador transacional após aceite V5 — 29/08/2026
+
+O botão **APROVAR PACOTE** da janela V5 invoca o worker local com o caminho do
+`pacote-revisao.json`. Antes de registrar a decisão, o worker recalcula o SHA-256
+do pacote, relê o contrato ativo, confere o selo completo (contrato, versão do
+jogo, fontes e catálogos), confirma a cobertura técnica por família e verifica
+as fontes declaradas. A decisão persistida contém exatamente o hash e o selo;
+ela não autoriza qualquer outro pacote.
+
+O botão **APLICAR PACOTE** chama o aplicador interno. Ele bloqueia se a decisão
+não for do mesmo hash/selo, se qualquer fonte sumiu, se a cobertura deixou de
+ser integral ou se houver divergência no readback. Em uma única transação ele
+estagia `execucao_leitura_contrato`, registra a auditoria por família em
+`clube_novo.aplicacao_pacote_revisao_extrator`, lê de volta os selos e só então
+teria permissão de confirmar os envelopes tipados. Identidade e FK são sempre
+as chaves canônicas declaradas; rótulos nunca são usados como chave ou destino.
+
+Durante este desenvolvimento `PRODUCTIVE_WRITES_LOCKED` permanece verdadeiro.
+O pacote atual contém diagnóstico/comparação, não envelopes normalizados de
+escrita de domínio; por isso o aplicador recusa produção antes de qualquer dado
+real. O smoke controlado usa transação integral com rollback e só valida o
+gate, estágio, auditoria e readback. A migração e seu rollback são
+`APLICAR-APLICADOR-TRANSACIONAL-EXTRATOR-V1.sql` e
+`ROLLBACK-APLICADOR-TRANSACIONAL-EXTRATOR-V1.sql`.
+
+### Smoke controlado
+
+O smoke `smoke-aplicador-controlado-20260829-221610` exerceu o mesmo comando
+de aprovação que a V5 chama, com pacote SHA-256
+`7f6ed397c672a1cf99417034f3c5b1d2f46e6ad18efa4ed03926270c66cec18f`.
+Depois, `--apply-review --test-rollback` confirmou estágio e readback da
+auditoria e fez rollback integral. A decisão de teste foi restaurada para
+`aguarda_aprovacao_no_extrator`. Pacotes adulterado e expirado foram recusados
+antes da escrita. Nenhum dado de jogo, tabela de domínio, motor ou UI visual
+foi alterado.
+## Descoberta autônoma e aplicação declarativa — 29/08/2026
+
+Em cada execução, o worker consulta o pedido ativo de `clube_novo`. A descoberta
+física ocorre exclusivamente por `catalogo_endereco_leitura_extrator_v1`: a
+view entrega a FK da família/campo, fonte/papel, arquivo, endereço, largura,
+decodificador, catálogo, normalizador e procedência. O worker abre somente as
+fontes devolvidas, lê o universo físico completo dos endereços solicitados,
+normaliza por chave canônica e produz `resultado.json` e
+`pacote-revisao.json` selados. Não há seleção manual de fonte, caminho Steam,
+offset ou fallback de leitura no código.
+
+O pacote mostra divergências por chave/procedência para revisão na V5. O aceite
+na própria V5 é vinculado ao SHA-256 e aos fingerprints atuais; antes de aplicar,
+o worker relê contrato, fontes, cobertura e selo. Escritores e destinos vêm de
+`escritores_dominio` do pedido, com envelope
+`clubef-envelopes-aplicacao-v1`; identidades e FKs são validadas antes de SQL
+parametrizado derivado do contrato. Rótulos humanos não são aceitos como chave.
+
+O smoke `smoke-catalogo-view-20260829-223810` percorreu as quatro fontes
+declaradas e concluiu a conferência de todas as famílias sem escrita. Seu pacote
+SHA-256 é `2eea6148608e9184869960d98fc8cdb7985e089f6ae5a56421d05419508cd156`.
+O aceite e `--apply-review --test-rollback` confirmaram estágio, auditoria e
+readback para os 29 destinos declarados, retornando rollback integral; o aceite
+de teste foi restaurado. `PRODUCTIVE_WRITES_LOCKED=true` permanece: não houve
+dados reais de jogo aplicados.
+
+### Comparação canônica de Cartas — 29/08/2026
+
+O leitor físico não compara CSV de apresentação. A comparação de Cartas ocorre
+depois da leitura de Dimensões, com `projecoes_cartas` do pedido, `card_id` e
+códigos/FKs canônicos. Nomes e rótulos de nacionalidade não geram falsos
+deltas nem chegam à etapa de aprovação como decisão de domínio.
+## Separação de catálogo, revisão e domínio — 29/08/2026
+
+O fluxo operacional é: `view de catálogo` → leitura física → envelope/pacote
+selado de estágio e revisão → aceite na V5 → transação para destinos canônicos
+do `clube_novo`. O catálogo serve exclusivamente para localizar/decodificar e
+nunca é escrito pelo Extrator. Tampouco são usados schema legado ou tabelas de
+endereço/procedência como destino de dados.
+
+O aceite é ligado ao hash do pacote. Antes de aplicar, o worker confere outra
+vez contrato, fontes, chaves/FKs, cobertura e selo; a auditoria e o readback
+ocorrem na mesma transação. Sem envelope declarado, destino declarado e aceite
+válido, a execução falha fechada. A trava produtiva continua habilitada durante
+o desenvolvimento.
+
+## Retificação de ficha e totais do relatório — 30/08/2026
+
+O runtime V46 normaliza `forma`, `pe_ruim_uso` e `pe_ruim_precisao` como
+códigos numéricos declarados no pedido. A projeção CSV agora apenas transporta
+esses códigos; ela não volta a interpretá-los por mapas de rótulos legados.
+Em prova somente leitura com o `Player.bin` de `dt870_updated`, as 43.072
+cartas tiveram zero diferença nesses três campos contra a fotografia canônica.
+
+`resistencia_lesao` é uma composição física declarada de dois bits: os estados
+ativos `Alta` e `Média` são normalizados pela precedência recebida no contrato.
+Para o estado físico `00`, o runtime consulta o catálogo de textos físico já
+selado no pedido e só aceita um nível-base quando encontra, na mesma seção,
+uma sequência de IDs consecutivos `[nível-base, prioridade 1, prioridade 2]`
+compatível com os dois rótulos declarados. Na execução atual, isso deriva
+`Baixa` sem mapa local. Se a sequência não for unívoca, o runtime falha fechado
+em vez de inventar rótulo. A prova read-only confirmou zero diferença nos quatro
+campos para as 43.072 cartas: `10 → Alta` (4.806), `01 → Média` (32.783) e
+`00 → Baixa` (5.483).
+
+O relatório HTML apresenta antes de cada grupo o total real de entidades e de
+diferenças. Para Cartas, por exemplo, a execução mostra
+`43.072 cartas afetadas; 172.288 diferenças em 4 informações`; os 50/10 itens
+renderizados são identificados explicitamente como exemplos paginados, nunca
+como o total. A geração do HTML continua somente leitura sobre o
+`resultado.json` já produzido.
+
+## Habilidades: comparação por conjunto — 30/08/2026
+
+Para `carta_habilidade_jogo`, a identidade de comparação é exclusivamente o
+par canônico `card_id + skill_id`. A propriedade `ordem` que chega da leitura
+física é preservada apenas como informação opcional de apresentação e
+procedência: ela não é regravada, nem usada para escolher uma ordem visual, nem
+entra no fingerprint lógico. Portanto, uma permutação pura da ordem não cria
+`alterado`; uma habilidade ausente ou adicional continua classificada por sua
+chave canônica.
+
+O teste read-only do comparador usou o mesmo conjunto `{7, 9}` em ordens
+distintas e retornou `exact_match=true`, `mismatch_count=0` e fingerprints
+iguais. No controle `{7, 9}` versus `{7, 11}`, retornou exatamente uma
+habilidade nova e uma removida. Não houve conexão ou escrita de domínio nesse
+teste.

@@ -8,10 +8,10 @@
 (function installV46ContractRuntime(global) {
   const core = global.CLUBEF_CORE;
   const reader = global.CLUBEF_CONTRACT_READER;
-  const physicalMap = global.CLUBEF_PHYSICAL_MAP || {};
   if (!core || !reader) throw new Error('runtime V4.6 requer leitura-contrato.js e extrator-core.js');
 
   let activePlan = null;
+  const precedenceBaseLabelCache = new WeakMap();
   const TD = new TextDecoder('utf-8');
   const u32 = (bytes, offset) => (bytes[offset] | (bytes[offset + 1] << 8) | (bytes[offset + 2] << 16) | (bytes[offset + 3] << 24)) >>> 0;
   const u32be = (bytes, offset) => ((bytes[offset] << 24) | (bytes[offset + 1] << 16) | (bytes[offset + 2] << 8) | bytes[offset + 3]) >>> 0;
@@ -39,6 +39,13 @@
     if (!found) throw new Error(`campo obrigatório ausente no contrato: ${key}`);
     return found;
   }
+  function family(plan, key) {
+    const item = (plan.familias || []).find((candidate) => candidate && candidate.chave_familia === key);
+    if (!item) throw new Error(`família ausente do contrato: ${key}`);
+    if (!Array.isArray(item.papeis_fonte) || !item.papeis_fonte.length) throw new Error(`família sem fontes no contrato: ${key}`);
+    return item;
+  }
+  function familyRoles(plan, key) { return [...family(plan, key).papeis_fonte]; }
   function fileById(plan, arquivoId) {
     const found = (plan.arquivos || []).find((item) => item.arquivo_id === arquivoId);
     if (!found) throw new Error(`arquivo ${arquivoId} ausente no contrato`);
@@ -217,15 +224,112 @@
     return { raw, hash, recordSize };
   }
 
-  function overall(attributes, position) {
-    const weights = physicalMap.OVRW?.weights?.[position];
-    if (!weights) return null;
-    let score = weights.b;
-    for (let i = 0; i < weights.w.length; i += 1) {
-      if (attributes[i] == null) return null;
-      score += attributes[i] * weights.w[i];
+  function declaredRange(fieldDefinition, raw, label) {
+    const transform = fieldDefinition.transformacao || {};
+    const domain = typeof transform.enum === 'string' ? transform.enum : transform.dominio;
+    const match = /^(\d+)\.\.(\d+)$/.exec(String(domain || ''));
+    if (!match) throw new Error(`normalização ausente no contrato para ${label}`);
+    const value = Number(raw);
+    const minimum = Number(match[1]), maximum = Number(match[2]);
+    if (!Number.isInteger(value) || value < minimum || value > maximum) {
+      throw new Error(`valor físico fora do domínio contratado para ${label}: ${raw}`);
     }
-    return Math.round(score);
+    return value;
+  }
+  function declaredEnum(plan, key, raw) {
+    const definition = field(plan, key);
+    const values = definition.transformacao?.enum;
+    if (!values || Array.isArray(values) || typeof values !== 'object') {
+      throw new Error(`enumeração ausente no contrato: ${key}`);
+    }
+    // decodeFile pode já ter aplicado o enum do próprio campo. Aceitamos esse
+    // resultado apenas se ele pertencer à enumeração recebida no pedido; nunca
+    // recorremos a um mapa local como segunda autoridade.
+    if (typeof raw === 'string' && Object.values(values).includes(raw)) return raw;
+    const normalized = values[String(raw)];
+    if (typeof normalized !== 'string' || !normalized.length) {
+      throw new Error(`valor físico sem enumeração contratada: ${key}=${raw}`);
+    }
+    return normalized;
+  }
+  function declaredPrecedence(plan, keys, values, label) {
+    const active = keys.map((key) => {
+      const definition = field(plan, key);
+      const transform = definition.transformacao || {};
+      if (transform.composicao !== 'precedencia' || typeof transform.grupo !== 'string' || !transform.grupo || typeof transform.rotulo !== 'string' || !transform.rotulo) {
+        throw new Error(`composição por precedência ausente no contrato para ${label}: ${key}`);
+      }
+      return {
+        key,
+        active: Number(values[key]) !== 0,
+        priority: Number(transform.prioridade),
+        label: transform.rotulo,
+        group: transform.grupo
+      };
+    });
+    if (new Set(active.map((item) => item.group)).size !== 1) throw new Error(`grupo de precedência incompatível para ${label}`);
+    const selected = active.filter((item) => item.active).sort((left, right) => right.priority - left.priority)[0];
+    if (selected) return { value: selected.label, state: 'precedencia_declarada_no_contrato' };
+
+    // O nível-base não recebe um nome local. Ele só é resolvido quando o
+    // catálogo físico de textos contratado contém, na mesma seção e em IDs
+    // consecutivos, a sequência [nível-base, prioridade 1, prioridade 2...].
+    // As identidades continuam sendo os bits; os textos são apenas a saída de
+    // apresentação. Se o vínculo não for unívoco, a leitura falha fechada.
+    const ordered = [...active].sort((left, right) => left.priority - right.priority);
+    if (!ordered.length || !ordered.every((item, index) => Number.isInteger(item.priority) && item.priority === index + 1)) {
+      throw new Error(`prioridades de precedência não enumeráveis para ${label}`);
+    }
+    const cacheKey = ordered.map((item) => `${item.key}:${item.priority}:${item.label}`).join('|');
+    let planCache = precedenceBaseLabelCache.get(plan);
+    if (!planCache) {
+      planCache = new Map();
+      precedenceBaseLabelCache.set(plan, planCache);
+    }
+    const cached = planCache.get(cacheKey);
+    if (cached) return { value: cached, state: 'nivel_base_catalogo_texto_contratado' };
+
+    const textRows = requireCatalog(plan, 'texto_do_jogo');
+    const rowsBySectionAndId = new Map();
+    for (const row of textRows) {
+      const section = typeof row.secao === 'string' ? row.secao : null;
+      const id = Number(row.id_texto);
+      if (!section || !Number.isInteger(id) || typeof row.texto !== 'string' || !row.texto) continue;
+      rowsBySectionAndId.set(`${section}\u0000${id}`, row.texto);
+    }
+    const baseLabels = new Set();
+    for (const row of textRows) {
+      const section = typeof row.secao === 'string' ? row.secao : null;
+      const baseId = Number(row.id_texto);
+      if (!section || !Number.isInteger(baseId) || typeof row.texto !== 'string' || !row.texto) continue;
+      const matches = ordered.every((item) => rowsBySectionAndId.get(`${section}\u0000${baseId + item.priority}`) === item.label);
+      if (matches) baseLabels.add(row.texto);
+    }
+    if (baseLabels.size !== 1) {
+      throw new Error(`nível-base de ${label} não pode ser derivado univocamente do catálogo de textos contratado`);
+    }
+    const baseLabel = [...baseLabels][0];
+    planCache.set(cacheKey, baseLabel);
+    return { value: baseLabel, state: 'nivel_base_catalogo_texto_contratado' };
+  }
+  function overallByContract(plan, attributes, position) {
+    const definition = reader.requirePlan(plan).fields.get('carta.overall');
+    if (!definition) return { value: null, state: 'nao_solicitado_pelo_contrato' };
+    const weights = definition.transformacao?.pesos_por_posicao?.[position];
+    if (!weights || !Number.isFinite(Number(weights.base)) || !Array.isArray(weights.pesos)) {
+      throw new Error(`pesos de overall ausentes no contrato para posição ${position}`);
+    }
+    if (weights.pesos.length !== attributes.length) {
+      throw new Error(`pesos de overall incompatíveis com atributos para posição ${position}`);
+    }
+    let score = Number(weights.base);
+    for (let index = 0; index < weights.pesos.length; index += 1) {
+      if (!Number.isFinite(Number(attributes[index])) || !Number.isFinite(Number(weights.pesos[index]))) {
+        throw new Error(`atributo/peso inválido no overall contratado para posição ${position}`);
+      }
+      score += Number(attributes[index]) * Number(weights.pesos[index]);
+    }
+    return { value: Math.round(score), state: 'normalizado_pelo_contrato' };
   }
   async function decodeLeagueByTeam(bytes, plan, cpk) {
     const teamField = field(plan, 'carta.liga.team_id');
@@ -261,10 +365,6 @@
     const clubs = new Map(requireCatalog(plan, 'clube_jogo').map((row) => [Number(row.codigo_jogo), row]));
     const leagues = new Map(requireCatalog(plan, 'liga_jogo').map((row) => [Number(row.codigo_jogo), row]));
     const nationalities = new Map(requireCatalog(plan, 'nacionalidade_jogo').map((row) => [Number(row.codigo_jogo), row]));
-    const nationalityEnglish = physicalMap.K?.NATIONALITY_ID || {};
-    const weakUsage = ['Almost Never','Rarely','Occasionally','Regularly'];
-    const weakAccuracy = ['Low','Medium','High','Very High'];
-    const forms = ['Inconsistent','Standard','Unwavering'];
     return decoded.records.map((record) => {
       const v = record.values;
       const id = String(v['carta.id']);
@@ -278,14 +378,23 @@
       if (nationalityCode && !nationalities.has(nationalityCode)) throw new Error(`nacionalidade sem catálogo: ${nationalityCode}`);
       if (clubCode && !clubs.has(clubCode)) throw new Error(`clube sem catálogo: ${clubCode}`);
       if (leagueCode != null && !leagues.has(leagueCode)) throw new Error(`liga sem catálogo: ${leagueCode}`);
+      const nationality = nationalities.get(nationalityCode) || null;
+      const nationalityLabel = nationality == null ? null : (nationality.nome_pt_br || nationality.nome_en || nationality.sigla || null);
+      if (nationalityCode && !nationalityLabel) throw new Error(`nacionalidade sem rótulo derivado do catálogo contratado: ${nationalityCode}`);
+      const injuryKeys = ['carta.resistencia_lesao.alta', 'carta.resistencia_lesao.media'];
+      const injuryHigh = Number(v['carta.resistencia_lesao.alta']) !== 0;
+      const injuryMedium = Number(v['carta.resistencia_lesao.media']) !== 0;
+      const injury = declaredPrecedence(plan, injuryKeys, v, 'carta.resistencia_lesao');
       return {
         card_id:id, height:Number(v['carta.altura']), weight:Number(v['carta.peso']), age:Number(v['carta.idade']), position,
         primary_style_id:primaryId, primary_style_unknown:primaryId !== 0 && !playstyles.has(primaryId),
         defensive_style_id:secondaryId, defensive_style_confirmed:secondaryId === 0 || playstyles.has(secondaryId),
-        weak_foot_usage:weakUsage[Number(v['carta.pe.ruim_uso'])], weak_foot_accuracy:weakAccuracy[Number(v['carta.pe.ruim_precisao'])],
-        foot:String(v['carta.pe']), form:forms[Number(v['carta.forma'])],
-        injury:Number(v['carta.resistencia_lesao.alta']) ? 'Alta' : (Number(v['carta.resistencia_lesao.media']) ? 'Média' : 'Baixa'),
-        nationality:nationalityEnglish[nationalityCode] || String(nationalityCode), nacionalidade_codigo:nationalityCode,
+        weak_foot_usage:declaredRange(field(plan, 'carta.pe.ruim_uso'), v['carta.pe.ruim_uso'], 'carta.pe.ruim_uso'),
+        weak_foot_accuracy:declaredRange(field(plan, 'carta.pe.ruim_precisao'), v['carta.pe.ruim_precisao'], 'carta.pe.ruim_precisao'),
+        foot:declaredEnum(plan, 'carta.pe', v['carta.pe']),
+        form:declaredRange(field(plan, 'carta.forma'), v['carta.forma'], 'carta.forma'),
+        injury:injury.value, injury_raw:{ alta:injuryHigh, media:injuryMedium }, injury_normalization:injury.state,
+        nationality:nationalityLabel, nacionalidade_codigo:nationalityCode,
         clube_codigo:clubCode, clube:clubs.get(clubCode) || null, liga_codigo:leagueCode, liga:leagueCode == null ? null : leagues.get(leagueCode) || null,
         name:String(v['carta.nome.roman'] || '')
       };
@@ -312,10 +421,22 @@
       const base = BigInt(card.card_id) < (1n << 18n);
       card.tipo = test ? 'teste' : (base ? 'base' : 'colecionavel');
       card.roda_motor = !test && !base;
-      card.overall = overall(card.attrs, card.position);
+      const overall = overallByContract(plan, card.attrs, card.position);
+      card.overall = overall.value;
+      card.overall_normalization = overall.state;
       const rel = relations.get(card.card_id);
       if (!rel) throw new Error(`contrato não retornou relações para ${card.card_id}`);
-      card.skills = rel.skills; card.ai_styles = rel.ai; card.aptitudes = rel.aptitudes;
+      if (!Array.isArray(rel.habilidades_fisicas)) {
+        throw new Error(`contrato não retornou habilidades físicas para ${card.card_id}`);
+      }
+      card.skills = rel.skills;
+      card.habilidades_fisicas = rel.habilidades_fisicas;
+      card.ai_styles = rel.ai;
+      if (!Array.isArray(rel.estilos_ia_fisicos)) {
+        throw new Error(`contrato não retornou estilos IA físicos para ${card.card_id}`);
+      }
+      card.estilos_ia_fisicos = rel.estilos_ia_fisicos;
+      card.aptitudes = rel.aptitudes;
       const body = bodies.get(card.card_id);
       if (!body) throw new Error(`contrato não retornou corpo para ${card.card_id}`);
       card.corpo = [card.height, ...body];
@@ -331,9 +452,12 @@
 
   async function extractCardDimensionsByFamilyV46(sourceBytes, sourceDescriptors = {}, log = () => {}) {
     const plan = planNow();
-    const roles = ['dt870_updated','dt200','dt870_original'];
-    for (const role of [...roles, 'dt261_bra']) if (!sourceBytes[role]) throw new Error(`Fonte obrigatória ausente para Dimensões: ${role}`);
-    const cpks = Object.fromEntries([...roles, 'dt261_bra'].map((role) => [role, extractCpk(sourceBytes[role])]));
+    const roles = familyRoles(plan, 'dimensoes');
+    for (const role of roles) if (!sourceBytes[role]) throw new Error(`Fonte contratada ausente para Dimensões: ${role}`);
+    const textRoles = familyRoles(plan, 'textos');
+    const textRole = textRoles.find((role) => sourceBytes[role]);
+    if (!textRole) throw new Error('Dimensões exige a família Textos contratada para resolver rótulos oficiais');
+    const cpks = Object.fromEntries([...new Set([...roles, textRole])].map((role) => [role, extractCpk(sourceBytes[role])]));
     const fileHashes = {};
 
     const nationalityRefs = requireCatalog(plan, 'nacionalidade_jogo');
@@ -351,7 +475,8 @@
       fileHashes[`${role}:Country.bin`] = item.hash;
     }
     if (new Set(roles.map((role) => fileHashes[`${role}:Country.bin`])).size !== 1) throw new Error('Country.bin não é byte-idêntico nas três fontes');
-    const country = countryByRole.dt870_updated;
+    const countryRole = roles[0];
+    const country = countryByRole[countryRole];
     const countrySize = Number(countryRef.tamanho_registro);
     const nationalities = [];
     const nationalityByCode = new Map();
@@ -361,11 +486,11 @@
         id:String(codigo), codigo_jogo:codigo,
         nome_pt_br:fixed(country, offset + Number(countryRef.offset_nome_pt_br), Number(countryRef.largura_nome_pt_br)),
         sigla:fixed(country, offset + Number(countryRef.offset_sigla), Number(countryRef.largura_sigla)),
-        source_role:'dt870_updated', arquivo:countryRef.arquivo, record_index:recordIndex, record_size:countrySize,
+        source_role:countryRole, arquivo:countryRef.arquivo, record_index:recordIndex, record_size:countrySize,
         codigo_bit:Number(countryRef.bit_codigo), codigo_largura:Number(countryRef.largura_codigo),
         nome_offset:Number(countryRef.offset_nome_pt_br), nome_largura:Number(countryRef.largura_nome_pt_br),
         sigla_offset:Number(countryRef.offset_sigla), sigla_largura:Number(countryRef.largura_sigla),
-        source_file_sha256:fileHashes['dt870_updated:Country.bin'], presente_dt870_atualizacao:true, presente_dt200:true, presente_dt870_original:true
+        source_file_sha256:fileHashes[`${countryRole}:Country.bin`], presente_dt870_atualizacao:roles.includes('dt870_updated'), presente_dt200:roles.includes('dt200'), presente_dt870_original:roles.includes('dt870_original')
       };
       if (!record.nome_pt_br || !record.sigla || nationalityByCode.has(codigo)) throw new Error(`Country.bin inválido no registro ${recordIndex}`);
       record.fingerprint = core.stableJson(record);
@@ -457,9 +582,11 @@
 
     const idField = field(plan, 'carta.id');
     const playerFile = fileById(plan, idField.arquivo_id);
-    const playerItem = await unpackPhysical(cpks, plan, 'dt870_updated', playerFile.arquivo, Number(playerFile.tamanho_registro));
-    fileHashes[`dt870_updated:${playerFile.arquivo}`] = playerItem.hash;
-    const validCards = new Set((await decodeBasicCards(sourceBytes.dt870_updated, plan)).map((card) => card.card_id));
+    const cardRole = familyRoles(plan, 'cartas')[0];
+    if (!sourceBytes[cardRole]) throw new Error(`Cartas sem fonte contratada para Dimensões: ${cardRole}`);
+    const playerItem = await unpackPhysical(cpks, plan, cardRole, playerFile.arquivo, Number(playerFile.tamanho_registro));
+    fileHashes[`${cardRole}:${playerFile.arquivo}`] = playerItem.hash;
+    const validCards = new Set((await decodeBasicCards(sourceBytes[cardRole], plan)).map((card) => card.card_id));
     const natField = field(plan, 'carta.nacionalidade.raw');
     const clubField = field(plan, 'carta.clube.codigo');
     const subtypeField = field(plan, 'carta.tipo.subtipo');
@@ -484,8 +611,8 @@
 
     const unavailableField = field(plan, 'carta.tipo.indisponivel.id');
     const deleteFile = fileById(plan, unavailableField.arquivo_id);
-    const deleteItem = await unpackPhysical(cpks, plan, 'dt870_updated', deleteFile.arquivo, Number(deleteFile.tamanho_registro));
-    fileHashes[`dt870_updated:${deleteFile.arquivo}`] = deleteItem.hash;
+    const deleteItem = await unpackPhysical(cpks, plan, cardRole, deleteFile.arquivo, Number(deleteFile.tamanho_registro));
+    fileHashes[`${cardRole}:${deleteFile.arquivo}`] = deleteItem.hash;
     const deleted = new Set();
     for (let offset = 0; offset < deleteItem.raw.length; offset += deleteItem.recordSize) {
       deleted.add(String(reader.readByteLE(deleteItem.raw, offset + Number(unavailableField.byte_offset), Number(unavailableField.largura_bytes))));
@@ -525,7 +652,7 @@
     clubs.sort((a,b) => a.codigo_jogo - b.codigo_jogo);
     const clubByCode = new Map(clubs.map((row) => [row.codigo_jogo, row]));
 
-    const textCatalog = await core.extractTextCatalogFromCpk(sourceBytes.dt261_bra);
+    const textCatalog = await core.extractTextCatalogFromCpk(sourceBytes[textRole]);
     const textByKey = new Map(textCatalog.records.map((row) => [row.id, row]));
     const types = typeRefs.map((source) => {
       const record = { ...source, id:source.tipo_carta_id };

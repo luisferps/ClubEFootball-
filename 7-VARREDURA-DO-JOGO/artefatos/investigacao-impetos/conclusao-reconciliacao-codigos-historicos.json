@@ -1,0 +1,702 @@
+{
+  "schema": "clubef-conclusao-reconciliacao-codigos-historicos-v1",
+  "generated_at": "2026-08-30T08:15:47.652059+00:00",
+  "read_only": true,
+  "database_write": false,
+  "rule_global_plus_one_applied": false,
+  "source": {
+    "cpk": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\eFootball\\cpk\\dt870_console_win.cpk",
+    "cpk_sha256": "ae0d8cef26804439e9930ef8959f8d9425754d0e290d056b3e4d1f7b999edd5c",
+    "player_booster_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+    "layout_observed": "prefixo 24 bytes + 165 blocos de 40 bytes"
+  },
+  "pairs_examined": 22,
+  "records_with_exact_provenance_and_plus_one": 22,
+  "pairs_with_complete_semantic_proof": 0,
+  "decision": "nenhum_par_promovido; manter_novo_removido_alterado_como_alerta",
+  "reason": "o padrão de código e registro é físico, mas condição, alvos, efeitos e faixas do layout legado não têm decodificador comprovado; aplicar o deslocamento misturaria variantes atuais reais nos códigos 208, 268, 308, 334 e 368",
+  "evidence": [
+    {
+      "database_code": 204,
+      "raw_code": 203,
+      "record_number_one_based": 81,
+      "record_sha256": "332f156198ec1288b87a33b2fcb164bc436b457fbd5ba19752d4e0e405dfbcab",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 209,
+      "raw_code": 208,
+      "record_number_one_based": 83,
+      "record_sha256": "12a4630266534aa80347a03c56b7b4f30ca1bbf170550fcbe330b86f9281c44b",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 4,
+          "cards": 4
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": true,
+      "semantic_collision_risk": true,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 214,
+      "raw_code": 213,
+      "record_number_one_based": 85,
+      "record_sha256": "2e1839247dd3f19ee5392621b1e372feacde9c0c22162a9ec43580ad90b15868",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 219,
+      "raw_code": 218,
+      "record_number_one_based": 87,
+      "record_sha256": "6917c70cbaf0d77c925d395c087f63e3e3e353117f4f2bf150586483fcc444d6",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 224,
+      "raw_code": 223,
+      "record_number_one_based": 89,
+      "record_sha256": "882873bb17012238ca1cdda5f824c62a3f7a4332f7180243d38455c43cf082cc",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 229,
+      "raw_code": 228,
+      "record_number_one_based": 91,
+      "record_sha256": "80c60e14c43f0ef6e7befdde0f2914db448491c11d6689aa216cb954a9d62558",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 234,
+      "raw_code": 233,
+      "record_number_one_based": 93,
+      "record_sha256": "4027446eefedc5ea0667bf09d58576a20cea93c57618b8888c912ff5741dcc12",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 239,
+      "raw_code": 238,
+      "record_number_one_based": 95,
+      "record_sha256": "27af8ca87e5c4a2c3abedbf39d88aa24ddbaf7c30991062aeefe41e11fc9fb90",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 244,
+      "raw_code": 243,
+      "record_number_one_based": 97,
+      "record_sha256": "245931395a6c82ee4dc5a0e164f126c31bb51974479b832f87de3c80a8b5bb9c",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 249,
+      "raw_code": 248,
+      "record_number_one_based": 99,
+      "record_sha256": "a81aba07ccbea9c09cc43f8dfd48e3c4fef356636eaca295da066b2454b85fdf",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 254,
+      "raw_code": 253,
+      "record_number_one_based": 101,
+      "record_sha256": "d95fae664b3a8ac5209cd739aee98a4c69a4fe1729902e9f78f2f000dd11abfd",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 259,
+      "raw_code": 258,
+      "record_number_one_based": 103,
+      "record_sha256": "9fc4178748bffec16aaae31afd50fb91149d9b406d1c33fdbf9e7f86d4d12cb8",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 269,
+      "raw_code": 268,
+      "record_number_one_based": 107,
+      "record_sha256": "999bee7cdba35efb616acf21321ee77e30d929fb40c728c1dc0e5ccf55080ce0",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": true,
+      "semantic_collision_risk": true,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 274,
+      "raw_code": 273,
+      "record_number_one_based": 109,
+      "record_sha256": "60d63369840dafc9d348fd9c5b60a264a923b43f4e1adbceafe60c7fb3b005d8",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 279,
+      "raw_code": 278,
+      "record_number_one_based": 111,
+      "record_sha256": "ba1a46671b13716c7f1afda466b277003636bf8355b3f9ebaa79a723fc8baf49",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 284,
+      "raw_code": 283,
+      "record_number_one_based": 113,
+      "record_sha256": "be81f36962f387aa8d5350401011c813c8a7289400cdea5de914b37966e7798e",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 289,
+      "raw_code": 288,
+      "record_number_one_based": 115,
+      "record_sha256": "98998e4ef908bf7dd8caebda0a683a5441494cdbb405d444918d9c5e55dfd04f",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 294,
+      "raw_code": 293,
+      "record_number_one_based": 117,
+      "record_sha256": "a20a818d90d8daebf324c25c043e0ba3b477fa877c154389bb1c13d3215f361b",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 299,
+      "raw_code": 298,
+      "record_number_one_based": 119,
+      "record_sha256": "d0bd318cbba6baccab2da9d3018845a6f590f7b98931cf3de69fe8df7a70c0bb",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": false,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 309,
+      "raw_code": 308,
+      "record_number_one_based": 123,
+      "record_sha256": "5ee1378074ce10cb4ba4f46e50cdc5306668b8d6f09711bacc8ba75cd89392cd",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 1,
+          "cards": 1
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": true,
+      "semantic_collision_risk": true,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 334,
+      "raw_code": 333,
+      "record_number_one_based": 133,
+      "record_sha256": "6ac2eae07fbe3850f2cc5cd8c77766f3b65acc557ee4e11f18914d411550f17f",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 4,
+        "conditions": 1,
+        "ranges": 3
+      },
+      "usage": {
+        "database_code": {
+          "slots": 2,
+          "cards": 2
+        },
+        "raw_code": {
+          "slots": 0,
+          "cards": 0
+        }
+      },
+      "has_current_updated_variant": true,
+      "raw_code_also_exists_in_catalog": false,
+      "semantic_collision_risk": true,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    },
+    {
+      "database_code": 369,
+      "raw_code": 368,
+      "record_number_one_based": 147,
+      "record_sha256": "bdb769c0d80428e31b09281df50da4a3a53934d2f904b88f3c1cddbabad2fe24",
+      "provenance_record_matches": true,
+      "plus_one_observed": true,
+      "database_content_available": {
+        "effects": 0,
+        "conditions": 0,
+        "ranges": 0
+      },
+      "usage": {
+        "database_code": {
+          "slots": 0,
+          "cards": 0
+        },
+        "raw_code": {
+          "slots": 2,
+          "cards": 2
+        }
+      },
+      "has_current_updated_variant": false,
+      "raw_code_also_exists_in_catalog": true,
+      "semantic_collision_risk": true,
+      "status": "alerta_sem_prova_semantica_completa",
+      "missing_proof": [
+        "decodificador físico validado para condição/alvos/efeitos/faixas do formato legado",
+        "conteúdo histórico normalizado/fingerprint no clube_novo para comparação independente"
+      ]
+    }
+  ]
+}

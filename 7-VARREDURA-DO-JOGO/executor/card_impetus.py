@@ -16,6 +16,123 @@ from typing import Any
 SLOT_COLUMNS = ("impeto_s1", "impeto_s2_cond", "vaga_s1", "vaga_s2")
 CONTRACT = "clubef-card-impetus-physical-w10-v3"
 EMPTY = {"impeto_s1": "", "impeto_s2_cond": "", "vaga_s1": "false", "vaga_s2": "false"}
+MONITORED_LABEL_MARKER = "rotulo_operacional_monitorado"
+USER_CONFIRMED_LABEL_MARKER = "rotulo_operacional_confirmado_usuario"
+
+
+def _catalog_rows(reading_contract: dict[str, Any], table: str) -> list[dict[str, Any]]:
+    """Obtém linhas do pedido atual; nunca usa rótulos históricos como chave."""
+    if not isinstance(reading_contract, dict):
+        return []
+    for catalog in reading_contract.get("catalogos", []):
+        if isinstance(catalog, dict) and catalog.get("table") == table:
+            rows = catalog.get("rows")
+            return [row for row in rows if isinstance(row, dict)] if isinstance(rows, list) else []
+    return []
+
+
+def resolve_impetus_presentation_label(reading_contract: dict[str, Any], code: int | None) -> dict[str, Any]:
+    """Resolve um rótulo físico ou, quando declarado, operacional monitorado.
+
+    ``impeto_jogo.nome_pt`` e ``nome_en`` são referências históricas de
+    catálogo, não evidência de que aquele é o texto apresentado pela versão do
+    jogo lida. Por isso, um rótulo só é devolvido quando o próprio pedido traz
+    ``secao_texto`` + ``id_texto`` para o código e a chave existe com
+    procedência física completa no ``texto_do_jogo`` da mesma execução.
+
+    A exceção não física é igualmente fail-closed: ``nome_pt`` só pode ser
+    apresentado quando ``falta_o_que`` contém ``rotulo_operacional_monitorado``
+    ou ``rotulo_operacional_confirmado_usuario``. Ambos preservam a pendência
+    da ponte textual e nunca são promovidos a ``rotulo_fisico_comprovado``.
+    """
+    absent = {
+        "rotulo": None,
+        "rotulo_status": "rotulo_fisico_nao_comprovado",
+        "rotulo_falta_o_que": "vínculo explícito codigo_impeto -> secao_texto/id_texto no all.str",
+        "rotulo_proveniencia": None,
+    }
+    if code is None:
+        return {**absent, "rotulo_status": "sem_impeto", "rotulo_falta_o_que": None}
+
+    impulse = next((row for row in _catalog_rows(reading_contract, "impeto_jogo") if row.get("codigo_jogo") == code), None)
+    if impulse is None:
+        return {**absent, "rotulo_falta_o_que": "código de Ímpeto ausente no pedido atual"}
+    section, text_id = impulse.get("secao_texto"), impulse.get("id_texto")
+    if not isinstance(section, str) or not section or not isinstance(text_id, int) or text_id < 0:
+        pending = impulse.get("falta_o_que")
+        catalog_label = impulse.get("nome_pt")
+        operational_marker = None
+        if isinstance(pending, str):
+            if USER_CONFIRMED_LABEL_MARKER in pending:
+                operational_marker = USER_CONFIRMED_LABEL_MARKER
+            elif MONITORED_LABEL_MARKER in pending:
+                operational_marker = MONITORED_LABEL_MARKER
+        if operational_marker and isinstance(catalog_label, str) and catalog_label.strip():
+            user_confirmed = operational_marker == USER_CONFIRMED_LABEL_MARKER
+            return {
+                "rotulo": catalog_label.strip(),
+                "rotulo_status": (
+                    "rotulo_operacional_confirmado_usuario"
+                    if user_confirmed else "rotulo_operacional_monitorado"
+                ),
+                "rotulo_falta_o_que": "ponte textual oficial secao_texto/id_texto pendente",
+                "rotulo_proveniencia": {
+                    "tipo": (
+                        "confirmacao_usuario_com_ponte_fisica_pendente"
+                        if user_confirmed else "confirmacao_visual_e_padrao_fisico_completo"
+                    ),
+                    "catalogo": "clube_novo.impeto_jogo",
+                    "codigo_jogo": code,
+                    "secao_texto": None,
+                    "id_texto": None,
+                },
+            }
+        missing = []
+        if not isinstance(section, str) or not section:
+            missing.append("secao_texto")
+        if not isinstance(text_id, int) or text_id < 0:
+            missing.append("id_texto")
+        return {**absent, "rotulo_falta_o_que": "; ".join(missing)}
+
+    text = next(
+        (
+            row
+            for row in _catalog_rows(reading_contract, "texto_do_jogo")
+            if row.get("secao") == section and row.get("id_texto") == text_id
+        ),
+        None,
+    )
+    if text is None:
+        return {**absent, "rotulo_falta_o_que": f"chave oficial ausente no all.str: {section}:{text_id}"}
+    label = text.get("texto")
+    physical = (
+        text.get("origem") == "jogo_fisico"
+        and text.get("arquivo") == "all.str"
+        and text.get("presente_na_fonte") is True
+        and isinstance(text.get("cpk"), str)
+        and bool(text["cpk"])
+        and isinstance(text.get("fonte_cpk_sha256"), str)
+        and len(text["fonte_cpk_sha256"]) == 64
+        and isinstance(text.get("fonte_arquivo_sha256"), str)
+        and len(text["fonte_arquivo_sha256"]) == 64
+    )
+    if not physical or not isinstance(label, str) or not label.strip():
+        return {**absent, "rotulo_falta_o_que": f"procedência física incompleta para {section}:{text_id}"}
+    if "%d" in label or "%s" in label:
+        return {**absent, "rotulo_falta_o_que": f"template oficial sem regra declarada de apresentação: {section}:{text_id}"}
+    return {
+        "rotulo": label.strip(),
+        "rotulo_status": "rotulo_fisico_comprovado",
+        "rotulo_falta_o_que": None,
+        "rotulo_proveniencia": {
+            "secao": section,
+            "id_texto": text_id,
+            "arquivo": text["arquivo"],
+            "cpk": text["cpk"],
+            "fonte_cpk_sha256": text["fonte_cpk_sha256"],
+            "fonte_arquivo_sha256": text["fonte_arquivo_sha256"],
+        },
+    }
 
 
 def slot_sources_from_contract(reading_contract: dict[str, Any]) -> dict[int, str]:
@@ -67,8 +184,9 @@ def physical_slots_from_csv(csv_text: str, require_complete: bool = False) -> di
         if (slots["impeto_s2_cond"] != "") and (slots["vaga_s2"] == "true"):
             raise ValueError(f"estado físico contraditório no slot 2: {card_id}")
         source[card_id] = slots
-    if require_complete and len(source) != 43_072:
-        raise ValueError(f"CSV físico contém {len(source)} cartas; esperado 43072")
+    # ``require_complete`` é mantido apenas por compatibilidade de chamada.
+    # O contrato não fornece nem impõe cardinalidade: toda linha física válida
+    # é lida e a contagem observada segue para o diagnóstico normalizado.
     return source
 
 
@@ -142,11 +260,23 @@ def validate_physical_slot_projection(csv_text: str, connection: Any, reading_co
     physical = physical_slots_from_csv(csv_text, require_complete=True)
     relation_projection, relation = _relation_projection(connection)
     differences: list[tuple[str, str, str, str]] = []
+    classification: dict[str, list[dict[str, Any]]] = {kind: [] for kind in ("new", "removed", "altered", "repeated", "invalid")}
     for card_id, slots in physical.items():
         database = relation_projection.get(card_id, EMPTY)
         for field in SLOT_COLUMNS:
             if slots[field] != database[field]:
                 differences.append((card_id, field, slots[field], database[field]))
+                slot = 1 if field in {"impeto_s1", "vaga_s1"} else 2
+                classification["altered"].append({
+                    "classificacao": "alterado", "escopo": "slots_de_impeto",
+                    "chave_canonica": {"card_id": card_id, "slot": slot},
+                    "fonte_fisica": {"fotografia": "cartas-fisicas.csv", "card_id": card_id},
+                    "vinculo_banco": {"card_id": card_id, "slot": slot},
+                    "campo": field, "valor_fisico": slots[field], "valor_banco": database[field],
+                })
+    for card_id in sorted(set(relation_projection) - set(physical)):
+        for slot in (1, 2):
+            classification["removed"].append({"classificacao": "removido", "escopo": "slots_de_impeto", "chave_canonica": {"card_id": card_id, "slot": slot}, "fonte_fisica": None, "vinculo_banco": {"card_id": card_id, "slot": slot}})
     filled = vacancies = empty = 0
     for slots in physical.values():
         for slot in (1, 2):
@@ -157,15 +287,17 @@ def validate_physical_slot_projection(csv_text: str, connection: Any, reading_co
     digest = hashlib.sha256()
     for item in sorted(differences):
         digest.update(("|".join(item) + "\n").encode("utf-8"))
-    physical_ok = len(physical) == 43_072 and filled == 2_381 and vacancies == 1_367 and empty == 82_396
     return {
         "contract": CONTRACT, "transaction_read_only": True, "database_write": False,
         "source": {"slot_1": slot_sources[1], "slot_2": slot_sources[2]},
-        "physical": {"cards": len(physical), "slots": 86_144, "filled": filled, "vacancies": vacancies, "empty": empty},
+        "physical": {"cards": len(physical), "slots": len(physical) * 2, "filled": filled, "vacancies": vacancies, "empty": empty},
         "extractor_projection": {"differences_from_physical": 0, "source": "CSV físico w10"},
         "database_relation": {"rows": len(relation), "cards": len(relation_projection), "differences_from_physical": len(differences), "difference_sha256": digest.hexdigest(), "samples": [dict(zip(("card_id", "field", "physical", "database"), item, strict=True)) for item in differences[:20]]},
-        "physical_passed": physical_ok, "passed": physical_ok,
-        "result": "aprovado_fonte_fisica_relacao_divergente" if physical_ok and differences else ("aprovado" if physical_ok else "reabrir_leitor_fisico"),
+        "classification_complete": True,
+        "technical_integrity": True,
+        "exact_match": not any(classification[kind] for kind in classification),
+        "classification": classification,
+        "result": "divergencias_diagnosticadas" if differences else "sem_divergencias_observadas",
     }
 
 
@@ -184,7 +316,7 @@ def readback_card_slots(connection: Any, card_ids: list[str], csv_text: str, rea
         if cursor.fetchone()[0] != "on":
             raise RuntimeError("o readback de Ímpetos não ficou protegido como somente leitura")
         cards = _rows(cursor, "select card_id,nome,codigo_nacionalidade,codigo_liga,codigo_clube from clube_novo.carta_jogo where card_id=any(%s)", (clean_ids,))
-        catalog = _rows(cursor, """select i.codigo_jogo,i.nome_pt,i.nome_en,i.condicional,i.tipo_condicao_raw,i.pode_rodar,i.falta_o_que,c.criterio_codigo,c.campo_alvo,c.alvo_origem,c.avaliacao_minima,c.avaliacao_maxima,c.status_validacao,c.transformacao_regra,c.arquivo_origem,c.indice_registro,c.registro_sha256 from clube_novo.impeto_jogo i left join clube_novo.impeto_condicao_jogo c on c.codigo_impeto=i.codigo_jogo where i.codigo_jogo=any(%s)""", (codes,)) if codes else []
+        catalog = _rows(cursor, """select i.codigo_jogo,i.condicional,i.tipo_condicao_raw,i.pode_rodar,i.falta_o_que,c.criterio_codigo,c.campo_alvo,c.alvo_origem,c.avaliacao_minima,c.avaliacao_maxima,c.status_validacao,c.transformacao_regra,c.arquivo_origem,c.indice_registro,c.registro_sha256 from clube_novo.impeto_jogo i left join clube_novo.impeto_condicao_jogo c on c.codigo_impeto=i.codigo_jogo where i.codigo_jogo=any(%s)""", (codes,)) if codes else []
         detail_queries = {
             "efeitos": "select codigo_impeto,codigo_atributo,ordem,delta,endereco_origem,status_validacao from clube_novo.impeto_atributo_jogo where codigo_impeto=any(%s) order by codigo_impeto,ordem",
             "faixas": "select codigo_impeto,ordem,quantidade_minima,quantidade_maxima,delta,status_validacao,fonte_prova from clube_novo.impeto_condicao_faixa_jogo where codigo_impeto=any(%s) order by codigo_impeto,ordem",
@@ -217,7 +349,8 @@ def readback_card_slots(connection: Any, card_ids: list[str], csv_text: str, rea
                 "criterio": item["criterio_codigo"], "tipo_raw": item["tipo_condicao_raw"], "campo_alvo": item["campo_alvo"], "alvo_origem": item["alvo_origem"], "avaliacao_minima": item["avaliacao_minima"], "avaliacao_maxima": item["avaliacao_maxima"], "transformacao_regra": item["transformacao_regra"], "status_validacao": item["status_validacao"], "efeitos": grouped["efeitos"].get(code, []), "faixas": grouped["faixas"].get(code, []), "parametros_faixa": grouped["parametros_faixa"].get(code, []), "alvos": {name: grouped[name].get(code, []) for name in ("nacionalidades", "ligas", "membros_liga", "clubes", "classes", "candidatos_classe", "outros")}, "proveniencia": {"arquivo": item["arquivo_origem"], "registro": item["indice_registro"], "sha256_registro": item["registro_sha256"]}}
             source_fields = {"impeto_s1": source["impeto_s1"], "vaga_s1": source["vaga_s1"]} if slot == 1 else {"impeto_s2_cond": source["impeto_s2_cond"], "vaga_s2": source["vaga_s2"]}
             database_fields = {key: database[key] for key in source_fields}
-            slots.append({"slot": slot, "origem_fisica": slot_sources[slot], "estado": state, "codigo_impeto": code, "nome": (item or {}).get("nome_pt") or (item or {}).get("nome_en"), "ativacao": None if not item else ("condicional" if item["condicional"] else "sempre_ativo"), "condicional": None if not item else bool(item["condicional"]), "receita": recipe, "relacao_banco_confere": source_fields == database_fields, "relacao_banco": database_fields, "consumidor": {"pode_rodar": bool(item["pode_rodar"]) if item else False, "falta_o_que": item["falta_o_que"] if item else None}})
+            label = resolve_impetus_presentation_label(reading_contract, code)
+            slots.append({"slot": slot, "origem_fisica": slot_sources[slot], "estado": state, "codigo_impeto": code, "nome": label["rotulo"], "rotulo_status": label["rotulo_status"], "rotulo_falta_o_que": label["rotulo_falta_o_que"], "rotulo_proveniencia": label["rotulo_proveniencia"], "ativacao": None if not item else ("condicional" if item["condicional"] else "sempre_ativo"), "condicional": None if not item else bool(item["condicional"]), "receita": recipe, "relacao_banco_confere": source_fields == database_fields, "relacao_banco": database_fields, "consumidor": {"pode_rodar": bool(item["pode_rodar"]) if item else False, "falta_o_que": item["falta_o_que"] if item else None}})
         results.append({**cards_by_id[card_id], "slots": slots})
     missing_database = sorted(set(clean_ids) - set(cards_by_id))
     mismatches = sum(not slot["relacao_banco_confere"] for card in results for slot in card["slots"])

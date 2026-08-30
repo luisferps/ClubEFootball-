@@ -13,21 +13,37 @@ import tecnicos as legacy
 CONTRACT = "clubef-tecnicos-carga-v4-sobreposicao"
 
 
-def _issue(name: str, comparison: dict[str, Any]) -> dict[str, Any] | None:
-    if comparison.get("exact"):
-        return None
-    return {
-        "family": name,
-        "missing_in_database": int(comparison.get("missing_in_database") or 0),
-        "extra_in_database": int(comparison.get("extra_in_database") or 0),
-        "samples": comparison.get("samples") or {},
-    }
+def _classify(scope: str, source: set[tuple[Any, ...]], database: set[tuple[Any, ...]], key_size: int) -> dict[str, list[dict[str, Any]]]:
+    """Compara por identidade estável; valores restantes são conteúdo."""
+    result: dict[str, list[dict[str, Any]]] = {kind: [] for kind in ("new", "removed", "altered", "repeated", "invalid")}
+    def index(rows: set[tuple[Any, ...]], origin: str) -> dict[tuple[Any, ...], tuple[Any, ...]]:
+        indexed: dict[tuple[Any, ...], tuple[Any, ...]] = {}
+        for row in rows:
+            key = row[:key_size]
+            if key in indexed and indexed[key] != row:
+                result["repeated"].append({"classificacao": "repetido", "escopo": scope, "chave_canonica": list(key), "origem": origin})
+            else:
+                indexed[key] = row
+        return indexed
+    left, right = index(source, "fisica"), index(database, "banco")
+    for key in sorted(set(left) | set(right), key=str):
+        physical, stored = left.get(key), right.get(key)
+        base = {"escopo": scope, "chave_canonica": list(key), "fonte_fisica": None if physical is None else {"arquivo": physical[-3] if len(physical) >= 3 else None, "registro": physical[-2] if len(physical) >= 2 else None}, "vinculo_banco": None if stored is None else list(key), "valor_fisico": physical, "valor_banco": stored}
+        if stored is None: result["new"].append({"classificacao": "novo", **base})
+        elif physical is None: result["removed"].append({"classificacao": "removido", **base})
+        elif physical != stored: result["altered"].append({"classificacao": "alterado", **base})
+    return result
 
 
-def validate_tecnicos_v4610(snapshot: dict[str, Any], connection: Any) -> dict[str, Any]:
-    if not isinstance(snapshot, dict) or snapshot.get("contract") != CONTRACT:
-        raise ValueError("contrato físico de Técnicos incompatível")
+def validate_tecnicos_v4610(snapshot: dict[str, Any], connection: Any, reading_contract: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(snapshot, dict):
+        raise ValueError("fotografia física de Técnicos incompatível")
 
+    family = next((item for item in reading_contract.get("familias", []) if isinstance(item, dict) and item.get("chave_familia") == "tecnicos"), None)
+    roles = family.get("precedencia_fontes") if isinstance(family, dict) else None
+    if not isinstance(roles, list) or not roles or not isinstance(roles[0], str):
+        raise ValueError("pedido canônico não declara a fonte prioritária de Técnicos")
+    source_role = roles[0]
     records = snapshot.get("records") or []
     nationalities = snapshot.get("nationalities") or []
     affinities = snapshot.get("affinities") or []
@@ -134,8 +150,7 @@ def validate_tecnicos_v4610(snapshot: dict[str, Any], connection: Any) -> dict[s
             "select id,nome_en,nome_jp,nome_cn,idade,codigo_nacionalidade,"
             "codigo_afinidade,registro_campos_apresentacao,hash_campos_apresentacao "
             "from clube_novo.tecnico_jogo "
-            "where fonte_autoritativa='dt870_updated' "
-            "and presente_dt870_atualizacao is true",
+            "where fonte_autoritativa=%s and presente_dt870_atualizacao is true", (source_role,),
         )
         nat = legacy._rows(
             cursor,
@@ -157,8 +172,7 @@ def validate_tecnicos_v4610(snapshot: dict[str, Any], connection: Any) -> dict[s
             "relation.hash_coach_bin,relation.confirmado "
             "from clube_novo.tecnico_estilo_jogo relation "
             "join clube_novo.tecnico_jogo tecnico on tecnico.id=relation.tecnico_id "
-            "where tecnico.fonte_autoritativa='dt870_updated' "
-            "and tecnico.presente_dt870_atualizacao is true",
+            "where tecnico.fonte_autoritativa=%s and tecnico.presente_dt870_atualizacao is true", (source_role,),
         )
         boosts = legacy._rows(
             cursor,
@@ -167,8 +181,7 @@ def validate_tecnicos_v4610(snapshot: dict[str, Any], connection: Any) -> dict[s
             "relation.largura,relation.hash_coach_bin,relation.confirmado "
             "from clube_novo.tecnico_atributo_jogo relation "
             "join clube_novo.tecnico_jogo tecnico on tecnico.id=relation.tecnico_id "
-            "where tecnico.fonte_autoritativa='dt870_updated' "
-            "and tecnico.presente_dt870_atualizacao is true",
+            "where tecnico.fonte_autoritativa=%s and tecnico.presente_dt870_atualizacao is true", (source_role,),
         )
         orphans = legacy._rows(
             cursor,
@@ -244,26 +257,18 @@ def validate_tecnicos_v4610(snapshot: dict[str, Any], connection: Any) -> dict[s
         for row in boosts
     }
 
-    checks = {
-        "technicians": legacy._compare(source_technicians, database_technicians),
-        "nationalities": legacy._compare(source_nationalities, database_nationalities),
-        "affinities": legacy._compare(source_affinities, database_affinities),
-        "proficiencies_and_overload": legacy._compare(source_styles, database_styles),
-        "boosts": legacy._compare(source_boosts, database_boosts),
-        "foreign_key_orphans": orphans,
+    checks = {"foreign_key_orphans": orphans}
+    classifications = {
+        "technicians": _classify("tecnicos", source_technicians, database_technicians, 1),
+        "nationalities": _classify("nacionalidades", source_nationalities, database_nationalities, 1),
+        "affinities": _classify("afinidades", source_affinities, database_affinities, 1),
+        "proficiencies_and_overload": _classify("proficiencias_tecnico", source_styles, database_styles, 2),
+        "boosts": _classify("boosts_tecnico", source_boosts, database_boosts, 2),
     }
-    issues = [
-        issue
-        for name in (
-            "technicians", "nationalities", "affinities",
-            "proficiencies_and_overload", "boosts",
-        )
-        if (issue := _issue(name, checks[name])) is not None
-    ]
-    if any(int(value or 0) for value in orphans.values()):
-        issues.append({"family": "foreign_key_orphans", "counts": orphans})
-
-    passed = not issues
+    classification = {kind: [] for kind in ("new", "removed", "altered", "repeated", "invalid")}
+    for items in classifications.values():
+        for kind, entries in items.items(): classification[kind].extend(entries)
+    technical_integrity = not classification["repeated"] and not classification["invalid"] and not any(int(value or 0) for value in orphans.values())
     return {
         "contract": CONTRACT,
         "authority": "clube_novo",
@@ -271,7 +276,6 @@ def validate_tecnicos_v4610(snapshot: dict[str, Any], connection: Any) -> dict[s
         "database_write": False,
         "preserved_schema": "clube",
         "continue_pipeline": True,
-        "application_blocked": not passed,
         "requested_by_database": {
             "technicians": len(database_technicians),
             "nationalities": len(database_nationalities),
@@ -287,7 +291,9 @@ def validate_tecnicos_v4610(snapshot: dict[str, Any], connection: Any) -> dict[s
             "boosts": len(source_boosts),
         },
         "checks": checks,
-        "issues": issues,
-        "passed": passed,
-        "result": "aprovado" if passed else "divergencias_registradas",
+        "classification_complete": True,
+        "technical_integrity": technical_integrity,
+        "exact_match": not any(classification[kind] for kind in classification),
+        "classification": classification,
+        "result": "violacao_tecnica" if not technical_integrity else "divergencias_diagnosticadas" if any(classification[kind] for kind in ("new", "removed", "altered")) else "sem_divergencias_observadas",
     }

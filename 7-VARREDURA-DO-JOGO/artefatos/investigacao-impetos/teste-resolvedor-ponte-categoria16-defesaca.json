@@ -1,0 +1,34 @@
+{
+  "schema": "clubef-smoke-resolvedor-rotulo-impeto-v1",
+  "transaction_read_only": true,
+  "database_write": false,
+  "codigo_79": {
+    "rotulo": "Defesaça",
+    "rotulo_status": "rotulo_fisico_comprovado",
+    "rotulo_falta_o_que": null,
+    "rotulo_proveniencia": {
+      "secao": "Any3W",
+      "id_texto": 65,
+      "arquivo": "all.str",
+      "cpk": "dt261_bra_console_win.cpk",
+      "fonte_cpk_sha256": "2419045a081a151f8a0cdcc70a9ca0c4ca1ca265b8467b9c182623baa05338db",
+      "fonte_arquivo_sha256": "306741adab8376ed64620b618ae9721d316ae548b126419730b9bd5ff5f525a9"
+    }
+  },
+  "controle_codigo_38": {
+    "rotulo": null,
+    "rotulo_status": "rotulo_fisico_nao_comprovado",
+    "rotulo_falta_o_que": "secao_texto; id_texto",
+    "rotulo_proveniencia": null
+  },
+  "controle_codigo_49": {
+    "rotulo": null,
+    "rotulo_status": "rotulo_fisico_nao_comprovado",
+    "rotulo_falta_o_que": "secao_texto; id_texto",
+    "rotulo_proveniencia": null
+  },
+  "carta_impeto_jogo": {
+    "rows": 3748,
+    "md5": "2b78ded34a46ab83e84570ba5578dd4f"
+  }
+}

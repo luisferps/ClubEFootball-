@@ -26,6 +26,93 @@
   async function physicalCatalog(cpks,role,key){const f=field(key),spec=(plan.arquivos||[]).find(x=>x.arquivo_id===f.arquivo_id),item=await rawFile(cpks,role,spec.arquivo,spec.tamanho_registro,role==='dt870_updated'),records=[];const prefix=item.prefix;for(let o=prefix;o<item.raw.length;o+=item.size){const rb=item.raw.subarray(o,o+item.size),id=f.tipo_leitura==='byte_le'?reader.readByteLE(item.raw,o+Number(f.byte_offset),Number(f.largura_bytes)):reader.readBitsLE(item.raw,o,Number(f.bit_inicio),Number(f.largura_bits));records.push({id:String(id),raw_hex:hex(rb),record_sha256:await reader.sha256(rb),source_role:role,record_index:(o-prefix)/item.size,source_file_sha256:item.hash});}return{records,duplicate_ids:duplicateIds(records),record_size:item.size,file:spec.arquivo,hash:item.hash};}
   function fingerprint(record){return{...record,fingerprint:base.stableJson(record)};}
 
+  const impetosLayoutAtual=impetos;
+  async function impetosFailClosed(cpks){
+    // O DT870 Steam observado em 2026-08-30 tem prefixo de 24 bytes e
+    // registros cujo restante semântico não obedece ao layout atual. Ele é
+    // preservado como evidência histórica por registro, mas nunca participa
+    // da união canônica nem recebe efeitos/condições decodificados pelo layout
+    // da atualização. Isso impede que um deslocamento aparente de código seja
+    // promovido sem prova física completa.
+    const decoded=await impetosLayoutAtual(cpks);
+    const semanticRoles=['dt200','dt870_updated'];
+    const records=[];
+    for(const source of decoded.records){
+      const sourceDetails=Object.fromEntries(semanticRoles.filter(role=>(source.source_details?.[role]||[]).length).map(role=>[role,source.source_details[role]]));
+      const origins=semanticRoles.filter(role=>sourceDetails[role]);
+      if(!origins.length)continue;
+      const preferred_source=origins.includes('dt870_updated')?'dt870_updated':'dt200';
+      const preferred=sourceDetails[preferred_source][0]||{};
+      const rawType=preferred.tipo_condicao_raw??null;
+      const isVacancy=source.id==='136'&&rawType===4;
+      const isRaw4=rawType===4;
+      const clean={
+        id:source.id,
+        origins,
+        preferred_source,
+        source_fingerprints:Object.fromEntries(origins.map(role=>[role,source.source_fingerprints?.[role]??null])),
+        source_details:sourceDetails,
+        tipo_condicao_raw:isRaw4?null:rawType,
+        tipo_condicao_status:isVacancy?'vaga_de_slot':(isRaw4?'registro_nao_impeto_raw4':(rawType===null?'nao_coletado':'coletado')),
+        vaga_de_slot:isVacancy,
+        criterio_codigo:preferred.criterio_codigo??null,
+        alvo_tipo:preferred.alvo_tipo??null,
+        alvo_codigo:preferred.alvo_codigo??null,
+        classe_candidato:preferred.classe_candidato??null,
+        classe_dono:preferred.classe_dono??null,
+        corte_raw:preferred.corte_raw??null,
+        corte:preferred.corte??null,
+        efeito_maximo:preferred.efeito_maximo??null,
+        faixas:preferred.faixas||[],
+        efeitos:preferred.efeitos||[],
+        tipo_espelho_bit:preferred.tipo_espelho_bit,
+        tipo_espelho_largura:preferred.tipo_espelho_largura
+      };
+      clean.fingerprint=base.stableJson({id:clean.id,origins,source_fingerprints:clean.source_fingerprints,tipo_condicao_raw:clean.tipo_condicao_raw,tipo_condicao_status:clean.tipo_condicao_status});
+      records.push(clean);
+    }
+    const boosterFile=fileForField('impeto.catalogo.codigo');
+    const size=Number(decoded.record_size||boosterFile.tamanho_registro);
+    const codeField=field('impeto.catalogo.codigo');
+    const codeBit=Number(codeField.bit_inicio);
+    const codeWidth=Number(codeField.largura_bits);
+    const original=await rawFile(cpks,'dt870_original',boosterFile.arquivo,size,true);
+    const historicalRecords=[];
+    for(let offset=original.prefix,index=0;offset<original.raw.length;offset+=size,index++){
+      const bytes=original.raw.subarray(offset,offset+size);
+      historicalRecords.push({
+        record_index:index,
+        record_number:index+1,
+        byte_offset:offset,
+        raw_code:reader.readBitsLE(original.raw,offset,codeBit,codeWidth),
+        code_bit:codeBit,
+        code_width:codeWidth,
+        record_sha256:await reader.sha256(bytes),
+        source_file_sha256:original.hash,
+        source_role:'dt870_original',
+        semantic_status:'layout_legado_sem_decodificador_comprovado',
+        canonical_identity:null,
+        comparison_action:'alerta_historico_fail_closed'
+      });
+    }
+    return{
+      ...decoded,
+      records,
+      source_policy:'DT200 e DT870 atualizado formam a união canônica; DT870 Steam é evidência histórica isolada até existir decodificador semântico comprovado',
+      historical_source:{
+        source_role:'dt870_original',
+        file:boosterFile.arquivo,
+        record_size:size,
+        prefix_bytes:original.prefix,
+        source_file_sha256:original.hash,
+        semantic_status:'layout_legado_sem_decodificador_comprovado',
+        canonical_merge_enabled:false,
+        records:historicalRecords
+      }
+    };
+  }
+  impetos=impetosFailClosed;
+
   async function technicians(cpks,texts){const coachFile=fileForField('tecnico.id'),countryFile=fileForField('nacionalidade.codigo'),coachItem=await rawFile(cpks,'dt870_updated',coachFile.arquivo,coachFile.tamanho_registro),countryItem=await rawFile(cpks,'dt870_updated',countryFile.arquivo,countryFile.tamanho_registro);const cf={id:field('tecnico.id'),jp:field('tecnico.nome.jp'),en:field('tecnico.nome.en'),cn:field('tecnico.nome.cn'),age:field('tecnico.idade.raw'),nat:field('tecnico.nacionalidade.codigo'),aff:field('tecnico.afinidade.codigo'),b1:field('tecnico.boost.1'),b2:field('tecnico.boost.2')};const nf={code:field('nacionalidade.codigo'),name:field('nacionalidade.nome_pt_br'),sigla:field('nacionalidade.sigla')};const nats=[],natByCode=new Map();for(let o=0,ri=0;o<countryItem.raw.length;o+=countryItem.size,ri++){const code=reader.readBitsLE(countryItem.raw,o,Number(nf.code.bit_inicio),Number(nf.code.largura_bits)),r=fingerprint({id:String(code),codigo_jogo:code,nome_pt_br:fixed(countryItem.raw,o+Number(nf.name.byte_offset),Number(nf.name.largura_bytes)),sigla:fixed(countryItem.raw,o+Number(nf.sigla.byte_offset),Number(nf.sigla.largura_bytes)),source_role:'dt870_updated',arquivo:countryFile.arquivo,record_index:ri,record_size:countryItem.size,codigo_bit:Number(nf.code.bit_inicio),codigo_largura:Number(nf.code.largura_bits),nome_offset:Number(nf.name.byte_offset),nome_largura:Number(nf.name.largura_bytes),nome_codificacao:'utf-8',sigla_offset:Number(nf.sigla.byte_offset),sigla_largura:Number(nf.sigla.largura_bytes),source_file_sha256:countryItem.hash,presente_dt200:true,presente_dt870_original:true,presente_dt870_atualizacao:true,ativo:true});if(natByCode.has(code))throw new Error(`nacionalidade duplicada ${code}`);nats.push(r);natByCode.set(code,r);}
     const styleRefs=rows('estilo_jogo_tecnico').filter(x=>x.pode_rodar!==false).sort((a,b)=>Number(a.ordem)-Number(b.ordem));const affinityRefs=rows('afinidade_tecnico_jogo'),attrOrder=rows('atributo_ordem_otimizador'),affinityText=(texts.records||[]).find(r=>r.id==='Any1W:495');const affinities=affinityRefs.map(source=>fingerprint({id:String(source.codigo_jogo),codigo_jogo:Number(source.codigo_jogo),nome_pt:source.nome_pt??null,nome_tela:source.nome_tela??null,ausencia_legitima:Boolean(source.ausencia_legitima),rotulo_confirmado:Boolean(source.rotulo_confirmado),source_role:'dt870_updated',arquivo:source.arquivo_fonte||coachFile.arquivo,bit:Number(source.bit),largura:Number(source.largura),source_file_sha256:coachItem.hash,texto_source_role:source.codigo_jogo===5?'dt261_bra':null,texto_arquivo:source.codigo_jogo===5?(source.arquivo_texto||'all.str'):null,texto_secao:source.codigo_jogo===5?(source.secao_texto||affinityText?.secao||null):null,texto_id:source.codigo_jogo===5?(source.id_texto??affinityText?.id_texto??null):null,pode_rodar:Boolean(source.pode_rodar),falta_o_que:source.falta_o_que??null,ativo:true}));
     const tech=[];for(let o=0,ri=0;o<coachItem.raw.length;o+=coachItem.size,ri++){const id=String(reader.readByteLE(coachItem.raw,o+Number(cf.id.byte_offset),Number(cf.id.largura_bytes))),natCode=reader.readBitsLE(coachItem.raw,o,Number(cf.nat.bit_inicio),Number(cf.nat.largura_bits)),nat=natByCode.get(natCode);if(!nat)throw new Error(`técnico ${id} referencia nacionalidade ${natCode} ausente`);const prof={},profPhysical={};for(const s of styleRefs){const value=reader.readBitsLE(coachItem.raw,o,Number(s.bit),Number(s.largura));if(s.codigo!=='overload'||value){prof[s.codigo]=value;profPhysical[s.codigo]={bit:Number(s.bit),largura:Number(s.largura)};}}const boosts=[];for(const [ord,f] of [[1,cf.b1],[2,cf.b2]]){const encoded=reader.readBitsLE(coachItem.raw,o,Number(f.bit_inicio),Number(f.largura_bits));if(encoded){const idx=encoded-1;if(!attrOrder.some(a=>Number(a.indice_otimizador)===idx))throw new Error(`boost de técnico sem atributo canônico ${idx}`);boosts.push({ordem:ord,atributo_idx_canonico:idx,delta:Number(f.transformacao?.delta??1),bit:Number(f.bit_inicio),largura:Number(f.largura_bits)});}}const ageRaw=reader.readBitsLE(coachItem.raw,o,Number(cf.age.bit_inicio),Number(cf.age.largura_bits));const r={id,nome_jp:fixed(coachItem.raw,o+Number(cf.jp.byte_offset),Number(cf.jp.largura_bytes)),nome_en:fixed(coachItem.raw,o+Number(cf.en.byte_offset),Number(cf.en.largura_bytes)),nome_cn:fixed(coachItem.raw,o+Number(cf.cn.byte_offset),Number(cf.cn.largura_bytes)),proficiencias:prof,proficiencias_fisico:profPhysical,boosts,idade:ageRaw+14,idade_valor_fisico:ageRaw,nacionalidade_codigo:natCode,nacionalidade_nome_pt_br:nat.nome_pt_br,nacionalidade_sigla:nat.sigla,afinidade_codigo:reader.readBitsLE(coachItem.raw,o,Number(cf.aff.bit_inicio),Number(cf.aff.largura_bits)),source_role:'dt870_updated',arquivo:coachFile.arquivo,record_index:ri,record_size:coachItem.size,source_file_sha256:coachItem.hash,field_contract:{idade:{bit:Number(cf.age.bit_inicio),largura:Number(cf.age.largura_bits),transformacao:'valor_fisico + 14'},nacionalidade:{bit:Number(cf.nat.bit_inicio),largura:Number(cf.nat.largura_bits),resolve_em:'nacionalidade_jogo'},afinidade:{bit:Number(cf.aff.bit_inicio),largura:Number(cf.aff.largura_bits),zero:'ausencia_legitima'}},ativo:true};tech.push(fingerprint(r));}
@@ -38,6 +125,82 @@
 
   async function extractMetadataByFamilyV46(sourceBytes,sourceDescriptors,log=()=>{}){if(!plan)throw new Error('contrato ativo ainda não foi recebido');const required=['dt870_updated','dt200','dt870_original','dt261_bra'];for(const role of required)if(!sourceBytes[role])throw new Error(`fonte obrigatória ausente: ${role}`);const cpks=Object.fromEntries(required.map(r=>[r,extractCpk(sourceBytes[r])]));const skill=await physicalCatalog(cpks,'dt870_updated','catalogo.habilidade.id'),habilidades={supported:true,file:skill.file,source_policy:'DT870 da atualização',record_size:skill.record_size,id_contract:'id físico fornecido pelo contrato',records:skill.records.map(r=>fingerprint(r)),duplicate_ids:skill.duplicate_ids};log(`habilidades · ${habilidades.records.length}`);const booster=await impetos(cpks);log(`ímpetos · união com procedência: ${booster.records.length}`);const playKey='catalogo.playstyle.id',baseStyle=await physicalCatalog(cpks,'dt200',playKey),overlayStyle=await physicalCatalog(cpks,'dt870_updated',playKey),overlayById=new Map(overlayStyle.records.map(r=>[r.id,r])),baseIds=new Set(baseStyle.records.map(r=>r.id)),unsupportedEntries=overlayStyle.records.filter(r=>!baseIds.has(r.id)).map(r=>({id:r.id,source_role:'dt870_updated',reason:'overlay sem registro semântico correspondente no DT200'})),playstyles={supported:true,file:baseStyle.file,source_policy:'DT200 é a base semântica; DT870 atualizado é somente overlay',record_size:baseStyle.record_size,id_contract:'id físico fornecido pelo contrato',records:baseStyle.records.map(b=>fingerprint({id:b.id,semantic_source:'dt200',base_raw_hex:b.raw_hex,overlay_present:overlayById.has(b.id),overlay_raw_hex:overlayById.get(b.id)?.raw_hex||null})),unsupported_entries:unsupportedEntries,duplicate_ids:[]};log(`playstyles · base DT200: ${playstyles.records.length}`);const textos=await base.extractTextCatalogFromCpk(sourceBytes.dt261_bra);log(`textos · ${textos.records.length}`);const coach=await technicians(cpks,textos),tecnicos={supported:true,file:'Coach.bin + Country.bin',source_policy:'DT870 da atualização; referências físicas canônicas',record_size:fileForField('tecnico.id').tamanho_registro,id_contract:'u64 do contrato',contract:'clubef-tecnicos-carga-v4-sobreposicao',records:coach.technicians,duplicate_ids:[]},nacionalidades={supported:true,file:'Country.bin',source_policy:'DT870 atualizado; referência canônica',record_size:fileForField('nacionalidade.codigo').tamanho_registro,id_contract:'código físico do contrato',contract:'clubef-nacionalidades-v1',records:coach.nationalities,duplicate_ids:[]},afinidades={supported:true,file:'Coach.bin + all.str',source_policy:'código físico + rótulo oficial',id_contract:'afinidade_tecnico_jogo',contract:'clubef-afinidades-tecnico-v1',records:coach.affinities,duplicate_ids:[]};log(`técnicos · ${tecnicos.records.length}; nacionalidades: ${nacionalidades.records.length}; afinidades: ${afinidades.records.length}`);const unsupported=(file,reason,source_policy=null)=>({supported:false,status:'nao_suportado_nesta_atualizacao',file,reason,source_policy,records:[],duplicate_ids:[]}),posicoes={supported:true,file:'Player.bin + catálogo',source_policy:'clube_novo.posicao_jogo',records:rows('posicao_jogo').map(r=>fingerprint({id:String(r.id),codigo_en:r.codigo_en})),duplicate_ids:[]};const catalogs={habilidades,impetos:booster,playstyles,posicoes,textos,tecnicos,nacionalidades,afinidades_tecnico:afinidades,estilos_ia:unsupported('Player.bin','catálogo nominal integral ainda não suportado'),efeitos_de_impeto:{supported:true,file:booster.file,contract:booster.contract,records:booster.records.flatMap(r=>(r.efeitos||[]).map(e=>({codigo_impeto:r.id,...e}))),duplicate_ids:[]},times_e_vinculos:unsupported('Team.bin + PlayerAssignment.bin','layout integral não suportado'),potw:unsupported('PlayerWeekly.bin','layout integral não suportado'),habilidade_extra_de_variacao:unsupported('PlayerVariationPrSkill.bin','layout integral não suportado')};return{contract:'clubef-physical-metadata-v4',source_policy:'por família; endereços de clube_novo',sources:sourceDescriptors,catalogs};}
 
+  function familyRoles(key){const item=(plan?.familias||[]).find(x=>x.chave_familia===key);if(!item)throw new Error(`família ausente do pedido: ${key}`);return[...new Set((item.papeis_fonte||[]).filter(Boolean))];}
+  function roleForField(key){const file=fileForField(key);if(!file.papel_fonte)throw new Error(`arquivo sem papel de fonte no contrato: ${key}`);return file.papel_fonte;}
+  function notRequested(file,reason){return{supported:false,status:'nao_solicitado_pelo_contrato',file,reason,records:[],duplicate_ids:[]};}
+  function coverageBlockedCatalogsFromContract(){
+    const output={},seen=new Set();
+    for(const mapping of plan?.catalogos_fisicos||[]){
+      if(!mapping||mapping.aprovacao_aplicacao_habilitada!==false)continue;
+      const key=mapping.chave_resultado_leitura,impacted=mapping.familias_impactadas;
+      if(typeof key!=='string'||!key||seen.has(key))throw new Error('contrato de cobertura sem chave de resultado única');
+      if(!Array.isArray(impacted)||!impacted.every(item=>typeof item==='string'&&item))throw new Error(`contrato de cobertura sem famílias impactadas: ${key}`);
+      if(typeof mapping.estado_cobertura!=='string'||!mapping.estado_cobertura)throw new Error(`contrato de cobertura sem estado: ${key}`);
+      seen.add(key);
+      // O contrato ainda não prova uma enumeração total de estilo IA. A V5
+      // deve explicitar que os bits retornados pelas cartas são monitorados,
+      // sem publicar a lista observada como catálogo completo.
+      const observedStyleMonitor=mapping.schema==='clube_novo'&&mapping.table==='estilo_ia';
+      const coverageState=observedStyleMonitor?'observado_nas_cartas_monitorado':mapping.estado_cobertura;
+      output[key]={
+        supported:false,
+        status:coverageState,
+        coverage_complete:false,
+        application_eligible:false,
+        catalogo:{schema:mapping.schema,table:mapping.table,colunas_chave_canonica:mapping.colunas_chave_canonica||[]},
+        origem_fisica_comprovada:Boolean(mapping.evidencia_enumeracao?.fonte_enumeravel_comprovada),
+        artefato_fisico_declarado:mapping.artefato_fisico??null,
+        papel_fonte_declarado:mapping.papel_fonte??null,
+        familias_impactadas:impacted,
+        reason:observedStyleMonitor?'os bits observados nas cartas são monitorados; não existe enumeração física integral comprovada':(mapping.motivo_cobertura||'cobertura física não verificável pelo contrato'),
+        monitoring:observedStyleMonitor?{
+          identity:'bit físico + procedência por carta',
+          unknown_member_action:'alertar para revisão e bloquear somente a relação afetada',
+          catalog_auto_creation:false,
+          label_inference:false
+        }:null,
+        evidencia:mapping.evidencia_enumeracao||{},
+        records:[],duplicate_ids:[]
+      };
+    }
+    return output;
+  }
+  async function extractMetadataByFamilyTyped(sourceBytes,sourceDescriptors,log=()=>{}){
+    if(!plan)throw new Error('contrato ativo ainda não foi recebido');
+    const allowed=new Set([...(plan.arquivos||[]).map(x=>x.papel_fonte),...(plan.familias||[]).flatMap(f=>f.papeis_fonte||[])].filter(Boolean));
+    for(const role of Object.keys(sourceBytes))if(!allowed.has(role))throw new Error(`fonte fora do pedido tipado: ${role}`);
+    const required=[...new Set(['catalogos','tecnicos','impetos','textos'].flatMap(familyRoles))];
+    for(const role of required)if(!sourceBytes[role])throw new Error(`fonte contratada ausente para Metadados: ${role}`);
+    const cpks=Object.fromEntries(required.map(role=>[role,extractCpk(sourceBytes[role])]));
+    const skillRole=roleForField('catalogo.habilidade.id');
+    const skill=await physicalCatalog(cpks,skillRole,'catalogo.habilidade.id');
+    const habilidades={supported:true,file:skill.file,source_policy:'papel declarado pelo contrato',record_size:skill.record_size,id_contract:'id físico do contrato',records:skill.records.map(fingerprint),duplicate_ids:skill.duplicate_ids};
+    log(`habilidades · ${habilidades.records.length}`);
+    const textRoles=familyRoles('textos');
+    const textRole=textRoles.length===1?textRoles[0]:null;
+    const textos=textRole?await base.extractTextCatalogFromCpk(sourceBytes[textRole]):null;
+    if(textos)log(`textos · ${textos.records.length}`);
+    const technicianRole=roleForField('tecnico.id');
+    let tecnicos=notRequested('Coach.bin','o leitor tipado de técnicos requer que Coach.bin seja atendido pelo papel declarado');
+    let nacionalidades=notRequested('Country.bin','o leitor tipado de nacionalidades requer que Country.bin seja atendido pelo papel declarado');
+    let afinidades=notRequested('Coach.bin + all.str','leitura depende das fontes declaradas de Técnicos e Textos');
+    if(technicianRole==='dt870_updated'&&cpks[technicianRole]){
+      const coach=await technicians(cpks,textos||{records:[]});
+      tecnicos={supported:true,file:'Coach.bin + Country.bin',source_policy:'papel declarado pelo contrato',record_size:fileForField('tecnico.id').tamanho_registro,id_contract:'u64 físico do contrato',records:coach.technicians,duplicate_ids:[]};
+      nacionalidades={supported:true,file:'Country.bin',source_policy:'papel declarado pelo contrato',record_size:fileForField('nacionalidade.codigo').tamanho_registro,id_contract:'código físico do contrato',records:coach.nationalities,duplicate_ids:[]};
+      afinidades={supported:true,file:'Coach.bin + all.str',source_policy:'FK física e rótulo oficial separado',records:coach.affinities,duplicate_ids:[]};
+      log(`técnicos · ${tecnicos.records.length}; nacionalidades: ${nacionalidades.records.length}`);
+    }
+    const playRole=roleForField('catalogo.playstyle.id');
+    const playstyles=cpks[playRole]?(()=>physicalCatalog(cpks,playRole,'catalogo.playstyle.id'))():null;
+    const resolvedPlaystyles=playstyles?await playstyles:notRequested('Player.bin','a fonte de playstyles não foi solicitada pelo contrato');
+    const impetoRoles=familyRoles('impetos');
+    const impetoSupported=impetoRoles.length===3&&['dt200','dt870_original','dt870_updated'].every(role=>impetoRoles.includes(role));
+    const impetosCatalog=impetoSupported?await impetos(cpks):notRequested('PlayerBooster.bin','o plano atual não declara todas as fontes históricas exigidas pelo leitor de união; nenhuma fonte foi inferida');
+    const posicoes={supported:true,file:'Player.bin + catálogo',source_policy:'FK estável clube_novo.posicao_jogo',records:rows('posicao_jogo').map(r=>fingerprint({id:String(r.id),codigo_en:r.codigo_en})),duplicate_ids:[]};
+    const catalogs={habilidades,impetos:impetosCatalog,playstyles:resolvedPlaystyles&&resolvedPlaystyles.records?{supported:true,file:resolvedPlaystyles.file,source_policy:'papel declarado pelo contrato',record_size:resolvedPlaystyles.record_size,id_contract:'id físico do contrato',records:resolvedPlaystyles.records.map(fingerprint),duplicate_ids:resolvedPlaystyles.duplicate_ids}:resolvedPlaystyles,posicoes,textos:textos||notRequested('all.str','a família Textos não declarou fonte única'),tecnicos,nacionalidades,afinidades_tecnico:afinidades,efeitos_de_impeto:impetosCatalog.supported?{supported:true,file:impetosCatalog.file,records:impetosCatalog.records.flatMap(r=>(r.efeitos||[]).map(e=>({codigo_impeto:r.id,...e}))),duplicate_ids:[]}:notRequested('PlayerBooster.bin',impetosCatalog.reason),...coverageBlockedCatalogsFromContract()};
+    return{contract:'pedido_leitura_tipado_v1',source_policy:'somente papéis declarados pelo contrato',sources:sourceDescriptors,catalogs};
+  }
   async function captureValidate(bytes,p,role){reader.requirePlan(p);plan=p;return previousValidate(bytes,p,role);}
-  global.CLUBEF_CORE=Object.freeze({...base,validateSourceByContract:captureValidate,extractMetadataByFamily:extractMetadataByFamilyV46});
+  global.CLUBEF_CORE=Object.freeze({...base,validateSourceByContract:captureValidate,extractMetadataByFamily:extractMetadataByFamilyTyped});
 })(globalThis);

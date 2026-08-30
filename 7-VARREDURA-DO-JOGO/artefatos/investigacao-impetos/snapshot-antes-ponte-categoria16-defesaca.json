@@ -1,0 +1,150 @@
+{
+  "schema": "clubef-snapshot-ponte-categoria16-defesaca-v1",
+  "captured_at": "2026-08-30T07:26:40.082584+00:00",
+  "evidence_sha256": "9e5d83f5481b905af50d7dfe00ead9e06d9ad4bcf31e149fa5320bfa677174d9",
+  "target_codes": [
+    67,
+    73,
+    79,
+    85,
+    91,
+    118,
+    315,
+    360,
+    381,
+    411,
+    420,
+    455,
+    464,
+    490
+  ],
+  "text": {
+    "secao": "Any3W",
+    "id_texto": 65,
+    "texto": "Defesaça",
+    "arquivo": "all.str",
+    "cpk": "dt261_bra_console_win.cpk",
+    "entrada_offset": 265748,
+    "texto_offset": 276934,
+    "fonte_cpk_sha256": "2419045a081a151f8a0cdcc70a9ca0c4ca1ca265b8467b9c182623baa05338db",
+    "fonte_arquivo_sha256": "306741adab8376ed64620b618ae9721d316ae548b126419730b9bd5ff5f525a9"
+  },
+  "impeto_jogo_before": [
+    {
+      "codigo_jogo": 67,
+      "nome_pt": null,
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "nome_pt; id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 73,
+      "nome_pt": "Defesaça",
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 79,
+      "nome_pt": "Defesaça",
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 85,
+      "nome_pt": "Defesaça",
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 91,
+      "nome_pt": null,
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "nome_pt; id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 118,
+      "nome_pt": "Defesaça",
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 315,
+      "nome_pt": "Defesaça",
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 360,
+      "nome_pt": "Defesaça",
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 381,
+      "nome_pt": "Defesaça",
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 411,
+      "nome_pt": "Defesaça",
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 420,
+      "nome_pt": "Defesaça",
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 455,
+      "nome_pt": "Defesaça",
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 464,
+      "nome_pt": "Defesaça",
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    },
+    {
+      "codigo_jogo": 490,
+      "nome_pt": "Defesaça",
+      "secao_texto": null,
+      "id_texto": null,
+      "pode_rodar": false,
+      "falta_o_que": "id_texto; secao_texto"
+    }
+  ],
+  "carta_impeto_jogo_before": {
+    "rows": 3748,
+    "md5": "2b78ded34a46ab83e84570ba5578dd4f"
+  }
+}

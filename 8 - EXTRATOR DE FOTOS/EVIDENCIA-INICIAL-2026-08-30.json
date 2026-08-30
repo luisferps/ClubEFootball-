@@ -1,0 +1,38 @@
+{
+  "formato": "clubefutebol-extrator-fotos-evidencia-v1",
+  "data": "2026-08-30",
+  "identidade": "card_id",
+  "banco": {
+    "tabela": "clube_novo.carta_jogo",
+    "coluna": "foto_url_cloudinary",
+    "tabela_paralela_criada": false,
+    "constraint": "a URL deve ser https://res.cloudinary.com/demsusjwf/image/upload/{card_id}.png"
+  },
+  "inventario_cloudinary": {
+    "assets_com_card_id": 2081,
+    "assets_com_carta_canonica": 2081,
+    "assets_sem_carta_canonica": 0
+  },
+  "backfill_amostra": {
+    "cartas": 6,
+    "vinculos_lidos_de_volta": 6,
+    "sobrescritas": 0,
+    "linhas_alteradas_na_repeticao": 0
+  },
+  "seguranca": {
+    "novos_grants": 0,
+    "anon_select": false,
+    "anon_update": false,
+    "authenticated_select": false,
+    "authenticated_update": false,
+    "alerta_preexistente": "clube_novo.carta_jogo estava com RLS desabilitada antes desta mudanca; nenhuma politica ampla foi alterada nesta tarefa"
+  },
+  "testes_locais": {
+    "total": 6,
+    "aprovados": 6,
+    "falhas": 0
+  },
+  "carga_ampla_iniciada": false,
+  "motivo_carga_ampla_pendente": "autenticacao local Cloudinary ainda nao comprovada"
+}
+

@@ -1,0 +1,13 @@
+{
+  "database_read_only": true,
+  "contrato_id": "clubef-dt870-2026-r1",
+  "versao_jogo": "dt870-2026-atualizacao",
+  "versao_contrato": "r2-fontes",
+  "estado": "ativo",
+  "cobertura_total": true,
+  "fingerprint_contrato_sha256": "7141fa3257037137b4be25257095a05fe0d66f5d6e70ba5d9abdb24a275799d8",
+  "fingerprint_fontes_sha256": "9019aeaa69a4c9c9c54499a0dbf987a44c913bb6c323b3af81dd9f584d8de06c",
+  "expectativas_ativas": 6,
+  "function_sha256": "683046b330562ea089354811ddb83feb6162980c713e3e6d2771d03c3f5b51db",
+  "rollback": "4-DOCUMENTOS/EXTRATOR/SQL/ROLLBACK-POLITICA-REVISAO-CONTRATO-V1.sql"
+}

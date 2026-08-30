@@ -46,6 +46,14 @@ def _replace_literal_count(
     return source.replace(old, new)
 
 
+def _replace_regex_once(source: str, pattern: str, replacement: str, label: str) -> str:
+    """Aplica um patch semântico, sem depender da indentação da UI."""
+    updated, count = re.subn(pattern, replacement, source, count=1, flags=re.MULTILINE)
+    if count != 1:
+        raise RuntimeError(f"patch V4.6.12 não encontrou trecho único: {label} (encontrados={count})")
+    return updated
+
+
 def patched_contract_reader_source() -> str:
     path = Path(previous.legacy.base.ROOT) / "app" / "leitura-contrato.js"
     source = path.read_text(encoding="utf-8-sig")
@@ -444,10 +452,10 @@ def patched_ui_source() -> str:
         2,
         "comparação responsiva de cartas",
     )
-    source = _replace_literal_once(
+    source = _replace_regex_once(
         source,
-        "      const dimensionStructure = core.validateCardDimensionsSnapshot(dimensionSnapshot);",
-        "      const dimensionStructure = await core.validateCardDimensionsSnapshotResponsive(dimensionSnapshot);",
+        r"^(?P<indent>\s*)dimensionStructure = core\.validateCardDimensionsSnapshot\(dimensionSnapshot\);$",
+        r"\g<indent>dimensionStructure = await core.validateCardDimensionsSnapshotResponsive(dimensionSnapshot);",
         "validação responsiva de Dimensões",
     )
     source = _replace_literal_once(
@@ -579,6 +587,24 @@ class Handler(previous.Handler):
 
 
 def main() -> None:
+    """Entrada legada aposentada em favor do worker desktop versionado.
+
+    A V4.6.12 remendava fontes da UI por substituições de texto durante a
+    inicialização. Isso deixou uma execução dependente da formatação de uma
+    página que já não é o runtime oficial. A rota operacional V5 é o launcher
+    Windows -> ``desktop_worker.py``; portanto esta entrada não deve tentar
+    aplicar patches, abrir servidor nem aceitar uma varredura.
+    """
+    message = (
+        "Runtime web V4.6.12 aposentado: use ABRIR-EXTRATOR.cmd ou "
+        "Extrator eFootball.exe V5.0.0. O worker desktop executa somente "
+        "leitura e gera artefatos em artefatos/desktop."
+    )
+    previous.legacy.runtime_log("RUNTIME-LEGADO-APOSENTADO | " + message)
+    if previous.legacy.base.sys.stdout is not None:
+        print(message)
+    return
+
     host = "127.0.0.1"
     port = int(
         previous.legacy.base.os.environ.get(

@@ -1,13 +1,15 @@
 @echo off
 chcp 65001 > nul
-title 1 - LIMPAR ANTES DE SUBIR PRO GITHUB
+title 1 - LIMPEZA OPCIONAL - NAO PUBLICA
 cd /d "%~dp0"
 echo.
 echo  ============================================================
-echo   LIMPEZA - passo 1 de 2
+echo   1 - LIMPEZA OPCIONAL - NAO PUBLICA NEM BAIXA
 echo  ============================================================
 echo.
-echo   Ele NAO APAGA nada. Ele MOVE para a pasta _LIXO.
+echo   Este botao nao e necessario para usar o botao 3.
+echo   Ele move arquivos antigos para _LIXO e remove apenas caches
+echo   __pycache__ encontrados nos locais descritos abaixo.
 echo   Se algo der errado, esta tudo la para voltar.
 echo.
 echo   Depois que o GitHub subir e o motor rodar na outra maquina,
@@ -78,7 +80,8 @@ echo  ============================================================
 echo   PRONTO. Tudo que saiu esta em _LIXO\
 echo  ============================================================
 echo.
-echo   Confira que o sistema ainda abre. Se estiver tudo certo,
-echo   rode o  2-SUBIR-PRO-GITHUB.bat
+echo   Este botao NAO publicou nada.
+echo   Para publicar TODAS as alteracoes deste repositorio existente,
+echo   use o  3-ATUALIZAR-O-GITHUB.bat  na raiz desta pasta.
 echo.
 pause

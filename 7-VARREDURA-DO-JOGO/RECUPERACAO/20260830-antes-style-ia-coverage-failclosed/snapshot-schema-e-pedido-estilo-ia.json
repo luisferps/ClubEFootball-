@@ -1,0 +1,145 @@
+{
+  "read_only": true,
+  "table": "clube_novo.contrato_leitura_catalogo_fisico",
+  "columns": [
+    {
+      "column_name": "contrato_id",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "catalogo_schema",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": "'clube_novo'::text"
+    },
+    {
+      "column_name": "catalogo_tabela",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "modo_validacao",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "artefato_fisico",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "coluna_chave_fisica",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "colunas_chave_canonica",
+      "data_type": "ARRAY",
+      "udt_name": "_text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "column_name": "papel_fonte",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "familia_dependencia",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "check_dependencia",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "column_name": "proveniencia",
+      "data_type": "text",
+      "udt_name": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    }
+  ],
+  "constraints": [
+    {
+      "conname": "contrato_leitura_catalogo_fisico_catalogo_schema_check",
+      "definition": "CHECK (catalogo_schema = 'clube_novo'::text)"
+    },
+    {
+      "conname": "contrato_leitura_catalogo_fisico_check",
+      "definition": "CHECK (modo_validacao = 'fisico_direto'::text AND artefato_fisico IS NOT NULL AND coluna_chave_fisica IS NOT NULL AND papel_fonte IS NOT NULL OR modo_validacao = 'dependencia_normalizada'::text AND familia_dependencia IS NOT NULL AND check_dependencia IS NOT NULL)"
+    },
+    {
+      "conname": "contrato_leitura_catalogo_fisico_colunas_chave_canonica_check",
+      "definition": "CHECK (array_length(colunas_chave_canonica, 1) > 0)"
+    },
+    {
+      "conname": "contrato_leitura_catalogo_fisico_contrato_id_fkey",
+      "definition": "FOREIGN KEY (contrato_id) REFERENCES clube_novo.contrato_leitura_jogo(contrato_id) ON DELETE RESTRICT"
+    },
+    {
+      "conname": "contrato_leitura_catalogo_fisico_modo_validacao_check",
+      "definition": "CHECK (modo_validacao = ANY (ARRAY['fisico_direto'::text, 'dependencia_normalizada'::text]))"
+    },
+    {
+      "conname": "contrato_leitura_catalogo_fisico_pkey",
+      "definition": "PRIMARY KEY (contrato_id, catalogo_schema, catalogo_tabela)"
+    }
+  ],
+  "estilo_ia_rows": [
+    {
+      "contrato_id": "clubef-dt870-2026-r1",
+      "papel_fonte": null,
+      "proveniencia": "relações normalizadas por bit",
+      "modo_validacao": "dependencia_normalizada",
+      "artefato_fisico": null,
+      "catalogo_schema": "clube_novo",
+      "catalogo_tabela": "estilo_ia",
+      "check_dependencia": "relacoes_normalizadas",
+      "coluna_chave_fisica": null,
+      "familia_dependencia": "relacoes",
+      "colunas_chave_canonica": [
+        "bit"
+      ]
+    }
+  ],
+  "function_definitions": [
+    "CREATE OR REPLACE FUNCTION clube_novo.obter_pedido_leitura_tipado_ativo()\n RETURNS jsonb\n LANGUAGE plpgsql\n SET search_path TO 'clube_novo', 'pg_temp'\nAS $function$\ndeclare pedido jsonb; cid text;\nbegin\n pedido:=clube_novo.obter_pedido_leitura_tipado_sem_revisao_v1(); cid:=pedido->>'contrato_id';\n if cid is null or cid='' then raise exception 'pedido tipado sem contrato_id'; end if;\n if not exists(select 1 from clube_novo.contrato_leitura_politica_revisao where contrato_id=cid) then raise exception 'pedido tipado sem política de aprovação interna'; end if;\n if not exists(select 1 from clube_novo.contrato_leitura_catalogo_fisico where contrato_id=cid) then raise exception 'pedido tipado sem cobertura de catálogo'; end if;\n if not exists(select 1 from clube_novo.contrato_leitura_projecao_cartas where contrato_id=cid) then raise exception 'pedido tipado sem projeção canônica de cartas'; end if;\n if exists (\n   select 1 from clube_novo.contrato_leitura_familia f left join clube_novo.contrato_leitura_escritor_dominio e\n     on e.contrato_id=f.contrato_id and e.chave_familia=f.chave_familia and e.ativo\n   where f.contrato_id=cid and f.obrigatoria and e.escritor_id is null\n ) then raise exception 'pedido tipado sem escritor declarativo para família obrigatória'; end if;\n if exists (\n   select 1 from clube_novo.contrato_leitura_escritor_dominio e\n   where e.contrato_id=cid and e.ativo and not exists (select 1 from clube_novo.contrato_leitura_escritor_destino d where d.escritor_id=e.escritor_id and d.ativo)\n ) then raise exception 'pedido tipado com escritor sem destino declarado'; end if;\n return pedido || jsonb_build_object(\n  'politica_revisao',(select jsonb_build_object('revisao_humana_obrigatoria',p.revisao_humana_obrigatoria,'cobertura_aprovada',p.cobertura_aprovada,'carga_autorizada',p.carga_autorizada,'promocao_snapshot_autorizada',p.promocao_snapshot_autorizada,'decisao',p.decisao,'proveniencia',p.proveniencia,'atualizado_em',p.atualizado_em) from clube_novo.contrato_leitura_politica_revisao p where p.contrato_id=cid),\n  'catalogos_fisicos',(select coalesce(jsonb_agg(jsonb_build_object('schema',catalogo_schema,'table',catalogo_tabela,'modo_validacao',modo_validacao,'artefato_fisico',artefato_fisico,'coluna_chave_fisica',coluna_chave_fisica,'colunas_chave_canonica',colunas_chave_canonica,'papel_fonte',papel_fonte,'familia_dependencia',familia_dependencia,'check_dependencia',check_dependencia,'proveniencia',proveniencia) order by catalogo_tabela),'[]'::jsonb) from clube_novo.contrato_leitura_catalogo_fisico where contrato_id=cid),\n  'projecoes_cartas',(select coalesce(jsonb_agg(jsonb_build_object('chave_campo',chave_campo,'artefato_fisico',artefato_fisico,'coluna_fisica',coluna_fisica,'destino_schema',destino_schema,'destino_tabela',destino_tabela,'destino_coluna',destino_coluna,'tipo_valor',tipo_valor,'proveniencia',proveniencia) order by chave_campo),'[]'::jsonb) from clube_novo.contrato_leitura_projecao_cartas where contrato_id=cid),\n  'escritores_dominio',(select coalesce(jsonb_agg(jsonb_build_object('escritor_id',e.escritor_id,'familia',e.chave_familia,'versao',e.versao_escritor,'schema_envelope',e.schema_envelope,'identidade_canonica',e.identidade_canonica,'operacao',e.operacao,'destinos',(select coalesce(jsonb_agg(jsonb_build_object('destino_id',d.destino_id,'schema',d.destino_schema,'tabela',d.destino_tabela,'operacao',d.operacao,'colunas_chave',d.colunas_chave,'colunas_escrita',d.colunas_escrita,'tipos_colunas',d.tipos_colunas,'exige_procedencia',d.exige_procedencia,'ordem_lote',d.ordem_lote,'proveniencia',d.proveniencia) order by d.ordem_lote,d.destino_tabela),'[]'::jsonb) from clube_novo.contrato_leitura_escritor_destino d where d.escritor_id=e.escritor_id and d.ativo),'proveniencia',e.proveniencia) order by e.chave_familia),'[]'::jsonb) from clube_novo.contrato_leitura_escritor_dominio e where e.contrato_id=cid and e.ativo)\n );\nend; $function$\n"
+  ],
+  "pedido_catalogo_estilo_ia": [
+    {
+      "table": "estilo_ia",
+      "schema": "clube_novo",
+      "papel_fonte": null,
+      "proveniencia": "relações normalizadas por bit",
+      "modo_validacao": "dependencia_normalizada",
+      "artefato_fisico": null,
+      "check_dependencia": "relacoes_normalizadas",
+      "coluna_chave_fisica": null,
+      "familia_dependencia": "relacoes",
+      "colunas_chave_canonica": [
+        "bit"
+      ]
+    }
+  ]
+}

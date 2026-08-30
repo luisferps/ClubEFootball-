@@ -1,0 +1,2884 @@
+{
+  "schema": "clubef-prova-reconciliacao-codigos-historicos-v1",
+  "generated_at": "2026-08-30T08:10:43.559302+00:00",
+  "read_only": true,
+  "rule_global_plus_one_used": false,
+  "physical_artifact": "C:\\Users\\Luis Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\7-VARREDURA-DO-JOGO\\artefatos\\desktop\\run-20260830-005609\\metadados-fisicos.json",
+  "physical_artifact_sha256": "f64858dd4fb6ae58f934bb2cbe70fe1491b5a1439f70b7fa6ad366182b98aec1",
+  "pairs_tested": 21,
+  "pairs_proven": 0,
+  "pairs_divergent_or_unproven": 21,
+  "proof": [
+    {
+      "physical_code": 203,
+      "database_code": 204,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 80,
+        "record_number_one_based": 81,
+        "record_sha256": "332f156198ec1288b87a33b2fcb164bc436b457fbd5ba19752d4e0e405dfbcab"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:368:6",
+            18,
+            154,
+            5
+          ],
+          [
+            "PB:384:6",
+            14,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:402:6",
+            4,
+            281,
+            5
+          ],
+          [
+            "PB:408:6",
+            1,
+            160,
+            5
+          ],
+          [
+            "PB:434:6",
+            24,
+            180,
+            5
+          ],
+          [
+            "PB:492:6",
+            24,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:518:6",
+            4,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            6,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            12,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 208,
+      "database_code": 209,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 82,
+        "record_number_one_based": 83,
+        "record_sha256": "12a4630266534aa80347a03c56b7b4f30ca1bbf170550fcbe330b86f9281c44b"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:368:6",
+            18,
+            154,
+            5
+          ],
+          [
+            "PB:384:6",
+            26,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:402:6",
+            4,
+            281,
+            5
+          ],
+          [
+            "PB:416:6",
+            1,
+            165,
+            5
+          ],
+          [
+            "PB:434:6",
+            1,
+            180,
+            5
+          ],
+          [
+            "PB:492:6",
+            2,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:512:6",
+            3,
+            170,
+            5
+          ],
+          [
+            "PB:524:6",
+            11,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            13,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 213,
+      "database_code": 214,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 84,
+        "record_number_one_based": 85,
+        "record_sha256": "2e1839247dd3f19ee5392621b1e372feacde9c0c22162a9ec43580ad90b15868"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:368:6",
+            18,
+            154,
+            5
+          ],
+          [
+            "PB:384:6",
+            4,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:402:6",
+            4,
+            281,
+            5
+          ],
+          [
+            "PB:416:6",
+            24,
+            165,
+            5
+          ],
+          [
+            "PB:492:6",
+            12,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:512:6",
+            4,
+            170,
+            5
+          ],
+          [
+            "PB:518:6",
+            1,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            17,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            13,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 218,
+      "database_code": 219,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": null,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 86,
+        "record_number_one_based": 87,
+        "record_sha256": "6917c70cbaf0d77c925d395c087f63e3e3e353117f4f2bf150586483fcc444d6"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "quantidade_jogadores_classe_impeto",
+          "tipo_raw": 2
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:368:6",
+            27,
+            154,
+            5
+          ],
+          [
+            "PB:384:6",
+            8,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:402:6",
+            22,
+            281,
+            5
+          ],
+          [
+            "PB:408:6",
+            16,
+            160,
+            5
+          ],
+          [
+            "PB:416:6",
+            4,
+            165,
+            5
+          ],
+          [
+            "PB:428:6",
+            1,
+            185,
+            5
+          ],
+          [
+            "PB:492:6",
+            22,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:518:6",
+            8,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            3,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            13,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 223,
+      "database_code": 224,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": null,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 88,
+        "record_number_one_based": 89,
+        "record_sha256": "882873bb17012238ca1cdda5f824c62a3f7a4332f7180243d38455c43cf082cc"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "avaliacao_ao_vivo",
+          "tipo_raw": 1
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:368:6",
+            27,
+            154,
+            5
+          ],
+          [
+            "PB:384:6",
+            18,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:402:6",
+            22,
+            281,
+            5
+          ],
+          [
+            "PB:416:6",
+            8,
+            165,
+            5
+          ],
+          [
+            "PB:434:6",
+            2,
+            180,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:512:6",
+            4,
+            170,
+            5
+          ],
+          [
+            "PB:518:6",
+            2,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            8,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            14,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 228,
+      "database_code": 229,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 90,
+        "record_number_one_based": 91,
+        "record_sha256": "80c60e14c43f0ef6e7befdde0f2914db448491c11d6689aa216cb954a9d62558"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:368:6",
+            27,
+            154,
+            5
+          ],
+          [
+            "PB:384:6",
+            30,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:402:6",
+            22,
+            281,
+            5
+          ],
+          [
+            "PB:416:6",
+            8,
+            165,
+            5
+          ],
+          [
+            "PB:434:6",
+            6,
+            180,
+            5
+          ],
+          [
+            "PB:492:6",
+            10,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:518:6",
+            2,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            14,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            14,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 233,
+      "database_code": 234,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 92,
+        "record_number_one_based": 93,
+        "record_sha256": "4027446eefedc5ea0667bf09d58576a20cea93c57618b8888c912ff5741dcc12"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:368:6",
+            27,
+            154,
+            5
+          ],
+          [
+            "PB:384:6",
+            2,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:402:6",
+            8,
+            281,
+            5
+          ],
+          [
+            "PB:408:6",
+            31,
+            160,
+            5
+          ],
+          [
+            "PB:416:6",
+            31,
+            165,
+            5
+          ],
+          [
+            "PB:428:6",
+            1,
+            185,
+            5
+          ],
+          [
+            "PB:434:6",
+            31,
+            180,
+            5
+          ],
+          [
+            "PB:492:6",
+            20,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:512:6",
+            31,
+            170,
+            5
+          ],
+          [
+            "PB:518:6",
+            31,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            12,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            14,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 238,
+      "database_code": 239,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 94,
+        "record_number_one_based": 95,
+        "record_sha256": "27af8ca87e5c4a2c3abedbf39d88aa24ddbaf7c30991062aeefe41e11fc9fb90"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:368:6",
+            4,
+            154,
+            5
+          ],
+          [
+            "PB:384:6",
+            12,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:402:6",
+            8,
+            281,
+            5
+          ],
+          [
+            "PB:408:6",
+            4,
+            160,
+            5
+          ],
+          [
+            "PB:416:6",
+            8,
+            165,
+            5
+          ],
+          [
+            "PB:434:6",
+            8,
+            180,
+            5
+          ],
+          [
+            "PB:492:6",
+            30,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:518:6",
+            4,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            5,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            14,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 243,
+      "database_code": 244,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 96,
+        "record_number_one_based": 97,
+        "record_sha256": "245931395a6c82ee4dc5a0e164f126c31bb51974479b832f87de3c80a8b5bb9c"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 4
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:368:6",
+            4,
+            154,
+            5
+          ],
+          [
+            "PB:384:6",
+            22,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:402:6",
+            8,
+            281,
+            5
+          ],
+          [
+            "PB:408:6",
+            20,
+            160,
+            5
+          ],
+          [
+            "PB:416:6",
+            4,
+            165,
+            5
+          ],
+          [
+            "PB:492:6",
+            8,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:512:6",
+            4,
+            170,
+            5
+          ],
+          [
+            "PB:524:6",
+            10,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            15,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 248,
+      "database_code": 249,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 98,
+        "record_number_one_based": 99,
+        "record_sha256": "a81aba07ccbea9c09cc43f8dfd48e3c4fef356636eaca295da066b2454b85fdf"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 3
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:368:6",
+            4,
+            154,
+            5
+          ],
+          [
+            "PB:384:6",
+            2,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:402:6",
+            8,
+            281,
+            5
+          ],
+          [
+            "PB:434:6",
+            1,
+            180,
+            5
+          ],
+          [
+            "PB:492:6",
+            18,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:512:6",
+            19,
+            170,
+            5
+          ],
+          [
+            "PB:524:6",
+            16,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            15,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 253,
+      "database_code": 254,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": null,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 100,
+        "record_number_one_based": 101,
+        "record_sha256": "d95fae664b3a8ac5209cd739aee98a4c69a4fe1729902e9f78f2f000dd11abfd"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "avaliacao_ao_vivo",
+          "tipo_raw": 1
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:368:6",
+            9,
+            154,
+            5
+          ],
+          [
+            "PB:384:6",
+            16,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:402:6",
+            18,
+            281,
+            5
+          ],
+          [
+            "PB:408:6",
+            16,
+            160,
+            5
+          ],
+          [
+            "PB:434:6",
+            2,
+            180,
+            5
+          ],
+          [
+            "PB:492:6",
+            28,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:512:6",
+            8,
+            170,
+            5
+          ],
+          [
+            "PB:518:6",
+            2,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            7,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            15,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 258,
+      "database_code": 259,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 102,
+        "record_number_one_based": 103,
+        "record_sha256": "9fc4178748bffec16aaae31afd50fb91149d9b406d1c33fdbf9e7f86d4d12cb8"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 7
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:368:6",
+            9,
+            154,
+            5
+          ],
+          [
+            "PB:384:6",
+            24,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:402:6",
+            18,
+            281,
+            5
+          ],
+          [
+            "PB:416:6",
+            24,
+            165,
+            5
+          ],
+          [
+            "PB:492:6",
+            6,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:512:6",
+            4,
+            170,
+            5
+          ],
+          [
+            "PB:518:6",
+            1,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            17,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            16,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            17,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 268,
+      "database_code": 269,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": null,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 106,
+        "record_number_one_based": 107,
+        "record_sha256": "999bee7cdba35efb616acf21321ee77e30d929fb40c728c1dc0e5ccf55080ce0"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "avaliacao_ao_vivo",
+          "tipo_raw": 1
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:384:6",
+            18,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:408:6",
+            16,
+            160,
+            5
+          ],
+          [
+            "PB:416:6",
+            4,
+            165,
+            5
+          ],
+          [
+            "PB:422:6",
+            20,
+            224,
+            5
+          ],
+          [
+            "PB:428:6",
+            1,
+            185,
+            5
+          ],
+          [
+            "PB:448:6",
+            3,
+            229,
+            5
+          ],
+          [
+            "PB:492:6",
+            26,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:518:6",
+            8,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            3,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            16,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 273,
+      "database_code": 274,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 108,
+        "record_number_one_based": 109,
+        "record_sha256": "60d63369840dafc9d348fd9c5b60a264a923b43f4e1adbceafe60c7fb3b005d8"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 4
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:384:6",
+            22,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            16,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:416:6",
+            4,
+            165,
+            5
+          ],
+          [
+            "PB:422:6",
+            26,
+            224,
+            5
+          ],
+          [
+            "PB:434:6",
+            16,
+            180,
+            5
+          ],
+          [
+            "PB:448:6",
+            3,
+            229,
+            5
+          ],
+          [
+            "PB:492:6",
+            4,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:518:6",
+            24,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            1,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            17,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 278,
+      "database_code": 279,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 110,
+        "record_number_one_based": 111,
+        "record_sha256": "ba1a46671b13716c7f1afda466b277003636bf8355b3f9ebaa79a723fc8baf49"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:384:6",
+            8,
+            249,
+            5
+          ],
+          [
+            "PB:408:6",
+            1,
+            160,
+            5
+          ],
+          [
+            "PB:434:6",
+            10,
+            180,
+            5
+          ],
+          [
+            "PB:492:6",
+            14,
+            239,
+            5
+          ],
+          [
+            "PB:498:6",
+            1,
+            144,
+            5
+          ],
+          [
+            "PB:518:6",
+            2,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            19,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            17,
+            244,
+            5
+          ],
+          [
+            "PB:550:6",
+            2,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 283,
+      "database_code": 284,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 112,
+        "record_number_one_based": 113,
+        "record_sha256": "be81f36962f387aa8d5350401011c813c8a7289400cdea5de914b37966e7798e"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:384:6",
+            12,
+            249,
+            5
+          ],
+          [
+            "PB:408:6",
+            3,
+            160,
+            5
+          ],
+          [
+            "PB:434:6",
+            16,
+            180,
+            5
+          ],
+          [
+            "PB:492:6",
+            24,
+            239,
+            5
+          ],
+          [
+            "PB:498:6",
+            1,
+            144,
+            5
+          ],
+          [
+            "PB:518:6",
+            16,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            22,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            17,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            2,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 288,
+      "database_code": 289,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 114,
+        "record_number_one_based": 115,
+        "record_sha256": "98998e4ef908bf7dd8caebda0a683a5441494cdbb405d444918d9c5e55dfd04f"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:384:6",
+            18,
+            249,
+            5
+          ],
+          [
+            "PB:408:6",
+            2,
+            160,
+            5
+          ],
+          [
+            "PB:434:6",
+            2,
+            180,
+            5
+          ],
+          [
+            "PB:492:6",
+            2,
+            239,
+            5
+          ],
+          [
+            "PB:498:6",
+            1,
+            144,
+            5
+          ],
+          [
+            "PB:512:6",
+            12,
+            170,
+            5
+          ],
+          [
+            "PB:524:6",
+            24,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            18,
+            244,
+            5
+          ],
+          [
+            "PB:550:6",
+            2,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 293,
+      "database_code": 294,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": null,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 116,
+        "record_number_one_based": 117,
+        "record_sha256": "a20a818d90d8daebf324c25c043e0ba3b477fa877c154389bb1c13d3215f361b"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "avaliacao_ao_vivo",
+          "tipo_raw": 1
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:384:6",
+            22,
+            249,
+            5
+          ],
+          [
+            "PB:416:6",
+            12,
+            165,
+            5
+          ],
+          [
+            "PB:492:6",
+            12,
+            239,
+            5
+          ],
+          [
+            "PB:498:6",
+            1,
+            144,
+            5
+          ],
+          [
+            "PB:518:6",
+            20,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            27,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            18,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            16,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            2,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 298,
+      "database_code": 299,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 118,
+        "record_number_one_based": 119,
+        "record_sha256": "d0bd318cbba6baccab2da9d3018845a6f590f7b98931cf3de69fe8df7a70c0bb"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:384:6",
+            2,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            22,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:416:6",
+            6,
+            165,
+            5
+          ],
+          [
+            "PB:460:6",
+            16,
+            256,
+            5
+          ],
+          [
+            "PB:492:6",
+            22,
+            239,
+            5
+          ],
+          [
+            "PB:498:6",
+            1,
+            144,
+            5
+          ],
+          [
+            "PB:512:6",
+            8,
+            170,
+            5
+          ],
+          [
+            "PB:518:6",
+            2,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            30,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            18,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            20,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 308,
+      "database_code": 309,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": true,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 122,
+        "record_number_one_based": 123,
+        "record_sha256": "5ee1378074ce10cb4ba4f46e50cdc5306668b8d6f09711bacc8ba75cd89392cd"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 4
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:384:6",
+            22,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            22,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:408:6",
+            20,
+            160,
+            5
+          ],
+          [
+            "PB:416:6",
+            4,
+            165,
+            5
+          ],
+          [
+            "PB:460:6",
+            16,
+            256,
+            5
+          ],
+          [
+            "PB:492:6",
+            10,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:512:6",
+            4,
+            170,
+            5
+          ],
+          [
+            "PB:524:6",
+            10,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            19,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            20,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    },
+    {
+      "physical_code": 368,
+      "database_code": 369,
+      "status": "divergente",
+      "checks": {
+        "provenance_record": true,
+        "source_role": true,
+        "condition_raw": false,
+        "condition_semantics": null,
+        "targets": true,
+        "effects": false,
+        "ranges": true
+      },
+      "physical_provenance": {
+        "source_role": "dt870_original",
+        "source_file_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+        "record_index_zero_based": 146,
+        "record_number_one_based": 147,
+        "record_sha256": "bdb769c0d80428e31b09281df50da4a3a53934d2f904b88f3c1cddbabad2fe24"
+      },
+      "condition": {
+        "physical": {
+          "criterio": "avaliacao_ao_vivo",
+          "tipo_raw": 1
+        },
+        "database": {
+          "condicional": null,
+          "tipo_raw": null,
+          "rows": []
+        }
+      },
+      "targets": {
+        "physical": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        },
+        "database": {
+          "nacionalidade_regiao": [],
+          "liga_categoria": [],
+          "clube": [],
+          "classe": [],
+          "outro": []
+        }
+      },
+      "effects": {
+        "physical": [
+          [
+            "PB:384:6",
+            28,
+            249,
+            5
+          ],
+          [
+            "PB:390:6",
+            23,
+            261,
+            5
+          ],
+          [
+            "PB:396:6",
+            16,
+            276,
+            5
+          ],
+          [
+            "PB:408:6",
+            2,
+            160,
+            5
+          ],
+          [
+            "PB:434:6",
+            16,
+            180,
+            5
+          ],
+          [
+            "PB:460:6",
+            12,
+            256,
+            5
+          ],
+          [
+            "PB:492:6",
+            2,
+            239,
+            5
+          ],
+          [
+            "PB:504:6",
+            8,
+            149,
+            5
+          ],
+          [
+            "PB:512:6",
+            8,
+            170,
+            5
+          ],
+          [
+            "PB:518:6",
+            8,
+            175,
+            5
+          ],
+          [
+            "PB:524:6",
+            13,
+            122,
+            5
+          ],
+          [
+            "PB:530:6",
+            23,
+            244,
+            5
+          ],
+          [
+            "PB:544:6",
+            20,
+            266,
+            5
+          ],
+          [
+            "PB:550:6",
+            1,
+            271,
+            5
+          ]
+        ],
+        "database": []
+      },
+      "ranges": {
+        "physical": [],
+        "database": []
+      }
+    }
+  ]
+}

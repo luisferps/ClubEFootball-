@@ -1,0 +1,39 @@
+{
+  "test": "runtime_historico_failclosed",
+  "passed": true,
+  "read_only": true,
+  "database_write": false,
+  "domain_write": false,
+  "canonical_records": 412,
+  "canonical_records_with_dt870_original": 0,
+  "historical_records": 165,
+  "historical_prefix_bytes": 24,
+  "historical_source_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b",
+  "historical_semantic_status": "layout_legado_sem_decodificador_comprovado",
+  "historical_canonical_merge_enabled": false,
+  "displacement_candidates_verified": 22,
+  "displacement_candidates_total": 22,
+  "samples": [
+    {
+      "database_code": 204,
+      "raw_code": 203,
+      "record_number": 81,
+      "record_sha256": "332f156198ec1288b87a33b2fcb164bc436b457fbd5ba19752d4e0e405dfbcab",
+      "exact": true
+    },
+    {
+      "database_code": 209,
+      "raw_code": 208,
+      "record_number": 83,
+      "record_sha256": "12a4630266534aa80347a03c56b7b4f30ca1bbf170550fcbe330b86f9281c44b",
+      "exact": true
+    },
+    {
+      "database_code": 214,
+      "raw_code": 213,
+      "record_number": 85,
+      "record_sha256": "2e1839247dd3f19ee5392621b1e372feacde9c0c22162a9ec43580ad90b15868",
+      "exact": true
+    }
+  ]
+}

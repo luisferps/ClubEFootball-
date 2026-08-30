@@ -29,6 +29,7 @@ namespace ClubEfootballWindowsApp
 
     internal sealed class ExtractorForm : Form
     {
+        private const string DesktopProtocolVersion = "5.0.0";
         private readonly string root;
         private readonly JavaScriptSerializer json = new JavaScriptSerializer();
         private readonly Dictionary<string, ListViewItem> families = new Dictionary<string, ListViewItem>(StringComparer.OrdinalIgnoreCase);
@@ -36,14 +37,14 @@ namespace ClubEfootballWindowsApp
         private readonly ProgressBar progress = new ProgressBar();
         private readonly ListView familyList = new ListView();
         private readonly RichTextBox log = new RichTextBox();
-        private readonly Button start = new Button(), cancel = new Button(), viewResult = new Button();
+        private readonly Button start = new Button(), cancel = new Button(), viewResult = new Button(), approve = new Button(), apply = new Button();
         private Process worker;
         private string cancelPath, resultPath;
 
         internal ExtractorForm(string applicationRoot)
         {
             root = applicationRoot;
-            Text = "Extrator eFootball — conferência somente leitura";
+            Text = "Extrator eFootball V" + DesktopProtocolVersion + " — conferência somente leitura";
             MinimumSize = new Size(900, 650); Size = new Size(1080, 760); StartPosition = FormStartPosition.CenterScreen;
             Font = new Font("Segoe UI", 9F);
             BuildLayout();
@@ -67,7 +68,9 @@ namespace ClubEfootballWindowsApp
             start.Text = "INICIAR VARREDURA"; start.AutoSize = true; start.Padding = new Padding(12, 6, 12, 6); start.Click += delegate { StartWorker(); };
             cancel.Text = "CANCELAR"; cancel.AutoSize = true; cancel.Padding = new Padding(12, 6, 12, 6); cancel.Enabled = false; cancel.Click += delegate { RequestCancel(); };
             viewResult.Text = "VER DIVERGÊNCIAS"; viewResult.AutoSize = true; viewResult.Padding = new Padding(12, 6, 12, 6); viewResult.Enabled = false; viewResult.Click += delegate { OpenResult(); };
-            actions.Controls.Add(start); actions.Controls.Add(cancel); actions.Controls.Add(viewResult); layout.Controls.Add(actions, 0, 5);
+            approve.Text = "APROVAR PACOTE"; approve.AutoSize = true; approve.Padding = new Padding(12, 6, 12, 6); approve.Enabled = false; approve.Click += delegate { ApprovePackage(); };
+            apply.Text = "APLICAR PACOTE"; apply.AutoSize = true; apply.Padding = new Padding(12, 6, 12, 6); apply.Enabled = false; apply.Click += delegate { ApplyPackage(); };
+            actions.Controls.Add(start); actions.Controls.Add(cancel); actions.Controls.Add(viewResult); actions.Controls.Add(approve); actions.Controls.Add(apply); layout.Controls.Add(actions, 0, 5);
         }
 
         private void SetAvailability(string databaseText, string sourceText, string stageText) { database.Text = databaseText; sources.Text = sourceText; stage.Text = "Etapa: " + stageText; }
@@ -96,8 +99,8 @@ namespace ClubEfootballWindowsApp
             string runDirectory = Path.Combine(root, "artefatos", "desktop", "run-" + DateTime.Now.ToString("yyyyMMdd-HHmmss")); Directory.CreateDirectory(runDirectory);
             cancelPath = Path.Combine(runDirectory, "CANCELAR.txt"); resultPath = Path.Combine(runDirectory, "resultado.json");
             foreach (ListViewItem item in families.Values) { item.SubItems[1].Text = "aguardando"; item.SubItems[2].Text = "Ainda não iniciada."; }
-            log.Clear(); progress.Value = 0; start.Enabled = false; cancel.Enabled = true; viewResult.Enabled = false; SetAvailability("Banco: conectando em leitura", "Fontes: verificando", "Preparando processo de extração separado."); AppendLog("Iniciando worker separado. Nenhuma escrita no banco é permitida.");
-            ProcessStartInfo info = new ProcessStartInfo(); info.FileName = python; info.Arguments = (launcher ? "-3 " : "") + Quote(script) + " --root " + Quote(root) + " --run-dir " + Quote(runDirectory) + " --cancel " + Quote(cancelPath); info.WorkingDirectory = root; info.UseShellExecute = false; info.CreateNoWindow = true; info.RedirectStandardOutput = true; info.RedirectStandardError = true; info.EnvironmentVariables["PYTHONPATH"] = Path.Combine(root, "executor", "vendor"); info.EnvironmentVariables["PYTHONUNBUFFERED"] = "1"; info.EnvironmentVariables.Remove("CLUBEF_ENABLE_REAL_WRITE");
+            log.Clear(); progress.Value = 0; start.Enabled = false; cancel.Enabled = true; viewResult.Enabled = false; approve.Enabled = false; apply.Enabled = false; SetAvailability("Banco: conectando em leitura", "Fontes: verificando", "Preparando processo de extração separado."); AppendLog("Iniciando worker desktop V" + DesktopProtocolVersion + ". Nenhuma escrita no banco é permitida.");
+            ProcessStartInfo info = new ProcessStartInfo(); info.FileName = python; info.Arguments = (launcher ? "-3 " : "") + Quote(script) + " --root " + Quote(root) + " --run-dir " + Quote(runDirectory) + " --cancel " + Quote(cancelPath) + " --protocol-version " + Quote(DesktopProtocolVersion); info.WorkingDirectory = root; info.UseShellExecute = false; info.CreateNoWindow = true; info.RedirectStandardOutput = true; info.RedirectStandardError = true; info.EnvironmentVariables["PYTHONPATH"] = Path.Combine(root, "executor", "vendor"); info.EnvironmentVariables["PYTHONUNBUFFERED"] = "1"; info.EnvironmentVariables.Remove("CLUBEF_ENABLE_REAL_WRITE");
             worker = new Process { StartInfo = info, EnableRaisingEvents = true };
             worker.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) { if (!String.IsNullOrEmpty(e.Data)) HandleWorkerLine(e.Data); };
             worker.ErrorDataReceived += delegate(object sender, DataReceivedEventArgs e) { if (!String.IsNullOrEmpty(e.Data)) AppendFromWorker("ERRO | " + e.Data); };
@@ -142,10 +145,45 @@ namespace ClubEfootballWindowsApp
         }
         private void FinishWorker(int exitCode)
         {
-            cancel.Enabled = false; start.Enabled = true; viewResult.Enabled = File.Exists(resultPath);
+            cancel.Enabled = false; start.Enabled = true; viewResult.Enabled = File.Exists(resultPath); approve.Enabled = File.Exists(Path.Combine(Path.GetDirectoryName(resultPath), "pacote-revisao.json")); apply.Enabled = false;
             if (exitCode == 0) { progress.Value = 100; stage.Text = "Etapa: conferência concluída — somente leitura."; AppendLog("Worker concluído. Nenhuma escrita automática foi executada."); }
             else { stage.Text = "Etapa: worker encerrado com código " + exitCode + ". Consulte o log e o resultado local."; AppendLog("Worker encerrado com código " + exitCode + ". A janela permaneceu disponível."); }
         }
-        private void OpenResult() { if (File.Exists(resultPath)) Process.Start(new ProcessStartInfo("notepad.exe", Quote(resultPath)) { UseShellExecute = false }); }
+        private void OpenResult()
+        {
+            if (!File.Exists(resultPath)) return;
+            string reviewHtml = Path.Combine(Path.GetDirectoryName(resultPath), "resultado.html");
+            if (!File.Exists(reviewHtml))
+            {
+                MessageBox.Show("O resumo HTML desta execução ainda não existe. O JSON técnico foi preservado e não será aberto no Bloco de Notas.", "Extrator eFootball", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            try
+            {
+                Process.Start(new ProcessStartInfo { FileName = reviewHtml, UseShellExecute = true });
+                AppendLog("Resumo de divergências aberto no navegador: " + reviewHtml);
+            }
+            catch (Exception error)
+            {
+                AppendLog("Não foi possível abrir o resumo HTML: " + error.Message);
+                MessageBox.Show("Não foi possível abrir o resumo HTML: " + error.Message, "Extrator eFootball", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void ApprovePackage()
+        {
+            string package = Path.Combine(Path.GetDirectoryName(resultPath), "pacote-revisao.json"); if (!File.Exists(package)) return;
+            if (MessageBox.Show("Aprovar este pacote de revisão no contrato do Extrator? O aceite só vale se hash, fontes e contrato ainda coincidirem.", "Aprovação interna", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+            bool launcher; string python = FindPython(out launcher); string script = Path.Combine(root, "executor", "desktop_worker.py");
+            ProcessStartInfo info = new ProcessStartInfo { FileName = python, Arguments = (launcher ? "-3 " : "") + Quote(script) + " --root " + Quote(root) + " --run-dir " + Quote(Path.GetDirectoryName(resultPath)) + " --cancel " + Quote(Path.Combine(Path.GetDirectoryName(resultPath), "CANCELAR.txt")) + " --protocol-version " + Quote(DesktopProtocolVersion) + " --approve-review " + Quote(package), WorkingDirectory = root, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true };
+            using (Process p = Process.Start(info)) { string output = p.StandardOutput.ReadToEnd() + p.StandardError.ReadToEnd(); p.WaitForExit(); AppendLog(output); apply.Enabled = p.ExitCode == 0; MessageBox.Show(p.ExitCode == 0 ? "Pacote aprovado no fluxo interno. A aplicação revalidará o mesmo hash, contrato, fontes e cobertura antes de qualquer escrita." : "Aprovação recusada: " + output, "Extrator eFootball", MessageBoxButtons.OK, p.ExitCode == 0 ? MessageBoxIcon.Information : MessageBoxIcon.Error); }
+        }
+        private void ApplyPackage()
+        {
+            string package = Path.Combine(Path.GetDirectoryName(resultPath), "pacote-revisao.json"); if (!File.Exists(package)) return;
+            if (MessageBox.Show("Aplicar exclusivamente este pacote já aprovado? O worker recusará hash, fontes, contrato, cobertura ou envelopes divergentes.", "Aplicação transacional", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+            bool launcher; string python = FindPython(out launcher); string script = Path.Combine(root, "executor", "desktop_worker.py");
+            ProcessStartInfo info = new ProcessStartInfo { FileName = python, Arguments = (launcher ? "-3 " : "") + Quote(script) + " --root " + Quote(root) + " --run-dir " + Quote(Path.GetDirectoryName(resultPath)) + " --cancel " + Quote(Path.Combine(Path.GetDirectoryName(resultPath), "CANCELAR.txt")) + " --protocol-version " + Quote(DesktopProtocolVersion) + " --apply-review " + Quote(package), WorkingDirectory = root, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true };
+            using (Process p = Process.Start(info)) { string output = p.StandardOutput.ReadToEnd() + p.StandardError.ReadToEnd(); p.WaitForExit(); AppendLog(output); MessageBox.Show(p.ExitCode == 0 ? "Pacote aplicado e confirmado." : "Aplicação recusada com segurança: " + output, "Extrator eFootball", MessageBoxButtons.OK, p.ExitCode == 0 ? MessageBoxIcon.Information : MessageBoxIcon.Error); }
+        }
     }
 }

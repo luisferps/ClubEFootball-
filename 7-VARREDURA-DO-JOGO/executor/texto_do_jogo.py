@@ -132,6 +132,66 @@ def baseline_snapshot(connection: Any, schema: str = "clube_novo") -> dict[str, 
     }
 
 
+def validate_text_snapshot(snapshot: dict[str, Any], connection: Any, schema: str = "clube_novo") -> dict[str, Any]:
+    """Classifica a fotografia de ``all.str`` por chave oficial e procedência.
+
+    Não promove snapshot, não interpreta quantidade e não usa texto exibido
+    como identidade: a chave é sempre ``(secao, id_texto)``.
+    """
+    records = snapshot.get("records") if isinstance(snapshot, dict) else None
+    if not isinstance(records, list):
+        raise ValueError("fotografia física de textos não contém registros")
+    source: dict[str, dict[str, Any]] = {}
+    classification: dict[str, list[dict[str, Any]]] = {kind: [] for kind in ("new", "removed", "altered", "repeated", "invalid")}
+    for row in records:
+        if not isinstance(row, dict):
+            classification["invalid"].append({"classificacao": "invalido", "escopo": "textos", "chave_canonica": None, "reason": "registro físico não é objeto"})
+            continue
+        try:
+            key = _key(row)
+        except (TypeError, ValueError):
+            classification["invalid"].append({"classificacao": "invalido", "escopo": "textos", "chave_canonica": None, "reason": "chave física inválida"})
+            continue
+        if key in source:
+            classification["repeated"].append({"classificacao": "repetido", "escopo": "textos", "chave_canonica": {"secao": row.get("secao"), "id_texto": row.get("id_texto")}, "fonte_fisica": {"arquivo": row.get("arquivo"), "fonte_arquivo_sha256": row.get("fonte_arquivo_sha256")}})
+            continue
+        source[key] = row
+    database_rows = fetch_text_rows(connection, schema, require_full_schema=False)
+    database: dict[str, dict[str, Any]] = {}
+    for row in database_rows:
+        key = _key(row)
+        if key in database:
+            classification["repeated"].append({"classificacao": "repetido", "escopo": "textos", "chave_canonica": {"secao": row.get("secao"), "id_texto": row.get("id_texto")}, "vinculo_banco": {"secao": row.get("secao"), "id_texto": row.get("id_texto")}})
+            continue
+        database[key] = row
+    fields = [field for field in TEXT_COLUMNS if field != "extraido_em"]
+    for key in sorted(set(source) | set(database)):
+        physical, stored = source.get(key), database.get(key)
+        stable = {"secao": (physical or stored).get("secao"), "id_texto": (physical or stored).get("id_texto")}
+        provenance = None if physical is None else {field: physical.get(field) for field in ("arquivo", "cpk", "fonte_cpk_sha256", "fonte_arquivo_sha256", "secao_offset", "entrada_offset", "texto_offset")}
+        if stored is None:
+            classification["new"].append({"classificacao": "novo", "escopo": "textos", "chave_canonica": stable, "fonte_fisica": provenance, "vinculo_banco": None, "valor_fisico": physical})
+        elif physical is None:
+            classification["removed"].append({"classificacao": "removido", "escopo": "textos", "chave_canonica": stable, "fonte_fisica": None, "vinculo_banco": stable, "valor_banco": stored})
+        else:
+            changed = {field: {"fisico": physical.get(field), "banco": stored.get(field)} for field in fields if _canonical(physical.get(field)) != _canonical(stored.get(field))}
+            if changed:
+                classification["altered"].append({"classificacao": "alterado", "escopo": "textos", "chave_canonica": stable, "fonte_fisica": provenance, "vinculo_banco": stable, "campos_alterados": changed})
+    technical_integrity = not classification["repeated"] and not classification["invalid"]
+    return {
+        "contract": "clubef-text-readback-by-key-v1",
+        "authority": f"{schema}.texto_do_jogo",
+        "transaction_read_only": True,
+        "database_write": False,
+        "classification_complete": True,
+        "technical_integrity": technical_integrity,
+        "exact_match": not any(classification[key] for key in classification),
+        "classification": classification,
+        "source_sha256": _sha256([source[key] for key in sorted(source)]),
+        "database_sha256": _sha256([database[key] for key in sorted(database)]),
+    }
+
+
 def _normalized_record(record: dict[str, Any]) -> dict[str, Any]:
     result: dict[str, Any] = {}
     for column in TEXT_COLUMNS:

@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 > nul
-title 2 - SUBIR PRO GITHUB
+title 2 - PRIMEIRA PUBLICACAO SOMENTE
 cd /d "%~dp0"
 set LOG=%~dp0_ERRO-DO-GITHUB.txt
 
@@ -12,8 +12,11 @@ echo. >> "%LOG%"
 
 echo.
 echo  ============================================================
-echo   SUBIR PRO GITHUB
+echo   2 - PRIMEIRA PUBLICACAO SOMENTE
 echo  ============================================================
+echo.
+echo   Este botao so serve para uma pasta que ainda NAO tenha .git.
+echo   Para este repositorio Main ja existente, use o botao 3.
 echo.
 echo   Tudo que acontecer fica gravado em _ERRO-DO-GITHUB.txt
 echo   Se der errado, e so me mandar esse arquivo.
@@ -33,6 +36,17 @@ if errorlevel 1 (
 git --version >> "%LOG%" 2>&1
 echo   ok: git instalado
 
+if exist ".git" (
+  echo.
+  echo   ^>^> PAREI. Este repositorio ja existe.
+  echo      Para publicar TODAS as alteracoes, use:
+  echo      3-ATUALIZAR-O-GITHUB.bat
+  echo REPOSITORIO EXISTENTE - USE O BOTAO 3 >> "%LOG%"
+  echo.
+  pause
+  exit /b 1
+)
+
 echo. >> "%LOG%"
 echo ---- o .gitignore protege a chave? >> "%LOG%"
 if not exist ".gitignore" (
@@ -48,22 +62,29 @@ if errorlevel 1 (
   pause
   exit /b 1
 )
+findstr /C:".env" ".gitignore" >nul 2>&1
+if errorlevel 1 (
+  echo   ^>^> PAREI. O .gitignore nao protege arquivos .env.
+  echo GITIGNORE SEM PROTECAO DE .ENV >> "%LOG%"
+  pause
+  exit /b 1
+)
+findstr /C:"*.key" ".gitignore" >nul 2>&1
+if errorlevel 1 (
+  echo   ^>^> PAREI. O .gitignore nao protege arquivos de chave.
+  echo GITIGNORE SEM PROTECAO DE CHAVES >> "%LOG%"
+  pause
+  exit /b 1
+)
 echo   ok: a chave esta protegida
 
 echo. >> "%LOG%"
 echo ---- estado do repositorio local >> "%LOG%"
-if not exist ".git" (
-  echo   ---- primeira vez: criando o repositorio local
-  echo PRIMEIRA VEZ - git init >> "%LOG%"
-  git init >> "%LOG%" 2>&1
-  git branch -M main >> "%LOG%" 2>&1
-  git remote add origin https://github.com/luisferps/ClubEFootball-.git >> "%LOG%" 2>&1
-) else (
-  echo REPOSITORIO JA EXISTE >> "%LOG%"
-  git remote -v >> "%LOG%" 2>&1
-  git remote remove origin >> "%LOG%" 2>&1
-  git remote add origin https://github.com/luisferps/ClubEFootball-.git >> "%LOG%" 2>&1
-)
+echo   ---- primeira vez: criando o repositorio local
+echo PRIMEIRA VEZ - git init >> "%LOG%"
+git init >> "%LOG%" 2>&1
+git branch -M main >> "%LOG%" 2>&1
+git remote add origin https://github.com/luisferps/ClubEFootball-.git >> "%LOG%" 2>&1
 
 echo.
 echo   ---- juntando os arquivos (pode demorar um pouco)

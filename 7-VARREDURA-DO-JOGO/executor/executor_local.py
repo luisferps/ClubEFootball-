@@ -29,12 +29,13 @@ from texto_do_jogo import (
     apply_text_selection,
     baseline_snapshot as text_baseline_snapshot,
     preflight_text_selection,
+    validate_text_snapshot,
 )
 
 from card_relations import validate_card_relations
 from card_dimensions import validate_card_dimensions
-from impetos import validate_impetos
-from tecnicos import validate_tecnicos
+from impetos_v4610 import validate_impetos_v4610
+from tecnicos_v4610 import validate_tecnicos_v4610
 from card_impetus import apply_canonical_slot_projection, readback_card_slots, validate_physical_slot_projection
 
 
@@ -82,6 +83,7 @@ ALLOWED_MODES = {"card_diff", "card_full", "metadata_diff"}
 # uma carga produtiva. Este bloqueio independe do arquivo de configuração e só
 # poderá ser removido por uma autorização posterior, explícita e auditável.
 PRODUCTIVE_WRITES_LOCKED = True
+REVIEW_GATE_CONTRACT = "clubef-review-gate-v1"
 
 
 def default_source_definitions() -> dict[str, dict[str, Any]]:
@@ -132,6 +134,49 @@ def source_definitions() -> dict[str, dict[str, Any]]:
         configured = os.environ.get(variable)
         if configured:
             definitions[role]["candidates"] = [Path(configured)]
+    return definitions
+
+
+def _expand_contract_path(template: str) -> Path:
+    """Expande somente variáveis explícitas do localizador versionado pelo banco."""
+    expanded = os.path.expandvars(template)
+    if "%" in expanded:
+        raise ValueError("localizador do contrato contém variável de ambiente não resolvida")
+    return Path(expanded)
+
+
+def contract_source_definitions(contract: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Descoberta exclusivamente pelo catálogo-view tipado de ``clube_novo``.
+
+    Caminho, papel e obrigatoriedade não são escolhidos pelo executável. Um
+    rótulo humano é informativo; identidade é sempre o papel de fonte do plano.
+    """
+    if contract.get("contrato_formato") != "pedido_leitura_tipado_v1":
+        raise ValueError("pedido sem formato tipado de descoberta")
+    catalog = contract.get("catalogo_enderecos")
+    if not isinstance(catalog, list) or not catalog:
+        raise ValueError("pedido tipado sem catálogo único de endereços")
+    by_role: dict[str, list[dict[str, Any]]] = {}
+    for item in catalog:
+        if not isinstance(item, dict) or not isinstance(item.get("papel_fonte"), str) or not isinstance(item.get("arquivo"), str):
+            raise ValueError("catálogo de endereço sem fonte/arquivo canônicos")
+        if not isinstance(item.get("campo_id"), int) or not isinstance(item.get("familia_id"), int):
+            raise ValueError("catálogo de endereço sem FK estável de campo/família")
+        if not isinstance(item.get("template_caminho"), str) or not item["template_caminho"]:
+            raise ValueError("catálogo de endereço sem localizador físico")
+        by_role.setdefault(item["papel_fonte"], []).append(item)
+    definitions: dict[str, dict[str, Any]] = {}
+    for role, entries in sorted(by_role.items()):
+        role_locators = sorted(entries, key=lambda item: int(item.get("precedencia_localizador", 0)))
+        definitions[role] = {
+            "label": role,
+            "filename": ", ".join(sorted({str(item["arquivo"]) for item in entries})),
+            "purpose": "definido pelo catálogo único de endereços do contrato",
+            "operations": sorted({str(item.get("leitor_id") or item.get("leitor_familia")) for item in entries}),
+            "candidates": list(dict.fromkeys(_expand_contract_path(str(item["template_caminho"])) for item in role_locators)),
+            "required": any(bool(item.get("arquivo_obrigatorio", True)) or bool(item.get("localizador_obrigatorio", True)) for item in entries),
+            "contract_cpk_sha256": next((str(item["sha256_cpk"]).lower() for item in role_locators if item.get("sha256_cpk")), None),
+        }
     return definitions
 
 
@@ -549,30 +594,18 @@ def connection_source() -> str:
 
 
 def write_is_enabled(config: dict[str, Any]) -> bool:
-    return (not PRODUCTIVE_WRITES_LOCKED) and bool(config.get("write_enabled")) and os.environ.get("CLUBEF_ENABLE_REAL_WRITE") == "EU_AUTORIZO_ESCRITA_REAL"
+    # Este worker devolve resultado normalizado e diagnóstico; ele não contém
+    # aplicador de dados de jogo. A trava impede qualquer rota herdada de
+    # confundir essa devolução com uma carga manual.
+    return False
 
 
 def manual_card_apply_allowed(config: dict[str, Any]) -> bool:
-    if PRODUCTIVE_WRITES_LOCKED:
-        return False
-    try:
-        assert_card_target(config)
-    except ValueError:
-        return False
-    return bool(config.get("allow_manual_card_apply")) and bool(connection_string())
+    return False
 
 
 def manual_text_apply_allowed(config: dict[str, Any]) -> bool:
-    if PRODUCTIVE_WRITES_LOCKED:
-        return False
-    database = config.get("database") or {}
-    adapter = (config.get("catalog_adapters") or {}).get("textos") or {}
-    return (
-        database.get("schema") == "clube_novo"
-        and bool(config.get("allow_manual_text_apply"))
-        and bool(adapter.get("enabled"))
-        and bool(connection_string())
-    )
+    return False
 
 
 def assert_card_target(config: dict[str, Any]) -> None:
@@ -798,6 +831,50 @@ def current_card_baseline(config: dict[str, Any], reading_contract: dict[str, An
     }
 
 
+def current_card_canonical_baseline(config: dict[str, Any], reading_contract: dict[str, Any]) -> tuple[bytes, dict[str, Any]]:
+    """Lê apenas as colunas de Cartas declaradas nas projeções do contrato.
+
+    Este artefato interno não substitui o CSV de apresentação nem introduz uma
+    lista local de FKs: seus campos são a união das colunas de destino que o
+    banco enviou no próprio pedido, sempre identificadas por ``card_id``.
+    """
+    assert_card_target(config)
+    projections = reading_contract.get("projecoes_cartas")
+    if not isinstance(projections, list) or not projections:
+        raise RuntimeError("pedido canônico sem projeções de cartas")
+    destinations = sorted({item.get("destino_coluna") for item in projections if isinstance(item, dict) and isinstance(item.get("destino_coluna"), str) and _CONTRACT_IDENTIFIER.fullmatch(item["destino_coluna"])})
+    if not destinations or any(not isinstance(item, dict) or item.get("destino_schema") != "clube_novo" or item.get("destino_tabela") != config["database"]["cards_table"] for item in projections):
+        raise RuntimeError("projeção canônica de cartas inválida no pedido")
+    dsn = connection_string()
+    if not dsn:
+        raise RuntimeError("a conexão segura com clube_novo não está disponível")
+    psycopg, sql, _ = import_psycopg()
+    columns = ["card_id", *[column for column in destinations if column != "card_id"]]
+    with psycopg.connect(dsn, connect_timeout=20) as connection:
+        connection.read_only = True
+        with connection.cursor() as cursor:
+            cursor.execute("show transaction_read_only")
+            if cursor.fetchone()[0] != "on":
+                raise RuntimeError("a leitura canônica de cartas não ficou protegida")
+            query = sql.SQL("select {} from {}.{} order by card_id").format(
+                sql.SQL(",").join(sql.Identifier(column) for column in columns),
+                sql.Identifier(config["database"]["schema"]), sql.Identifier(config["database"]["cards_table"]),
+            )
+            cursor.execute(query)
+            values = cursor.fetchall()
+    output = io.StringIO(newline="")
+    writer = csv.DictWriter(output, fieldnames=columns, lineterminator="\n")
+    writer.writeheader()
+    for row in values:
+        writer.writerow({column: row[index] for index, column in enumerate(columns)})
+    data = ("\ufeff" + output.getvalue()).encode("utf-8")
+    return data, {
+        "source": "clube_novo.carta_jogo; colunas de projeções do pedido",
+        "records": len(values), "columns": columns,
+        "sha256": hashlib.sha256(data).hexdigest(), "transaction_read_only": True, "database_write": False,
+    }
+
+
 _CONTRACT_IDENTIFIER = re.compile(r"^[a-z_][a-z0-9_]*$")
 
 
@@ -811,6 +888,15 @@ def contract_catalogs(connection: Any, contract: dict[str, Any], sql: Any) -> li
         # card_id identifica a entidade de destino, não um catálogo de tradução.
         if schema and table and key and key != "card_id":
             requested.setdefault((schema, table), set()).add(key)
+    for family in contract.get("familias", []):
+        if not isinstance(family, dict):
+            raise RuntimeError("família inválida no pedido de catálogos")
+        for dependency in family.get("catalogos_requeridos", []):
+            if not isinstance(dependency, dict):
+                raise RuntimeError("dependência de catálogo inválida no pedido")
+            schema, table, key = dependency.get("schema"), dependency.get("tabela"), dependency.get("chave")
+            if schema and table and key:
+                requested.setdefault((schema, table), set()).add(key)
     catalogs: list[dict[str, Any]] = []
     with connection.cursor() as cursor:
         for (schema, table), keys in sorted(requested.items()):
@@ -846,8 +932,11 @@ def current_reading_contract(config: dict[str, Any]) -> dict[str, Any]:
                 cursor.execute("show transaction_read_only")
                 if cursor.fetchone()[0] != "on":
                     raise RuntimeError("a leitura do contrato não ficou protegida")
-                cursor.execute("select clube_novo.obter_pedido_leitura_contrato_ativo()")
+                cursor.execute("select clube_novo.obter_pedido_leitura_tipado_ativo()")
                 contract = cursor.fetchone()[0]
+                cursor.execute("select m.mapeamento_id,m.destino_id,m.coluna_destino,m.campo_id,m.artefato_fisico,m.coluna_fisica,m.regra_decomposicao,m.normalizador_id,m.versao_normalizador,m.proveniencia,m.status,m.ordem_regra,m.grupo_repeticao from clube_novo.contrato_leitura_envelope_mapeamento m join clube_novo.contrato_leitura_escritor_destino d on d.destino_id=m.destino_id join clube_novo.contrato_leitura_escritor_dominio w on w.escritor_id=d.escritor_id where w.contrato_id=%s and m.status='comprovado' order by m.destino_id,m.grupo_repeticao,m.ordem_regra", (contract.get("contrato_id"),))
+                cols=[item.name for item in cursor.description]
+                mappings=[dict(zip(cols,row)) for row in cursor.fetchall()]
             if not isinstance(contract, dict):
                 raise RuntimeError("o pedido canônico do contrato não retornou JSON válido")
             catalogs = contract_catalogs(connection, contract, sql)
@@ -855,14 +944,17 @@ def current_reading_contract(config: dict[str, Any]) -> dict[str, Any]:
         raise
     except Exception as error:
         raise RuntimeError(f"o contrato canônico recusou a leitura: {error}") from error
-    catalog_fingerprint = sha256_json(catalogs)
+    # O selo inclui tanto as linhas de catálogo quanto as regras declarativas de
+    # cobertura; mudar somente o gate no banco invalida qualquer pacote antigo.
+    catalog_fingerprint = sha256_json({"catalogos": catalogs, "cobertura_catalogos": contract.get("catalogos_fisicos", [])})
     return {
         **contract,
+        "mapeamentos_envelope": mappings,
         "catalogos": catalogs,
         "fingerprint_catalogos_sha256": catalog_fingerprint,
         "transaction_read_only": True,
         "database_write": False,
-        "source": "clube_novo.obter_pedido_leitura_contrato_ativo",
+        "source": "clube_novo.obter_pedido_leitura_tipado_ativo",
     }
 
 
@@ -876,6 +968,116 @@ def reading_contract_seal(contract: dict[str, Any]) -> dict[str, str]:
     if any(not isinstance(value, str) or not value.strip() for value in seal.values()):
         raise RuntimeError("o pedido canônico não contém um selo de versão íntegro")
     return cast(dict[str, str], seal)
+
+
+def evaluate_sync_readiness(contract: dict[str, Any], family_states: dict[str, Any]) -> dict[str, Any]:
+    """Confirma se a leitura integral retornou resultado normalizado íntegro.
+
+    Um resultado parcial jamais habilita uma família isolada: cada família
+    obrigatória precisa de leitor/normalizador declarados, campos tipados,
+    fotografia física pronta e todas as comparações exigidas concluídas. A
+    Divergências de conteúdo já classificadas são diagnóstico e não impedem a
+    execução da próxima leitura. O aceite é feito na UI do Extrator sobre o
+    pacote selado; ele só habilita a aplicação posterior, nunca a varredura.
+    """
+    fields_by_family: dict[str, list[dict[str, Any]]] = {}
+    for field in contract.get("campos", []):
+        if isinstance(field, dict) and isinstance(field.get("chave_familia"), str):
+            fields_by_family.setdefault(field["chave_familia"], []).append(field)
+
+    approvals: dict[str, dict[str, Any]] = {}
+    required_keys: list[str] = []
+    application_blockers: list[dict[str, Any]] = []
+    catalog_state = family_states.get("catalogos") if isinstance(family_states.get("catalogos"), dict) else {}
+    for check in (catalog_state.get("comparison_checks") or {}).values():
+        if not isinstance(check, dict):
+            continue
+        blockers = check.get("application_blockers") or []
+        if not isinstance(blockers, list):
+            raise RuntimeError("comparação de catálogos devolveu bloqueios inválidos")
+        for blocker in blockers:
+            if (not isinstance(blocker, dict) or not isinstance(blocker.get("catalogo"), str)
+                    or not isinstance(blocker.get("familias_impactadas"), list)
+                    or not all(isinstance(item, str) and item for item in blocker["familias_impactadas"])):
+                raise RuntimeError("comparação de catálogos devolveu bloqueio sem identidade canônica")
+            application_blockers.append(blocker)
+    for family in contract.get("familias", []):
+        if not isinstance(family, dict) or family.get("obrigatoria") is False:
+            continue
+        key = family.get("chave_familia")
+        if not isinstance(key, str) or not key:
+            raise RuntimeError("pedido canônico contém família obrigatória sem chave estável")
+        required_keys.append(key)
+        state = family_states.get(key) if isinstance(family_states.get(key), dict) else {}
+        reasons: list[str] = []
+        for requirement in ("leitor_id", "versao_leitor", "tipo_saida", "schema_payload", "normalizador_id", "versao_normalizador"):
+            if not family.get(requirement):
+                reasons.append(f"contrato sem {requirement}")
+        fields = fields_by_family.get(key, [])
+        if not fields:
+            reasons.append("contrato sem campos tipados")
+        for field in fields:
+            missing = [item for item in ("expected_type", "normalizador_id", "versao_normalizador", "identidade_estavel", "schema_payload") if not field.get(item)]
+            if missing:
+                reasons.append(f"campo {field.get('chave_campo') or '?'} sem {','.join(missing)}")
+            if not field.get("status_base"):
+                reasons.append(f"campo {field.get('chave_campo') or '?'} sem status de evidência no contrato")
+        for blocker in application_blockers:
+            if key in blocker["familias_impactadas"]:
+                reasons.append(f"cobertura física não verificável: {blocker['catalogo']}")
+        if state.get("physical_state") != "ready":
+            reasons.append("fotografia física não concluída")
+        checks = state.get("comparison_checks")
+        if not isinstance(checks, dict) or not checks:
+            reasons.append("comparação normalizada ausente")
+        else:
+            # O worker só declara fatos técnicos: a conferência terminou, a
+            # classificação por chave/procedência está completa e não há uma
+            # violação de integridade.  Ele não interpreta contagens nem
+            # transforma uma divergência de conteúdo em rejeição local.
+            for item in checks.values():
+                if not isinstance(item, dict) or item.get("completed") is not True:
+                    reasons.append("comparação normalizada não concluída")
+                elif item.get("classification_complete") is not True:
+                    reasons.append("classificação por chave e procedência pendente")
+                elif item.get("technical_integrity") is not True:
+                    reasons.append("comparação reportou violação técnica de integridade")
+        approvals[key] = {
+            "approved": not reasons,
+            "physical_state": state.get("physical_state", "not_started"),
+            "comparison_checks": checks or {},
+            "normalization_state": "approved" if not reasons else "blocked",
+            "reasons": sorted(set(reasons)),
+        }
+
+    structural_coverage_complete = bool(required_keys) and all(item["approved"] for item in approvals.values())
+    review = contract.get("politica_revisao") if isinstance(contract.get("politica_revisao"), dict) else {}
+    approved_in_extractor = review.get("cobertura_aprovada") is True and review.get("carga_autorizada") is True
+    return {
+        "contract": REVIEW_GATE_CONTRACT,
+        "reading_contract": reading_contract_seal(contract),
+        "required_families": required_keys,
+        "families": approvals,
+        "application_blockers": application_blockers,
+        "structural_coverage_complete": structural_coverage_complete,
+        "read_results_available": True,
+        "result_return_enabled": True,
+        "approval_required_in_extractor": bool(review.get("revisao_humana_obrigatoria", True)),
+        "approved_in_extractor": approved_in_extractor,
+        "application_enabled": structural_coverage_complete and approved_in_extractor and not PRODUCTIVE_WRITES_LOCKED,
+        "database_data_write_enabled": False,
+        "state": "review_required" if structural_coverage_complete and not approved_in_extractor else "ready_to_apply" if structural_coverage_complete else "coverage_blocked" if application_blockers else "incomplete",
+        "reason": "pacote de revisão pronto na UI do Extrator" if structural_coverage_complete and not approved_in_extractor else "leitura integral e aprovação interna concluídas" if structural_coverage_complete else "aprovação/aplicação bloqueada somente para famílias dependentes de catálogo sem cobertura física verificável" if application_blockers else "cobertura integral não concluída por família",
+    }
+
+
+def data_write_status(config: dict[str, Any]) -> dict[str, Any]:
+    """Expõe a fronteira atual: este processo não aplica dados de jogo."""
+    try:
+        assert_card_target(config)
+    except ValueError as error:
+        return {"allowed": False, "reason": str(error)}
+    return {"allowed": False, "reason": "resultado normalizado é retornado ao fluxo clube_novo; aplicação de dados não pertence a este worker"}
 
 
 def current_card_impetus_validation(csv_text: str, config: dict[str, Any], reading_contract: dict[str, Any]) -> dict[str, Any]:
@@ -902,8 +1104,13 @@ def current_card_impetus_readback(card_ids: list[str], csv_text: str, config: di
         return readback_card_slots(connection, card_ids, csv_text, reading_contract)
 
 
-def current_card_relations_validation(csv_text: str, config: dict[str, Any]) -> dict[str, Any]:
-    """Compara as cinco relações físicas com clube_novo sem abrir transação gravável."""
+def current_card_relations_validation(
+    csv_text: str,
+    canonical_cards: list[dict[str, Any]],
+    config: dict[str, Any],
+    reading_contract: dict[str, Any],
+) -> dict[str, Any]:
+    """Compara relações por FKs físicas do pedido, em transação somente leitura."""
     assert_card_target(config)
     dsn = connection_string()
     if not dsn:
@@ -916,7 +1123,7 @@ def current_card_relations_validation(csv_text: str, config: dict[str, Any]) -> 
             cursor.execute("show transaction_read_only")
             if cursor.fetchone()[0] != "on":
                 raise RuntimeError("a validação das relações não ficou protegida")
-        return validate_card_relations(csv_text, connection, "clube_novo", sql)
+        return validate_card_relations(csv_text, canonical_cards, reading_contract, connection, "clube_novo", sql)
 
 
 def current_card_dimensions_validation(snapshot: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
@@ -935,7 +1142,7 @@ def current_card_dimensions_validation(snapshot: dict[str, Any], config: dict[st
                 raise RuntimeError("a validação de Dimensões não ficou protegida")
         return validate_card_dimensions(snapshot, connection, "clube_novo", sql)
 
-def current_impetos_validation(snapshot: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
+def current_impetos_validation(snapshot: dict[str, Any], config: dict[str, Any], reading_contract: dict[str, Any]) -> dict[str, Any]:
     """Compara a releitura física completa de ímpetos com clube_novo em READ ONLY."""
     assert_card_target(config)
     dsn=connection_string()
@@ -947,10 +1154,10 @@ def current_impetos_validation(snapshot: dict[str, Any], config: dict[str, Any])
             cursor.execute("set statement_timeout = '10min'")
             cursor.execute('show transaction_read_only')
             if cursor.fetchone()[0]!='on': raise RuntimeError('a validação de Ímpetos não ficou protegida')
-        return validate_impetos(snapshot,connection)
+        return validate_impetos_v4610(snapshot, connection, reading_contract)
 
 
-def current_tecnicos_validation(snapshot: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
+def current_tecnicos_validation(snapshot: dict[str, Any], config: dict[str, Any], reading_contract: dict[str, Any]) -> dict[str, Any]:
     """Compara Técnicos e seus catálogos compartilhados com clube_novo em READ ONLY."""
     assert_card_target(config)
     dsn = connection_string()
@@ -964,7 +1171,7 @@ def current_tecnicos_validation(snapshot: dict[str, Any], config: dict[str, Any]
             cursor.execute("show transaction_read_only")
             if cursor.fetchone()[0] != "on":
                 raise RuntimeError("a validação de Técnicos não ficou protegida")
-        return validate_tecnicos(snapshot, connection)
+        return validate_tecnicos_v4610(snapshot, connection, reading_contract)
 
 
 def current_text_baseline(config: dict[str, Any]) -> dict[str, Any]:
@@ -983,6 +1190,24 @@ def current_text_baseline(config: dict[str, Any]) -> dict[str, Any]:
             if cursor.fetchone()[0] != "on":
                 raise RuntimeError("a leitura dos textos não ficou protegida")
         return text_baseline_snapshot(connection, schema)
+
+
+def current_text_validation(snapshot: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
+    """Compara a fotografia solicitada de all.str sem decidir sua aceitação."""
+    schema = (config.get("database") or {}).get("schema")
+    if schema != "clube_novo":
+        raise ValueError("destino textual bloqueado: somente clube_novo.texto_do_jogo")
+    dsn = connection_string()
+    if not dsn:
+        raise RuntimeError("a conexão segura com clube_novo não está disponível")
+    psycopg, _, _ = import_psycopg()
+    with psycopg.connect(dsn, connect_timeout=20) as connection:
+        connection.read_only = True
+        with connection.cursor() as cursor:
+            cursor.execute("show transaction_read_only")
+            if cursor.fetchone()[0] != "on":
+                raise RuntimeError("a validação dos textos não ficou protegida")
+        return validate_text_snapshot(snapshot, connection, schema)
 
 
 def csv_rows_by_id(csv_text: str) -> dict[str, dict[str, str]]:
@@ -1158,6 +1383,9 @@ def apply_cards(selection: dict[str, Any], config: dict[str, Any]) -> dict[str, 
 
 
 def apply_selection(selection: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
+    gate = data_write_status(config)
+    if not gate["allowed"]:
+        raise PermissionError("aplicação globalmente bloqueada: " + str(gate["reason"]))
     if selection["kind"] == "cards":
         return apply_cards(selection, config)
     if selection.get("kind") == "metadata" and selection.get("items") and all(item.get("catalog") == "textos" for item in selection["items"]):
@@ -1579,10 +1807,11 @@ class Handler(SimpleHTTPRequestHandler):
             if path == "/api/card-relations/validate":
                 payload = self.read_json()
                 csv_text = payload.get("card_csv")
-                if not isinstance(csv_text, str) or not csv_text.strip():
-                    raise ValueError("a fotografia de cartas extraída pelo núcleo não foi recebida")
-                result = current_card_relations_validation(csv_text, config)
-                self.send_json(HTTPStatus.OK if result.get("passed") else HTTPStatus.CONFLICT, result)
+                canonical_cards = payload.get("canonical_cards")
+                if not isinstance(csv_text, str) or not csv_text.strip() or not isinstance(canonical_cards, list):
+                    raise ValueError("card_csv de apresentação e cartas canônicas com FKs/procedência são obrigatórios")
+                result = current_card_relations_validation(csv_text, canonical_cards, config, self._reading_contract)
+                self.send_json(HTTPStatus.OK if result.get("technical_integrity") else HTTPStatus.CONFLICT, result)
                 return
             if path == "/api/card-dimensions/validate":
                 payload = self.read_json()
@@ -1611,7 +1840,7 @@ class Handler(SimpleHTTPRequestHandler):
             if path == "/api/impetos/validate":
                 payload=self.read_json(); snapshot=payload.get('snapshot')
                 if not isinstance(snapshot,dict): raise ValueError('a fotografia física de Ímpetos não foi recebida')
-                result=current_impetos_validation(snapshot,config)
+                result=current_impetos_validation(snapshot, config, self._reading_contract)
                 self.send_json(HTTPStatus.OK if result.get('passed') else HTTPStatus.CONFLICT,result)
                 return
             if path == "/api/tecnicos/validate":

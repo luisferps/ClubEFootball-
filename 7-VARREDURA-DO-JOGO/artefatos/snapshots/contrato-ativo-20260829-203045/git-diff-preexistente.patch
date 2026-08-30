@@ -1,0 +1,73 @@
+diff --git a/7-VARREDURA-DO-JOGO/executor/desktop_physical_worker.js b/7-VARREDURA-DO-JOGO/executor/desktop_physical_worker.js
+index 10993f5..8053ad0 100644
+--- a/7-VARREDURA-DO-JOGO/executor/desktop_physical_worker.js
++++ b/7-VARREDURA-DO-JOGO/executor/desktop_physical_worker.js
+@@ -123,10 +123,13 @@ async function main() {
+     return records;
+   }, result);
+ 
+-  // Dimensões e Metadados permanecem independentes de Cartas: uma falha em
+-  // qualquer um deles vira relatório próprio, sem anular a fotografia anterior.
++  // O worker nunca abre uma fonte que o contrato ativo não solicitou. Famílias
++  // que exigem uma fonte ausente do pedido ficam explicitamente pendentes, sem
++  // derrubar Cartas nem forçar um fallback de layout local.
++  const requestedRoles = new Set((plan.arquivos || []).map((item) => item.papel_fonte).filter(Boolean));
++  const requested = (role) => requestedRoles.has(role);
+   const metadataSources = { dt870_updated: updated };
+-  for (const role of ['dt200', 'dt870_original', 'dt261_bra']) {
++  for (const role of ['dt200', 'dt870_original', 'dt261_bra'].filter(requested)) {
+     metadataSources[role] = await readSource(sources, role);
+     await core.validateSourceByContract(metadataSources[role], plan, role);
+   }
+@@ -134,20 +137,38 @@ async function main() {
+     role, filename: item.filename, location: item.location, bytes: item.bytes, sha256: item.sha256 || null
+   }]));
+ 
+-  const dimensions = await family('Dimensões', 55, async () => {
+-    const snapshot = await core.extractCardDimensionsByFamily(metadataSources, descriptors, (message) => emit('log', { message }));
+-    result.artifacts.dimensions = writeJson('dimensoes-fisicas.json', snapshot);
+-    result.dimensions_counts = snapshot.counts;
+-    return snapshot;
+-  }, result);
++  const metadataRoles = ['dt870_updated', 'dt200', 'dt870_original', 'dt261_bra'];
++  const missingForMetadata = metadataRoles.filter((role) => !requested(role));
++  let dimensions = null;
++  let metadata = null;
++  if (missingForMetadata.length) {
++    const message = `não solicitada pelo contrato ativo: faltam ${missingForMetadata.join(', ')}`;
++    for (const name of ['Dimensões', 'Metadados', 'Técnicos', 'Ímpetos']) {
++      result.families[name] = { state: 'not_requested_by_contract', message, database_write: false };
++      emit('family', { family: name, state: 'not_requested_by_contract', message });
++    }
++  } else {
++    dimensions = await family('Dimensões', 55, async () => {
++      const snapshot = await core.extractCardDimensionsByFamily(metadataSources, descriptors, (message) => emit('log', { message }));
++      result.artifacts.dimensions = writeJson('dimensoes-fisicas.json', snapshot);
++      result.dimensions_counts = snapshot.counts;
++      return snapshot;
++    }, result);
++    metadata = await family('Metadados', 76, async () => {
++      const snapshot = await core.extractMetadataByFamily(metadataSources, descriptors, (message) => emit('log', { message }));
++      result.artifacts.metadata = writeJson('metadados-fisicos.json', snapshot);
++      result.metadata_catalogs = Object.fromEntries(Object.entries(snapshot.catalogs || {}).map(([name, catalog]) => [name, {
++        supported: Boolean(catalog && catalog.supported), records: Array.isArray(catalog && catalog.records) ? catalog.records.length : 0
++      }]));
++      return snapshot;
++    }, result);
++  }
+ 
+-  const metadata = await family('Metadados', 76, async () => {
+-    const snapshot = await core.extractMetadataByFamily(metadataSources, descriptors, (message) => emit('log', { message }));
+-    result.artifacts.metadata = writeJson('metadados-fisicos.json', snapshot);
+-    result.metadata_catalogs = Object.fromEntries(Object.entries(snapshot.catalogs || {}).map(([name, catalog]) => [name, {
+-      supported: Boolean(catalog && catalog.supported), records: Array.isArray(catalog && catalog.records) ? catalog.records.length : 0
+-    }]));
+-    return snapshot;
++  if (requested('dt261_bra')) await family('Textos', 76, async () => {
++    const catalog = await core.extractTextCatalogFromCpk(metadataSources.dt261_bra);
++    result.artifacts.texts = writeJson('textos-fisicos.json', catalog);
++    result.texts = { sections: catalog.section_count, keys: catalog.records.length, duplicate_ids: catalog.duplicate_ids.length };
++    return catalog;
+   }, result);
+ 
+   if (cards) result.families['Relações'] = { state: 'pending_database_comparison', database_write: false };

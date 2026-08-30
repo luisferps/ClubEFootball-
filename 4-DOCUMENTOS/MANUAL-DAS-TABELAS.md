@@ -265,10 +265,16 @@ nenhuma das 42.803 cartas. A flag bate 100% com o dado real.
 
 # 4 · ESTILO DE IA — `clube_novo.estilo_ia`
 
-São **7**, e o jogo os guarda diferente de tudo: **não existe arquivo de catálogo**.
-Varri os 12 CPK — o único `.bin` com código textual é o `Playstyle.bin`. O
-`eFootball-WESYS-Unzlib-Tool.exe` também não tem (abri o módulo `wesys`: só as duas
-chaves de descriptografia). E o extrator tem os 7 nomes ingleses **digitados à mão**.
+Há **7 bits atualmente observados nas relações de cartas**. `bit` é a chave
+estável do domínio, e a tabela continua sendo o catálogo de apresentação e a
+FK de `carta_estilo_ia_jogo`; ela não é a autoridade de localização física.
+
+As colunas históricas `arquivo` e `endereco` registram a anotação
+`Player.bin`/`bit N · largura 1`, mas não substituem o contrato: não têm
+`arquivo_id`, papel de fonte, versão/hash, layout de registro, procedência
+física tipada ou prova por item. Os textos (`secao_texto`, `id_texto`, nomes e
+descrições) são somente apresentação. Eles nunca podem associar um texto a um
+bit por semelhança de nome.
 
 | bit | id_texto | Português | cartas |
 |---:|---:|---|---:|
@@ -280,10 +286,32 @@ chaves de descriptografia). E o extrator tem os 7 nomes ingleses **digitados à 
 | 678 | 77 | Perito em bola longa | 8.321 |
 | 680 | 13 | Drible veloz | 9.521 |
 
-⚠️ **Falta casar id ↔ bit.** São duas numerações diferentes da Konami. A prova está
-montada: 7 cartas, cada uma com **um único** estilo ligado — Juninho Capixaba (614),
-Frank Zambo Anguissa (616), Harry Kane (647), Robert Lewandowski (649),
-Luke Shaw (674), William Saliba (678), Conor Gallagher (680).
+Os sete endereços acima são lidos como **relações** no pedido tipado:
+`contrato_leitura_campo` 214/212/210/213/215/216/211, cada um com
+`Player.bin`, `bit_inicio` correspondente e largura 1, normalizado pela FK
+`estilo_ia.bit`. A autoridade de arquivo, papel/fonte, SHA-256, versão,
+tamanho de registro, leitor, tipo, bit/largura e prova está em
+`contrato_leitura_arquivo`/`contrato_leitura_campo` e é exposta, sem cópia,
+pela view read-only `catalogo_endereco_leitura_extrator_v1`.
+
+### Cobertura do catálogo — 29/08/2026
+
+Os sete bits provam presença/ausência de relações por carta; **não provam uma
+enumeração completa do catálogo de estilos de IA**. Até a descoberta de uma
+fonte física enumerável, o contrato declara
+`clube_novo.estilo_ia` como `coverage_nao_verificavel` em
+`contrato_leitura_catalogo_fisico` e na view derivada
+`catalogo_cobertura_extrator_v1`: `artefato_fisico` e `papel_fonte` são nulos,
+e a aprovação/aplicação das famílias `catalogos` e `relacoes` fica fail-closed.
+Isto não impede as leituras independentes nem promove `Playstyle.bin`,
+`all.str` ou um rótulo como fonte do catálogo.
+
+Quando uma enumeração física for comprovada, endereço/arquivo/bit ou código,
+largura, layout, versão, hash e procedência entram somente no contrato e em
+sua view derivada. A alteração mínima adicional será um vínculo explícito e
+versionado, com FK, de `campo_id` para `estilo_ia.bit`; ele transportará apenas
+a chave estável, sem duplicar endereço ou estado de domínio no catálogo. A
+saída seguirá envelope selado → revisão/aceite V5 → aplicação transacional.
 
 ---
 
@@ -612,6 +640,17 @@ contra os campos-fonte de `carta_jogo`. A sexta foi carregada e validada pela fr
 compara as cinco relações em modo somente leitura; nenhum desses comparadores grava
 automaticamente no banco.
 
+### Limite operacional de `estilo_ia`
+
+`carta_estilo_ia_jogo` usa exclusivamente a chave estável
+(`card_id`,`bit_estilo_ia`) e a procedência do campo em `Player.bin`. Os bits
+atualmente lidos são uma projeção **observada nas cartas e monitorada**, não uma
+enumeração integral do catálogo `clube_novo.estilo_ia`. Se o Extrator receber um
+membro físico ativo fora dessa projeção, ele registra alerta com card, bit,
+registro/arquivo/hash e mantém a aplicação dessa relação bloqueada. Ele não cria
+linha de catálogo, não converte nomes em bits e não infere rótulo; a descoberta
+integral permanece cobertura não verificável até existir fonte física enumerável.
+
 ---
 
 # 11 · DIMENSÕES UNITÁRIAS DAS CARTAS
@@ -714,3 +753,151 @@ falam da mesma habilidade na mesma função, divergem (Finalizador nato no Falso
 *Próximo: qualquer ativação de consumidor de Ímpetos deve ter migração própria e
 comprovada. A integração cumulativa do Extrator e seu checklist estão concluídos,
 mas nenhuma tabela deste manual redireciona ou liga o motor por existir.*
+
+## Contrato tipado do Extrator — 29/08/2026
+
+`clube_novo` passou a manter a camada versionada de descoberta do Extrator:
+`contrato_leitura_familia`, `contrato_leitura_fonte_localizador` e
+`contrato_leitura_expectativa`, além da semântica de saída em
+`contrato_leitura_arquivo` e `contrato_leitura_campo`. Cada campo declara família,
+tipo esperado, normalizador/versionamento, identidade estável, FK de destino,
+nulidade e serialização; cada arquivo declara leitor/versionamento e cada fonte é
+localizada pelo template versionado no banco. A função
+`clube_novo.obter_pedido_leitura_tipado_ativo()` é somente leitura e entrega esse
+pedido ao Extrator.
+
+Identidade de logística é exclusivamente `card_id`, id físico, código de catálogo
+ou FK declarada. Nome, rótulo, ordem e posição visual não unem nem sobrescrevem
+registros. Um envelope carrega `bruto`, `normalizado`, tipo, identidade/FK e
+procedência; rótulos derivados são apenas `apresentacao` para a interface. A carga
+produtiva continua desligada: snapshots e comparações são por família e selados por
+fonte, contrato e payload; qualquer aplicação futura exigirá lote, validação de FK,
+unicidade e readback no próprio `clube_novo`.
+
+## Matriz física R2 do Extrator — 29/08/2026 (em validação)
+
+O contrato declara `dt200` (Steam), `dt870_original` (Steam) e
+`dt870_updated` (atualização Konami), cada qual com localizador e SHA-256 do
+CPK. `dt261_bra` é fonte textual separada e só aparece quando `textos` a
+solicita. A precedência é dado de comparação, nunca fallback:
+`dt870_updated`, `dt870_original`, `dt200`.
+
+Cada família também declara `catalogos_requeridos`; o executor só consulta
+esses catálogos e os já referidos pelos campos. Condições, efeitos e vínculos
+de liga de Ímpetos, portanto, não podem voltar a depender de lista local.
+
+## Fluxo de sincronização do Extrator — 29/08/2026
+
+`clube_novo` é a única autoridade do pedido: informa o que buscar, onde e
+como decodificar, o tipo, normalizador, identidade e FK. O Extrator sempre lê
+integralmente o universo físico solicitado, normaliza por chave canônica e
+devolve o resultado selado ao fluxo de `clube_novo`. Não existe aprovação
+manual de carga, política de contagem ou decisão externa sobre quais registros
+buscar.
+
+O resultado classifica novo, removido, alterado, repetido e inválido por chave
+e procedência; essa classificação é diagnóstico para investigação de mudança e
+nunca impede a leitura seguinte. O worker atual não aplica dados de jogo; sua
+trava de escrita protege exclusivamente contra destino/schema indevido e não
+transforma o resultado em uma carga manual separada.
+
+### Retificação: aprovação no próprio Extrator
+
+O pacote de revisão selado é apresentado na UI do Extrator. O usuário aprova
+ali; o contrato registra esse aceite e somente então a aplicação ao
+`clube_novo` pode ser habilitada. A aprovação não muda o pedido nem reduz a
+varredura física.
+
+### Cardinalidade é observação, não limite
+
+O contrato de `clube_novo` especifica como localizar e decodificar uma família,
+mas não limita sua cardinalidade. Cada leitura percorre todos os registros do
+arquivo físico atual. Contagens/snapshots registrados servem somente para
+comparação posterior por chave canônica e procedência, e uma diferença vai para
+diagnóstico — nunca reduz o universo lido.
+
+## Cobertura de catálogos e projeção de Cartas — 29/08/2026
+
+As novas tabelas de metadados operacionais são
+`clube_novo.contrato_leitura_catalogo_fisico` e
+`clube_novo.contrato_leitura_projecao_cartas`. A primeira vincula cada catálogo
+requisitado à sua chave física ou a uma dependência normalizada declarada; a
+segunda vincula cada `chave_campo` de Carta a artefato físico, coluna, tipo e
+coluna de destino de `clube_novo.carta_jogo`. Ambas se ligam por
+`contrato_id`, não armazenam dados do jogo e só são expostas pelo pedido ativo.
+
+`carta_jogo.jogador_indisponivel` é o destino correto do campo booleano
+`carta.tipo.indisponivel.id`; `tipo_carta_jogo.tipo_carta_id` continua sendo
+catálogo, não destino de escrita desse booleano. `card_id` é a única identidade
+da projeção. Rótulos como nome exibido, caixa e nacionalidade textual são de
+apresentação e não são usados para união, comparação de FK ou futura carga.
+
+## Auditoria de aplicação interna do Extrator — 29/08/2026
+
+`clube_novo.aplicacao_pacote_revisao_extrator` é a auditoria exclusiva de uma
+aplicação aprovada pelo Extrator. Ela vincula `idempotency_key`, a execução
+estagiada, `contrato_id`, SHA-256 do pacote, selo de contrato, manifesto de
+fontes, cobertura e auditoria por família. A chave única
+`(contrato_id, pacote_sha256)` impede que outro pacote seja associado ao mesmo
+aceite. A linha é criada e relida na mesma transação da aplicação; qualquer
+divergência provoca rollback.
+
+Ela não recebe rótulos humanos nem altera tabela de domínio por si só. Um
+aplicador só pode gravar dados quando o pacote trouxer envelopes tipados por
+família com as chaves/FKs previstas no contrato; relatório de comparação sem
+esses envelopes é recusado antes da escrita. O ambiente de desenvolvimento usa
+o mesmo estágio e readback sob rollback, portanto não promove dado físico real.
+## Catálogo único de endereços do Extrator — 29/08/2026
+
+`clube_novo.catalogo_endereco_leitura_extrator_v1` é a **view read-only** que
+o Extrator consulta para descobrir campos físicos. Ela é derivada diretamente
+das linhas canônicas do contrato, famílias, arquivos e localizadores já
+existentes: não é tabela-espelho, não tem trigger de sincronização, não contém
+estado próprio e não duplica dado de domínio.
+
+Cada linha preserva `familia_id` e `campo_id` originais, além de fonte/papel,
+arquivo, caminho físico, versão, precedência, endereço, largura/tipo,
+catálogo/FK, normalizador e procedência. Um mesmo campo aparece para cada
+papel físico declarado pela família; a identidade continua sendo a FK do campo,
+nunca nome ou posição. A coluna `papel_fonte_arquivo_canonico` conserva a fonte
+do arquivo do campo quando ela difere do papel que torna a fonte disponível.
+
+Na validação do contrato ativo, a view retornou 602 localizações para 214
+campos canônicos, cobrindo os papéis `dt200`, `dt261_bra`, `dt870_original` e
+`dt870_updated`. `obter_pedido_leitura_tipado_sem_revisao_v1()` deriva dela as
+projeções `catalogo_enderecos`, `arquivos`, `localizadores_fontes` e `campos`;
+portanto o código não pode escolher endereço, precedência ou fonte fora da
+view. O rollback estrutural é
+`4-DOCUMENTOS/EXTRATOR/SQL/ROLLBACK-CATALOGO-ENDERECOS-VIEW-V1.sql`.
+
+## Escritores declarativos por família — 29/08/2026
+
+`contrato_leitura_escritor_dominio` e
+`contrato_leitura_escritor_destino` registram, no `clube_novo`, a serialização
+autorizada de envelopes normalizados. O worker não escolhe uma tabela nem uma
+chave por condição local: recebe `escritor_id`, destinos, chaves, colunas de
+escrita, tipos e exigência de procedência do pedido. As sete famílias cobertas
+somam 29 destinos (Cartas 1, Catálogos 2, Dimensões 3, Ímpetos 11, Relações 7,
+Técnicos 4 e Textos 1).
+
+O envelope usa exclusivamente identidade/FKs canônicas e procedência; rótulos
+seguem como projeção de apresentação. A ausência de escritor ou destino no
+pedido falha fechada. A migração e rollback são
+`APLICAR-ENVELOPES-ESCRITORES-DECLARATIVOS-V1.sql` e
+`ROLLBACK-ENVELOPES-ESCRITORES-DECLARATIVOS-V1.sql`.
+## Fronteira de destino do Extrator — 29/08/2026
+
+Há três camadas que não se confundem. A view
+`catalogo_endereco_leitura_extrator_v1` é somente índice de descoberta: suas
+tabelas-origem de endereço, versão e procedência nunca recebem valores físicos
+extraídos. A execução produz envelope selado para estágio/revisão; a V5 exibe
+o pacote e grava uma decisão vinculada a hash. Somente após o aceite válido o
+aplicador transacional pode escrever os destinos canônicos de domínio do
+`clube_novo`, declarados em `contrato_leitura_escritor_destino`.
+
+O aplicador não possui destino implícito: valida chaves/FKs e readback para
+cada envelope, abre uma transação e registra a auditoria em
+`aplicacao_pacote_revisao_extrator`. Catálogo de leitura, estágio/revisão e
+domínio ficam deliberadamente separados. Dados legados e estruturas de mapa
+nunca são alvo. Enquanto `PRODUCTIVE_WRITES_LOCKED=true`, inclusive os
+destinos canônicos continuam fechados.

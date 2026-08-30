@@ -159,22 +159,25 @@ exit /b 0
 
 :VALIDAR_CONFIG_REMOTO
 set "CONFIG_REMOTO="
-for /f "delims=" %%F in ('git ls-tree -r --name-only FETCH_HEAD -- "config.txt" "2-MOTORES/config.txt" "7-VARREDURA-DO-JOGO/configuracao.local.json" 2^>nul') do set "CONFIG_REMOTO=%%F"
+for /f "delims=" %%F in ('git ls-tree -r --name-only FETCH_HEAD -- "config.txt" ".env" ".env.*" "*.key" "*.pem" "*.secret" "*.secrets" "credenciais.local.*" "configuracao.local.*" 2^>nul') do (
+  if /I not "%%~nxF"==".env.example" set "CONFIG_REMOTO=%%F"
+)
 if defined CONFIG_REMOTO (
-  echo O remoto tentou versionar uma configuracao local: %CONFIG_REMOTO%
+  echo O remoto tentou versionar uma configuracao ou chave local: %CONFIG_REMOTO%
   echo A sincronizacao foi cancelada antes de alterar arquivos.
   exit /b 1
 )
 exit /b 0
 
 :VALIDAR_CONFIG_LOCAL
-for %%F in ("config.txt" "2-MOTORES\config.txt" "7-VARREDURA-DO-JOGO\configuracao.local.json") do (
-  git ls-files --error-unmatch -- "%%~F" >nul 2>&1
-  if not errorlevel 1 (
-    echo Configuracao local ainda esta versionada: %%~F
-    echo A sincronizacao foi cancelada antes de alterar arquivos.
-    exit /b 1
-  )
+set "CONFIG_LOCAL="
+for /f "delims=" %%F in ('git ls-files -- "config.txt" ".env" ".env.*" "*.key" "*.pem" "*.secret" "*.secrets" "credenciais.local.*" "configuracao.local.*"') do (
+  if /I not "%%~nxF"==".env.example" set "CONFIG_LOCAL=%%F"
+)
+if defined CONFIG_LOCAL (
+  echo Configuracao ou chave local ainda esta versionada: %CONFIG_LOCAL%
+  echo A sincronizacao foi cancelada antes de alterar arquivos.
+  exit /b 1
 )
 exit /b 0
 

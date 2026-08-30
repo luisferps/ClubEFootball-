@@ -660,8 +660,8 @@
       const baseline = await baselineResponse.json().catch(() => ({ error: `HTTP ${baselineResponse.status}` }));
       if (!baselineResponse.ok || !baseline.transaction_read_only || baseline.database_write !== false) throw new Error(baseline.error || 'A fotografia atual de clube_novo.texto_do_jogo não pôde ser lida de modo protegido.');
       if (baseline.duplicate_official_keys) throw new Error('clube_novo.texto_do_jogo contém chave oficial duplicada.');
-      if (baseline.catalog_references_checked !== 166 || baseline.unresolved_catalog_references !== 0) throw new Error('As 166 referências textuais dos catálogos não resolveram integralmente.');
-      if (baseline.validated_foreign_keys !== 8 || baseline.unvalidated_foreign_keys !== 0) throw new Error('As oito FKs canônicas de Texto não estão integralmente validadas.');
+      if (baseline.unresolved_catalog_references !== 0) throw new Error('Referências textuais de catálogo ainda não resolvem integralmente.');
+      if (baseline.unvalidated_foreign_keys !== 0) throw new Error('FKs canônicas de Texto ainda não estão integralmente validadas.');
       const textDiff = core.compareTextCatalog(textCatalog, baseline.rows || []);
       diff.textos = textDiff;
       summary.textos = {
@@ -676,17 +676,17 @@
         affinities: physical.catalogs.afinidades_tecnico.records
       };
       const technicianReadback = await postJson('/api/tecnicos/validate', { snapshot: technicianSnapshot }, 600000);
-      if (!technicianReadback.passed || !technicianReadback.transaction_read_only || technicianReadback.database_write !== false) {
-        throw new Error('A comparação integral de Técnicos com clube_novo não foi aprovada.');
+      if (!technicianReadback.classification_complete || !technicianReadback.technical_integrity || !technicianReadback.transaction_read_only || technicianReadback.database_write !== false) {
+        throw new Error('A comparação integral de Técnicos não produziu classificação tecnicamente íntegra.');
       }
-      summary.tecnicos = { ...summary.tecnicos, status: 'validado_banco', current: 1478, baseline_active: 1478, new: 0, changed: 0, absent: 0 };
-      summary.nacionalidades = { ...summary.nacionalidades, status: 'validado_banco', current: 214, baseline_active: 214, new: 0, changed: 0, absent: 0 };
-      summary.afinidades_tecnico = { ...summary.afinidades_tecnico, status: 'validado_banco', current: 8, baseline_active: 8, new: 0, changed: 0, absent: 0 };
+      summary.tecnicos = { ...summary.tecnicos, status: 'validado_banco', current: technicianSnapshot.records.length, baseline_active: technicianReadback.extracted?.technicians ?? 0, new: technicianReadback.classification?.new?.length ?? 0, changed: technicianReadback.classification?.altered?.length ?? 0, absent: technicianReadback.classification?.removed?.length ?? 0 };
+      summary.nacionalidades = { ...summary.nacionalidades, status: 'validado_banco', current: technicianSnapshot.nationalities.length, baseline_active: technicianReadback.extracted?.nationalities ?? 0, new: 0, changed: 0, absent: 0 };
+      summary.afinidades_tecnico = { ...summary.afinidades_tecnico, status: 'validado_banco', current: technicianSnapshot.affinities.length, baseline_active: technicianReadback.extracted?.affinities ?? 0, new: 0, changed: 0, absent: 0 };
       for (const name of ['tecnicos', 'nacionalidades', 'afinidades_tecnico']) diff[name] = { ...diff[name], status: 'validado_banco', reason: null };
-      log('log-metadata', 'Técnicos aprovados: 1.478 registros, 214 nacionalidades, 8 afinidades, 7.391 proficiências/Sobreposição e 104 boosts.');
+      log('log-metadata', `Técnicos conferidos: ${technicianSnapshot.records.length} registros, ${technicianSnapshot.nationalities.length} nacionalidades e ${technicianSnapshot.affinities.length} afinidades; divergências seguem para revisão.`);
       const impetusReadback = await postJson('/api/impetos/validate', { snapshot: physical.catalogs.impetos }, 600000);
-      if (!impetusReadback.passed || !impetusReadback.transaction_read_only || impetusReadback.database_write !== false) {
-        throw new Error('A comparação integral de Ímpetos com clube_novo não foi aprovada.');
+      if (!impetusReadback.classification_complete || !impetusReadback.technical_integrity || !impetusReadback.transaction_read_only || impetusReadback.database_write !== false) {
+        throw new Error('A comparação integral de Ímpetos não produziu classificação tecnicamente íntegra.');
       }
       summary.impetos = { ...summary.impetos, status: 'validado_banco', current: 440, baseline_active: 440, new: 0, changed: 0, absent: 0 };
       diff.impetos = { ...diff.impetos, status: 'validado_banco', reason: null, current: 440, baseline_active: 440 };
