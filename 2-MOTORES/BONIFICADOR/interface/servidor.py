@@ -92,8 +92,9 @@ class GatewayBonificador:
 
     def rpc(self, nome: str, corpo: dict | None = None):
         if nome not in {
-            "bonificador_regua_v1",
-            "bonificador_carta_v1",
+            "bonificador_regua_v2",
+            "bonificador_carta_v2",
+            "bonificador_contexto_fila_v3",
         }:
             raise ErroDaInterface("contrato não permitido", 403)
         pedido = urllib.request.Request(
@@ -110,7 +111,10 @@ class GatewayBonificador:
             with urllib.request.urlopen(pedido, timeout=30) as resposta:
                 texto = resposta.read().decode("utf-8")
         except urllib.error.HTTPError as erro:
-            raise ErroDaInterface(f"contrato recusou a consulta ({erro.code})", 503) from erro
+            detalhe = erro.read().decode("utf-8", errors="replace").strip()
+            detalhe = re.sub(r"\s+", " ", detalhe)[:300]
+            sufixo = f": {detalhe}" if detalhe else ""
+            raise ErroDaInterface(f"contrato recusou a consulta ({erro.code}){sufixo}", 503) from erro
         except Exception as erro:
             raise ErroDaInterface(
                 f"não foi possível consultar o contrato ({type(erro).__name__})", 503
@@ -124,8 +128,8 @@ class ServicoBonificador:
         self.funcoes = carregar_funcoes_puras()
 
     def regua(self) -> dict:
-        regua = self.gateway.rpc("bonificador_regua_v1") or {}
-        if regua.get("contrato") != "bonificador-regua-v1":
+        regua = self.gateway.rpc("bonificador_regua_v2") or {}
+        if regua.get("contrato") != "bonificador-regua-v2":
             raise ErroDaInterface("versão inesperada da régua", 503)
         return regua
 
@@ -138,6 +142,41 @@ class ServicoBonificador:
                     "id": int(dado["id"]), "codigo": codigo, "nome": dado.get("rotulo") or codigo,
                 })
         return sorted(itens, key=lambda x: (x["nome"], x["id"]))
+
+    def fila_pendente(self, limite: int = 5000) -> dict:
+        """Lê a fila operacional do contrato, sem tabela direta nem escrita."""
+        limite = max(1, min(int(limite), 5000))
+        bruto = self.gateway.rpc("bonificador_contexto_fila_v3", {
+            "p_limit": limite, "p_offset": 0,
+        }) or []
+        if not isinstance(bruto, list):
+            raise ErroDaInterface("contrato da fila do Bonificador devolveu formato inesperado", 503)
+        nomes = {item["id"]: item["nome"] for item in self.catalogo_funcoes(self.regua())}
+        itens = []
+        for dado in bruto:
+            try:
+                funcao_id = int(dado["funcao_id"])
+                linha_id = int(dado["build_linha_card_id"])
+                posicao_id = int(dado["posicao_id"])
+            except (KeyError, TypeError, ValueError) as erro:
+                raise ErroDaInterface("contrato da fila sem identidade canônica", 503) from erro
+            itens.append({
+                "linha_id": linha_id,
+                "card_id": str(dado.get("card_id") or ""),
+                "funcao_id": funcao_id,
+                "funcao_codigo": str(dado.get("funcao_codigo") or ""),
+                "funcao_nome": nomes.get(funcao_id) or f"Função ID {funcao_id}",
+                "posicao_id": posicao_id,
+                "carta_versao": dado.get("carta_versao"),
+                "carta_fingerprint": dado.get("carta_fingerprint"),
+            })
+        return {
+            "contrato": "bonificador_contexto_fila_v3",
+            "itens": itens,
+            "total": len(itens),
+            "total_exato": len(itens) < limite,
+            "limite": limite,
+        }
 
     @staticmethod
     def _preparar_regua(regua: dict) -> dict:
@@ -168,7 +207,7 @@ class ServicoBonificador:
         funcoes = {item["id"]: item for item in self.catalogo_funcoes(regua_original)}
         if funcao_id not in funcoes:
             raise ErroDaInterface("função não disponível na régua")
-        carta = self.gateway.rpc("bonificador_carta_v1", {"p_card_id": card_id}) or {}
+        carta = self.gateway.rpc("bonificador_carta_v2", {"p_card_id": card_id}) or {}
         regua = self._preparar_regua(regua_original)
 
         falhas = list(regua.get("falta_o_que") or []) + list(carta.get("falta_o_que") or [])
@@ -269,7 +308,9 @@ class PipelineBonificador:
         self._processo = None
         self._parada_solicitada = False
         self._estado = {"estado": "parado", "mensagem": "Pipeline não iniciado.",
-                        "aguardando": False, "confirmados": 0, "codigo_saida": None}
+                        "aguardando": False, "confirmados": 0, "calculados": 0,
+                        "total_rodada": 0, "linha_atual": None, "eventos": [],
+                        "codigo_saida": None}
 
     def estado(self) -> dict:
         with self._lock:
@@ -278,6 +319,12 @@ class PipelineBonificador:
     def _atualizar(self, **campos) -> None:
         with self._lock:
             self._estado.update(campos)
+
+    def _evento(self, texto: str) -> None:
+        with self._lock:
+            eventos = list(self._estado.get("eventos") or [])
+            eventos.append(texto)
+            self._estado["eventos"] = eventos[-30:]
 
     def iniciar(self) -> dict:
         with self._lock:
@@ -292,7 +339,9 @@ class PipelineBonificador:
             self._processo = self._popen([sys.executable, "-u", str(MOTOR)], **opcoes)
             self._parada_solicitada = False
             self._estado = {"estado": "iniciando", "mensagem": "Iniciando o pipeline canônico...",
-                            "aguardando": False, "confirmados": 0, "codigo_saida": None}
+                            "aguardando": False, "confirmados": 0, "calculados": 0,
+                            "total_rodada": 0, "linha_atual": None, "eventos": [],
+                            "codigo_saida": None}
             processo = self._processo
         threading.Thread(target=self._ler_saida, args=(processo,), daemon=True).start()
         threading.Thread(target=self._aguardar_saida, args=(processo,), daemon=True).start()
@@ -317,6 +366,25 @@ class PipelineBonificador:
             if not texto:
                 continue
             campos = {"mensagem": texto}
+            if texto.startswith("FILA_TOTAL:"):
+                try:
+                    campos["total_rodada"] = int(texto.split(":", 1)[1].strip())
+                except ValueError:
+                    pass
+            elif texto.startswith("FILA_LINHA:"):
+                partes = dict(
+                    campo.split("=", 1) for campo in texto.split(":", 1)[1].strip().split()
+                    if "=" in campo
+                )
+                campos["linha_atual"] = {
+                    "linha_id": partes.get("linha"), "card_id": partes.get("card"),
+                    "funcao_id": partes.get("funcao"), "posicao_id": partes.get("posicao"),
+                }
+                campos.update(estado="processando", aguardando=False)
+            elif texto.startswith("FILA_CALCULADA:"):
+                campos["calculados"] = int(self.estado().get("calculados") or 0) + 1
+            elif texto.startswith("FILA_CONFIRMADA:"):
+                campos["confirmados"] = int(self.estado().get("confirmados") or 0) + 1
             if "AGUARDANDO NOVAS LINHAS" in texto:
                 campos.update(estado="aguardando", aguardando=True)
             elif "CONTINUANDO:" in texto or "[2/4]" in texto or "[3/4]" in texto or "[4/4]" in texto:
@@ -325,9 +393,9 @@ class PipelineBonificador:
                 campos.update(estado="parado", aguardando=False)
             elif "PAREI:" in texto or "ERRO" in texto:
                 campos.update(estado="erro", aguardando=False)
-            if "resultados confirmados" in texto and texto.split()[0].isdigit():
-                campos["confirmados"] = int(texto.split()[0])
             self._atualizar(**campos)
+            if texto.startswith("FILA_") or "PAREI:" in texto or "ERRO" in texto:
+                self._evento(texto)
 
     def _aguardar_saida(self, processo) -> None:
         codigo = processo.wait()
@@ -338,7 +406,11 @@ class PipelineBonificador:
             if self._parada_solicitada or codigo == 0:
                 self._estado.update(estado="parado", mensagem="Pipeline parado normalmente.")
             else:
-                self._estado.update(estado="erro", mensagem="Pipeline terminou com código %s." % codigo)
+                detalhe = self._estado.get("mensagem")
+                mensagem = "Pipeline terminou com código %s." % codigo
+                if detalhe and detalhe not in {"Iniciando o pipeline canônico...", mensagem}:
+                    mensagem += " Detalhe: %s" % detalhe
+                self._estado.update(estado="erro", mensagem=mensagem)
 
 
 def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
@@ -401,7 +473,7 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
                     return self.responder_arquivo("style.css", "text/css; charset=utf-8")
                 if caminho.path == "/api/saude":
                     regua = servico.regua()
-                    return self.responder_json(200, {"ok": True, "contrato": regua.get("contrato"), "pode_rodar": regua.get("pode_rodar"), "falta_o_que": regua.get("falta_o_que") or []})
+                    return self.responder_json(200, {"ok": True, "aplicativo": "bonificador_clubefootball", "versao_interface": "20260831-v2-native", "contrato": regua.get("contrato"), "pode_rodar": regua.get("pode_rodar"), "falta_o_que": regua.get("falta_o_que") or []})
                 if caminho.path == "/api/funcoes":
                     return self.responder_json(200, {"ok": True, "funcoes": servico.catalogo_funcoes(servico.regua())})
                 if caminho.path == "/api/simular":
@@ -413,6 +485,14 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
                     return self.responder_json(200, servico.simular(card_id, funcao_id))
                 if caminho.path == "/api/auditoria":
                     return self.responder_json(200, {"ok": True, "auditoria": servico.auditoria()})
+                if caminho.path == "/api/fila/status":
+                    fila = servico.fila_pendente()
+                    estado = pipeline.estado()
+                    atual = estado.get("linha_atual") or {}
+                    for item in fila["itens"]:
+                        item["estado"] = "calculando" if str(item["linha_id"]) == str(atual.get("linha_id")) else "pendente"
+                    fila["pipeline"] = estado
+                    return self.responder_json(200, {"ok": True, "fila": fila})
                 if caminho.path == "/api/pipeline/estado":
                     return self.responder_json(200, {"ok": True, "pipeline": pipeline.estado()})
                 return self.responder_json(404, {"ok": False, "erro": "rota local não encontrada"})

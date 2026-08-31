@@ -7,7 +7,7 @@ O QUE MUDOU NESTA VERSAO
      playstyles e estilos de IA saem exclusivamente de contratos v1 sobre
      clube_novo. Nao existe fallback para carta_do_motor nem para JSON antigo.
   2. GRAVA SOMENTE NO MODELO NOVO. Cada resultado apto passa pelo writer
-     transacional public.gravar_build_bonificador_v1. Nao existe chamada
+     transacional public.gravar_build_bonificador_v3. Nao existe chamada
      produtiva para public.gravar_bonus nem gravacao em clube.build.
   3. O BONUS DE ESTILO E POR FUNCAO, NAO POR POSICAO.  <-- a correcao de fundo
      Antes: o estilo ligava na POSICAO, entao Defensor criativo montado como
@@ -19,10 +19,10 @@ O QUE MUDOU NESTA VERSAO
      com 1,0 cheio.
 
 AS PORTAS DO BANCO
-    public.bonificador_regua_v1() a receita allowlisted e seus gates
-    public.bonificador_carta_v1() somente as entradas usadas pelo Bonificador
-    public.bonificador_contexto_escrita_v2() linhas e selos vigentes
-    public.gravar_build_bonificador_v1(jsonb) a volta transacional
+    public.bonificador_regua_v2() a receita allowlisted e seus gates
+    public.bonificador_carta_v2() somente as entradas usadas pelo Bonificador
+    public.bonificador_contexto_fila_v3() linhas e selos vigentes
+    public.gravar_build_bonificador_v3(jsonb) a volta transacional
 
 A CHAVE sai do config.txt na hora de rodar. Nunca e gravada nem impressa aqui.
 """
@@ -136,7 +136,7 @@ if __name__ == '__main__' and not _os.environ.get(_MARCADOR_RODADA):
     raise SystemExit(0)
 
 MOTOR_BONUS = 'v9-3108-clube-novo-writer-v1'
-WRITER_BONUS = 'gravar_build_bonificador_v1'
+WRITER_BONUS = 'gravar_build_bonificador_v3'
 LOTE = 200
 NAOSEI = 'NAO-SEI.txt'
 
@@ -440,6 +440,7 @@ def gravar_resultados_canonicos(linhas, rpc_call):
             continue
         resposta = rpc_call(WRITER_BONUS, {'p_resultado': payload})
         respostas.append(validar_retorno_writer(resposta, payload))
+        print('FILA_CONFIRMADA: linha=%d' % payload['build_linha_card_id'])
     return respostas
 
 
@@ -450,9 +451,9 @@ print('=' * 70)
 
 print('')
 print('[1/4] baixando a receita do banco')
-rb = rpc('bonificador_regua_v1')
+rb = rpc('bonificador_regua_v2')
 if not rb or not rb.get('pode_rodar'):
-    print('  PAREI: a public.bonificador_regua_v1() esta ausente ou bloqueada.')
+    print('  PAREI: a public.bonificador_regua_v2() esta ausente ou bloqueada.')
     if rb and rb.get('falta_o_que'):
         print('  Falta: %s' % ', '.join(str(x) for x in rb.get('falta_o_que') or []))
     pausa(); sys.exit(1)
@@ -488,13 +489,13 @@ print('[2/4] baixando as linhas pendentes e os selos vigentes')
 pares, passo, de = [], 1000, 0
 while True:
     try:
-        lote = rpc('bonificador_contexto_escrita_v2',
+        lote = rpc('bonificador_contexto_fila_v3',
                    {'p_limit': passo, 'p_offset': de})
     except urllib.error.HTTPError as e:
         detalhe = e.read().decode('utf-8')[:300]
         print('')
-        print('  PAREI: porta publica do contexto novo indisponivel: %s' % detalhe)
-        print('  Nao existe fallback para public.bonificador_pares_v1 nem clube.build.')
+        print('  PAREI: porta publica da fila V3 indisponivel: %s' % detalhe)
+        print('  Nao existe fallback para qualquer tabela ou contrato legado.')
         pausa(); sys.exit(1)
     if not lote:
         break
@@ -526,6 +527,7 @@ while True:
     if len(lote) < passo:
         break
 print('   pares card x funcao ................ %d      ' % len(pares))
+print('FILA_TOTAL: %d' % len(pares))
 
 if not pares:
     print('')
@@ -547,7 +549,7 @@ for i, cid in enumerate(cards):
     if i % 200 == 0:
         print('   %d/%d cards...' % (i, len(cards)), end='\r')
     try:
-        CARTA[cid] = rpc('bonificador_carta_v1', {'p_card_id': cid}) or {
+        CARTA[cid] = rpc('bonificador_carta_v2', {'p_card_id': cid}) or {
             'pode_rodar': False,
             'falta_o_que': ['contrato vazio']}
     except Exception as e:
@@ -562,18 +564,15 @@ for contexto in pares:
     fun_id = contexto['funcao_id']
     fun_codigo = contexto['funcao_codigo']
     linha_posicao_id = contexto['posicao_id']
+    print('FILA_LINHA: linha=%d card=%s funcao=%d posicao=%d'
+          % (linha_id, cid, fun_id, linha_posicao_id))
     c = CARTA.get(cid) or {}
     falhas_contrato = list(c.get('falta_o_que') or [])
-    completude = c.get('completude_motor') or {}
     if str(c.get('card_id') or '') != str(cid):
         falhas_contrato.append('contrato devolveu outro card_id')
-    if completude.get('apto_motor') is not True:
-        falhas_contrato.append('completude vigente nao esta apta para motor')
     for selo in ('carta_versao', 'carta_fingerprint'):
         if not isinstance(c.get(selo), str) or not c.get(selo).strip():
             falhas_contrato.append('contrato sem %s' % selo)
-    if c.get('carta_fingerprint') != completude.get('fingerprint'):
-        falhas_contrato.append('fingerprint da carta diverge da completude vigente')
     if c.get('carta_versao') != contexto.get('carta_versao') or c.get('carta_fingerprint') != contexto.get('carta_fingerprint'):
         falhas_contrato.append('selos da carta divergiram do contexto de escrita')
     contrato_carta = c.get('contrato_versao') or c.get('contrato')
@@ -648,6 +647,8 @@ for contexto in pares:
         'contrato_versao': contexto.get('contrato_versao'),
         'contrato_fingerprint': contexto.get('contrato_fingerprint'),
         'formula_fingerprint': contexto.get('formula_fingerprint')})
+    print('FILA_CALCULADA: linha=%d estado=%s' % (
+        linha_id, 'bloqueada' if faltou else 'apta'))
 
 print('   %d pares calculados' % len(saida))
 com_est = sum(1 for x in saida if x['b_estilo'])
