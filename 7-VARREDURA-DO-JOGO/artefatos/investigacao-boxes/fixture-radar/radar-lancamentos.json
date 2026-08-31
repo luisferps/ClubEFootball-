@@ -1,12 +1,12 @@
 {
-  "contract": "clubef-radar-lancamentos-fisicos-v1",
+  "contract": "clubef-radar-lancamentos-fisicos-v2",
   "generated_at": "2026-08-31T12:00:00.000Z",
   "database_write": false,
   "read_only": true,
   "evidence_mode": "fixture_salvo",
-  "radar_fingerprint": "882225a520d838c86eeb9df7cb89abce9d8ec0dcfb2c3c35945993e9c7f6d5bc",
+  "radar_fingerprint": "d0265ff8bdf570e8971fc3162324c1212ecaa26dad183e1e20012fc4f2da5516",
   "parser": {
-    "version": "player-variation-detail-168-v1",
+    "version": "player-variation-detail-168-v2",
     "record_size": 168,
     "name_offset": 12,
     "encoding": "utf-8-nul"
@@ -15,7 +15,10 @@
   "publication_decision": {
     "evaluated": false,
     "blocked": false,
-    "reason": "O radar informa a box física, mas não autoriza nem impede publicar ou selecionar o card no site."
+    "reason": "O radar informa a box física, mas não autoriza nem impede publicar ou selecionar o card no site.",
+    "ignored_records_evaluated": true,
+    "ignored_records_publishable": false,
+    "ignored_records_reason": "Um registro sem relação card/box atual comprovada não comprova um lançamento e permanece fora do radar publicável."
   },
   "motor_decision": {
     "evaluated": false,
@@ -23,6 +26,7 @@
   },
   "apply_scope": {
     "radar_fields_included": false,
+    "ignored_records_included": false,
     "destination": null,
     "reason": "Box é observação local fora da identidade canônica e fora do pacote de aplicação enquanto não houver contrato/migração próprios."
   },
@@ -61,7 +65,7 @@
     "reason": "Mesmo papel de fonte, membro físico e versão de parser.",
     "previous_artifact": "fixture://anterior/radar-lancamentos.json",
     "previous_generated_at": "2026-08-30T12:00:00.000Z",
-    "previous_radar_fingerprint": "298decf882ff9d2f0a7d158a0a640a706630cf8aed41c73817fcab86d3951cd8",
+    "previous_radar_fingerprint": "f0b0006c3eae6dadf258baf31085dfb8587e8c4253cd37bfeeafc94e1fb1cf8f",
     "boxes_ausentes_desde_anterior": [
       {
         "nome_box": "Box Fixture Ausente",
@@ -76,6 +80,11 @@
   "counts": {
     "boxes": 2,
     "cards_mapped": 5,
+    "records_ignored": 1,
+    "ignored_absent_from_current_player": 0,
+    "ignored_by_classification": {
+      "card_without_box_name": 1
+    },
     "boxes_ausentes_desde_anterior": 1,
     "by_state": {
       "nova": 1,
@@ -96,10 +105,14 @@
       "file": "PlayerVariationDetail.bin",
       "packed_bytes": null,
       "packed_sha256": null,
-      "raw_bytes": 840,
-      "raw_sha256": "4ebb997c043580df2553697c6fa42979416caaf3b9f285cda75ce1639605fdb4",
-      "records_total": 5,
-      "relations_valid": 5
+      "raw_bytes": 1008,
+      "raw_sha256": "a4f02450779f37aa9e1f5a693b7a775d2a356558376bebe8afa2bf51798aaa3a",
+      "records_total": 6,
+      "relations_valid": 5,
+      "records_ignored": 1,
+      "ignored_by_classification": {
+        "card_without_box_name": 1
+      }
     },
     "contract_verification": {
       "evidence_mode": "fixture_salvo",
@@ -112,6 +125,33 @@
     "card_join_checked": true,
     "card_join_source": "cartas-fisicas-canonicas.json / Player.bin da mesma rodada"
   },
+  "ignored_records": [
+    {
+      "classification": "card_without_box_name",
+      "card_id": "105639015776029",
+      "record_index": 5,
+      "byte_offset": 840,
+      "nonzero_offsets": [
+        0,
+        1,
+        2,
+        4,
+        5
+      ],
+      "name_region_all_zero": true,
+      "record_tail_after_id_all_zero": true,
+      "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+      "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+      "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+      "publication_eligible": false,
+      "radar_relation_eligible": false,
+      "package_eligible": false,
+      "database_write": false,
+      "record_sha256": "d72b757f46225a51ff97d8540c0048183654af2d0b4712180d6422f9e3402db5",
+      "card_join_checked": true,
+      "card_present_in_current_player": true
+    }
+  ],
   "boxes": [
     {
       "nome_box": "Box Fixture Conhecida",
@@ -127,25 +167,29 @@
           "card_id": "100000000000001",
           "nome_card": "Card Fixture A",
           "record_index": 0,
-          "byte_offset": 0
+          "byte_offset": 0,
+          "record_sha256": "004e1d569e28baadc91cd670c50be83383202bc38702eac817aa55a9cf015633"
         },
         {
           "card_id": "100000000000002",
           "nome_card": "Card Fixture B",
           "record_index": 1,
-          "byte_offset": 168
+          "byte_offset": 168,
+          "record_sha256": "3c15546ab66120ec0f7f71c33cd07b6640faf7e11b9115e8377becd50ccca9ff"
         },
         {
           "card_id": "100000000000003",
           "nome_card": "Card Fixture C",
           "record_index": 2,
-          "byte_offset": 336
+          "byte_offset": 336,
+          "record_sha256": "41e062e702364c8048890aab87e807ea248a7ef7b5fd4eb27265a3ad39e64b65"
         },
         {
           "card_id": "100000000000004",
           "nome_card": "Card Fixture D",
           "record_index": 3,
-          "byte_offset": 504
+          "byte_offset": 504,
+          "record_sha256": "0c70369e3db53014f553b3a8a029c430b773180937c5ed9426730b4371d1292c"
         }
       ],
       "estado": "ja_conhecida",
@@ -171,7 +215,8 @@
           "card_id": "100000000000005",
           "nome_card": "Card Fixture E",
           "record_index": 4,
-          "byte_offset": 672
+          "byte_offset": 672,
+          "record_sha256": "70401aa71f88f2af2ef12108e861e70cab3d2215bcee1ade1fdcf9e8409b3289"
         }
       ],
       "estado": "nova",

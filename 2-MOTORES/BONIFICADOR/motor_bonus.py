@@ -51,7 +51,89 @@ if _MEU_LUGAR in _sys.path:
     _sys.path.remove(_MEU_LUGAR)
 _sys.path.insert(0, _MEU_LUGAR)
 
-import os, sys, json, time, urllib.request, urllib.error, decimal
+import os, sys, json, time, urllib.request, urllib.error, decimal, signal, threading
+
+
+# ========================================================= PIPELINE VIVO
+# O estado da fila vive somente no banco. Este laço não cria checkpoint, cache ou
+# arquivo de controle: cada rodada relê os pares já confirmados pelo Otimizador.
+_MARCADOR_RODADA = '_CLUBEF_BONIFICADOR_RODADA_INTERNA'
+
+
+def _inteiro_ambiente(nome, padrao, minimo=0):
+    bruto = _os.environ.get(nome, str(padrao))
+    try:
+        valor = int(bruto)
+    except (TypeError, ValueError):
+        raise RuntimeError('%s precisa ser inteiro, recebeu %r' % (nome, bruto))
+    if valor < minimo:
+        raise RuntimeError('%s precisa ser maior ou igual a %d' % (nome, minimo))
+    return valor
+
+
+def _executar_pipeline_vivo():
+    """Roda uma rodada por vez e volta ao banco sem carregar estado local."""
+    import runpy
+
+    espera = _inteiro_ambiente('CLUBEF_BONIFICADOR_INTERVALO_SEGUNDOS', 5, 1)
+    # Somente para teste offline/diagnóstico controlado; 0 significa operação contínua.
+    max_rodadas = _inteiro_ambiente('CLUBEF_BONIFICADOR_MAX_RODADAS', 0, 0)
+    rodada = 0
+    parar = threading.Event()
+
+    def solicitar_parada(_sinal, _quadro):
+        if not parar.is_set():
+            print('\n  PARADA SOLICITADA: termino a rodada já em andamento e não inicio outra.')
+        parar.set()
+
+    sinais = [signal.SIGINT]
+    if hasattr(signal, 'SIGBREAK'):
+        sinais.append(signal.SIGBREAK)
+    anteriores = {sinal: signal.getsignal(sinal) for sinal in sinais}
+    for sinal in sinais:
+        signal.signal(sinal, solicitar_parada)
+    print('  PIPELINE VIVO: consulta linhas confirmadas pelo Otimizador continuamente.')
+    print('  Quando não houver linha apta, espera %ds. Ctrl+C para parar normalmente.' % espera)
+    try:
+        while not parar.is_set():
+            rodada += 1
+            _os.environ[_MARCADOR_RODADA] = str(rodada)
+            resultado = None
+            try:
+                resultado = runpy.run_path(__file__, run_name='__main__').get('PIPELINE_RESULTADO')
+            except SystemExit as erro:
+                codigo = 0 if erro.code is None else erro.code
+                if codigo != 0:
+                    raise
+            finally:
+                _os.environ.pop(_MARCADOR_RODADA, None)
+
+            if max_rodadas and rodada >= max_rodadas:
+                print('  PARADA DE TESTE: limite de %d rodada(s) atingido.' % max_rodadas)
+                return
+
+            if parar.is_set():
+                break
+
+            confirmou = int((resultado or {}).get('enviados') or 0)
+            if confirmou == 0:
+                print('  AGUARDANDO NOVAS LINHAS: nenhuma linha apta confirmada nesta rodada; '
+                      'nova consulta em %ds. Ctrl+C para parar.' % espera)
+                parar.wait(espera)
+            else:
+                print('  CONTINUANDO: %d resultado(s) confirmado(s); consultando novas linhas.' % confirmou)
+    except KeyboardInterrupt:
+        solicitar_parada(None, None)
+    finally:
+        for sinal, anterior in anteriores.items():
+            signal.signal(sinal, anterior)
+    print('  PARADA NORMAL: Bonificador interrompido pelo operador. '
+          'Resultados já confirmados permanecem no banco.')
+
+
+if __name__ == '__main__' and not _os.environ.get(_MARCADOR_RODADA):
+    _executar_pipeline_vivo()
+    raise SystemExit(0)
 
 MOTOR_BONUS = 'v9-3108-clube-novo-writer-v1'
 WRITER_BONUS = 'gravar_build_bonificador_v1'
@@ -449,7 +531,9 @@ if not pares:
     print('')
     print('  CONCLUIDO: nao ha linha pendente em clube_novo.build_linha_card.')
     print('  Nenhuma gravacao era necessaria nesta rodada.')
-    pausa(); sys.exit(0)
+    if not _os.environ.get(_MARCADOR_RODADA):
+        pausa()
+    sys.exit(0)
 
 cards = sorted({x['card_id'] for x in pares})
 print('   cards distintos .................... %d' % len(cards))
@@ -635,4 +719,10 @@ print('=' * 70)
 print('  PRONTO. O writer novo confirmou identidade, selos e readback transacional.')
 print('  Nenhuma chamada produtiva foi feita para o writer legado.')
 print('=' * 70)
-pausa()
+PIPELINE_RESULTADO = {
+    'pares': len(pares),
+    'bloqueados': bloqueados,
+    'enviados': enviados,
+}
+if not _os.environ.get(_MARCADOR_RODADA):
+    pausa()

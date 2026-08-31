@@ -514,7 +514,7 @@
       previous_artifact: input.previous_artifact_path || null,
       generated_at: input.generated_at
     });
-    log(`Radar de boxes: ${artifact.counts.boxes} box(es), ${artifact.counts.cards_mapped} card(s), comparação ${artifact.comparison.status}.`);
+    log(`Radar de boxes: ${artifact.counts.boxes} box(es), ${artifact.counts.cards_mapped} card(s), ${artifact.counts.records_ignored} registro(s) isolado(s), comparação ${artifact.comparison.status}.`);
     return artifact;
   }
 

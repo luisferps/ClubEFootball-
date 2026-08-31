@@ -16,11 +16,8 @@ MIGRACAO_CONTADORES = (
     RAIZ / "4-DOCUMENTOS" / "OTIMIZADOR" / "MIGRACAO-ENTRADAS" /
     "MIGRACAO-OTIMIZADOR-CONTADORES-OBRIGATORIOS-V13.sql"
 )
-MIGRACAO_FILA_LEGADO = (
-    RAIZ / "4-DOCUMENTOS" / "OTIMIZADOR" / "MIGRACAO-ENTRADAS" /
-    "MIGRACAO-FILA-COMPARACAO-LEGADO-50-V14.sql"
-)
 FILA_LEGADO = OTIMIZADOR / "fila_comparacao_legado_50.py"
+LANCADOR_FILA_HISTORICA = OTIMIZADOR / "RODAR-COMPARACAO-LEGADO-50-CARDS.bat"
 
 
 def carrega(nome, caminho):
@@ -121,19 +118,14 @@ class ImpetosLinhasV12Test(unittest.TestCase):
         self.assertNotIn("from clube.", operacional.lower())
         self.assertNotIn("join clube.", operacional.lower())
 
-    def test_fila_de_50_usa_legado_so_como_referencia(self):
-        sql = MIGRACAO_FILA_LEGADO.read_text(encoding="utf-8")
+    def test_entrada_historica_esta_encerrada(self):
         worker = FILA_LEGADO.read_text(encoding="utf-8")
-        self.assertIn("clube.build_arquivo_2608", sql)
-        self.assertIn("insert into clube_novo.build_linha_card", sql.lower())
-        self.assertIn("fila de comparacao exige tabelas de motor zeradas", sql)
-        self.assertIn("where x.ordem<=50", sql)
-        self.assertIn("existe linha sem par no arquivo anterior", sql)
-        self.assertNotIn("insert into clube.", sql.lower())
-        self.assertNotIn("update clube.", sql.lower())
-        self.assertNotIn("delete from clube.", sql.lower())
-        self.assertIn("QTD_CARDS=50", worker)
-        self.assertIn("fila_comparacao_legado_50_v1", worker)
+        lancador = LANCADOR_FILA_HISTORICA.read_text(encoding="utf-8")
+        self.assertIn("frente de legado foi encerrada", worker)
+        self.assertIn("raise SystemExit(MENSAGEM)", worker)
+        self.assertNotIn("otimizador_", worker)
+        self.assertIn("exit /b 1", lancador.lower())
+        self.assertNotIn("python", lancador.lower())
         self.assertFalse((OTIMIZADOR / "teste_fila_100.py").exists())
 
 

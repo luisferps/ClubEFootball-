@@ -267,6 +267,9 @@ async function main() {
     result.radar_lancamentos = {
       boxes: radar.counts.boxes,
       cards_mapped: radar.counts.cards_mapped,
+      records_ignored: radar.counts.records_ignored,
+      ignored_absent_from_current_player: radar.counts.ignored_absent_from_current_player,
+      ignored_by_classification: radar.counts.ignored_by_classification,
       by_state: radar.counts.by_state,
       boxes_absent_since_previous: radar.counts.boxes_ausentes_desde_anterior,
       comparison_status: radar.comparison.status,

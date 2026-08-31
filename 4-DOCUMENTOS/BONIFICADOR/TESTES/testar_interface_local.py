@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import importlib.util
+import io
 import json
 import threading
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -54,6 +56,35 @@ def obter(url, dados=None):
         return resposta.status, json.loads(resposta.read().decode("utf-8"))
 
 
+class ProcessoFalso:
+    def __init__(self):
+        self.stdout = io.StringIO(
+            "PIPELINE VIVO\nAGUARDANDO NOVAS LINHAS: nenhuma linha apta\n"
+        )
+        self._ativo = True
+        self._fim = threading.Event()
+
+    def poll(self):
+        return None if self._ativo else 0
+
+    def wait(self):
+        self._fim.wait(2)
+        return 0
+
+    def send_signal(self, _sinal):
+        self._ativo = False
+        self._fim.set()
+
+
+def esperar(predicado):
+    limite = time.time() + 2
+    while time.time() < limite:
+        if predicado():
+            return
+        time.sleep(.01)
+    raise AssertionError("estado assíncrono não chegou a tempo")
+
+
 def main():
     servico = MODULO.ServicoBonificador(GatewayFalso())
     resultado = servico.simular("casillas-teste", 19)
@@ -64,7 +95,11 @@ def main():
     assert resultado["carta"]["playstyles"][1]["id"] == 336
     assert "clube_novo" in json.dumps(servico.auditoria(), ensure_ascii=False)
 
-    httpd = MODULO.criar_servidor(servico, 0)
+    processos = []
+    def criar_processo(*_args, **_kwargs):
+        processo = ProcessoFalso(); processos.append(processo); return processo
+    pipeline = MODULO.PipelineBonificador(criar_processo)
+    httpd = MODULO.criar_servidor(servico, 0, pipeline)
     thread = threading.Thread(target=httpd.serve_forever, daemon=True)
     thread.start()
     base = f"http://127.0.0.1:{httpd.server_address[1]}"
@@ -73,6 +108,14 @@ def main():
         assert status == 200 and saude["ok"]
         status, simulado = obter(base + "/api/simular?card_id=casillas-teste&funcao_id=19")
         assert status == 200 and simulado["bonus"]["estilo"] == 1.5
+        status, iniciado = obter(base + "/api/pipeline/iniciar", b"{}")
+        assert status == 200 and iniciado["pipeline"]["ativo"] is True
+        status, estado = obter(base + "/api/pipeline/estado")
+        assert status == 200 and estado["pipeline"]["ativo"] is True
+        assert processos and processos[0].poll() is None
+        status, parada = obter(base + "/api/pipeline/parar", b"{}")
+        assert status == 200 and parada["pipeline"]["estado"] in {"parando", "parado"}
+        esperar(lambda: pipeline.estado()["ativo"] is False)
         try:
             obter(base + "/api/simular", b"{}")
             raise AssertionError("POST deveria ser bloqueado")
@@ -83,7 +126,7 @@ def main():
 
     estaticos = (RAIZ / "2-MOTORES" / "BONIFICADOR" / "interface" / "app.js").read_text(encoding="utf-8")
     assert "SUPABASE_KEY" not in estaticos and "clube_novo" not in estaticos
-    print("INTERFACE_LOCAL_OK simulacao=casillas estilo=1.5 post=405 frontend_sem_credencial=sim")
+    print("INTERFACE_LOCAL_OK simulacao=casillas pipeline_inicio_parada_assincronos=sim post=405 frontend_sem_credencial=sim")
 
 
 if __name__ == "__main__":

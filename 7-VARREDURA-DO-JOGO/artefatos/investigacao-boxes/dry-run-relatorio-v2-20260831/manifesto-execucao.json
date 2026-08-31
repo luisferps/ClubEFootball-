@@ -1,0 +1,3946 @@
+{
+  "schema": "clubef-execution-manifest-v1",
+  "review_renderer_schema": "clubef-result-review-html-v5-radar-e-motores",
+  "generated_at": "2026-08-31T08:23:36.574643+00:00",
+  "execution": {
+    "execution_id": "dry-run-relatorio-v2-20260831",
+    "result": "resultado.json",
+    "review_html": "resultado.html",
+    "manifest": "manifesto-execucao.json"
+  },
+  "result": {
+    "name": "resultado.json",
+    "bytes": 343886,
+    "modified_at": "2026-08-31T07:57:50.552577+00:00"
+  },
+  "program": {
+    "physical_reader": "node-desktop-worker",
+    "launcher_protocol_version": "5.3.0"
+  },
+  "contract": {
+    "contrato_id": "clubef-dt870-2026-r1",
+    "versao_jogo": "dt870-2026-atualizacao",
+    "versao_contrato": "r3-estilo-ia-cobertura-failclosed-v1",
+    "fingerprint_contrato_sha256": "a55f2b59973f13de003236f7a2b049ece975af0c42447e4b0f489bd849f16dd1",
+    "fingerprint_fontes_sha256": "9019aeaa69a4c9c9c54499a0dbf987a44c913bb6c323b3af81dd9f584d8de06c",
+    "fingerprint_catalogos_sha256": "3c2e0c44577303216a4d6a195fff7b89427a80b1dfef1c06735ab18296c9f49d"
+  },
+  "sources": {},
+  "families": [
+    {
+      "family_key": "cartas",
+      "family": "Cartas e jogadores",
+      "state": "observed",
+      "state_label": "Sem mudança",
+      "status_tone": "success",
+      "blocks_application": false,
+      "operator_action": "Nada a fazer.",
+      "counts": {
+        "new": 0,
+        "removed": 0,
+        "altered": 0,
+        "repeated": 0,
+        "invalid": 0,
+        "known_pending": 0,
+        "historical_unresolved": 0
+      },
+      "reports": [
+        "cartas:baseline"
+      ],
+      "classification_complete": true,
+      "technical_integrity": true,
+      "exact_match": true,
+      "entities_affected": 0,
+      "field_differences": 0,
+      "information_count": 0,
+      "detail": "O que foi encontrado no jogo corresponde ao que já está salvo."
+    },
+    {
+      "family_key": "radar de lançamentos",
+      "family": "Radar De Lançamentos",
+      "state": "error",
+      "state_label": "Não foi possível conferir tudo",
+      "status_tone": "error",
+      "blocks_application": false,
+      "operator_action": "Não envie alterações desta parte ao banco. Abra os itens vermelhos e consulte o log.",
+      "counts": {
+        "new": 0,
+        "removed": 0,
+        "altered": 0,
+        "repeated": 0,
+        "invalid": 0,
+        "known_pending": 0,
+        "historical_unresolved": 0
+      },
+      "reports": [],
+      "classification_complete": null,
+      "technical_integrity": null,
+      "exact_match": null,
+      "entities_affected": 0,
+      "field_differences": 0,
+      "information_count": 0,
+      "detail": "A leitura encontrou um problema que impede confiar nesta parte do resultado."
+    },
+    {
+      "family_key": "dimensoes",
+      "family": "Altura, peso e outros dados dos jogadores",
+      "state": "observed",
+      "state_label": "Sem mudança",
+      "status_tone": "success",
+      "blocks_application": false,
+      "operator_action": "Nada a fazer.",
+      "counts": {
+        "new": 0,
+        "removed": 0,
+        "altered": 0,
+        "repeated": 0,
+        "invalid": 0,
+        "known_pending": 0,
+        "historical_unresolved": 0
+      },
+      "reports": [
+        "dimensoes:dimensoes_normalizadas"
+      ],
+      "classification_complete": true,
+      "technical_integrity": true,
+      "exact_match": true,
+      "entities_affected": 0,
+      "field_differences": 0,
+      "information_count": 0,
+      "detail": "O que foi encontrado no jogo corresponde ao que já está salvo."
+    },
+    {
+      "family_key": "metadados",
+      "family": "Arquivos necessários para a leitura",
+      "state": "ready",
+      "state_label": "Arquivos lidos",
+      "status_tone": "success",
+      "blocks_application": false,
+      "operator_action": "Nada a fazer.",
+      "counts": {
+        "new": 0,
+        "removed": 0,
+        "altered": 0,
+        "repeated": 0,
+        "invalid": 0,
+        "known_pending": 0,
+        "historical_unresolved": 0
+      },
+      "reports": [],
+      "classification_complete": null,
+      "technical_integrity": null,
+      "exact_match": null,
+      "entities_affected": 0,
+      "field_differences": 0,
+      "information_count": 0,
+      "detail": "Os arquivos necessários foram encontrados e lidos."
+    },
+    {
+      "family_key": "textos",
+      "family": "Textos do jogo",
+      "state": "observed",
+      "state_label": "Sem mudança",
+      "status_tone": "success",
+      "blocks_application": false,
+      "operator_action": "Nada a fazer.",
+      "counts": {
+        "new": 0,
+        "removed": 0,
+        "altered": 0,
+        "repeated": 0,
+        "invalid": 0,
+        "known_pending": 0,
+        "historical_unresolved": 0
+      },
+      "reports": [
+        "textos:textos_normalizados"
+      ],
+      "classification_complete": true,
+      "technical_integrity": true,
+      "exact_match": true,
+      "entities_affected": 0,
+      "field_differences": 0,
+      "information_count": 0,
+      "detail": "O que foi encontrado no jogo corresponde ao que já está salvo."
+    },
+    {
+      "family_key": "relacoes",
+      "family": "Dados das cartas: habilidades, posições e estilos",
+      "state": "review",
+      "state_label": "Sem mudança",
+      "status_tone": "success",
+      "blocks_application": false,
+      "operator_action": "Nada a fazer.",
+      "counts": {
+        "new": 0,
+        "removed": 0,
+        "altered": 0,
+        "repeated": 0,
+        "invalid": 0,
+        "known_pending": 0,
+        "historical_unresolved": 0
+      },
+      "reports": [
+        "relacoes:relacoes_normalizadas"
+      ],
+      "classification_complete": true,
+      "technical_integrity": true,
+      "exact_match": false,
+      "entities_affected": 0,
+      "field_differences": 0,
+      "information_count": 0,
+      "detail": "O que foi encontrado no jogo corresponde ao que já está salvo."
+    },
+    {
+      "family_key": "impetos",
+      "family": "Ímpetos",
+      "state": "review",
+      "state_label": "Sem mudança atual; há referência antiga",
+      "status_tone": "info",
+      "blocks_application": false,
+      "operator_action": "Nada a corrigir hoje. Não use esses registros antigos para alterar o banco; o programa continuará guardando o aviso.",
+      "counts": {
+        "new": 0,
+        "removed": 0,
+        "altered": 0,
+        "repeated": 0,
+        "invalid": 0,
+        "known_pending": 0,
+        "historical_unresolved": 101
+      },
+      "reports": [
+        "impetos:slots_normalizados",
+        "impetos:catalogo_normalizado"
+      ],
+      "classification_complete": true,
+      "technical_integrity": true,
+      "exact_match": false,
+      "entities_affected": 101,
+      "field_differences": 101,
+      "information_count": 0,
+      "detail": "Os dados atuais conferem. 101 registros de uma versão antiga foram guardados só para referência e não contam como mudança de hoje."
+    },
+    {
+      "family_key": "tecnicos",
+      "family": "Técnicos",
+      "state": "observed",
+      "state_label": "Sem mudança",
+      "status_tone": "success",
+      "blocks_application": false,
+      "operator_action": "Nada a fazer.",
+      "counts": {
+        "new": 0,
+        "removed": 0,
+        "altered": 0,
+        "repeated": 0,
+        "invalid": 0,
+        "known_pending": 0,
+        "historical_unresolved": 0
+      },
+      "reports": [
+        "tecnicos:tecnicos_normalizados"
+      ],
+      "classification_complete": true,
+      "technical_integrity": true,
+      "exact_match": true,
+      "entities_affected": 0,
+      "field_differences": 0,
+      "information_count": 0,
+      "detail": "O que foi encontrado no jogo corresponde ao que já está salvo."
+    },
+    {
+      "family_key": "catalogos",
+      "family": "Listas e nomes usados pelo jogo",
+      "state": "review",
+      "state_label": "Pendência já conhecida",
+      "status_tone": "warning",
+      "blocks_application": false,
+      "operator_action": "Este aviso não entra no pacote de envio. Se aparecer outra mudança comprovada, ela poderá ser marcada separadamente.",
+      "counts": {
+        "new": 0,
+        "removed": 0,
+        "altered": 0,
+        "repeated": 0,
+        "invalid": 0,
+        "known_pending": 1,
+        "historical_unresolved": 0
+      },
+      "reports": [
+        "catalogos:catalogos_normalizados"
+      ],
+      "classification_complete": true,
+      "technical_integrity": true,
+      "exact_match": true,
+      "entities_affected": 1,
+      "field_differences": 1,
+      "information_count": 0,
+      "detail": "Há 1 assunto que o programa já acompanha e continuará mostrando até ser resolvido. Não é falha desta extração."
+    }
+  ],
+  "review_gate": {
+    "contract": "clubef-review-gate-v1",
+    "reading_contract": {
+      "contrato_id": "clubef-dt870-2026-r1",
+      "versao_jogo": "dt870-2026-atualizacao",
+      "versao_contrato": "r3-estilo-ia-cobertura-failclosed-v1",
+      "fingerprint_contrato_sha256": "a55f2b59973f13de003236f7a2b049ece975af0c42447e4b0f489bd849f16dd1",
+      "fingerprint_fontes_sha256": "9019aeaa69a4c9c9c54499a0dbf987a44c913bb6c323b3af81dd9f584d8de06c",
+      "fingerprint_catalogos_sha256": "3c2e0c44577303216a4d6a195fff7b89427a80b1dfef1c06735ab18296c9f49d"
+    },
+    "required_families": [
+      "cartas",
+      "catalogos",
+      "dimensoes",
+      "impetos",
+      "relacoes",
+      "tecnicos",
+      "textos"
+    ],
+    "families": {
+      "cartas": {
+        "approved": true,
+        "physical_state": "ready",
+        "comparison_checks": {
+          "baseline": {
+            "completed": true,
+            "classification_complete": true,
+            "technical_integrity": true,
+            "application_eligible": true,
+            "application_blockers": [],
+            "unresolved_pending_count": 0,
+            "database_write": false
+          }
+        },
+        "normalization_state": "approved",
+        "reasons": []
+      },
+      "catalogos": {
+        "approved": false,
+        "physical_state": "ready",
+        "comparison_checks": {
+          "catalogos_normalizados": {
+            "completed": true,
+            "classification_complete": true,
+            "technical_integrity": true,
+            "application_eligible": false,
+            "application_blockers": [
+              {
+                "catalogo": "clube_novo.estilo_ia",
+                "estado_cobertura": "coverage_nao_verificavel",
+                "estado_monitoramento": "observado_nas_cartas_monitorado",
+                "familias_impactadas": [
+                  "catalogos",
+                  "relacoes"
+                ],
+                "motivo": "os bits observados nas cartas são monitorados; não existe enumeração física integral comprovada",
+                "procedencia": "relações normalizadas por bit",
+                "origem_fisica_comprovada": false,
+                "artefato_fisico_declarado": null
+              }
+            ],
+            "unresolved_pending_count": 1,
+            "database_write": false
+          }
+        },
+        "normalization_state": "blocked",
+        "reasons": [
+          "cobertura física não verificável: clube_novo.estilo_ia"
+        ]
+      },
+      "dimensoes": {
+        "approved": true,
+        "physical_state": "ready",
+        "comparison_checks": {
+          "dimensoes_normalizadas": {
+            "completed": true,
+            "classification_complete": true,
+            "technical_integrity": true,
+            "application_eligible": true,
+            "application_blockers": [],
+            "unresolved_pending_count": 0,
+            "database_write": false
+          }
+        },
+        "normalization_state": "approved",
+        "reasons": []
+      },
+      "impetos": {
+        "approved": true,
+        "physical_state": "ready",
+        "comparison_checks": {
+          "slots_normalizados": {
+            "completed": true,
+            "classification_complete": true,
+            "technical_integrity": true,
+            "application_eligible": true,
+            "application_blockers": [],
+            "unresolved_pending_count": 0,
+            "database_write": false
+          },
+          "catalogo_normalizado": {
+            "completed": true,
+            "classification_complete": true,
+            "technical_integrity": true,
+            "application_eligible": true,
+            "application_blockers": [],
+            "unresolved_pending_count": 0,
+            "database_write": false
+          }
+        },
+        "normalization_state": "approved",
+        "reasons": []
+      },
+      "relacoes": {
+        "approved": false,
+        "physical_state": "ready",
+        "comparison_checks": {
+          "relacoes_normalizadas": {
+            "completed": true,
+            "classification_complete": true,
+            "technical_integrity": true,
+            "application_eligible": true,
+            "application_blockers": [
+              {
+                "family": "estilos_ia",
+                "state": "coverage_nao_verificavel",
+                "reason": "A origem física enumarável do catálogo não foi comprovada. Bits observados em Player.bin são relações de carta e não enumeram o domínio completo."
+              }
+            ],
+            "unresolved_pending_count": 0,
+            "database_write": false
+          }
+        },
+        "normalization_state": "blocked",
+        "reasons": [
+          "cobertura física não verificável: clube_novo.estilo_ia"
+        ]
+      },
+      "tecnicos": {
+        "approved": true,
+        "physical_state": "ready",
+        "comparison_checks": {
+          "tecnicos_normalizados": {
+            "completed": true,
+            "classification_complete": true,
+            "technical_integrity": true,
+            "application_eligible": true,
+            "application_blockers": [],
+            "unresolved_pending_count": 0,
+            "database_write": false
+          }
+        },
+        "normalization_state": "approved",
+        "reasons": []
+      },
+      "textos": {
+        "approved": true,
+        "physical_state": "ready",
+        "comparison_checks": {
+          "textos_normalizados": {
+            "completed": true,
+            "classification_complete": true,
+            "technical_integrity": true,
+            "application_eligible": true,
+            "application_blockers": [],
+            "unresolved_pending_count": 0,
+            "database_write": false
+          }
+        },
+        "normalization_state": "approved",
+        "reasons": []
+      }
+    },
+    "application_blockers": [
+      {
+        "catalogo": "clube_novo.estilo_ia",
+        "estado_cobertura": "coverage_nao_verificavel",
+        "estado_monitoramento": "observado_nas_cartas_monitorado",
+        "familias_impactadas": [
+          "catalogos",
+          "relacoes"
+        ],
+        "motivo": "os bits observados nas cartas são monitorados; não existe enumeração física integral comprovada",
+        "procedencia": "relações normalizadas por bit",
+        "origem_fisica_comprovada": false,
+        "artefato_fisico_declarado": null
+      }
+    ],
+    "structural_coverage_complete": false,
+    "read_results_available": true,
+    "result_return_enabled": true,
+    "approval_required_in_extractor": true,
+    "approved_in_extractor": false,
+    "application_enabled": false,
+    "database_data_write_enabled": false,
+    "state": "coverage_blocked",
+    "reason": "aprovação/aplicação bloqueada somente para famílias dependentes de catálogo sem cobertura física verificável"
+  },
+  "launch_radar": {
+    "available": true,
+    "counts": {
+      "boxes": 2002,
+      "cards_mapped": 13363,
+      "records_ignored": 48,
+      "ignored_absent_from_current_player": 23,
+      "ignored_by_classification": {
+        "card_without_box_name": 45,
+        "box_relation_card_absent_from_current_player": 3
+      },
+      "boxes_ausentes_desde_anterior": 0,
+      "by_state": {
+        "nova": 0,
+        "ja_conhecida": 0,
+        "sem_historico": 2002
+      }
+    },
+    "comparison": {
+      "status": "sem_historico_comparavel",
+      "reason": "Nenhuma rodada anterior do radar foi encontrada.",
+      "previous_artifact": null,
+      "previous_generated_at": null,
+      "previous_radar_fingerprint": null,
+      "boxes_ausentes_desde_anterior": []
+    },
+    "integration": {
+      "version": "clubef-box-observation-envelope-v1",
+      "status": "prepared_not_enabled",
+      "database_migration_required": true,
+      "write_enabled": false,
+      "current_destination": null,
+      "box_identity_fields": [
+        "fingerprint_identidade"
+      ],
+      "card_box_relation_identity_fields": [
+        "card_id",
+        "fingerprint_identidade"
+      ],
+      "payload_fields": [
+        "nome_box",
+        "nome_normalizado",
+        "fingerprint_identidade",
+        "fingerprint_box",
+        "card_id",
+        "record_index",
+        "byte_offset"
+      ],
+      "required_provenance": [
+        "source.role",
+        "source.cpk_sha256",
+        "member.raw_sha256",
+        "parser.version"
+      ],
+      "note": "O envelope está estável para uma migração futura, mas nenhuma tabela, RPC, trigger ou escrita foi ativada por este radar."
+    },
+    "meaning": "Radar local de boxes pré-carregadas fisicamente; não confirma que a box já apareceu na tela do jogo.",
+    "interesting_boxes": [
+      {
+        "nome_box": "(※中国版オリジナルFP)",
+        "nomes_fisicos_observados": [
+          "(※中国版オリジナルFP)"
+        ],
+        "nome_normalizado": "(※中国版オリジナルfp)",
+        "fingerprint_identidade": "5dcbb93c666fe62062e4e155b0965a1ebc03eb62621744ee1387f0fbd40d1b40",
+        "fingerprint_box": "1265c2d4366d383cc46846de19164be45f0903f53808f27e7c8aa720d9e35cb6",
+        "quantidade_cartas": 125,
+        "cartas": [
+          {
+            "card_id": "105592576283050",
+            "nome_card": "Cristiano Ronaldo",
+            "record_index": 2746,
+            "byte_offset": 461328,
+            "record_sha256": "d5530eb0a21db8523fea68e6e32d47fe11c18a3833b8416ba742753fe773ddd9"
+          },
+          {
+            "card_id": "105592576286039",
+            "nome_card": "Lionel Messi",
+            "record_index": 2752,
+            "byte_offset": 462336,
+            "record_sha256": "cccc0a380708d5eb355491a21c37b4e19503bd1e48b56e54d77c0ba432498c9d"
+          },
+          {
+            "card_id": "105592576309572",
+            "nome_card": "Radamel Falcao",
+            "record_index": 2758,
+            "byte_offset": 463344,
+            "record_sha256": "234df4cfee7a0cad4825964213562a33a739199b9f011f54e357d6a38435f99d"
+          },
+          {
+            "card_id": "105592576312626",
+            "nome_card": "Luka Modrić",
+            "record_index": 2750,
+            "byte_offset": 462000,
+            "record_sha256": "d3e0a5e26d1dbc4a4805452b4df9ac8bf701a1637d396c271fbda8f1ff331b3c"
+          },
+          {
+            "card_id": "105592576315242",
+            "nome_card": "Arturo Vidal",
+            "record_index": 2756,
+            "byte_offset": 463008,
+            "record_sha256": "91681fc9f4214c82e8376fd54831ff6e186c8e48271b4e46a0c4c36d0a22d903"
+          },
+          {
+            "card_id": "105592576318650",
+            "nome_card": "Romelu Lukaku",
+            "record_index": 2754,
+            "byte_offset": 462672,
+            "record_sha256": "7742b224dabb2fcafcae520b4d99fdeda9d7ee613390dd271436e908b260b048"
+          },
+          {
+            "card_id": "105592576318851",
+            "nome_card": "P. E. Aubameyang",
+            "record_index": 2747,
+            "byte_offset": 461496,
+            "record_sha256": "ad1b5c01b886e55cc6aa1848da1673ab4d397b2ddec828ad7cec6b30c0e2bbd8"
+          },
+          {
+            "card_id": "105592576319242",
+            "nome_card": "Thomas Müller",
+            "record_index": 2751,
+            "byte_offset": 462168,
+            "record_sha256": "0dd46abbc51315d7ea3ab71d071bf7f30c7748e7a8e070fda5eaa2b0db0d5c0e"
+          },
+          {
+            "card_id": "105592576322907",
+            "nome_card": "Kevin De Bruyne",
+            "record_index": 2745,
+            "byte_offset": 461160,
+            "record_sha256": "e089e082b7586b846083f0b3936317c72ced86714bb2b1910aa512cdf8b5a69b"
+          },
+          {
+            "card_id": "105592576324521",
+            "nome_card": "Marquinhos",
+            "record_index": 2736,
+            "byte_offset": 459648,
+            "record_sha256": "f7dffd33c717d7173a199ac84ddb7fb3f75681669a0982bbc4706c67fb52b52d"
+          },
+          {
+            "card_id": "105592576326312",
+            "nome_card": "Wílmar Barrios",
+            "record_index": 2740,
+            "byte_offset": 460320,
+            "record_sha256": "c229944ca890bacb74ccb355ea3cda88404d206e18c6eb7d4b09052963f999e5"
+          },
+          {
+            "card_id": "105592576335651",
+            "nome_card": "Mohamed Salah",
+            "record_index": 2744,
+            "byte_offset": 460992,
+            "record_sha256": "bbf64bc8826f38f2472ad19de06a2d1ca573ad121a1dab8f332bf2bf1b1c47eb"
+          },
+          {
+            "card_id": "105592576335661",
+            "nome_card": "Yassine Bounou",
+            "record_index": 2734,
+            "byte_offset": 459312,
+            "record_sha256": "ebe26444f4af9202898a9d67dd63a0bf479c343502fe0fbe928e0295f0d34816"
+          },
+          {
+            "card_id": "105592576338769",
+            "nome_card": "Rodrigo De Paul",
+            "record_index": 2737,
+            "byte_offset": 459816,
+            "record_sha256": "c20db59248f61bd309692eae01572dc40aede2cd97c97a0f2b31e0fa3be0e824"
+          },
+          {
+            "card_id": "105592576379604",
+            "nome_card": "Emiliano Martínez",
+            "record_index": 2755,
+            "byte_offset": 462840,
+            "record_sha256": "c486910b09abcd58d96bed8062acd7069706c831632183d96f57d19e051f320b"
+          },
+          {
+            "card_id": "105592576381932",
+            "nome_card": "Martin Ødegaard",
+            "record_index": 2757,
+            "byte_offset": 463176,
+            "record_sha256": "3f7e7f6d97e1e0b5602619808458e56f722e7572caceb841ebe64947cdc484a9"
+          },
+          {
+            "card_id": "105592576383280",
+            "nome_card": "Benjamin Pavard",
+            "record_index": 2738,
+            "byte_offset": 459984,
+            "record_sha256": "fd798eadf2ce71c18b77652391b1730d9ba14e79eca59fa1d65e298b66715033"
+          },
+          {
+            "card_id": "105592576386214",
+            "nome_card": "Federico Dimarco",
+            "record_index": 2735,
+            "byte_offset": 459480,
+            "record_sha256": "a0efeacbf7ff24776d1834c1db858cf235f489a53a7df719543c09272f814959"
+          },
+          {
+            "card_id": "105592576386930",
+            "nome_card": "Frank Zambo Anguissa",
+            "record_index": 2732,
+            "byte_offset": 458976,
+            "record_sha256": "9d6c0c3da1efed55dd13bd10a32cc96ab7ea5cb8a77205ecebc71f4b82770c95"
+          },
+          {
+            "card_id": "105592576387857",
+            "nome_card": "Harry Maguire",
+            "record_index": 2739,
+            "byte_offset": 460152,
+            "record_sha256": "ec62ecfcd3899e5b404bc8504b54658d7445cfc6e88e3e28eb9d1267cc82b0ad"
+          },
+          {
+            "card_id": "105592576389246",
+            "nome_card": "Kylian Mbappé",
+            "record_index": 2727,
+            "byte_offset": 458136,
+            "record_sha256": "0370f47c6632b42583f0153d5098af2aa8960677cf695482f8a4b716eee088da"
+          },
+          {
+            "card_id": "105592576389394",
+            "nome_card": "Richarlison",
+            "record_index": 2753,
+            "byte_offset": 462504,
+            "record_sha256": "815ea307cdb7057d98f64f21a8a34a262e044421788c5825529f82520b706db8"
+          },
+          {
+            "card_id": "105592576393132",
+            "nome_card": "Owen Wijndal",
+            "record_index": 2742,
+            "byte_offset": 460656,
+            "record_sha256": "7727f5c91e7fbc6123351e9280c17a1cf58e16b4b390c37e3f78af21a074135e"
+          },
+          {
+            "card_id": "105592576393169",
+            "nome_card": "Fodé Ballo-Touré",
+            "record_index": 2743,
+            "byte_offset": 460824,
+            "record_sha256": "6845a42c4b7e150dcb82358caccda6a8b043b6e1e49d7e082a33e3bb550bed24"
+          },
+          {
+            "card_id": "105592576393404",
+            "nome_card": "Aaron Wan-Bissaka",
+            "record_index": 2748,
+            "byte_offset": 461664,
+            "record_sha256": "8e7c9845ab807317ec686e85a292f07d0be4600021b2fa43aa371602438f9545"
+          },
+          {
+            "card_id": "105592576393503",
+            "nome_card": "Ibrahima Konaté",
+            "record_index": 2741,
+            "byte_offset": 460488,
+            "record_sha256": "700001ab2cab0eef44ceb3b2fadb5c6c1f1c8d2331157f3cc9f99fc22bcaa651"
+          },
+          {
+            "card_id": "105592576396321",
+            "nome_card": "Lisandro Martínez",
+            "record_index": 2728,
+            "byte_offset": 458304,
+            "record_sha256": "350708064b971ea26c2812ca4b5786dd7670a119882d2b84c09e978d25ebb664"
+          },
+          {
+            "card_id": "105592576406606",
+            "nome_card": "Eduardo Camavinga",
+            "record_index": 2733,
+            "byte_offset": 459144,
+            "record_sha256": "8c8ce658804a05433ea7d707939acfeb003c0c974334a67cfa0f9a245ce7b307"
+          },
+          {
+            "card_id": "105592576407248",
+            "nome_card": "K. Kvaratskhelia",
+            "record_index": 2759,
+            "byte_offset": 463512,
+            "record_sha256": "c9d5e0f77d9b53819b0c3317fb450a7da0d20130a684d56e91e929dca05d6156"
+          },
+          {
+            "card_id": "105592576411046",
+            "nome_card": "Gabriel Martinelli",
+            "record_index": 2729,
+            "byte_offset": 458472,
+            "record_sha256": "80f99e98632f518cd1b4ee2dd3000dd8f10f4092da84c15a12e13e0b5a3f6ee0"
+          },
+          {
+            "card_id": "105592576411685",
+            "nome_card": "Pedri",
+            "record_index": 2730,
+            "byte_offset": 458640,
+            "record_sha256": "6265dac1b90f893043094d1e8355f6e16e409ec68223050770965cfa55b549a6"
+          },
+          {
+            "card_id": "105592576412071",
+            "nome_card": "Erling Haaland",
+            "record_index": 2726,
+            "byte_offset": 457968,
+            "record_sha256": "58f2298e000f0d606d8f61e75968b0cb0a2c03c3de715a4bc147d1e86bda4586"
+          },
+          {
+            "card_id": "105592576416528",
+            "nome_card": "Jamal Musiala",
+            "record_index": 2731,
+            "byte_offset": 458808,
+            "record_sha256": "b2c9d4133e67b866ab8b5eaede31573df5b7e6d19fadf74b99ea372f503ca6e6"
+          },
+          {
+            "card_id": "105636599728125",
+            "nome_card": "Marko Arnautović",
+            "record_index": 3712,
+            "byte_offset": 623616,
+            "record_sha256": "b664264353c82af43654eb10f1c548630281e1d15c7f77e538929edb7a112390"
+          },
+          {
+            "card_id": "105636599729939",
+            "nome_card": "Yann Sommer",
+            "record_index": 3713,
+            "byte_offset": 623784,
+            "record_sha256": "e48cc919fde9ed9811acdd4ba78c39baa264753c4d9e7a3caa561dfb93abf8d8"
+          },
+          {
+            "card_id": "105636599733434",
+            "nome_card": "Romelu Lukaku",
+            "record_index": 3714,
+            "byte_offset": 623952,
+            "record_sha256": "3206ceaa8919622da6dcb22460d42c55a2d032b32794828f727b7586cbb9f2d4"
+          },
+          {
+            "card_id": "105636599733569",
+            "nome_card": "Chris Smalling",
+            "record_index": 3715,
+            "byte_offset": 624120,
+            "record_sha256": "4a17bfde23fbb53e900aac133d451b015a1d69f88270a332e9dd53b70f166e77"
+          },
+          {
+            "card_id": "105636599735981",
+            "nome_card": "Casemiro",
+            "record_index": 3716,
+            "byte_offset": 624288,
+            "record_sha256": "fa4bc8ff8cc006af1878aea82beb0bacd6c7cdc44251d7b509a6222aeb6aa3af"
+          },
+          {
+            "card_id": "105636599738668",
+            "nome_card": "Leandro Paredes",
+            "record_index": 3717,
+            "byte_offset": 624456,
+            "record_sha256": "ee848188e247858a024e42feec308fcdea46b64442d3c7ddf63ddc5bdddab2d9"
+          },
+          {
+            "card_id": "105636599739257",
+            "nome_card": "İlkay Gündoğan",
+            "record_index": 3718,
+            "byte_offset": 624624,
+            "record_sha256": "79f76cda879946c2f3c097c63e01383df41faae2ce58e7414794d4b50db75fbe"
+          },
+          {
+            "card_id": "105636599740599",
+            "nome_card": "Harry Kane",
+            "record_index": 3719,
+            "byte_offset": 624792,
+            "record_sha256": "6041b518712bf91c4d596d64479767ea27dbeadc5997d9478b394fe1e248df78"
+          },
+          {
+            "card_id": "105636599741099",
+            "nome_card": "João Cancelo",
+            "record_index": 3720,
+            "byte_offset": 624960,
+            "record_sha256": "eac6ef3768a80113ef71791db1e92c104d538a0a1448deee8376c79eac2812a8"
+          },
+          {
+            "card_id": "105636599753692",
+            "nome_card": "Leon Goretzka",
+            "record_index": 3721,
+            "byte_offset": 625128,
+            "record_sha256": "b28dd7498f2c2810c9427e80812a427ab3a83cbec340a13be6b808bc2674268b"
+          },
+          {
+            "card_id": "105636599754984",
+            "nome_card": "Marc ter Stegen",
+            "record_index": 3722,
+            "byte_offset": 625296,
+            "record_sha256": "95ef827562f3e6611ecc96d06137a3a58bed8047c1fb4eebbc80dfb01f9d7045"
+          },
+          {
+            "card_id": "105636599756769",
+            "nome_card": "Luis Alberto",
+            "record_index": 3723,
+            "byte_offset": 625464,
+            "record_sha256": "cda76f995318196ff18df643b939715dd479a6cbfa366cfb7f06437d855ff542"
+          },
+          {
+            "card_id": "105636599794535",
+            "nome_card": "Bouna Sarr",
+            "record_index": 3724,
+            "byte_offset": 625632,
+            "record_sha256": "e838022dde4d45821fead9c7eecfe1c5180a6e1a9cb8fdf56538c300415ed032"
+          },
+          {
+            "card_id": "105636599796432",
+            "nome_card": "Ivan Provedel",
+            "record_index": 3725,
+            "byte_offset": 625800,
+            "record_sha256": "36974d21325ab49a1ad98b36fee2a6c2165dcb15f712150a490b84ae64e5c702"
+          },
+          {
+            "card_id": "105636599796998",
+            "nome_card": "Nicolò Barella",
+            "record_index": 3726,
+            "byte_offset": 625968,
+            "record_sha256": "ce5487e41eed86319f25eea9d94ebdae8043e72c816137771cca192f695abb20"
+          },
+          {
+            "card_id": "105636599800953",
+            "nome_card": "Adam Marušić",
+            "record_index": 3727,
+            "byte_offset": 626136,
+            "record_sha256": "a549433e8e86d61894a7977bbcdafec46e68857b8c1c7b556f6a02f6f6a69d9b"
+          },
+          {
+            "card_id": "105636599802271",
+            "nome_card": "Declan Rice",
+            "record_index": 3728,
+            "byte_offset": 626304,
+            "record_sha256": "0f788f79c541895b6857e658f3e2642a7903f910f92ad90d17fbcc8a9d290b42"
+          },
+          {
+            "card_id": "105636599803890",
+            "nome_card": "Renato Sanches",
+            "record_index": 3729,
+            "byte_offset": 626472,
+            "record_sha256": "8c196dcf9619f8e15b4f161b27367358ec5f6df2946e12ca9695af929dab9e48"
+          },
+          {
+            "card_id": "105636599803950",
+            "nome_card": "Marcus Rashford",
+            "record_index": 3730,
+            "byte_offset": 626640,
+            "record_sha256": "c2b85a5d0aa9528477273c41ec88b03be8ebd0d53645e76e8fbf083950ca3640"
+          },
+          {
+            "card_id": "105636599804564",
+            "nome_card": "Théo Hernández",
+            "record_index": 3731,
+            "byte_offset": 626808,
+            "record_sha256": "67b1bcb6e899ca0bf23b04dcc81c77747cc6c1975410419a673d6e3dd45f2583"
+          },
+          {
+            "card_id": "105636599805416",
+            "nome_card": "Christian Pulišić",
+            "record_index": 3732,
+            "byte_offset": 626976,
+            "record_sha256": "9881ab55e6f28de6bf6e8026356227d5da1cc264331637b94da5abee996dfb88"
+          },
+          {
+            "card_id": "105636599807974",
+            "nome_card": "Alessandro Bastoni",
+            "record_index": 3733,
+            "byte_offset": 627144,
+            "record_sha256": "aca45b4e77ca09657f0d782ba4884da8fb69f0d7c1183210f68e5989bd0a5d31"
+          },
+          {
+            "card_id": "105636599808429",
+            "nome_card": "Gianluca Scamacca",
+            "record_index": 3734,
+            "byte_offset": 627312,
+            "record_sha256": "19581a99a7f684ab531a33cfba58805805c25e73f6b0fed17c90a38da223d6e2"
+          },
+          {
+            "card_id": "105636599808488",
+            "nome_card": "Taty Castellanos",
+            "record_index": 3735,
+            "byte_offset": 627480,
+            "record_sha256": "9ce51939e78853b5f4f1e0d29ca0d32e6c4f9037101935ea6231122e35bdc598"
+          },
+          {
+            "card_id": "105636599809566",
+            "nome_card": "Stanislav Lobotka",
+            "record_index": 3736,
+            "byte_offset": 627648,
+            "record_sha256": "329844fec122de88fa800654a088bb115f5ad017bd02ddb43483e1939ece7bc6"
+          },
+          {
+            "card_id": "105636599810282",
+            "nome_card": "Giovanni Di Lorenzo",
+            "record_index": 3737,
+            "byte_offset": 627816,
+            "record_sha256": "987ccaaab408208fdc21ccc9159ba58d76e8caee7c4f9c30e855263de26a6f94"
+          },
+          {
+            "card_id": "105636599811448",
+            "nome_card": "Diogo Dalot",
+            "record_index": 3738,
+            "byte_offset": 627984,
+            "record_sha256": "2fb2fe7648459afed812c54d11b8025829e029a281c5441af881443afd5daf38"
+          },
+          {
+            "card_id": "105636599811586",
+            "nome_card": "Tijjani Reijnders",
+            "record_index": 3739,
+            "byte_offset": 628152,
+            "record_sha256": "4763af08a62e836624b7e6f25936066402aba8afe564a3c2cfee5a3c6f4a3a24"
+          },
+          {
+            "card_id": "105636599811628",
+            "nome_card": "Teun Koopmeiners",
+            "record_index": 3740,
+            "byte_offset": 628320,
+            "record_sha256": "bac56512c808d057d05ae95b9b08c4febd3b1bb4f3a47214cd528a59b830f4c0"
+          },
+          {
+            "card_id": "105636599812465",
+            "nome_card": "Rafael Leão",
+            "record_index": 3741,
+            "byte_offset": 628488,
+            "record_sha256": "87767ea7709f1e53ec344852a16c921be20ab4b7d830e5b959d1f6e96440cdf0"
+          },
+          {
+            "card_id": "105636599813669",
+            "nome_card": "Eljif Elmas",
+            "record_index": 3742,
+            "byte_offset": 628656,
+            "record_sha256": "13c6e0f2b197ae457a1dd21bd96cf4693e470f419e3ee52cf6f84fb60baba623"
+          },
+          {
+            "card_id": "105636599815772",
+            "nome_card": "Kim Min-Jae",
+            "record_index": 3743,
+            "byte_offset": 628824,
+            "record_sha256": "54352f6e4048c351aabea7ad72b188bb19c5619de3b5c75124ce30b4ac51a1ca"
+          },
+          {
+            "card_id": "105636599820001",
+            "nome_card": "William Saliba",
+            "record_index": 3744,
+            "byte_offset": 628992,
+            "record_sha256": "ebda76d5de368a66ae2df97a7967fb99ada0c04832f900392b1962f7d59eef7e"
+          },
+          {
+            "card_id": "105636599820207",
+            "nome_card": "Victor Osimhen",
+            "record_index": 3745,
+            "byte_offset": 629160,
+            "record_sha256": "f5c546b134bb8bcf4bcdf1f551cf0ccb6b1e9f116dbf776f171e5faba236801d"
+          },
+          {
+            "card_id": "105636599821333",
+            "nome_card": "Marco Carnesecchi",
+            "record_index": 3746,
+            "byte_offset": 629328,
+            "record_sha256": "3f6bca9e3169af546f6690f841774b0ef6bc8a6c1fff76b97212336ffa930673"
+          },
+          {
+            "card_id": "105636599825830",
+            "nome_card": "Gabriel Martinelli",
+            "record_index": 3747,
+            "byte_offset": 629496,
+            "record_sha256": "3a190a972efc4ed880a32c6e94e6cd682c95d9a956a9d6494ffcbeb6691709f7"
+          },
+          {
+            "card_id": "105636599825856",
+            "nome_card": "Ronald Araújo",
+            "record_index": 3748,
+            "byte_offset": 629664,
+            "record_sha256": "db8c4911167202bc9c9f838ceea96fd9342afee9448e890195f0f659fb217bce"
+          },
+          {
+            "card_id": "105636599831307",
+            "nome_card": "Fábio Vieira",
+            "record_index": 3749,
+            "byte_offset": 629832,
+            "record_sha256": "9e3684a6796f4dca399deb4d2d521eb32943d4684a8805d2ef0879bbad273532"
+          },
+          {
+            "card_id": "105636599834533",
+            "nome_card": "Rasmus Højlund",
+            "record_index": 3750,
+            "byte_offset": 630000,
+            "record_sha256": "15b63c92039210ad43fe529af1abc09a67fbc446f39bb801e1b366499a5af2d4"
+          },
+          {
+            "card_id": "105636599834804",
+            "nome_card": "Giorgio Scalvini",
+            "record_index": 3751,
+            "byte_offset": 630168,
+            "record_sha256": "a5c567bec389428e9d6c7dade601432cc242867081994a75e6ce2c831ee6e520"
+          },
+          {
+            "card_id": "105648679323740",
+            "nome_card": "Marcelo",
+            "record_index": 4363,
+            "byte_offset": 732984,
+            "record_sha256": "fb26d60b4590a981443cfc7c7d6b5aab81c5717e585c5ce75614ea7e02d962d4"
+          },
+          {
+            "card_id": "105648679325457",
+            "nome_card": "Ivan Rakitić",
+            "record_index": 4364,
+            "byte_offset": 733152,
+            "record_sha256": "8efde5511fd577f8cff54141d637935dbcbda2f854eeaf84a8885d91b141892f"
+          },
+          {
+            "card_id": "105648679325459",
+            "nome_card": "Yann Sommer",
+            "record_index": 4365,
+            "byte_offset": 733320,
+            "record_sha256": "b4cd118a90ab0b9db0c41b79f3eeb775a4d4508892f1d80625ce4609decaaba8"
+          },
+          {
+            "card_id": "105648679325550",
+            "nome_card": "Alexis Sánchez",
+            "record_index": 4366,
+            "byte_offset": 733488,
+            "record_sha256": "990668dcd59225c149d6921fa22f15c62d3008eb261a241ad26a84b2ae7b6a7e"
+          },
+          {
+            "card_id": "105648679325938",
+            "nome_card": "Ángel Di María",
+            "record_index": 4367,
+            "byte_offset": 733656,
+            "record_sha256": "4534aea6c3eb0e98a19dee06ecc6f0e0568109bf7a411f165d7e9556fbc1b63c"
+          },
+          {
+            "card_id": "105648679327400",
+            "nome_card": "Sergio Busquets",
+            "record_index": 4368,
+            "byte_offset": 733824,
+            "record_sha256": "c343a6d6cf97242893e76725c7c187cdc8d307338430d86b01ec17139e6dbd99"
+          },
+          {
+            "card_id": "105648679328834",
+            "nome_card": "Robert Lewandowski",
+            "record_index": 4369,
+            "byte_offset": 733992,
+            "record_sha256": "001a9a66ad9dfa714b9f4b0e55863bbc66e099bbf9d7d4eaad36cf1406ec8df6"
+          },
+          {
+            "card_id": "105648679329463",
+            "nome_card": "Juan Cuadrado",
+            "record_index": 4370,
+            "byte_offset": 734160,
+            "record_sha256": "13013cd2c00d04ea7205498bc923a72a44f666066944e2eff4c13c4951bc911c"
+          },
+          {
+            "card_id": "105648679329557",
+            "nome_card": "Nicolás Otamendi",
+            "record_index": 4371,
+            "byte_offset": 734328,
+            "record_sha256": "4cb4e94a72b773ec050688161874d939afe79207507536d907ac5ac62ddcdb23"
+          },
+          {
+            "card_id": "105648679333508",
+            "nome_card": "Francesco Acerbi",
+            "record_index": 4372,
+            "byte_offset": 734496,
+            "record_sha256": "46feabd1adcbc60c00104d5e99948e95e1ef06c9f34d5b1a3c1eb99519ff970e"
+          },
+          {
+            "card_id": "105648679400318",
+            "nome_card": "Dušan Vlahović",
+            "record_index": 4373,
+            "byte_offset": 734664,
+            "record_sha256": "d904d0c8182ff4ffd1f521ec10a52403cbe76b93da243f5e797db8d5cbb6796e"
+          },
+          {
+            "card_id": "105648679403640",
+            "nome_card": "Phil Foden",
+            "record_index": 4374,
+            "byte_offset": 734832,
+            "record_sha256": "304959200f9c6d0e4b8a3e105b1b6c0c69bffbb2e6f70e8807573c7dcf0dba23"
+          },
+          {
+            "card_id": "105648679405583",
+            "nome_card": "Ferran Torres",
+            "record_index": 4375,
+            "byte_offset": 735000,
+            "record_sha256": "28b06eb6964dcd1d0654d3a39e05d9c3413d7415584e9bba881e0e2d243dd3df"
+          },
+          {
+            "card_id": "105648679405879",
+            "nome_card": "Vinícius Júnior",
+            "record_index": 4376,
+            "byte_offset": 735168,
+            "record_sha256": "156457494dfc8c6eac4d668abe7cdae1ad94ebc78ba679ee9070d40b0ec44f05"
+          },
+          {
+            "card_id": "105648679408614",
+            "nome_card": "Aurélien Tchouaméni",
+            "record_index": 4377,
+            "byte_offset": 735336,
+            "record_sha256": "a20a9adfa1d799715b90eb78e015cc0cd0b93a0db0c7d1afa1c0f975f639f02f"
+          },
+          {
+            "card_id": "105648679410205",
+            "nome_card": "Wesley Fofana",
+            "record_index": 4378,
+            "byte_offset": 735504,
+            "record_sha256": "767c9d8211db8bd3573c567d1bf9cd2ebe0c8b191d7112021c2fff7b0ab39720"
+          },
+          {
+            "card_id": "105648679412553",
+            "nome_card": "Dejan Kuluševski",
+            "record_index": 4379,
+            "byte_offset": 735672,
+            "record_sha256": "34f4d132145e13c9a211e392eb138170f713043f10d3c49c288b297ad12e4738"
+          },
+          {
+            "card_id": "105648679414234",
+            "nome_card": "Sven Botman",
+            "record_index": 4380,
+            "byte_offset": 735840,
+            "record_sha256": "64f1b11003c49746656aad188d49603f8f6de9f9f027b9499b3ce779724945e2"
+          },
+          {
+            "card_id": "105648679414996",
+            "nome_card": "Emile Smith Rowe",
+            "record_index": 4381,
+            "byte_offset": 736008,
+            "record_sha256": "389c4dbdc7e7e251f736673245e97ff7d703bf7a381fadf5005a714af22bc5d2"
+          },
+          {
+            "card_id": "105648679415456",
+            "nome_card": "Julián Alvarez",
+            "record_index": 4382,
+            "byte_offset": 736176,
+            "record_sha256": "a5524e161156f1f954d80d9a4f790324f5b9c3d31f4e3f378f3dae2e6eb7ec46"
+          },
+          {
+            "card_id": "105648679418793",
+            "nome_card": "Alphonso Davies",
+            "record_index": 4383,
+            "byte_offset": 736344,
+            "record_sha256": "45e07de1f11b51a6301e5a3b2a12b31ea9cc3c16eeaf23b3bb8da767a02e96e0"
+          },
+          {
+            "card_id": "105648679420560",
+            "nome_card": "Conor Gallagher",
+            "record_index": 4384,
+            "byte_offset": 736512,
+            "record_sha256": "347311038bef5016440089bee10e08a49e3b312629e8757829fe5aa4a1b00897"
+          },
+          {
+            "card_id": "105648679422375",
+            "nome_card": "Erling Haaland",
+            "record_index": 4385,
+            "byte_offset": 736680,
+            "record_sha256": "0cc7ed5e519098ba66689e05ed304612456568dbcc8efc29a883d84f55401817"
+          },
+          {
+            "card_id": "105648679424333",
+            "nome_card": "Pierre Kalulu",
+            "record_index": 4386,
+            "byte_offset": 736848,
+            "record_sha256": "6fa08f93e7a1c6baae6b3d6b67bcb08095a7407adc3765c7ee5302dbb714f990"
+          },
+          {
+            "card_id": "105652504534885",
+            "nome_card": "Zhang Linpeng",
+            "record_index": 4456,
+            "byte_offset": 748608,
+            "record_sha256": "49216dca78aabe4bf1f7aac42b9f32a6bce50efd0a1d7c5cef01ed426b2bec06"
+          },
+          {
+            "card_id": "105652504552525",
+            "nome_card": "Wu Xi",
+            "record_index": 4457,
+            "byte_offset": 748776,
+            "record_sha256": "f9f922dcca63bece74b00427787ede6f28f2caadf3ba9508cd05812d03dc7199"
+          },
+          {
+            "card_id": "105652504554603",
+            "nome_card": "Jiang Guangtai",
+            "record_index": 4458,
+            "byte_offset": 748944,
+            "record_sha256": "5e7969c9a092119be83d55e4d16cbcf976ea543b15c61aa983ff25970441d1d3"
+          },
+          {
+            "card_id": "105652504596452",
+            "nome_card": "Wei Shihao",
+            "record_index": 4459,
+            "byte_offset": 749112,
+            "record_sha256": "ca53a67ff33abf65f9e2036eae2c9042d9d87b92c5f1e5caa8b8f3ef3ebc7980"
+          },
+          {
+            "card_id": "105652504596665",
+            "nome_card": "Yan Junling",
+            "record_index": 4460,
+            "byte_offset": 749280,
+            "record_sha256": "bf73b0fe53fb543ee0b1ac7088419a257e0d8bc121c6b5cf3180a2efc5587cd9"
+          },
+          {
+            "card_id": "105652504596778",
+            "nome_card": "Wu Lei",
+            "record_index": 4461,
+            "byte_offset": 749448,
+            "record_sha256": "29359e566ad83c62d2e0eb79d91960d9ba0bbcde3e414d133792338123612446"
+          },
+          {
+            "card_id": "105652504601924",
+            "nome_card": "Wang Shangyuan",
+            "record_index": 4462,
+            "byte_offset": 749616,
+            "record_sha256": "e69e01498d6498cf86d706b26d73a8b4d9fe7d3de86c20a8d876e527a98e7e85"
+          },
+          {
+            "card_id": "105652504613281",
+            "nome_card": "Tan Long",
+            "record_index": 4463,
+            "byte_offset": 749784,
+            "record_sha256": "aa552f63b4594afcff3effcfb54d9738400f10cdb6aa641d71a472bf50f939a3"
+          },
+          {
+            "card_id": "105652504622460",
+            "nome_card": "Dai Wai-Tsun",
+            "record_index": 4464,
+            "byte_offset": 749952,
+            "record_sha256": "544bf695040ab9204c9f6bde8844195971bbf2c7499ba061ae31bbea2fec8528"
+          },
+          {
+            "card_id": "105735920846845",
+            "nome_card": "Marko Arnautović",
+            "record_index": 7253,
+            "byte_offset": 1218504,
+            "record_sha256": "69b96455087ddda1add16124bafa3c95b1fe9aea8db2ba9a2ddfe6cc311585b0"
+          },
+          {
+            "card_id": "105735920847908",
+            "nome_card": "César Azpilicueta",
+            "record_index": 7254,
+            "byte_offset": 1218672,
+            "record_sha256": "1b3671b7a6ffcd9955700e1701a7a8c2a61a664c9e96796978a7c1f111d06527"
+          },
+          {
+            "card_id": "105735920849859",
+            "nome_card": "Axel Witsel",
+            "record_index": 7255,
+            "byte_offset": 1218840,
+            "record_sha256": "3617eb9c6bcd2dc43952032c5e934fcccf837d89f2f84c724939e4107f9da330"
+          },
+          {
+            "card_id": "105735920850471",
+            "nome_card": "Ivan Perišić",
+            "record_index": 7256,
+            "byte_offset": 1219008,
+            "record_sha256": "e53b1db714b6213f63a4271c9ec31df6d7f08a8900d23fdb322000a93e26acca"
+          },
+          {
+            "card_id": "105735920850811",
+            "nome_card": "Dani Parejo",
+            "record_index": 7257,
+            "byte_offset": 1219176,
+            "record_sha256": "a5c89462b778adb6c6d047679500efc03ac623023b7402b29a576b25566dfa5d"
+          },
+          {
+            "card_id": "105735920850828",
+            "nome_card": "Toby Alderweireld",
+            "record_index": 7258,
+            "byte_offset": 1219344,
+            "record_sha256": "401684895d1467e5f14fd46d381eb7358f1177386e5ebda920c06f9b6a9ad673"
+          },
+          {
+            "card_id": "105735920851968",
+            "nome_card": "Henrikh Mkhitaryan",
+            "record_index": 7259,
+            "byte_offset": 1219512,
+            "record_sha256": "d8e87e00ddd58d99532b8acfba6aba8da6a08ddba15d58d56a937346e8d08b92"
+          },
+          {
+            "card_id": "105735920852457",
+            "nome_card": "Jordi Alba",
+            "record_index": 7260,
+            "byte_offset": 1219680,
+            "record_sha256": "d115722af06a03d18f476e292d48ed604c3fb4122f91ca70ebd442076a6aa124"
+          },
+          {
+            "card_id": "105735920925437",
+            "nome_card": "T. Alexander-Arnold",
+            "record_index": 7270,
+            "byte_offset": 1221360,
+            "record_sha256": "cb1f4b2adaf5b3a0707f91a7b4aed92b7b6b821efd7e1084ced19f8236a12e18"
+          },
+          {
+            "card_id": "105735920930039",
+            "nome_card": "Jadon Sancho",
+            "record_index": 7271,
+            "byte_offset": 1221528,
+            "record_sha256": "8ad85716c6209093b331e5f0c1f5610de2c85a366ae982cd29afb22f5beeefc4"
+          },
+          {
+            "card_id": "105735920938721",
+            "nome_card": "William Saliba",
+            "record_index": 7269,
+            "byte_offset": 1221192,
+            "record_sha256": "3e38bcad77f8310473914a6631654d166c97b9facc67f4e99fab494a1f7dbc24"
+          },
+          {
+            "card_id": "105735920939354",
+            "nome_card": "Mykhailo Mudryk",
+            "record_index": 7261,
+            "byte_offset": 1219848,
+            "record_sha256": "f6719196e3c3660a761ab0100be6399c65379d7713f9e2cf950da8f69fc130da"
+          },
+          {
+            "card_id": "105735920939576",
+            "nome_card": "Bukayo Saka",
+            "record_index": 7262,
+            "byte_offset": 1220016,
+            "record_sha256": "f63caa3fcbe24d3a332d3982112c8e18e5ebcf4780ff050ac64b8603643cfa34"
+          },
+          {
+            "card_id": "105735920940313",
+            "nome_card": "Enzo Fernández",
+            "record_index": 7263,
+            "byte_offset": 1220184,
+            "record_sha256": "205c951e2e276ec003cd3e4330de8342ec3f198e2cf379a6d0fe4f467abd675a"
+          },
+          {
+            "card_id": "105735920940752",
+            "nome_card": "K. Kvaratskhelia",
+            "record_index": 7264,
+            "byte_offset": 1220352,
+            "record_sha256": "d72291a90e7850df90abf541682207358c3aae7ab9737c5e20f64559b0ed33f1"
+          },
+          {
+            "card_id": "105735920941401",
+            "nome_card": "Michael Olise",
+            "record_index": 7265,
+            "byte_offset": 1220520,
+            "record_sha256": "fec7a49923a029198ffe8ac3d4634da1df45cc6b0be62a80e0d267e1d3a1b3b7"
+          },
+          {
+            "card_id": "105735920946826",
+            "nome_card": "Gonçalo Ramos",
+            "record_index": 7266,
+            "byte_offset": 1220688,
+            "record_sha256": "aea79fe46f43c371d305b954330c41de0c5e9d22597dafcb44e85e5463266f61"
+          },
+          {
+            "card_id": "105735920948216",
+            "nome_card": "Micky van de Ven",
+            "record_index": 7267,
+            "byte_offset": 1220856,
+            "record_sha256": "1d6cbf68b673f260be179cb6f082d4c5eebd1fa7c6c7b2799fb13f58aa1c466a"
+          },
+          {
+            "card_id": "105735920955228",
+            "nome_card": "Moisés Caicedo",
+            "record_index": 7268,
+            "byte_offset": 1221024,
+            "record_sha256": "d9ad6465959f7485c08f30fdc7d475a56645c505c460e5e9246c339ebac8648f"
+          }
+        ],
+        "estado": "sem_historico",
+        "explicacao_estado": "Ainda não existe uma rodada anterior comparável; esta primeira leitura vira a referência local.",
+        "conteudo_alterado": null,
+        "cards_adicionados_desde_anterior": [],
+        "cards_ausentes_desde_anterior": [],
+        "database_write": false
+      },
+      {
+        "nome_box": "[[NOT USE]]",
+        "nomes_fisicos_observados": [
+          "[[NOT USE]]"
+        ],
+        "nome_normalizado": "[[not use]]",
+        "fingerprint_identidade": "ba991ea5e8924e81f4cb77521f6b9dfd6d7977cbdec5a4fe04c0ab469a92fc68",
+        "fingerprint_box": "9d3cf2e3620c0dbb93cd3b5cc506e8deedbc4fa8d078e0fda1fd411fa5af4355",
+        "quantidade_cartas": 8,
+        "cartas": [
+          {
+            "card_id": "89131308850176",
+            "nome_card": "Henrikh Mkhitaryan",
+            "record_index": 3646,
+            "byte_offset": 612528,
+            "record_sha256": "a6921c7e90ef432f155e20d216d4ab9b3c23e99379bf939139c65509e202e1fd"
+          },
+          {
+            "card_id": "89131308851111",
+            "nome_card": "Christian Eriksen",
+            "record_index": 3642,
+            "byte_offset": 611856,
+            "record_sha256": "14cfe66f04616d97a016e83f472bd072ac9cce42d88dae8c012932977f06dc2f"
+          },
+          {
+            "card_id": "89131308851115",
+            "nome_card": "Stefan de Vrij",
+            "record_index": 3645,
+            "byte_offset": 612360,
+            "record_sha256": "3fd8df51de5900986299aaf66f6910ef16f8e979fe1231657474ba2bb7620eaa"
+          },
+          {
+            "card_id": "89131308852909",
+            "nome_card": "Casemiro",
+            "record_index": 3639,
+            "byte_offset": 611352,
+            "record_sha256": "f661775302b17812f7d131aeb4186eb068c69effda1e31de845c2828dfc2135b"
+          },
+          {
+            "card_id": "89131308857951",
+            "nome_card": "Anthony Martial",
+            "record_index": 3641,
+            "byte_offset": 611688,
+            "record_sha256": "88e380acd76894441d363931f1e3a33cc300bb1e81ec7fcbf31ef60d2b025c9b"
+          },
+          {
+            "card_id": "89131308911337",
+            "nome_card": "Hakan Çalhanoğlu",
+            "record_index": 3644,
+            "byte_offset": 612192,
+            "record_sha256": "010b58692b4effba24d50fd32ee80cc09930ebdf9f11afdddc15b4e9a3e83e30"
+          },
+          {
+            "card_id": "89131308918897",
+            "nome_card": "Lautaro Martínez",
+            "record_index": 3643,
+            "byte_offset": 612024,
+            "record_sha256": "b7237f9570ddd5ec07cb25ada361f601525d7e67df8bb08d1aadc94821ea55a8"
+          },
+          {
+            "card_id": "89131308925116",
+            "nome_card": "Aaron Wan-Bissaka",
+            "record_index": 3640,
+            "byte_offset": 611520,
+            "record_sha256": "9180ad5ed82839f45c8f2bc6a0de435f7629fb11446b16a6c4bdb419ee13ec51"
+          }
+        ],
+        "estado": "sem_historico",
+        "explicacao_estado": "Ainda não existe uma rodada anterior comparável; esta primeira leitura vira a referência local.",
+        "conteudo_alterado": null,
+        "cards_adicionados_desde_anterior": [],
+        "cards_ausentes_desde_anterior": [],
+        "database_write": false
+      },
+      {
+        "nome_box": "0",
+        "nomes_fisicos_observados": [
+          "0"
+        ],
+        "nome_normalizado": "0",
+        "fingerprint_identidade": "f137faed4ba185fc2a306c72fdfa847574bf16eb07e237fdeb930bc6664cc543",
+        "fingerprint_box": "c8a7ab80f6e1dfd8ab6221aaf10504c756e1c092b89741b1fb2304ce894bd331",
+        "quantidade_cartas": 48,
+        "cartas": [
+          {
+            "card_id": "105772696596573",
+            "nome_card": "Ryan Gravenberch",
+            "record_index": 9018,
+            "byte_offset": 1515024,
+            "record_sha256": "40662ed57554dddc123e3833846a15575320857c6d6af18ab491112d16271a13"
+          },
+          {
+            "card_id": "105772696601659",
+            "nome_card": "Jurriën Timber",
+            "record_index": 9019,
+            "byte_offset": 1515192,
+            "record_sha256": "8ef1c368e4b6bec0b3012c79fd9bb30a4baa3011aca3219a3451ca810afdeb59"
+          },
+          {
+            "card_id": "105772696602260",
+            "nome_card": "Nuno Mendes",
+            "record_index": 9020,
+            "byte_offset": 1515360,
+            "record_sha256": "8a7ab57e8483e86c9a2b56b4b1ea55e940c5319b563b564fd6d13145ef4824f9"
+          },
+          {
+            "card_id": "105772696602437",
+            "nome_card": "Jude Bellingham",
+            "record_index": 9021,
+            "byte_offset": 1515528,
+            "record_sha256": "c90801f752f74d63ba95d16c5ac74bcb16f0b3a3205cf43b941622b66a4b1b1d"
+          },
+          {
+            "card_id": "105772696603157",
+            "nome_card": "Rayan Cherki",
+            "record_index": 9022,
+            "byte_offset": 1515696,
+            "record_sha256": "ae06fdbbe277892e471052ce02f24973a8ba3987a4f2b69a2f5fbf7acebb85f7"
+          },
+          {
+            "card_id": "105772696609764",
+            "nome_card": "Anthony Elanga",
+            "record_index": 9023,
+            "byte_offset": 1515864,
+            "record_sha256": "e896691a0ba7b4e686dcb4d7728f5a1320b813ba109f51c363592dc244dbd5aa"
+          },
+          {
+            "card_id": "105772696610374",
+            "nome_card": "Nicolas Jackson",
+            "record_index": 9024,
+            "byte_offset": 1516032,
+            "record_sha256": "549dfcf5f562261904575c77eb40d9a6a588de139ecc549ad1b254c67ec3739a"
+          },
+          {
+            "card_id": "105772696610517",
+            "nome_card": "Kristjan Asllani",
+            "record_index": 9025,
+            "byte_offset": 1516200,
+            "record_sha256": "f8feb8cb20c1c4ff92ce0c5b5848f14e97c617c9b4171f4c360a49fc4fe833d4"
+          },
+          {
+            "card_id": "105772696610725",
+            "nome_card": "Rasmus Højlund",
+            "record_index": 9026,
+            "byte_offset": 1516368,
+            "record_sha256": "536979a96f66a99e4cf50195811947adb2accfeefd92b7a510209bcb15e7287e"
+          },
+          {
+            "card_id": "105772696611765",
+            "nome_card": "Nico Williams",
+            "record_index": 9027,
+            "byte_offset": 1516536,
+            "record_sha256": "b3d1fd854e35d52f06009aef6b5361b8abbb084f0a400200172eba2b724d1327"
+          },
+          {
+            "card_id": "105772696615965",
+            "nome_card": "Conor Bradley",
+            "record_index": 9028,
+            "byte_offset": 1516704,
+            "record_sha256": "02f8410d2eeebf1bd9d1fa5620c3046a0d679f333ba567ec546773e1ec93956a"
+          },
+          {
+            "card_id": "105772696616959",
+            "nome_card": "Mathys Tel",
+            "record_index": 9029,
+            "byte_offset": 1516872,
+            "record_sha256": "1c0fa81460646ac191c28b3106eb482ada05e65a19d090b03f3fa756dda14d3f"
+          },
+          {
+            "card_id": "105772696617468",
+            "nome_card": "Roméo Lavia",
+            "record_index": 9030,
+            "byte_offset": 1517040,
+            "record_sha256": "0e4ea8ebf02041448a846b2121576cb0d2309c23e565a3a9aed5f954357fb09f"
+          },
+          {
+            "card_id": "105772696622432",
+            "nome_card": "Désiré Doué",
+            "record_index": 9031,
+            "byte_offset": 1517208,
+            "record_sha256": "e9d5c3cad41e3352295098c0826544b4ad19a974218c93848a718a1103007075"
+          },
+          {
+            "card_id": "105772696622641",
+            "nome_card": "António Silva",
+            "record_index": 9032,
+            "byte_offset": 1517376,
+            "record_sha256": "5c798b04f8585d59d4f4b27c511366b640946248ba2923054da1b4ae69a4b09b"
+          },
+          {
+            "card_id": "105772696624367",
+            "nome_card": "Alejandro Garnacho",
+            "record_index": 9033,
+            "byte_offset": 1517544,
+            "record_sha256": "d8bc9692087dd3b65ec5d502d35d88668ca4c44c429a1cf41cb60f9e8a0aefc4"
+          },
+          {
+            "card_id": "105772696626895",
+            "nome_card": "Rico Lewis",
+            "record_index": 9034,
+            "byte_offset": 1517712,
+            "record_sha256": "60ac9cb3a48f0920b56dae43cbfcb8be38d71cfe58874acf22b34c3e05970e78"
+          },
+          {
+            "card_id": "105772696626976",
+            "nome_card": "Endrick",
+            "record_index": 9035,
+            "byte_offset": 1517880,
+            "record_sha256": "0d228257f13f008d133d61feefa8a988bb35bdc03b1c2c862ab266210afd1d20"
+          },
+          {
+            "card_id": "105772696628941",
+            "nome_card": "Myles Lewis-Skelly",
+            "record_index": 9036,
+            "byte_offset": 1518048,
+            "record_sha256": "71b029ee3be9f05ecafc61d83621ed97155cd66dc7cb32a80d8cf019dc7f9358"
+          },
+          {
+            "card_id": "105772696631618",
+            "nome_card": "Lamine Yamal",
+            "record_index": 9037,
+            "byte_offset": 1518216,
+            "record_sha256": "c42e2860406bf8c3944f61daaad46c477258a9b7aa04fc6fed4156614ea2b922"
+          },
+          {
+            "card_id": "105772696634397",
+            "nome_card": "Kenan Yıldız",
+            "record_index": 9038,
+            "byte_offset": 1518384,
+            "record_sha256": "1d686859efd367f7af98f18cf50e347f009321b1849f9791eb418104044ce118"
+          },
+          {
+            "card_id": "105772696635200",
+            "nome_card": "Pau Cubarsí",
+            "record_index": 9039,
+            "byte_offset": 1518552,
+            "record_sha256": "12549ea77bf6f1c415b0c574eed394b46a58238922e69d03964a6a0aaa9d70bc"
+          },
+          {
+            "card_id": "105772696635370",
+            "nome_card": "Assane Diao",
+            "record_index": 9040,
+            "byte_offset": 1518720,
+            "record_sha256": "ed696ec1d6e6148df74bc4371e839641bf84db51007eb49183cc19817e2714fa"
+          },
+          {
+            "card_id": "105772696641124",
+            "nome_card": "Raúl Asencio",
+            "record_index": 9041,
+            "byte_offset": 1518888,
+            "record_sha256": "a4ac46d33a358c9e643b65ef9650e899041ae05e4994f18163e79e0d85fe215b"
+          },
+          {
+            "card_id": "105795245055319",
+            "nome_card": "Lionel Messi",
+            "record_index": 9534,
+            "byte_offset": 1601712,
+            "record_sha256": "f32039cf985d1a7dd2cfc04f51529bc2e7b2848a57719716ac801b99a161fc90"
+          },
+          {
+            "card_id": "105795245086587",
+            "nome_card": "Dani Parejo",
+            "record_index": 9535,
+            "byte_offset": 1601880,
+            "record_sha256": "971b05f84faf5a713a5a3c4a8bf86c6c9b5fb4273447c7d0ccb60dc6da669571"
+          },
+          {
+            "card_id": "105795245086605",
+            "nome_card": "Daley Blind",
+            "record_index": 9536,
+            "byte_offset": 1602048,
+            "record_sha256": "18530a015b440bab40d75e6c91e6752b7ddd881c4e2bbf15df9a5eb6ac5f5bb3"
+          },
+          {
+            "card_id": "105795245088230",
+            "nome_card": "Xherdan Shaqiri",
+            "record_index": 9537,
+            "byte_offset": 1602216,
+            "record_sha256": "1210989f2eeb87cc8c17ad0cf8e729a38eea29b05677af440adde7a8a1828694"
+          },
+          {
+            "card_id": "105795245090124",
+            "nome_card": "Antoine Griezmann",
+            "record_index": 9538,
+            "byte_offset": 1602384,
+            "record_sha256": "ccf5aaf9e76a63c384bbc2ac27cfe74a7248205ea9871522f5e8a6f697306e68"
+          },
+          {
+            "card_id": "105795245090364",
+            "nome_card": "Isco",
+            "record_index": 9539,
+            "byte_offset": 1602552,
+            "record_sha256": "f7c54cc5ef078e58eba72df5668ed11006c7172ff1a7db1ff43b708fdd60f3c3"
+          },
+          {
+            "card_id": "105795245092187",
+            "nome_card": "Kevin De Bruyne",
+            "record_index": 9540,
+            "byte_offset": 1602720,
+            "record_sha256": "dfe8b1e29b3845674322051085e72ba7fa5c2198ce2846309b8f7d13ff297de2"
+          },
+          {
+            "card_id": "105795245094344",
+            "nome_card": "James Ward Prowse",
+            "record_index": 9541,
+            "byte_offset": 1602888,
+            "record_sha256": "94281edea920244de24a271697d4572deaa9e7b8fe103cac0e24be441ace433e"
+          },
+          {
+            "card_id": "105795245094987",
+            "nome_card": "Paulo Dybala",
+            "record_index": 9542,
+            "byte_offset": 1603056,
+            "record_sha256": "2f0d14aec3e0aa228309eb32674a8a50af54b674adff615b4c61616ff0062ae4"
+          },
+          {
+            "card_id": "105795245108320",
+            "nome_card": "Bruno Fernandes",
+            "record_index": 9543,
+            "byte_offset": 1603224,
+            "record_sha256": "2cc4b9aa3dee331aa5e5b782a2747c49be88f5624643cc4fd4fc87315e809c4d"
+          },
+          {
+            "card_id": "105795245111317",
+            "nome_card": "Talisca",
+            "record_index": 9544,
+            "byte_offset": 1603392,
+            "record_sha256": "3fd9d67d86a23a8efabec0e905fb8f0af84af2c87c31c918ce6a7b8115f4e146"
+          },
+          {
+            "card_id": "105795245148107",
+            "nome_card": "Kieran Trippier",
+            "record_index": 9545,
+            "byte_offset": 1603560,
+            "record_sha256": "bfa94c3aa4ef68df08c7d4fe277eb80c72bbe94862a398671ae81e1460337316"
+          },
+          {
+            "card_id": "105795245148866",
+            "nome_card": "Alejandro Grimaldo",
+            "record_index": 9546,
+            "byte_offset": 1603728,
+            "record_sha256": "64680fb9a2a5dcbd268587a87f3536b1b7c10b4d0f31600e9e49c371eef2f390"
+          },
+          {
+            "card_id": "105795245155494",
+            "nome_card": "Federico Dimarco",
+            "record_index": 9547,
+            "byte_offset": 1603896,
+            "record_sha256": "8261e329309594ca0d097937e86d5b300e681c201b48209ba97a49391fc67525"
+          },
+          {
+            "card_id": "105795245156767",
+            "nome_card": "Declan Rice",
+            "record_index": 9548,
+            "byte_offset": 1604064,
+            "record_sha256": "88b8cbbaeb6b11c4b167243ba234dfcb79038bf210c5235b9dc0706ad5db7fe9"
+          },
+          {
+            "card_id": "105795245158452",
+            "nome_card": "Raphinha",
+            "record_index": 9549,
+            "byte_offset": 1604232,
+            "record_sha256": "c6530daabc11b7b3bc197ac1dc5892d04db98d1a4af03cce18ea8f2521378204"
+          },
+          {
+            "card_id": "105795245161213",
+            "nome_card": "T. Alexander-Arnold",
+            "record_index": 9550,
+            "byte_offset": 1604400,
+            "record_sha256": "d4fa0199a99b5764f719f480a4d1fc9867b932d64f6c27e33e130e5c5dac442c"
+          },
+          {
+            "card_id": "105795245168048",
+            "nome_card": "Daniel Muñoz",
+            "record_index": 9551,
+            "byte_offset": 1604568,
+            "record_sha256": "0fd699ec6e91995848e6ea7549003cfba9a4581845b71688fd5ce929387e16a6"
+          },
+          {
+            "card_id": "105795245173854",
+            "nome_card": "Reece James",
+            "record_index": 9552,
+            "byte_offset": 1604736,
+            "record_sha256": "f329f9d6b4d4a5d901fb3e5290a6211778497e6916529ab75abc339f4b341471"
+          },
+          {
+            "card_id": "105795245178127",
+            "nome_card": "Dominik Szoboszlai",
+            "record_index": 9553,
+            "byte_offset": 1604904,
+            "record_sha256": "61c941f9b330d2015eabc2b2f4e3c585a722528b0928b4920a479807ad5bd03d"
+          },
+          {
+            "card_id": "105795245182875",
+            "nome_card": "Vitinha",
+            "record_index": 9554,
+            "byte_offset": 1605072,
+            "record_sha256": "c2ebdb026f456434d8cc3c0ef06c93d461dec2b774cf83cd15779a34d20dc60f"
+          },
+          {
+            "card_id": "105795245185964",
+            "nome_card": "Cole Palmer",
+            "record_index": 9555,
+            "byte_offset": 1605240,
+            "record_sha256": "4dfb8617249ef20a5be86b8e689ca7745acac594d16e594e029f3d6404f6dd2c"
+          },
+          {
+            "card_id": "105795245189386",
+            "nome_card": "Arda Güler",
+            "record_index": 9556,
+            "byte_offset": 1605408,
+            "record_sha256": "8f84495a736990062ecd103a4894be438fc2818115c6398fd5a0f2081e5141c8"
+          },
+          {
+            "card_id": "105795245189896",
+            "nome_card": "Omar Marmoush",
+            "record_index": 9557,
+            "byte_offset": 1605576,
+            "record_sha256": "524f026e724c72eaaab833aeafc294d0ac8457a90a8520093cca2784ac0d02d2"
+          }
+        ],
+        "estado": "sem_historico",
+        "explicacao_estado": "Ainda não existe uma rodada anterior comparável; esta primeira leitura vira a referência local.",
+        "conteudo_alterado": null,
+        "cards_adicionados_desde_anterior": [],
+        "cards_ausentes_desde_anterior": [],
+        "database_write": false
+      },
+      {
+        "nome_box": "1-2 Cut-in A 23 Apr '26",
+        "nomes_fisicos_observados": [
+          "1-2 Cut-in A 23 Apr '26"
+        ],
+        "nome_normalizado": "1-2 cut-in a 23 apr '26",
+        "fingerprint_identidade": "25993c99887391cd5be9730d32647701f9ec777e2ad5eddd3b8a90529f1952c2",
+        "fingerprint_box": "c2ea541ebb2cbf42bcad5946223ad172cf0fa369c127261ba9124313a21d9dd3",
+        "quantidade_cartas": 12,
+        "cartas": [
+          {
+            "card_id": "105839268507966",
+            "nome_card": "Robin Lod",
+            "record_index": 11948,
+            "byte_offset": 2007264,
+            "record_sha256": "cdc730d5cbde1c1f753313834952ec97ff529898e558210931a87b42678a6aff"
+          },
+          {
+            "card_id": "105839268572895",
+            "nome_card": "Ante Budimir",
+            "record_index": 11949,
+            "byte_offset": 2007432,
+            "record_sha256": "9b747b03c0825b7347a448247337b7fda92f7c421fc022b536dd630922c555c0"
+          },
+          {
+            "card_id": "105839268576670",
+            "nome_card": "Roland Sallai",
+            "record_index": 11950,
+            "byte_offset": 2007600,
+            "record_sha256": "710d04adf024826980641c43b5fa55a04f17419cd15a8a558633537d4cb40446"
+          },
+          {
+            "card_id": "105839268582403",
+            "nome_card": "Mateo Retegui",
+            "record_index": 11951,
+            "byte_offset": 2007768,
+            "record_sha256": "8fd2a63ea5000097fdc7bea4f0c1d23760acc1a5deb725d924943aba960b1b04"
+          },
+          {
+            "card_id": "105839268585739",
+            "nome_card": "P. Frankowski",
+            "record_index": 11952,
+            "byte_offset": 2007936,
+            "record_sha256": "612b27a07c71763b2a9ebb0f5c7e19019621cc3d9fa3eb353af0e441f822f60e"
+          },
+          {
+            "card_id": "105839268586621",
+            "nome_card": "Artem Dovbyk",
+            "record_index": 11953,
+            "byte_offset": 2008104,
+            "record_sha256": "c01878957ae2bfd83bca24090b5f9700ae891a665b655fdf969f705ed39bb7e2"
+          },
+          {
+            "card_id": "105839268602522",
+            "nome_card": "Fotis Ioannidis",
+            "record_index": 11954,
+            "byte_offset": 2008272,
+            "record_sha256": "a3c2e98421379cd44966b6d3f97055f839908d6c86af938ed273dd05fd93d7d6"
+          },
+          {
+            "card_id": "105839268605859",
+            "nome_card": "Andreas Schjelderup",
+            "record_index": 11955,
+            "byte_offset": 2008440,
+            "record_sha256": "2e3e1a77ea2f0521418cc316268aed3d9e7ce7642b597710641c70e16cf91a1c"
+          },
+          {
+            "card_id": "105839268615214",
+            "nome_card": "Ramón Sosa",
+            "record_index": 11956,
+            "byte_offset": 2008608,
+            "record_sha256": "924c9a8c72985fef9879ba1da69f3fae44bc824642d5b69c9bc3890c5808f83b"
+          },
+          {
+            "card_id": "105839268623814",
+            "nome_card": "Žan Vipotnik",
+            "record_index": 11957,
+            "byte_offset": 2008776,
+            "record_sha256": "57a98d343a00d5631e0116c69a58c9f1c031a07e812b4d2c27e2ad4ac4457d20"
+          },
+          {
+            "card_id": "106773155540934",
+            "nome_card": "Viktor Gyökeres",
+            "record_index": 11946,
+            "byte_offset": 2006928,
+            "record_sha256": "ab59ba9555468716cf874242c29fcc3fcec729edaba6360beae963fbfaeb86b1"
+          },
+          {
+            "card_id": "106773155552016",
+            "nome_card": "Jamal Musiala",
+            "record_index": 11947,
+            "byte_offset": 2007096,
+            "record_sha256": "fa720111979c6d353856ba489209c45f182da91a4b347778ef4798c6114ab73e"
+          }
+        ],
+        "estado": "sem_historico",
+        "explicacao_estado": "Ainda não existe uma rodada anterior comparável; esta primeira leitura vira a referência local.",
+        "conteudo_alterado": null,
+        "cards_adicionados_desde_anterior": [],
+        "cards_ausentes_desde_anterior": [],
+        "database_write": false
+      },
+      {
+        "nome_box": "100 Cap Elites 11 Jul '24",
+        "nomes_fisicos_observados": [
+          "100 Cap Elites 11 Jul '24"
+        ],
+        "nome_normalizado": "100 cap elites 11 jul '24",
+        "fingerprint_identidade": "25fc2bd7208cd757e44a1ed6a7c85d68abed79c36fac7e3e4f05f8953d8e89c9",
+        "fingerprint_box": "c75a9b43bd09a6b08146a5d3ca0710730889b4ec72bae1fa7533d9a95c671411",
+        "quantidade_cartas": 8,
+        "cartas": [
+          {
+            "card_id": "105694850196397",
+            "nome_card": "Pepe",
+            "record_index": 5788,
+            "byte_offset": 972384,
+            "record_sha256": "d6e6a74a61cb161c0c66df3f481f0f1d926e244d2dbbc5cd4e8dc0997803227e"
+          },
+          {
+            "card_id": "105694850222145",
+            "nome_card": "Luis Suárez",
+            "record_index": 5789,
+            "byte_offset": 972552,
+            "record_sha256": "ddd43cc511d65b9848ffab719f107c22af210ce60cc321f30da3804f45508a2a"
+          },
+          {
+            "card_id": "105694850226061",
+            "nome_card": "Daley Blind",
+            "record_index": 5790,
+            "byte_offset": 972720,
+            "record_sha256": "5b96a4dceb4f29ce3c91612965ba00aaf3b2c15f5f2b8ccb3172eebebb3b204a"
+          },
+          {
+            "card_id": "105694850227386",
+            "nome_card": "Romelu Lukaku",
+            "record_index": 5791,
+            "byte_offset": 972888,
+            "record_sha256": "b05c712ce1d582e78c3334da3d77b2a6c213a4a94f8f75457d536e50f1571d3d"
+          },
+          {
+            "card_id": "105694850229688",
+            "nome_card": "Granit Xhaka",
+            "record_index": 5792,
+            "byte_offset": 973056,
+            "record_sha256": "3ce437987b23edf8a10feb3ae3c5f2c1590a7cf413d0220f7d922fa83578441b"
+          },
+          {
+            "card_id": "105694850230358",
+            "nome_card": "Álvaro Morata",
+            "record_index": 5793,
+            "byte_offset": 973224,
+            "record_sha256": "cedb84221bc546d18de06be129cfca406f514b06f49c930a0b673c518eeb5ac2"
+          },
+          {
+            "card_id": "105694850234638",
+            "nome_card": "Piotr Zieliński",
+            "record_index": 5794,
+            "byte_offset": 973392,
+            "record_sha256": "11bfa38e39231d9d417fe5335aa7d03c12b8bfc7abb88fd2df5c399b88941aa7"
+          },
+          {
+            "card_id": "105694850296269",
+            "nome_card": "Joshua Kimmich",
+            "record_index": 5795,
+            "byte_offset": 973560,
+            "record_sha256": "6b00ebfc9c097c86702bc134b068c6d5a85b8cfab0399315d21c56a73f871506"
+          }
+        ],
+        "estado": "sem_historico",
+        "explicacao_estado": "Ainda não existe uma rodada anterior comparável; esta primeira leitura vira a referência local.",
+        "conteudo_alterado": null,
+        "cards_adicionados_desde_anterior": [],
+        "cards_ausentes_desde_anterior": [],
+        "database_write": false
+      },
+      {
+        "nome_box": "2023 J.LEAGUE AWARDS",
+        "nomes_fisicos_observados": [
+          "2023 J.LEAGUE AWARDS"
+        ],
+        "nome_normalizado": "2023 j.league awards",
+        "fingerprint_identidade": "4207ec818da9ae3a22f0b4a667b1791e1565b1b59babf6d4f97d341aa9baa68d",
+        "fingerprint_box": "4e4a34731f957aa2181edf19b97dc8f5b0b32d5db31b3790fd8416adb2129e4b",
+        "quantidade_cartas": 13,
+        "cartas": [
+          {
+            "card_id": "105643847465721",
+            "nome_card": "Nishikawa Shusaku",
+            "record_index": 4150,
+            "byte_offset": 697200,
+            "record_sha256": "1718b28983ad2f6f4b203dfe2dc5100ba223e4c15f018e5cd9e24b84aceebd89"
+          },
+          {
+            "card_id": "105643847489650",
+            "nome_card": "Sakai Gotoku",
+            "record_index": 4151,
+            "byte_offset": 697368,
+            "record_sha256": "588d98f5686ec27a22dd4572cd1d4a77ebe7e41a2609134731dbf6b3594c85ca"
+          },
+          {
+            "card_id": "105643847489655",
+            "nome_card": "Yamaguchi Hotaru",
+            "record_index": 4152,
+            "byte_offset": 697536,
+            "record_sha256": "6aa58001d5227270f2b86581d29a76368e76d28da405247aa2e516b6546d61fb"
+          },
+          {
+            "card_id": "105643847511891",
+            "nome_card": "Muto Yoshinori",
+            "record_index": 4153,
+            "byte_offset": 697704,
+            "record_sha256": "784d9fad26e5fa1a77d7e15d5a112a5a2337a9a743d9c132f92f377bf9e13231"
+          },
+          {
+            "card_id": "105643847555408",
+            "nome_card": "Alexander Scholz",
+            "record_index": 4154,
+            "byte_offset": 697872,
+            "record_sha256": "3c6649d549d3c05d8de13a8523b5ee8a609c479e6d0dd327937a7a82333c0add"
+          },
+          {
+            "card_id": "105643847573161",
+            "nome_card": "Wakizaka Yasuto",
+            "record_index": 4155,
+            "byte_offset": 698040,
+            "record_sha256": "47983c0bf8a40f2d5adcd17d031d58db8df2359484fb225c353679c957c47eb7"
+          },
+          {
+            "card_id": "105643847586138",
+            "nome_card": "Maikuma Seiya",
+            "record_index": 4156,
+            "byte_offset": 698208,
+            "record_sha256": "d45cf9a6af4989ef84c8e822f79d2c4c16ab44871515eb65007df66989ec98ae"
+          },
+          {
+            "card_id": "105643847590339",
+            "nome_card": "Ito Atsuki",
+            "record_index": 4157,
+            "byte_offset": 698376,
+            "record_sha256": "3159f49c830e0206665024e07b7bd4708a398961f7eaafbfcb820730e617b62d"
+          },
+          {
+            "card_id": "105643847610622",
+            "nome_card": "Marius Høibråten",
+            "record_index": 4158,
+            "byte_offset": 698544,
+            "record_sha256": "1037ef79a6cd3f88d7ab83bfa72f33ea7292c59f25e3d36f2678c172d495588d"
+          },
+          {
+            "card_id": "106724031764588",
+            "nome_card": "Osako Yuya",
+            "record_index": 4042,
+            "byte_offset": 679056,
+            "record_sha256": "abdebe1cdea69e3f507e359233c42e1fea94be0135b65de36ca4ebb19275c6f0"
+          },
+          {
+            "card_id": "106724031786329",
+            "nome_card": "Erik Lima",
+            "record_index": 4044,
+            "byte_offset": 679392,
+            "record_sha256": "81c28496082fc5b64d3745393e5f0c9c52b33c3e9659cacd04f4232e09ab32d2"
+          },
+          {
+            "card_id": "106724031832120",
+            "nome_card": "Anderson Lopes",
+            "record_index": 4043,
+            "byte_offset": 679224,
+            "record_sha256": "10b5be5273e7fbe2048f1e1792d8d1495d20464e0e18b5230dfbc3a5ce72c92f"
+          },
+          {
+            "card_id": "106724031840041",
+            "nome_card": "Juanma Delgado",
+            "record_index": 4045,
+            "byte_offset": 679560,
+            "record_sha256": "e5012e4eaf80ae0e405911e5bd186eab7a0db458bcb280bbfec319ad5251d945"
+          }
+        ],
+        "estado": "sem_historico",
+        "explicacao_estado": "Ainda não existe uma rodada anterior comparável; esta primeira leitura vira a referência local.",
+        "conteudo_alterado": null,
+        "cards_adicionados_desde_anterior": [],
+        "cards_ausentes_desde_anterior": [],
+        "database_write": false
+      },
+      {
+        "nome_box": "2024 J.LEAGUE AWARDS",
+        "nomes_fisicos_observados": [
+          "2024 J.LEAGUE AWARDS"
+        ],
+        "nome_normalizado": "2024 j.league awards",
+        "fingerprint_identidade": "da4c58c3e4ef2a67a8544fc783b30dc04b27f52693a17be10a3192fd0b65c9eb",
+        "fingerprint_box": "d30b339cb1d702752a89e2fff9c085c07a26af47436a47b946400cbc8b1144b8",
+        "quantidade_cartas": 13,
+        "cartas": [
+          {
+            "card_id": "105725988716738",
+            "nome_card": "Sasaki Sho",
+            "record_index": 7363,
+            "byte_offset": 1236984,
+            "record_sha256": "377f9be7125bb42028e4c066edcbec5cd734f4d3ad7d33c13323d34fcea8370a"
+          },
+          {
+            "card_id": "105725988739180",
+            "nome_card": "Osako Yuya",
+            "record_index": 7364,
+            "byte_offset": 1237152,
+            "record_sha256": "08eeec3bfa4081c6eb9e348215aca1436f3948932db6accc291db0164677e8a8"
+          },
+          {
+            "card_id": "105725988757567",
+            "nome_card": "Usami Takashi",
+            "record_index": 7365,
+            "byte_offset": 1237320,
+            "record_sha256": "29ff749a222562f32ff059ea31b06c0d43be26b071935b30ce092770f3b18ae2"
+          },
+          {
+            "card_id": "105725988761426",
+            "nome_card": "Nakatani Shinnosuke",
+            "record_index": 7366,
+            "byte_offset": 1237488,
+            "record_sha256": "ea76cbe03a3c65aef0b5230a85a13ee65c56034f478e3b6c8889dc7fde6c47d0"
+          },
+          {
+            "card_id": "105725988808972",
+            "nome_card": "Matheus Sávio",
+            "record_index": 7367,
+            "byte_offset": 1237656,
+            "record_sha256": "9666c34c2aafb083b6163c6e66e0d915173fb295573ce3410181264644ec71bb"
+          },
+          {
+            "card_id": "105725988815821",
+            "nome_card": "Chinen Kei",
+            "record_index": 7368,
+            "byte_offset": 1237824,
+            "record_sha256": "e8743671249ef543a769e15e43e8a040dff531e9eabe628b630b9cf4e0a050d8"
+          },
+          {
+            "card_id": "105725988818659",
+            "nome_card": "Matheus Thuler",
+            "record_index": 7369,
+            "byte_offset": 1237992,
+            "record_sha256": "df61b96a0777a4a1594cffcf3be4f7cf0631e121b82a7d7d55ca793bddf7729e"
+          },
+          {
+            "card_id": "105725988822002",
+            "nome_card": "Osako Keisuke",
+            "record_index": 7370,
+            "byte_offset": 1238160,
+            "record_sha256": "ecb84bc2e7d2aaa06e6a36b167d8ef3f77df0dbb3011ae080c10f0d4f39a0802"
+          },
+          {
+            "card_id": "105725988868384",
+            "nome_card": "Nono Kimito",
+            "record_index": 7371,
+            "byte_offset": 1238328,
+            "record_sha256": "04257c47f78befe676b622cbcd3dbf26c365e50bce1369eb0b93a849f566f7d4"
+          },
+          {
+            "card_id": "106733695463251",
+            "nome_card": "Muto Yoshinori",
+            "record_index": 7358,
+            "byte_offset": 1236144,
+            "record_sha256": "1d56d40bd54057b984e733c7590a067d096e31918394106d7f71f9bfd9e6fafd"
+          },
+          {
+            "card_id": "106733695508536",
+            "nome_card": "Anderson Lopes",
+            "record_index": 7356,
+            "byte_offset": 1235808,
+            "record_sha256": "20a51974a536537bdccaac4460222c59c0447cc9ecc5df50bfbc3862b411e410"
+          },
+          {
+            "card_id": "106733695550019",
+            "nome_card": "Takai Kota",
+            "record_index": 7454,
+            "byte_offset": 1252272,
+            "record_sha256": "ff1c3a9ae42834b023bdb5b04c06ba1e956d5d9c6a90b5743dd2fc5f6cc39e61"
+          },
+          {
+            "card_id": "106733695560490",
+            "nome_card": "Komori Hiiro",
+            "record_index": 7357,
+            "byte_offset": 1235976,
+            "record_sha256": "d9a4948d1bd4091eda06e0c2ce59239a48e96d7b529ae34632004defc400c916"
+          }
+        ],
+        "estado": "sem_historico",
+        "explicacao_estado": "Ainda não existe uma rodada anterior comparável; esta primeira leitura vira a referência local.",
+        "conteudo_alterado": null,
+        "cards_adicionados_desde_anterior": [],
+        "cards_ausentes_desde_anterior": [],
+        "database_write": false
+      },
+      {
+        "nome_box": "2025 J.LEAGUE AWARDS",
+        "nomes_fisicos_observados": [
+          "2025 J.LEAGUE AWARDS"
+        ],
+        "nome_normalizado": "2025 j.league awards",
+        "fingerprint_identidade": "742d9351c88ab305e8698ff911d25c194bd68330b1221e9f9aec128e50cb1551",
+        "fingerprint_box": "ce90660df9f80e539e7fb79989e772c1496b85df7f5d50d3e78cc7b8f4997cb5",
+        "quantidade_cartas": 12,
+        "cartas": [
+          {
+            "card_id": "105787728871863",
+            "nome_card": "Ueda Naomichi",
+            "record_index": 10965,
+            "byte_offset": 1842120,
+            "record_sha256": "e3d938b91f178921c0bb9c9ecc417c86ed962e31ff58b7ef9348175982e46c62"
+          },
+          {
+            "card_id": "105787728916317",
+            "nome_card": "Inagaki Sho",
+            "record_index": 10966,
+            "byte_offset": 1842288,
+            "record_sha256": "bcc895498449b2603acd64ead709aa39651f499fd56105d5da9fbb8beaa55e83"
+          },
+          {
+            "card_id": "105787728976898",
+            "nome_card": "Koga Taiyo",
+            "record_index": 10967,
+            "byte_offset": 1842456,
+            "record_sha256": "b2d6cadf3eed12c3787b8909679a27d2d1883427236f0478ab9ca40ac1d7c88b"
+          },
+          {
+            "card_id": "105787728977751",
+            "nome_card": "Rafael Elias",
+            "record_index": 10968,
+            "byte_offset": 1842624,
+            "record_sha256": "e362f80512f31b59bc2ad68007bb15b776fc0e6ecd02e5db290056d2baca7838"
+          },
+          {
+            "card_id": "105787728981772",
+            "nome_card": "Soma Yuki",
+            "record_index": 10969,
+            "byte_offset": 1842792,
+            "record_sha256": "bdd6ca8c73119ad245090bedbea13ed6520b9b4fc27d57d12fadc83ce2283700"
+          },
+          {
+            "card_id": "105787728982769",
+            "nome_card": "Ito Tatsuya",
+            "record_index": 10970,
+            "byte_offset": 1842960,
+            "record_sha256": "17df25f1340eb94cb1133492899ddbbacea10b43a0bdcc324a67661261e20c44"
+          },
+          {
+            "card_id": "105787728982781",
+            "nome_card": "Araki Hayato",
+            "record_index": 10971,
+            "byte_offset": 1843128,
+            "record_sha256": "0f34c10f7a912ee6833974d8f0e8e1c40bcb0baccb609c272a00c99dfa0bc8f0"
+          },
+          {
+            "card_id": "105787728983860",
+            "nome_card": "Koizumi Yoshio",
+            "record_index": 10972,
+            "byte_offset": 1843296,
+            "record_sha256": "fe35b5c39ad3413c94424418858f3d5e2a7a9df65065446b5f417da83eef3e9b"
+          },
+          {
+            "card_id": "105787728985581",
+            "nome_card": "Tanaka Satoshi",
+            "record_index": 10973,
+            "byte_offset": 1843464,
+            "record_sha256": "4a5deef8dd5e52f95d9da0fafb4e84c908fa020c30d673579a0d2f3d5fbfd20f"
+          },
+          {
+            "card_id": "106751949120936",
+            "nome_card": "Léo Ceará",
+            "record_index": 10963,
+            "byte_offset": 1841784,
+            "record_sha256": "3b1ab3f7342d9e74a114e2878adbdb553139c4ebdbe5d3cfc7d06860f02f1f3f"
+          },
+          {
+            "card_id": "106751949126357",
+            "nome_card": "Matheus Jesus",
+            "record_index": 10964,
+            "byte_offset": 1841952,
+            "record_sha256": "60ce06b2a56189d52fb3237737eabc6add63a32858a7f063de099b3f649719c6"
+          },
+          {
+            "card_id": "106751949173604",
+            "nome_card": "Sato Ryunosuke",
+            "record_index": 11042,
+            "byte_offset": 1855056,
+            "record_sha256": "bcbb1c0e07acc619f6b86fb02acfeeccfc352174eba884df9c8bc9cd53991ba8"
+          }
+        ],
+        "estado": "sem_historico",
+        "explicacao_estado": "Ainda não existe uma rodada anterior comparável; esta primeira leitura vira a referência local.",
+        "conteudo_alterado": null,
+        "cards_adicionados_desde_anterior": [],
+        "cards_ausentes_desde_anterior": [],
+        "database_write": false
+      },
+      {
+        "nome_box": "30th Anniversary Elites 10 Jul '25",
+        "nomes_fisicos_observados": [
+          "30th Anniversary Elites 10 Jul '25"
+        ],
+        "nome_normalizado": "30th anniversary elites 10 jul '25",
+        "fingerprint_identidade": "89ab0377e8a3a728b47f9a89a7b8482d31536310b5ae3ec546a81beaf83e5a1d",
+        "fingerprint_box": "7dbe71cea49f5dc55f709d32915fe62c13d251c93d640fbad32c8ed5ad8c80a6",
+        "quantidade_cartas": 8,
+        "cartas": [
+          {
+            "card_id": "105770549044695",
+            "nome_card": "José María Giménez",
+            "record_index": 9150,
+            "byte_offset": 1537200,
+            "record_sha256": "9418f596ac898003b3cfb25887da2c1ea61dde94d18532cfcee72b33555d4bd5"
+          },
+          {
+            "card_id": "105770549046303",
+            "nome_card": "Mike Maignan",
+            "record_index": 9151,
+            "byte_offset": 1537368,
+            "record_sha256": "c070b95238a8b022566748848bfec1043fda6dc938c32d5c185f8510cc2e8dc4"
+          },
+          {
+            "card_id": "105770549087376",
+            "nome_card": "David Raya",
+            "record_index": 9152,
+            "byte_offset": 1537536,
+            "record_sha256": "ab4556bcab4b0d469688195c933020d3c561e464900e8fa696cad5ddcc299d06"
+          },
+          {
+            "card_id": "105770549094258",
+            "nome_card": "Frank Zambo Anguissa",
+            "record_index": 9153,
+            "byte_offset": 1537704,
+            "record_sha256": "d43ac14c2c3bc4a5c247cbd1be717011cbc706983a7b25e5bdfe5a850ea5d06b"
+          },
+          {
+            "card_id": "105770549094861",
+            "nome_card": "Joshua Kimmich",
+            "record_index": 9154,
+            "byte_offset": 1537872,
+            "record_sha256": "66371d81bcc5c21ffa9ecde5fb9a19261b0969d2128dae2b102a0e96af46a068"
+          },
+          {
+            "card_id": "105770549094980",
+            "nome_card": "Manuel Akanji",
+            "record_index": 9155,
+            "byte_offset": 1538040,
+            "record_sha256": "c6374f95bb107f402933a909b549b4bfca2503c9821d2deca6998d26980ac075"
+          },
+          {
+            "card_id": "105770549095396",
+            "nome_card": "João Palhinha",
+            "record_index": 9156,
+            "byte_offset": 1538208,
+            "record_sha256": "5687406e4e8c0815c0666dc9d99399d07fade03e443da7dcc62daf5a795beb07"
+          },
+          {
+            "card_id": "105770549096694",
+            "nome_card": "Alexander Sørloth",
+            "record_index": 9157,
+            "byte_offset": 1538376,
+            "record_sha256": "0f08ac242ceb07b5f22d720c882a0f928c77c525504dc6aa6b96630941411abc"
+          }
+        ],
+        "estado": "sem_historico",
+        "explicacao_estado": "Ainda não existe uma rodada anterior comparável; esta primeira leitura vira a referência local.",
+        "conteudo_alterado": null,
+        "cards_adicionados_desde_anterior": [],
+        "cards_ausentes_desde_anterior": [],
+        "database_write": false
+      },
+      {
+        "nome_box": "750M Downloads Campaign",
+        "nomes_fisicos_observados": [
+          "750M Downloads Campaign"
+        ],
+        "nome_normalizado": "750m downloads campaign",
+        "fingerprint_identidade": "99f8c7d841f0508674886ed275943790b898fc901570767c6fb8d1ef0baccd98",
+        "fingerprint_box": "0797bfc458440daea4819e26a6f44cb249e02aa531954361941a2e6431dc8783",
+        "quantidade_cartas": 4,
+        "cartas": [
+          {
+            "card_id": "105679549406274",
+            "nome_card": "Robert Lewandowski",
+            "record_index": 5138,
+            "byte_offset": 863184,
+            "record_sha256": "1b9d66722c9240ed4ecabb2a9375d01be54ff295d412407c0813a7c61a4e5d08"
+          },
+          {
+            "card_id": "105679549470609",
+            "nome_card": "Joe Gomez",
+            "record_index": 5139,
+            "byte_offset": 863352,
+            "record_sha256": "f29f68dbf7db7927feb13c357808fa5843e0ad298e3e41ad9e230865c304b571"
+          },
+          {
+            "card_id": "105679549474221",
+            "nome_card": "Manuel Locatelli",
+            "record_index": 5140,
+            "byte_offset": 863520,
+            "record_sha256": "ad031ddaa3c879a29477b09a3f179b46c2a9428b3834cae77a4f3c6f888aa7b6"
+          },
+          {
+            "card_id": "105679549480232",
+            "nome_card": "Achraf Hakimi",
+            "record_index": 5141,
+            "byte_offset": 863688,
+            "record_sha256": "3b86bfee68dbb52f68b01f0ffaedad61b663cab3e253f24ad13a70e051a7c0ee"
+          }
+        ],
+        "estado": "sem_historico",
+        "explicacao_estado": "Ainda não existe uma rodada anterior comparável; esta primeira leitura vira a referência local.",
+        "conteudo_alterado": null,
+        "cards_adicionados_desde_anterior": [],
+        "cards_ausentes_desde_anterior": [],
+        "database_write": false
+      },
+      {
+        "nome_box": "777 Million Downloads Campaign",
+        "nomes_fisicos_observados": [
+          "777 Million Downloads Campaign"
+        ],
+        "nome_normalizado": "777 million downloads campaign",
+        "fingerprint_identidade": "3486d9a87e03a034f4e86daf0189f1f1f630a141dbfde0825acca2686b2bafd1",
+        "fingerprint_box": "d5289cacdadcf5722e172156da5d17dcc1b04c90b55e198ae6c1c376533ab8dd",
+        "quantidade_cartas": 3,
+        "cartas": [
+          {
+            "card_id": "105703440126378",
+            "nome_card": "Cristiano Ronaldo",
+            "record_index": 5956,
+            "byte_offset": 1000608,
+            "record_sha256": "365f1a0f44c0f1bcfbb4e55deb45f84687d1ebbe6b05353d75076340ae8f76cc"
+          },
+          {
+            "card_id": "105703440164919",
+            "nome_card": "Son Heung-Min",
+            "record_index": 5957,
+            "byte_offset": 1000776,
+            "record_sha256": "0fa7f78a8d0f6d79f5cf740570fd02e48ad77221522e9e3f4fd8d523e811dcc3"
+          },
+          {
+            "card_id": "105703440166235",
+            "nome_card": "Kevin De Bruyne",
+            "record_index": 5958,
+            "byte_offset": 1000944,
+            "record_sha256": "7c55119ba8f54936be80ba6273bfd19c80aa8ecb6364c409191d70a303b8626e"
+          }
+        ],
+        "estado": "sem_historico",
+        "explicacao_estado": "Ainda não existe uma rodada anterior comparável; esta primeira leitura vira a referência local.",
+        "conteudo_alterado": null,
+        "cards_adicionados_desde_anterior": [],
+        "cards_ausentes_desde_anterior": [],
+        "database_write": false
+      },
+      {
+        "nome_box": "900 Million Downloads Campaign",
+        "nomes_fisicos_observados": [
+          "900 Million Downloads Campaign"
+        ],
+        "nome_normalizado": "900 million downloads campaign",
+        "fingerprint_identidade": "8679f42d5b6580c3f2e715a359c04bcc1837419aaf045be53cbcc95e97115413",
+        "fingerprint_box": "fdb057d00b50b4417dae4f6dc3ed70430ace1862b0a34feb28d0be3a16ebc7a0",
+        "quantidade_cartas": 5,
+        "cartas": [
+          {
+            "card_id": "105805445698981",
+            "nome_card": "Andreas Christensen",
+            "record_index": 9762,
+            "byte_offset": 1640016,
+            "record_sha256": "4588f5efcfa95114023b273e02e95c94308268354c176e2a72b832e180916e36"
+          },
+          {
+            "card_id": "105805445711887",
+            "nome_card": "Ferran Torres",
+            "record_index": 9763,
+            "byte_offset": 1640184,
+            "record_sha256": "3fe2b8da32f8df85cdc439a3911ef78401bd4f15593c2590cc186f77d9df7367"
+          },
+          {
+            "card_id": "105805445742371",
+            "nome_card": "Gavi",
+            "record_index": 9764,
+            "byte_offset": 1640352,
+            "record_sha256": "efdd11e2ef5e6fe5c109904d7295d5d32d1e810ca72c0db50eb6f17ecd410ff1"
+          },
+          {
+            "card_id": "105805445756684",
+            "nome_card": "Fermín López",
+            "record_index": 9765,
+            "byte_offset": 1640520,
+            "record_sha256": "367802b0219a159d3f1ce438c00a47af757466e72d24ba04ded42b1185ee6248"
+          },
+          {
+            "card_id": "106758391503938",
+            "nome_card": "Robert Lewandowski",
+            "record_index": 9750,
+            "byte_offset": 1638000,
+            "record_sha256": "9d9d3a128615736641f106ac271f02e90f1b2eee07ec94bfb40863a474b9f12b"
+          }
+        ],
+        "estado": "sem_historico",
+        "explicacao_estado": "Ainda não existe uma rodada anterior comparável; esta primeira leitura vira a referência local.",
+        "conteudo_alterado": null,
+        "cards_adicionados_desde_anterior": [],
+        "cards_ausentes_desde_anterior": [],
+        "database_write": false
+      }
+    ],
+    "interesting_total": 12,
+    "ignored_records": [
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105639015776029",
+        "record_index": 3168,
+        "byte_offset": 532224,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "d72b757f46225a51ff97d8540c0048183654af2d0b4712180d6422f9e3402db5",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105639015776031",
+        "record_index": 3169,
+        "byte_offset": 532392,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "bdf5d4bcc4b591b603bfbbd1ed043faceb25965c69c3c6144195f3b4cf03213b",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88031797317069",
+        "record_index": 4567,
+        "byte_offset": 767256,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "187a7a44a2825ebce3fa096effe3b6ebfb9fcc4403421031421b7ecfc2a7d1ab",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88031797182741",
+        "record_index": 4583,
+        "byte_offset": 769944,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "ffeb0cb5bda118843d985ac480bf329e15fa523085b496c6a832f4e9e9168d7d",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88032065752554",
+        "record_index": 4932,
+        "byte_offset": 828576,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "33e5cccd3098d27653f0a04011854618cf6010b322cfdeaf072ea6242bb91ac5",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88032065752553",
+        "record_index": 4933,
+        "byte_offset": 828744,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "ed032f37feb9cd2a96c34da8ece4691056f13e5d313821d4e416ff3d461d8d44",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88032065752552",
+        "record_index": 4934,
+        "byte_offset": 828912,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "134c7e52c1e32c8f6bdbc00d840baf25d88b2672653f2e043002aea6e521d7f5",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88032065627237",
+        "record_index": 4935,
+        "byte_offset": 829080,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "ac16208b2e4c01000e2623729a2a54daba890385e5b93366bc7cf55e677d0320",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88032065752557",
+        "record_index": 4939,
+        "byte_offset": 829752,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "a1ed5e861cd53ce8ce302e2608244c7ad287e24d69f38c4e0f3c7d80922d8f6f",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88032334187980",
+        "record_index": 5614,
+        "byte_offset": 943152,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "e70072bef35c6b6ac539db9c7e602facafcc8f16118d8eb6d60591246cfdca5c",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88033139366516",
+        "record_index": 6060,
+        "byte_offset": 1018080,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "179b2614dae83780a29ad7c0f17013a44927e4c459f08821f33ec93e1df50389",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88033139494351",
+        "record_index": 6077,
+        "byte_offset": 1020936,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "7e1f06a52f072d8e8ab410bd86350fb240e4280d3132a025e47c5195f47e7a4c",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88033407799968",
+        "record_index": 6400,
+        "byte_offset": 1075200,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "16b266f089c35ba1035a088b0576eeea8551a086b793173d9ef5b26b1016813a",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88033407933154",
+        "record_index": 6441,
+        "byte_offset": 1082088,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "1fc0dd41f0e75c7fadbb82e163774b9971fddd0f90360d7d14706639ae32c614",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88033407798698",
+        "record_index": 6442,
+        "byte_offset": 1082256,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "4391a8a1cbda967bfc5fa44d1fa0569008ae1cab9c81011cf718073297848a05",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88033407929782",
+        "record_index": 6454,
+        "byte_offset": 1084272,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "8082422734aeba1fd2d9208e6c281d96bae975b9dc5a4d8cba95ae9e6d1a628a",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88035555413475",
+        "record_index": 7108,
+        "byte_offset": 1194144,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "49837786e95cbaf267cb4bf473e2cf964bf76fa9599bffda3177febb741e30f8",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88035555413471",
+        "record_index": 7115,
+        "byte_offset": 1195320,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "4d15a03f8762adc296299b6f2fe47f799f612d128af69c404d7e2ec27d209621",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88036092271624",
+        "record_index": 8106,
+        "byte_offset": 1361808,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "16ee7dd1ddb88f0b36046d78c28a866d834ff666e0cd636b4b6f8eb72a126a64",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88036092153968",
+        "record_index": 8109,
+        "byte_offset": 1362312,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "97903a462ba72437f2e6d3002d129a4d7af4729666a2c602f0bef1e6a1b25b36",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88036092284344",
+        "record_index": 8125,
+        "byte_offset": 1365000,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "8397fd13510e7f6e86bb9d8a7b91d936e7d90ca81592eba6682ba9dbbfe6a49c",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "88036092284352",
+        "record_index": 8126,
+        "byte_offset": 1365168,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "ba5cf868c689384f265e6a48b4daf5f851dec711a0bf3d0c78bf6635e85e9467",
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690648993",
+        "record_index": 8361,
+        "byte_offset": 1404648,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "c12579953342301cd3facfff26eb59ecb1ba16d461421b8ef5dbc27bc330364a",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690649906",
+        "record_index": 8362,
+        "byte_offset": 1404816,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "bdaf4f434eccfe1b4005d862b6533248aac7c7744d8ca77bb05cf23bcfb43709",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690650449",
+        "record_index": 8363,
+        "byte_offset": 1404984,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "9b0c365f359426ab019f9128e73dd755c949019119aee367ca02f12c9366dc70",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690651684",
+        "record_index": 8364,
+        "byte_offset": 1405152,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "68de20865e8c7c215549b523008df5f5e73955b974282dbad3292634facd23c2",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690652914",
+        "record_index": 8365,
+        "byte_offset": 1405320,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "4fd4f3942960f0cfd6911a86933774d384f4afdf6eddbe9ed60a9f96a3c81d81",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690652948",
+        "record_index": 8366,
+        "byte_offset": 1405488,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "0e5dbf430d85655e6c2f47c5fba67a952a936d52b7fbdee99d2ce4a0ff511f79",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690653446",
+        "record_index": 8367,
+        "byte_offset": 1405656,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "ed330d75868e7c54c0df8b0ca78980ba6c3d06c7abb815193e183e49c48aeb69",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690653635",
+        "record_index": 8368,
+        "byte_offset": 1405824,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "579736f8c47d1e5dc613669ce8bea7b8e9b4cfcc2d6ae0e8cf2211dfb3bd48b1",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690654160",
+        "record_index": 8369,
+        "byte_offset": 1405992,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "d1e280bce64c4af74630e9a848792650141c4be42983588784ccaac4b7092e12",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690654375",
+        "record_index": 8370,
+        "byte_offset": 1406160,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "6fc9c4fe29c4f3efb5937a1ce420db8e0bc1bb9dd47dc3bbaaada018031f636b",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690655810",
+        "record_index": 8371,
+        "byte_offset": 1406328,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "6e2d0420f6dc8595a29b86fdabcbe77ac2ff08f06055f068b0382b143241c4d0",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690655930",
+        "record_index": 8372,
+        "byte_offset": 1406496,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "e3c1540a23ac4a7fae0d18d15a6b9a6b200afca2a9cf09d41264f87be2a0bcd6",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690656103",
+        "record_index": 8373,
+        "byte_offset": 1406664,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "bebf9d38245bb1b93ff5c6ac9009e4cbda94bc39738467cb135bd6875a746981",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690656439",
+        "record_index": 8374,
+        "byte_offset": 1406832,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "eb319fc997cc33fa79c623fa018de5e19ebce9b650d4f9cafc477c2d623cfac1",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690656522",
+        "record_index": 8375,
+        "byte_offset": 1407000,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "c975bf1f3969547f74535e81880100873d6e69083bffb1408abe4625967a3f78",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690656927",
+        "record_index": 8376,
+        "byte_offset": 1407168,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "f6e5bbb21e6c62d8ff80895ddbde13d3b6c8c9cdbeb11836b6d96e82abda9145",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690658871",
+        "record_index": 8377,
+        "byte_offset": 1407336,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "7d2b70b33e3ff7b429d1cb3876f455596b79e24d91d982d486443fd8cba16fd3",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690658902",
+        "record_index": 8378,
+        "byte_offset": 1407504,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "38e10c743926adb7b5589c61f3494623b6b18ab67c32ccf20bd218d4425ad15d",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690661753",
+        "record_index": 8379,
+        "byte_offset": 1407672,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "2353440d9e24e3aa97e59780ad06f68efcdc20f005473ac55d4d3f78b5992b11",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690672931",
+        "record_index": 8380,
+        "byte_offset": 1407840,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "6e9dfaf6c2e8fc1bcff3b6d55b2d2f118228303a72efef1569135c92ccca6bca",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690675266",
+        "record_index": 8381,
+        "byte_offset": 1408008,
+        "nonzero_offsets": [
+          0,
+          1,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "68bf3bd5cace3d380ecc22ca6537da6fe71bda1a58aa74fee908f18fe5e9e8f7",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690716884",
+        "record_index": 8382,
+        "byte_offset": 1408176,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "799d333493276c2a3c85c87acb45b650bb2195262c8cb43c00c002fa34f48872",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "card_without_box_name",
+        "card_id": "105761690725137",
+        "record_index": 8383,
+        "byte_offset": 1408344,
+        "nonzero_offsets": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "name_region_all_zero": true,
+        "record_tail_after_id_all_zero": true,
+        "meaning": "O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.",
+        "affects_today": "Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.",
+        "operator_action": "Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "record_sha256": "71944ac79d1735992ef37659ab18ed70475b31c16726161d1925b14003e46ab8",
+        "card_join_checked": true,
+        "card_present_in_current_player": true
+      },
+      {
+        "classification": "box_relation_card_absent_from_current_player",
+        "card_id": "87961467093288",
+        "nome_box_fisico": "Yokohama FC 2017",
+        "record_index": 475,
+        "byte_offset": 79800,
+        "record_sha256": "5ad6f4e3e1f64dde62a2395216eaa16020309691bc12f1974fecf19ab6002c62",
+        "meaning": "O arquivo de boxes contém uma relação completa, mas o card não existe no Player.bin atual da mesma rodada.",
+        "affects_today": "Não entra no Radar atual porque não identifica um card disponível na base física atual do jogo.",
+        "operator_action": "Nenhuma ação manual. Preserve como referência física histórica e não recrie o card por tentativa.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "box_relation_card_absent_from_current_player",
+        "card_id": "105568953959383",
+        "nome_box_fisico": "Club Icons Jan '23",
+        "record_index": 1528,
+        "byte_offset": 256704,
+        "record_sha256": "c3c158fb50c7fbcd1a98aa5b311e39e9c5057b09c46e74a58b4759ea2322ea4b",
+        "meaning": "O arquivo de boxes contém uma relação completa, mas o card não existe no Player.bin atual da mesma rodada.",
+        "affects_today": "Não entra no Radar atual porque não identifica um card disponível na base física atual do jogo.",
+        "operator_action": "Nenhuma ação manual. Preserve como referência física histórica e não recrie o card por tentativa.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      },
+      {
+        "classification": "box_relation_card_absent_from_current_player",
+        "card_id": "105592576279511",
+        "nome_box_fisico": "(※中国版オリジナルFP)",
+        "record_index": 2749,
+        "byte_offset": 461832,
+        "record_sha256": "9505c33b312be15ce7c35e0b6b8a4176d6fd1e1e4204b6f365dd9b9c2784fd5e",
+        "meaning": "O arquivo de boxes contém uma relação completa, mas o card não existe no Player.bin atual da mesma rodada.",
+        "affects_today": "Não entra no Radar atual porque não identifica um card disponível na base física atual do jogo.",
+        "operator_action": "Nenhuma ação manual. Preserve como referência física histórica e não recrie o card por tentativa.",
+        "publication_eligible": false,
+        "radar_relation_eligible": false,
+        "package_eligible": false,
+        "database_write": false,
+        "card_join_checked": true,
+        "card_present_in_current_player": false
+      }
+    ],
+    "database_write": false,
+    "publication_independent": true
+  },
+  "motor_readiness": {
+    "available": true,
+    "state": "pronto",
+    "summary": {
+      "cards": 43072,
+      "motor_eligible": 20886,
+      "aguardando_insumos": 0,
+      "aguardando_decisao_de_vinculo": 0,
+      "nao_aplicavel_aos_motores": 22186,
+      "coleta_incompleta_total": 0,
+      "pendencias_conhecidas_total": 354,
+      "cartas_com_pendencia_conhecida": 354,
+      "pendencias_conhecidas_por_tipo": {
+        "clube_sem_vinculo_atual_por_licenca": 354
+      },
+      "pendencias_conhecidas_exemplos_por_tipo": {
+        "clube_sem_vinculo_atual_por_licenca": [
+          {
+            "card_id": "52777095131110",
+            "nome": "Paulo Vítor",
+            "tipo": "clube_sem_vinculo_atual_por_licenca",
+            "tipo_carta": "colecionavel",
+            "componente": "vinculos",
+            "motivo": "O card antigo preserva o código bruto do clube, mas a ligação atual sumiu após perda de licença."
+          },
+          {
+            "card_id": "52781926973458",
+            "nome": "Etienne Vaessen",
+            "tipo": "clube_sem_vinculo_atual_por_licenca",
+            "tipo_carta": "colecionavel",
+            "componente": "vinculos",
+            "motivo": "O card antigo preserva o código bruto do clube, mas a ligação atual sumiu após perda de licença."
+          },
+          {
+            "card_id": "52782463754198",
+            "nome": "Rogelio Funes Mori",
+            "tipo": "clube_sem_vinculo_atual_por_licenca",
+            "tipo_carta": "colecionavel",
+            "componente": "vinculos",
+            "motivo": "O card antigo preserva o código bruto do clube, mas a ligação atual sumiu após perda de licença."
+          },
+          {
+            "card_id": "52783805927896",
+            "nome": "Antonio Candreva",
+            "tipo": "clube_sem_vinculo_atual_por_licenca",
+            "tipo_carta": "colecionavel",
+            "componente": "vinculos",
+            "motivo": "O card antigo preserva o código bruto do clube, mas a ligação atual sumiu após perda de licença."
+          },
+          {
+            "card_id": "52783805937188",
+            "nome": "Tiago Volpi",
+            "tipo": "clube_sem_vinculo_atual_por_licenca",
+            "tipo_carta": "colecionavel",
+            "componente": "vinculos",
+            "motivo": "O card antigo preserva o código bruto do clube, mas a ligação atual sumiu após perda de licença."
+          },
+          {
+            "card_id": "52787027239094",
+            "nome": "Kjell Scherpen",
+            "tipo": "clube_sem_vinculo_atual_por_licenca",
+            "tipo_carta": "colecionavel",
+            "componente": "vinculos",
+            "motivo": "O card antigo preserva o código bruto do clube, mas a ligação atual sumiu após perda de licença."
+          },
+          {
+            "card_id": "52846619917943",
+            "nome": "Alfie Doughty",
+            "tipo": "clube_sem_vinculo_atual_por_licenca",
+            "tipo_carta": "colecionavel",
+            "componente": "vinculos",
+            "motivo": "O card antigo preserva o código bruto do clube, mas a ligação atual sumiu após perda de licença."
+          },
+          {
+            "card_id": "52848767313183",
+            "nome": "Welinton",
+            "tipo": "clube_sem_vinculo_atual_por_licenca",
+            "tipo_carta": "colecionavel",
+            "componente": "vinculos",
+            "motivo": "O card antigo preserva o código bruto do clube, mas a ligação atual sumiu após perda de licença."
+          },
+          {
+            "card_id": "52849841050072",
+            "nome": "Antonio Candreva",
+            "tipo": "clube_sem_vinculo_atual_por_licenca",
+            "tipo_carta": "colecionavel",
+            "componente": "vinculos",
+            "motivo": "O card antigo preserva o código bruto do clube, mas a ligação atual sumiu após perda de licença."
+          },
+          {
+            "card_id": "53876606742452",
+            "nome": "Alex Iacovitti",
+            "tipo": "clube_sem_vinculo_atual_por_licenca",
+            "tipo_carta": "colecionavel",
+            "componente": "vinculos",
+            "motivo": "O card antigo preserva o código bruto do clube, mas a ligação atual sumiu após perda de licença."
+          },
+          {
+            "card_id": "53877948849848",
+            "nome": "Younès Belhanda",
+            "tipo": "clube_sem_vinculo_atual_por_licenca",
+            "tipo_carta": "colecionavel",
+            "componente": "vinculos",
+            "motivo": "O card antigo preserva o código bruto do clube, mas a ligação atual sumiu após perda de licença."
+          },
+          {
+            "card_id": "53877948913650",
+            "nome": "Kévin Rodrigues",
+            "tipo": "clube_sem_vinculo_atual_por_licenca",
+            "tipo_carta": "colecionavel",
+            "componente": "vinculos",
+            "motivo": "O card antigo preserva o código bruto do clube, mas a ligação atual sumiu após perda de licença."
+          }
+        ]
+      },
+      "pendencias_de_resolucao_total": 0,
+      "cartas_com_pendencia_de_resolucao": 0,
+      "pendencias_de_resolucao_por_tipo": {},
+      "marcacoes_operador": 0,
+      "marcacoes_sem_card_atual": [],
+      "estados": {
+        "nao_aplicavel_aos_motores": 22186,
+        "pronto_para_motores": 20886
+      },
+      "componentes": {
+        "dados_basicos": {
+          "conferido_com_valor": 43072
+        },
+        "atributos": {
+          "conferido_com_valor": 43072
+        },
+        "corpo": {
+          "conferido_com_valor": 43072
+        },
+        "posicoes": {
+          "conferido_com_valor": 43072
+        },
+        "habilidades": {
+          "conferido_com_valor": 33521,
+          "conferido_sem_valor": 9551
+        },
+        "estilos_ia": {
+          "conferido_com_valor": 24854,
+          "conferido_sem_valor": 18218
+        },
+        "estilos_de_jogo": {
+          "conferido_com_valor": 43072
+        },
+        "impetos": {
+          "conferido_sem_valor": 40748,
+          "conferido_com_valor": 2324
+        },
+        "vinculos": {
+          "conferido_com_valor": 42718,
+          "conferido_sem_vinculo_atual": 354
+        }
+      }
+    },
+    "reason": null,
+    "rule": null,
+    "database_write": false,
+    "publication_independent": true,
+    "publication_blocked": false
+  },
+  "database_write": false,
+  "artifacts": [
+    {
+      "name": "radar-lancamentos.json",
+      "bytes": 5073027,
+      "modified_at": "2026-08-31T08:20:02.615300+00:00"
+    },
+    {
+      "name": "resultado.html",
+      "bytes": 122488,
+      "modified_at": "2026-08-31T08:23:36.728692+00:00"
+    },
+    {
+      "name": "resultado.json",
+      "bytes": 343886,
+      "modified_at": "2026-08-31T07:57:50.552577+00:00"
+    }
+  ]
+}

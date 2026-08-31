@@ -17,7 +17,7 @@ import subprocess
 import sys
 import tempfile
 import traceback
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterator
 
@@ -28,7 +28,7 @@ import motor_protection_installer
 import motor_protection_seed
 
 
-DESKTOP_WORKER_PROTOCOL_VERSION = "5.2.0"
+DESKTOP_WORKER_PROTOCOL_VERSION = "5.3.0"
 
 
 def _safe_database_connection_error(error: Exception) -> str:
@@ -85,6 +85,169 @@ def write_compact_json(path: Path, payload: Any) -> None:
     except Exception:
         temporary.unlink(missing_ok=True)
         raise
+
+
+def _windows_launcher_is_ancestor(expected_pid: int, expected_executable: Path) -> bool:
+    """Confirma que este worker nasceu do EXE operacional, inclusive via py.exe."""
+    if os.name != "nt":
+        return False
+    import ctypes
+    from ctypes import wintypes
+
+    class ProcessEntry32W(ctypes.Structure):
+        _fields_ = [
+            ("dwSize", wintypes.DWORD),
+            ("cntUsage", wintypes.DWORD),
+            ("th32ProcessID", wintypes.DWORD),
+            ("th32DefaultHeapID", ctypes.c_size_t),
+            ("th32ModuleID", wintypes.DWORD),
+            ("cntThreads", wintypes.DWORD),
+            ("th32ParentProcessID", wintypes.DWORD),
+            ("pcPriClassBase", ctypes.c_long),
+            ("dwFlags", wintypes.DWORD),
+            ("szExeFile", wintypes.WCHAR * 260),
+        ]
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel32.CreateToolhelp32Snapshot.argtypes = (wintypes.DWORD, wintypes.DWORD)
+    kernel32.CreateToolhelp32Snapshot.restype = wintypes.HANDLE
+    kernel32.Process32FirstW.argtypes = (wintypes.HANDLE, ctypes.POINTER(ProcessEntry32W))
+    kernel32.Process32FirstW.restype = wintypes.BOOL
+    kernel32.Process32NextW.argtypes = (wintypes.HANDLE, ctypes.POINTER(ProcessEntry32W))
+    kernel32.Process32NextW.restype = wintypes.BOOL
+    kernel32.OpenProcess.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.DWORD)
+    kernel32.OpenProcess.restype = wintypes.HANDLE
+    kernel32.QueryFullProcessImageNameW.argtypes = (
+        wintypes.HANDLE,
+        wintypes.DWORD,
+        wintypes.LPWSTR,
+        ctypes.POINTER(wintypes.DWORD),
+    )
+    kernel32.QueryFullProcessImageNameW.restype = wintypes.BOOL
+    kernel32.CloseHandle.argtypes = (wintypes.HANDLE,)
+    kernel32.CloseHandle.restype = wintypes.BOOL
+
+    snapshot = kernel32.CreateToolhelp32Snapshot(0x00000002, 0)
+    invalid_handle = ctypes.c_void_p(-1).value
+    if snapshot == invalid_handle:
+        return False
+    parents: dict[int, int] = {}
+    try:
+        entry = ProcessEntry32W()
+        entry.dwSize = ctypes.sizeof(entry)
+        ok = kernel32.Process32FirstW(snapshot, ctypes.byref(entry))
+        while ok:
+            parents[int(entry.th32ProcessID)] = int(entry.th32ParentProcessID)
+            ok = kernel32.Process32NextW(snapshot, ctypes.byref(entry))
+    finally:
+        kernel32.CloseHandle(snapshot)
+
+    current_pid = os.getpid()
+    for _depth in range(4):
+        parent_pid = parents.get(current_pid, 0)
+        if parent_pid <= 0:
+            return False
+        if parent_pid == expected_pid:
+            handle = kernel32.OpenProcess(0x1000, False, parent_pid)
+            if not handle:
+                return False
+            try:
+                buffer = ctypes.create_unicode_buffer(32768)
+                size = wintypes.DWORD(len(buffer))
+                if not kernel32.QueryFullProcessImageNameW(handle, 0, buffer, ctypes.byref(size)):
+                    return False
+                observed = Path(buffer.value)
+                return os.path.normcase(os.path.abspath(observed)) == os.path.normcase(
+                    os.path.abspath(expected_executable)
+                )
+            finally:
+                kernel32.CloseHandle(handle)
+        current_pid = parent_pid
+    return False
+
+
+def consume_operator_write_authorization(
+    root: Path,
+    run_dir: Path,
+    manifest_path: Path,
+    confirmation_sha256: str,
+    authorization_path: str | None,
+) -> dict[str, str]:
+    """Consome uma autorização curta criada pelo clique no EXE desktop."""
+    if not authorization_path:
+        raise RuntimeError("a instalação exige a confirmação criada pela janela do Extrator")
+    candidate = Path(os.path.abspath(authorization_path))
+    if candidate.parent.resolve() != run_dir.resolve() or not candidate.name.startswith(
+        "autorizacao-protecao-motores-"
+    ) or candidate.suffix.lower() != ".json":
+        raise RuntimeError("a autorização da janela não pertence a esta execução")
+    try:
+        stat = candidate.stat(follow_symlinks=False)
+    except OSError as error:
+        raise RuntimeError("a autorização da janela não existe mais") from error
+    if (
+        not candidate.is_file()
+        or candidate.is_symlink()
+        or bool(getattr(stat, "st_file_attributes", 0) & 0x400)
+        or stat.st_size <= 0
+        or stat.st_size > 65536
+    ):
+        raise RuntimeError("a autorização da janela não é um arquivo local íntegro")
+    consumed = candidate.with_name(candidate.stem + ".consumida.json")
+    if consumed.exists():
+        raise RuntimeError("a autorização da janela já foi consumida")
+    os.replace(candidate, consumed)
+    raw = consumed.read_bytes()
+    try:
+        envelope = json.loads(raw.decode("utf-8-sig"))
+    except Exception as error:
+        raise RuntimeError("a autorização da janela está inválida") from error
+    expected_keys = {
+        "schema",
+        "action",
+        "protocol_version",
+        "manifest_path",
+        "confirmation_sha256",
+        "launcher_pid",
+        "launcher_executable",
+        "issued_at",
+        "expires_at",
+        "nonce",
+        "database_write_authorized",
+    }
+    if not isinstance(envelope, dict) or set(envelope) != expected_keys:
+        raise RuntimeError("a autorização da janela tem formato incompatível")
+    launcher_executable = (root / "Extrator eFootball.exe").resolve()
+    try:
+        issued = datetime.fromisoformat(str(envelope["issued_at"]).replace("Z", "+00:00"))
+        expires = datetime.fromisoformat(str(envelope["expires_at"]).replace("Z", "+00:00"))
+    except Exception as error:
+        raise RuntimeError("a autorização da janela não contém prazo válido") from error
+    now = datetime.now(timezone.utc)
+    launcher_pid = envelope.get("launcher_pid")
+    valid = (
+        envelope.get("schema") == "clubef-autorizacao-escrita-ui-v1"
+        and envelope.get("action") == "install_motor_protection"
+        and envelope.get("protocol_version") == DESKTOP_WORKER_PROTOCOL_VERSION
+        and Path(str(envelope.get("manifest_path") or "")).resolve() == manifest_path.resolve()
+        and envelope.get("confirmation_sha256") == confirmation_sha256
+        and envelope.get("database_write_authorized") is True
+        and isinstance(launcher_pid, int)
+        and not isinstance(launcher_pid, bool)
+        and str(envelope.get("launcher_executable") or "") == str(launcher_executable)
+        and re.fullmatch(r"[0-9a-f]{64}", str(envelope.get("nonce") or "")) is not None
+        and issued.tzinfo is not None
+        and expires.tzinfo is not None
+        and now - timedelta(minutes=10) <= issued <= now + timedelta(minutes=1)
+        and now < expires <= now + timedelta(minutes=10)
+        and expires > issued
+    )
+    if not valid or not _windows_launcher_is_ancestor(int(launcher_pid or 0), launcher_executable):
+        raise RuntimeError("a instalação não veio da confirmação atual da janela do Extrator")
+    return {
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "consumed_path": str(consumed),
+    }
 
 
 def iter_json_array_file(path: Path, *, chunk_size: int = 1024 * 1024) -> Iterator[Any]:
@@ -2198,21 +2361,30 @@ def install_motor_protection(args: argparse.Namespace) -> int:
         raise RuntimeError("instalação produtiva bloqueada fora do botão dedicado")
     root = Path(args.root).resolve()
     run_dir = Path(args.run_dir).resolve()
+    if not args.confirmation_sha256:
+        raise RuntimeError("a prévia confirmada não foi informada")
+    manifest_path = Path(args.install_motor_protection).resolve()
+    authorization = consume_operator_write_authorization(
+        root,
+        run_dir,
+        manifest_path,
+        args.confirmation_sha256,
+        args.operator_write_authorization,
+    )
     dsn = runtime.connection_string()
     if not dsn:
         raise RuntimeError("conexão protegida indisponível; use CONFIGURAR CONEXÃO")
-    if not args.confirmation_sha256:
-        raise RuntimeError("a prévia confirmada não foi informada")
     config = runtime.load_config()
     contract = runtime.current_reading_contract(config)
     revalidate_saved_no_changes(root, run_dir, config, contract, reason="instalacao")
     report = motor_protection_installer.install_motor_protection(
         root,
         run_dir,
-        Path(args.install_motor_protection),
+        manifest_path,
         contract,
         dsn,
         confirmed_preview_sha256=args.confirmation_sha256,
+        operator_authorization_sha256=authorization["sha256"],
     )
     if report["state"] == "already_up_to_date":
         emit(
@@ -2257,6 +2429,7 @@ def main() -> int:
     parser.add_argument("--preview-motor-protection")
     parser.add_argument("--install-motor-protection")
     parser.add_argument("--confirmation-sha256")
+    parser.add_argument("--operator-write-authorization")
     parser.add_argument("--smoke-stage-habilidades", action="store_true")
     parser.add_argument("--smoke-stage-habilidades-limite", type=int, default=0)
     parser.add_argument("--test-rollback", action="store_true")

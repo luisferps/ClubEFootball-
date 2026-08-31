@@ -12,11 +12,11 @@ using System.Web.Script.Serialization;
 using System.Windows.Forms;
 
 [assembly: System.Reflection.AssemblyTitle("Extrator eFootball")]
-[assembly: System.Reflection.AssemblyDescription("Leitura física e conferência local em modo somente leitura")]
+[assembly: System.Reflection.AssemblyDescription("Varredura somente leitura e ações separadas confirmadas")]
 [assembly: System.Reflection.AssemblyProduct("Extrator eFootball")]
 [assembly: System.Reflection.AssemblyCompany("ClubEfootball")]
-[assembly: System.Reflection.AssemblyVersion("5.2.0.0")]
-[assembly: System.Reflection.AssemblyFileVersion("5.2.0.0")]
+[assembly: System.Reflection.AssemblyVersion("5.3.0.0")]
+[assembly: System.Reflection.AssemblyFileVersion("5.3.0.0")]
 
 namespace ClubEfootballWindowsApp
 {
@@ -33,9 +33,11 @@ namespace ClubEfootballWindowsApp
 
     internal sealed class ExtractorForm : Form
     {
-        private const string DesktopProtocolVersion = "5.2.0";
+        private const string DesktopProtocolVersion = "5.3.0";
         private const string CredentialSchema = "clubef-credencial-banco-windows-dpapi-v1";
-        private static readonly byte[] CredentialEntropy = Encoding.UTF8.GetBytes("ClubEfootball Extrator V5.2 database credential");
+        // O valor V1 é estável de propósito: trocá-lo invalidaria a credencial
+        // DPAPI que o operador já salvou na versão anterior.
+        private static readonly byte[] CredentialEntropyV1 = Encoding.UTF8.GetBytes("ClubEfootball Extrator V5.2 database credential");
         private readonly string root;
         private readonly JavaScriptSerializer json = new JavaScriptSerializer();
         private readonly Dictionary<string, ListViewItem> families = new Dictionary<string, ListViewItem>(StringComparer.OrdinalIgnoreCase);
@@ -111,7 +113,7 @@ namespace ClubEfootballWindowsApp
             string logsDirectory = Path.Combine(root, "logs");
             Directory.CreateDirectory(logsDirectory);
             sessionLogPath = Path.Combine(logsDirectory, "extrator-desktop-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".log");
-            Text = "Extrator eFootball V" + DesktopProtocolVersion + " — conferência somente leitura";
+            Text = "Extrator eFootball V" + DesktopProtocolVersion + " — varredura somente leitura; envios separados";
             MinimumSize = new Size(900, 650); Size = new Size(1080, 760); StartPosition = FormStartPosition.CenterScreen;
             Font = new Font("Segoe UI", 9F);
             BuildLayout();
@@ -206,7 +208,7 @@ namespace ClubEfootballWindowsApp
                     throw new InvalidOperationException();
                 byte[] encrypted = Convert.FromBase64String(TextValue(envelope, "ciphertext"));
                 if (encrypted.Length < 32 || encrypted.Length > 65536) throw new InvalidOperationException();
-                byte[] clear = ProtectedData.Unprotect(encrypted, CredentialEntropy, DataProtectionScope.CurrentUser);
+                byte[] clear = ProtectedData.Unprotect(encrypted, CredentialEntropyV1, DataProtectionScope.CurrentUser);
                 try { return NormalizeConnectionString(new UTF8Encoding(false, true).GetString(clear)); }
                 finally { Array.Clear(clear, 0, clear.Length); Array.Clear(encrypted, 0, encrypted.Length); }
             }
@@ -229,7 +231,7 @@ namespace ClubEfootballWindowsApp
             string temporary = null;
             try
             {
-                encrypted = ProtectedData.Protect(clear, CredentialEntropy, DataProtectionScope.CurrentUser);
+                encrypted = ProtectedData.Protect(clear, CredentialEntropyV1, DataProtectionScope.CurrentUser);
                 Dictionary<string, object> envelope = new Dictionary<string, object>();
                 envelope["schema"] = CredentialSchema; envelope["created_at"] = DateTime.UtcNow.ToString("o");
                 envelope["protection"] = "Windows DPAPI"; envelope["scope"] = "CurrentUser";
@@ -272,6 +274,50 @@ namespace ClubEfootballWindowsApp
         private static void ForgetProcessCredential(ProcessStartInfo info)
         {
             try { info.EnvironmentVariables.Remove("CLUBEF_SUPABASE_DB_URL"); } catch { }
+        }
+
+        private string CreateMotorProtectionAuthorization(string runDirectory, string manifestPath, string confirmationSha256)
+        {
+            string expectedRun = Path.GetFullPath(runDirectory);
+            string expectedManifest = Path.GetFullPath(manifestPath);
+            if (!File.Exists(expectedManifest) || !String.Equals(Path.GetDirectoryName(Path.GetDirectoryName(expectedManifest)), expectedRun, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("O seed da proteção não pertence à execução atual.");
+            byte[] nonce = new byte[32];
+            using (RandomNumberGenerator generator = RandomNumberGenerator.Create()) { generator.GetBytes(nonce); }
+            try
+            {
+                Dictionary<string, object> envelope = new Dictionary<string, object>();
+                DateTime issued = DateTime.UtcNow;
+                envelope["schema"] = "clubef-autorizacao-escrita-ui-v1";
+                envelope["action"] = "install_motor_protection";
+                envelope["protocol_version"] = DesktopProtocolVersion;
+                envelope["manifest_path"] = expectedManifest;
+                envelope["confirmation_sha256"] = confirmationSha256;
+                envelope["launcher_pid"] = Process.GetCurrentProcess().Id;
+                envelope["launcher_executable"] = Path.GetFullPath(Application.ExecutablePath);
+                envelope["issued_at"] = issued.ToString("o");
+                envelope["expires_at"] = issued.AddMinutes(5).ToString("o");
+                envelope["nonce"] = BitConverter.ToString(nonce).Replace("-", "").ToLowerInvariant();
+                envelope["database_write_authorized"] = true;
+                string path = Path.Combine(expectedRun, "autorizacao-protecao-motores-" + Guid.NewGuid().ToString("N") + ".json");
+                string temporary = path + ".novo";
+                byte[] document = new UTF8Encoding(false).GetBytes(json.Serialize(envelope));
+                try
+                {
+                    using (FileStream stream = new FileStream(temporary, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+                    {
+                        stream.Write(document, 0, document.Length); stream.Flush(true);
+                    }
+                    File.Move(temporary, path);
+                }
+                catch
+                {
+                    try { if (File.Exists(temporary)) File.Delete(temporary); } catch { }
+                    throw;
+                }
+                return path;
+            }
+            finally { Array.Clear(nonce, 0, nonce.Length); }
         }
 
         private string FindPython(out bool isLauncher)
@@ -926,6 +972,11 @@ namespace ClubEfootballWindowsApp
 
         private string MotorProtectionFailureText(string runDirectory, string confirmationSha256, CommandResult result)
         {
+            string diagnostic = (result.StandardOutput ?? "") + "\n" + (result.StandardError ?? "");
+            if (Regex.IsMatch(diagnostic, "\\\"commit_status\\\"\\s*:\\s*\\\"(?:commit_status_unknown|committed_readback_failed)\\\"", RegexOptions.CultureInvariant))
+                return "O banco pode ter confirmado a proteção, mas a conferência final não terminou. NÃO tente novamente. Abra o log para auditoria; o aviso continua válido mesmo se o arquivo local de resultado não pôde ser gravado.";
+            if (Regex.IsMatch(diagnostic, "\\\"commit_status\\\"\\s*:\\s*\\\"rolled_back_confirmed\\\"", RegexOptions.CultureInvariant))
+                return "Uma nova conexão comprovou que toda a tentativa foi desfeita. Faça outra prévia antes de tentar novamente.";
             string reportPath = Path.Combine(runDirectory, "instalacao-protecao-motores.json");
             try
             {
@@ -996,7 +1047,8 @@ namespace ClubEfootballWindowsApp
                         installUi = BeginAuxiliaryOperation();
                         stage.Text = "Etapa: instalando/atualizando a proteção dos motores em transação única.";
                         AppendLog("Instalação/atualização explícita confirmada e vinculada à prévia " + preview.ConfirmationSha256 + ". Publicação permanece independente.");
-                        RunCommandAsync(BuildWorkerCommand("--install-motor-protection", motorProtectionManifestPath, true, "--confirmation-sha256 " + Quote(preview.ConfirmationSha256)), delegate(CommandResult installResult) {
+                        string authorizationPath = CreateMotorProtectionAuthorization(runDirectory, motorProtectionManifestPath, preview.ConfirmationSha256);
+                        RunCommandAsync(BuildWorkerCommand("--install-motor-protection", motorProtectionManifestPath, true, "--confirmation-sha256 " + Quote(preview.ConfirmationSha256) + " --operator-write-authorization " + Quote(authorizationPath)), delegate(CommandResult installResult) {
                             RestoreAuxiliaryOperation(installUi);
                             if (!installResult.Succeeded)
                             {

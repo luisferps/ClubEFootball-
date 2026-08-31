@@ -274,6 +274,37 @@ def main() -> None:
             },
         }
         result_path.write_text(json.dumps(synthetic_result, ensure_ascii=False, indent=2), encoding="utf-8")
+        (run_dir / "radar-lancamentos.json").write_text(json.dumps({
+            "meaning": "fixture local somente leitura",
+            "counts": {
+                "boxes": 0,
+                "cards_mapped": 0,
+                "records_ignored": 2,
+                "ignored_by_classification": {
+                    "card_without_box_name": 1,
+                    "box_relation_card_absent_from_current_player": 1,
+                },
+                "by_state": {"nova": 0, "ja_conhecida": 0, "sem_historico": 0},
+            },
+            "comparison": {"status": "comparado", "reason": "fixture"},
+            "integration_contract": {"status": "prepared_not_enabled"},
+            "ignored_records": [
+                {
+                    "classification": "card_without_box_name",
+                    "card_id": "105639015776029",
+                    "record_index": 3168,
+                    "record_sha256": "d72b757f46225a51ff97d8540c0048183654af2d0b4712180d6422f9e3402db5",
+                },
+                {
+                    "classification": "box_relation_card_absent_from_current_player",
+                    "card_id": "87961467093288",
+                    "nome_box_fisico": "Yokohama FC 2017",
+                    "record_index": 475,
+                    "record_sha256": "11" * 32,
+                },
+            ],
+            "boxes": [],
+        }, ensure_ascii=False, indent=2), encoding="utf-8")
         rendered = review_html.render_saved_result(result_path)
         html_path = Path(rendered["review_html_path"])
         manifest_path = Path(rendered["manifest_path"])
@@ -300,6 +331,11 @@ def main() -> None:
             "Informações para suporte e auditoria (opcional)",
             "Detalhes técnicos",
             "Radar de boxes e possíveis lançamentos",
+            "registro físico possui card, mas ainda não possui nome de box",
+            "O Extrator não inventou um nome",
+            "Eles não bloqueiam o envio de outras mudanças comprovadas",
+            "ligação de box aponta para um card que não existe no jogo atual",
+            "Referência física antiga, fora dos lançamentos atuais",
             "Quais cartas podem entrar nos motores",
             "Um espaço realmente conferido e vazio",
         ):
@@ -349,10 +385,10 @@ def main() -> None:
     assert 'list.Items.Add(choice, false)' in launcher
     assert '"pacote-selecionado.json"' in launcher
     assert '"clubef-selecao-operador-v1"' in launcher
-    assert 'DesktopProtocolVersion = "5.2.0"' in launcher
-    assert desktop_worker.DESKTOP_WORKER_PROTOCOL_VERSION == "5.2.0"
+    assert 'DesktopProtocolVersion = "5.3.0"' in launcher
+    assert desktop_worker.DESKTOP_WORKER_PROTOCOL_VERSION == "5.3.0"
     opener = (ROOT / "ABRIR-EXTRATOR.cmd").read_text(encoding="utf-8")
-    assert '"5.2.0"' in opener
+    assert '"5.3.0"' in opener
     active_runtime = (ROOT / "app" / "contrato-v46-runtime.js").read_text(encoding="utf-8")
     assert "playstylesByBit" in active_runtime and "playstylesByIndex" in active_runtime
     assert "defensive_style_confirmed:secondaryId === 0 || playstylesByIndex.has(secondaryId)" in active_runtime

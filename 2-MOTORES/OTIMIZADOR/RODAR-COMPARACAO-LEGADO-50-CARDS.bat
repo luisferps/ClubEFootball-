@@ -1,13 +1,10 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-title Otimizador - comparacao de 50 cards do arquivo anterior
-echo ================================================================
-echo   COMPARACAO ISOLADA - 50 CARDS DO ARQUIVO ANTERIOR
-echo   TODAS AS LINHAS - NAO PUBLICA
-echo ================================================================
-python "fila_comparacao_legado_50.py" executar
+title Otimizador - frente de legado encerrada
 echo.
-echo Resultado e retomada ficam em teste-legado-50\estado-lote.json
-pause
+echo A frente de legado foi encerrada.
+echo Este lancador nao cria, consulta ou executa fila historica.
+echo Use RODAR-OTIMIZADOR.bat para a interface local baseada em clube_novo.
 endlocal
+exit /b 1

@@ -78,9 +78,13 @@ function expectParserFailure(bytes, expected) {
   });
   assert(previous.boxes.every((box) => box.estado === 'sem_historico'), 'primeira fotografia não ficou como sem histórico');
 
-  const currentObservation = await observation(fixture.current, 'atual');
+  const currentEntries = [
+    ...fixture.current,
+    { card_id: '105639015776029', box: '', card_name: 'Card físico sem box no fixture' }
+  ];
+  const currentObservation = await observation(currentEntries, 'atual');
   const current = await radar.buildRadar(currentObservation, previous, {
-    cards: cards(fixture.current),
+    cards: cards(currentEntries),
     previous_artifact: 'fixture://anterior/radar-lancamentos.json',
     generated_at: fixture.current_generated_at
   });
@@ -92,6 +96,11 @@ function expectParserFailure(bytes, expected) {
   assert(current.integration_contract.write_enabled === false && current.integration_contract.current_destination === null, 'integração futura foi ligada sem migração');
   assert(current.comparison.status === 'comparado', 'fixture anterior não foi reconhecido como comparável');
   assert(current.counts.boxes === 2 && current.counts.cards_mapped === 5, 'contagens do radar divergiram');
+  assert(current.counts.records_ignored === 1 && current.counts.ignored_by_classification.card_without_box_name === 1, 'registro físico sem nome de box não foi contado separadamente');
+  assert(current.ignored_records.length === 1, 'evidência do registro ignorado não foi preservada');
+  assert(current.ignored_records[0].card_id === '105639015776029' && current.ignored_records[0].record_index === fixture.current.length, 'identidade ou índice do registro ignorado divergiram');
+  assert(/^[0-9a-f]{64}$/.test(current.ignored_records[0].record_sha256), 'registro ignorado ficou sem hash físico');
+  assert(current.ignored_records[0].publication_eligible === false && current.ignored_records[0].package_eligible === false && current.ignored_records[0].database_write === false, 'registro sem box ganhou publicação, pacote ou escrita');
   assert(current.counts.boxes_ausentes_desde_anterior === 1, 'box ausente desde a rodada anterior não foi contada');
   assert(current.comparison.boxes_ausentes_desde_anterior[0].nome_box === 'Box Fixture Ausente', 'proveniência da box ausente não foi preservada');
   assert(current.comparison.boxes_ausentes_desde_anterior[0].database_write === false, 'box ausente acionou exclusão indevida');
@@ -108,7 +117,19 @@ function expectParserFailure(bytes, expected) {
     { card_id: '123', box: 'Duplicada' },
     { card_id: '123', box: 'Duplicada' }
   ]), 'card_id duplicado');
-  expectParserFailure(encodeRecords([{ card_id: '123', box: '' }]), 'estão incompletos');
+  const parsedWithIgnored = radar.parsePlayerVariationDetail(encodeRecords([
+    { card_id: '123', box: 'Box comprovada' },
+    { card_id: '124', box: '' }
+  ]));
+  assert(parsedWithIgnored.records.length === 1 && parsedWithIgnored.ignored_records.length === 1, 'card_id sem nome de box deveria ser isolado sem derrubar relações comprovadas');
+  assert(parsedWithIgnored.ignored_records[0].classification === 'card_without_box_name', 'card_id sem box recebeu classificação incorreta');
+  expectParserFailure(encodeRecords([{ card_id: '0', box: 'Box sem card' }]), 'nome de box sem card_id');
+  const residual = encodeRecords([
+    { card_id: '123', box: 'Box comprovada' },
+    { card_id: '124', box: '' }
+  ]);
+  residual[radar.RECORD_SIZE + 8] = 1;
+  expectParserFailure(residual, 'dados residuais não comprovados');
   const invalidUtf8 = encodeRecords([{ card_id: '123', box: 'A' }]);
   invalidUtf8[radar.NAME_OFFSET] = 0xff;
   invalidUtf8[radar.NAME_OFFSET + 1] = 0;
@@ -117,15 +138,15 @@ function expectParserFailure(bytes, expected) {
   unterminated.fill(0x41, radar.NAME_OFFSET, radar.RECORD_SIZE);
   expectParserFailure(unterminated, 'sem terminador NUL');
 
-  let orphanFailure = null;
-  try {
-    await radar.buildRadar(currentObservation, previous, { cards: cards(fixture.current).slice(1) });
-  } catch (error) { orphanFailure = String(error.message || error); }
-  assert(orphanFailure && orphanFailure.includes('ausente em Player.bin'), 'junção card/box órfã não falhou fechada');
+  const orphanIsolated = await radar.buildRadar(currentObservation, previous, { cards: cards(currentEntries).slice(1) });
+  const isolatedRelation = orphanIsolated.ignored_records.find((record) => record.classification === 'box_relation_card_absent_from_current_player');
+  assert(isolatedRelation && isolatedRelation.card_present_in_current_player === false, 'relação de box sem card atual não foi isolada com a prova da junção');
+  assert(isolatedRelation.publication_eligible === false && isolatedRelation.package_eligible === false, 'relação de box sem card atual ganhou publicação ou pacote');
+  assert(!orphanIsolated.boxes.some((box) => box.cartas.some((card) => card.card_id === isolatedRelation.card_id)), 'relação isolada permaneceu em uma box atual');
 
   const incompatible = JSON.parse(JSON.stringify(previous));
   incompatible.parser.version = 'outro-layout';
-  const withoutComparableHistory = await radar.buildRadar(currentObservation, incompatible, { cards: cards(fixture.current) });
+  const withoutComparableHistory = await radar.buildRadar(currentObservation, incompatible, { cards: cards(currentEntries) });
   assert(withoutComparableHistory.comparison.status === 'sem_historico_comparavel', 'histórico incompatível foi comparado indevidamente');
   assert(withoutComparableHistory.boxes.every((box) => box.estado === 'sem_historico'), 'histórico incompatível contaminou os estados');
 

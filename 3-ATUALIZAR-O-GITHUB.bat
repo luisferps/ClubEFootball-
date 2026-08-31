@@ -166,25 +166,30 @@ if "!MODO_VERIFICAR!"=="1" (
 )
 
 echo.
-echo   Para publicar TODAS as alteracoes acima, digite exatamente:
-echo   PUBLICAR TUDO
-set "CONFIRMACAO="
-set /p "CONFIRMACAO=  Confirmacao: "
-if /I not "!CONFIRMACAO!"=="PUBLICAR TUDO" (
+echo   Pressione S para publicar TODAS as alteracoes acima.
+echo   Pressione N para cancelar sem alterar nada.
+>>"%LOG%" echo ---- aguardando confirmacao S ou N para publicar tudo
+choice /C SN /N /M "  Confirmacao [S/N]: "
+set "CONFIRMACAO_PUBLICAR=!errorlevel!"
+if not "!CONFIRMACAO_PUBLICAR!"=="1" (
   echo.
   echo   Cancelado. Nenhum arquivo foi preparado, gravado ou enviado.
+  >>"%LOG%" echo ---- publicacao cancelada antes de preparar arquivos
   goto LIMPAR_E_SAIR
 )
 
 if not "!DELETED!"=="0" (
   echo.
-  echo   Existem !DELETED! exclusoes. Para aceita-las, digite exatamente:
-  echo   CONFIRMAR EXCLUSOES
-  set "CONFIRMA_EXCLUSOES="
-  set /p "CONFIRMA_EXCLUSOES=  Confirmacao das exclusoes: "
-  if /I not "!CONFIRMA_EXCLUSOES!"=="CONFIRMAR EXCLUSOES" (
+  echo   Existem !DELETED! exclusoes.
+  echo   Pressione S para confirmar tambem essas exclusoes.
+  echo   Pressione N para cancelar sem alterar nada.
+  >>"%LOG%" echo ---- aguardando segunda confirmacao S ou N para exclusoes
+  choice /C SN /N /M "  Confirmar exclusoes [S/N]: "
+  set "CONFIRMACAO_EXCLUSOES=!errorlevel!"
+  if not "!CONFIRMACAO_EXCLUSOES!"=="1" (
     echo.
     echo   Cancelado. As exclusoes nao foram publicadas.
+    >>"%LOG%" echo ---- publicacao cancelada na confirmacao das exclusoes
     goto LIMPAR_E_SAIR
   )
 )
@@ -347,6 +352,11 @@ exit /b 1
 if "!MODO_VERIFICAR!"=="0" pause
 
 :LIMPAR_E_SAIR
+if "!MODO_VERIFICAR!"=="0" (
+  echo.
+  echo   A janela ficara aberta para voce conferir o resultado.
+  pause
+)
 call :LIMPAR_TEMP
 exit /b 0
 

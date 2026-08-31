@@ -11,17 +11,17 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Painel local de execução e acompanhamento do Otimizador")]
 [assembly: AssemblyProduct("Otimizador ClubEfootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: AssemblyVersion("1.3.0.0")]
+[assembly: AssemblyFileVersion("1.3.0.0")]
 
 namespace ClubEfootballOtimizador
 {
     internal static class Program
     {
-        private const string AppUrl = "http://127.0.0.1:8767/?v=20260831-v20";
+        private const string AppUrl = "http://127.0.0.1:8767/?v=20260831-v24";
         private const string StatusUrl = "http://127.0.0.1:8767/api/saude";
         private const string ExpectedApp = "\"aplicativo\": \"otimizador_clubefootball\"";
-        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v20\"";
+        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v24\"";
 
         [STAThread]
         private static void Main()

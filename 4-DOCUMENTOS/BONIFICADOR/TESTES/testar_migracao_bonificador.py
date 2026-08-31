@@ -6,7 +6,7 @@ Uso:
   python testar_migracao_bonificador.py --online
 
 O modo padrão valida o executável por AST e exercita somente as funções puras.
-O modo --online acrescenta readback das três RPCs v1; nunca chama gravar_bonus.
+O modo --online acrescenta readback dos contratos de leitura; nunca chama o writer.
 """
 
 from __future__ import annotations
@@ -59,9 +59,9 @@ def validar_portas(arvore: ast.AST):
     assert set(chamadas) == {
         "bonificador_regua_v1",
         "bonificador_carta_v1",
-        "bonificador_pares_v1",
-        "gravar_bonus",
+        "bonificador_contexto_escrita_v2",
     }, chamadas
+    assert "gravar_build_bonificador_v1" in FONTE.read_text(encoding="utf-8")
     assert "regua_bonus" not in chamadas
     assert "carta_do_motor" not in chamadas
     assert not any(
@@ -120,7 +120,7 @@ def rpc_leitura(url: str, key: str, nome: str, corpo=None):
     assert nome in {
         "bonificador_regua_v1",
         "bonificador_carta_v1",
-        "bonificador_pares_v1",
+        "bonificador_contexto_escrita_v2",
     }
     pedido = urllib.request.Request(
         f"{url}/rest/v1/rpc/{nome}",
@@ -187,7 +187,7 @@ def validar_online(escopo):
     assert ausente["falta_o_que"]
 
     pares = rpc_leitura(
-        url, key, "bonificador_pares_v1", {"p_limit": 1, "p_offset": 0}
+        url, key, "bonificador_contexto_escrita_v2", {"p_limit": 1, "p_offset": 0}
     )
     assert isinstance(pares, list)
 
@@ -203,7 +203,7 @@ def validar_online(escopo):
         1, float(regua["parametro"]["bonus_corpo_max"])
     ) is not None
 
-    assert all("funcao_id" in item for item in pares)
+    assert all("build_linha_card_id" in item and "funcao_id" in item for item in pares)
 
     fp = hashlib.sha256(
         json.dumps(readback, sort_keys=True, ensure_ascii=False).encode("utf-8")

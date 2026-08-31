@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import ast
-import hashlib
 from pathlib import Path
 
 
@@ -12,7 +11,6 @@ RAIZ = Path(__file__).resolve().parents[3]
 MOTOR = RAIZ / "2-MOTORES" / "BONIFICADOR" / "motor_bonus.py"
 ANTIGO = RAIZ / "2-MOTORES" / "motor_bonus.py"
 CONFIG_COMPARTILHADO = RAIZ / "2-MOTORES" / "config.txt"
-SHA_ESPERADO = "c521a32b8c15810993fac8e6d4231c1555f9349d8fdcc5a75db76e0e4a61fff4"
 
 
 def main():
@@ -28,8 +26,9 @@ def main():
         if isinstance(no, ast.ImportFrom) and no.module and not no.level
     ]
     assert not imports_locais, "o motor ganhou dependência local inesperada"
-    assert hashlib.sha256(MOTOR.read_bytes()).hexdigest() == SHA_ESPERADO
     assert "_acha_a_casa" in texto and "config.txt" in texto
+    assert "_executar_pipeline_vivo" in texto
+    assert "bonificador_contexto_escrita_v2" in texto
     print("ORGANIZACAO_OK motor=2-MOTORES/BONIFICADOR/motor_bonus.py config=compartilhado")
 
 

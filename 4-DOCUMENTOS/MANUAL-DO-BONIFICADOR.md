@@ -13,9 +13,9 @@ numa função de jogo: leitura corporal, pé ruim, estilo de jogo e estilos de I
 cria atributos novos nem muda a carta. Ele apenas lê a fotografia canônica da carta,
 aplica a régua vigente e prepara o resultado para a build do Otimizador.
 
-Hoje o Bonificador está **preparado, auditado e desligado para lote produtivo**. Portanto
-nenhuma carta foi gravada por esta migração. A projeção de pares `card × função` está
-vazia até que uma execução produtiva seja autorizada separadamente.
+O pipeline do Bonificador está pronto para operar junto do Otimizador, mas **nenhuma
+carta foi gravada durante esta migração**. Ele só toca uma linha depois que o Otimizador
+a confirmou e os gates canônicos a devolverem como apta.
 
 ### O que ele lê da carta
 
@@ -57,11 +57,11 @@ IDs físicos/canônicos para carta, posição, playstyle, corpo e função. A re
 legada sobrevive apenas como fotografia de auditoria e recuperação, fora de gates e da
 decisão do motor.
 
-O motor de lote permanece em `2-MOTORES/BONIFICADOR/motor_bonus.py`. Para consulta
-humana existe o aplicativo local `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe`.
-Ele usa o mesmo `config.txt` compartilhado de `2-MOTORES`, mas não executa o motor de
-lote, não chama a porta de gravação e não altera a carta. Testes, SQL e recuperação
-permanecem em `4-DOCUMENTOS/BONIFICADOR`, fora do runtime.
+O motor de lote permanece em `2-MOTORES/BONIFICADOR/motor_bonus.py`. O ponto normal de
+uso é o aplicativo local `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe`: seus
+botões iniciam, acompanham e param o processo local do motor sem expor a chave ou o
+schema ao navegador. Testes, SQL e recuperação permanecem em
+`4-DOCUMENTOS/BONIFICADOR`, fora do runtime.
 
 ### Auditoria, paridade e recuperação
 
@@ -88,10 +88,11 @@ Bonificador.
 
 ## 2. Arquitetura ativa
 
-| responsabilidade | origem ativa em 28/08/2026 |
+| responsabilidade | origem ativa em 31/08/2026 |
 |---|---|
-| motor de lote (desligado) | `2-MOTORES/BONIFICADOR/motor_bonus.py` |
-| aplicativo local de consulta | `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe` |
+| motor de lote incremental | `2-MOTORES/BONIFICADOR/motor_bonus.py` |
+| aplicativo local de consulta e controle | `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe` |
+| lançador técnico opcional | `2-MOTORES/BONIFICADOR/RODAR-BONIFICADOR-PIPELINE.bat` |
 | lançador de compatibilidade | `2-MOTORES/BONIFICADOR/RODAR-INTERFACE-BONIFICADOR.bat` |
 | receita | `public.bonificador_regua_v1()` |
 | carta | `public.bonificador_carta_v1(card_id)` |
@@ -294,8 +295,26 @@ retorno divergente encerra o lote antes da escrita. O writer e o RPC de contexto
 precisam ser instalados e relidos no banco por uma ação separada; este ajuste de runtime
 não os instalou e não executou lote real. As duas portas ficam em `public` com acesso
 controlado; o schema privado `clube_novo` não precisa e não deve ser exposto no Data API.
-Quando o contexto retorna zero linhas pendentes, a rodada termina normalmente com
-sucesso e informa que nenhuma gravação era necessária.
+Quando o contexto retorna zero linhas pendentes, o pipeline informa que está aguardando,
+espera cinco segundos por padrão e consulta de novo. O intervalo é configurável pela
+variável de ambiente `CLUBEF_BONIFICADOR_INTERVALO_SEGUNDOS` (mínimo de um segundo).
+Uma rodada confirma somente suas linhas; assim que o Otimizador confirmar outra, ela
+entra na próxima consulta, sem esperar o lote inteiro. `Ctrl+C` faz a parada normal;
+resultados já confirmados continuam no banco.
+
+## 13. Pipeline incremental para produção
+
+No computador dedicado, abra **Bonificador ClubEfootball.exe** e use o botão
+**Iniciar Bonificador**. A tela informa se está processando, aguardando novas linhas ou
+parando; o botão **Parar normalmente** pede o fim após a rodada em andamento. Mantenha
+**um único escritor Bonificador** para o mesmo banco. O `.bat` de pipeline permanece
+somente como lançador técnico para diagnóstico, não como caminho normal do operador.
+O motor não cria checkpoint, fila ou cache local: o estado durável é `clube_novo`, e
+cada ciclo busca de novo somente as linhas já concluídas pelo Otimizador.
+
+Falha de rede aparece como falha, e falha de gate/validação interrompe a rodada; nenhuma
+delas é tratada como sucesso. Linhas incompletas permanecem excluídas do writer e são
+registradas no relatório local `NAO-SEI.txt` da rodada, sem receber valor inventado.
 
 Os dados materializados preservam 14 parâmetros, 228 moldes (19 × 12), 13 slots e 90
 regras de playstyle (31 IDs). A paridade contra o snapshot confirmou igualdade de
@@ -316,7 +335,8 @@ contrato, proveniência e fingerprint. Iker Casillas (`88045755827028`) é uma a
 GO, `291` Goleiro adiantado no slot 1 e `336` Goleiro ofensivo no slot 2; na função
 Goleiro ofensivo (#5), a simulação retorna `1,5000` para playstyle e `1,6875` no total.
 
-O navegador só usa `GET` contra o executor local. Este permite exclusivamente
-`bonificador_regua_v1` e `bonificador_carta_v1`; a chave fica no `config.txt` local.
-Não há botão, rota ou chamada de lote, gravação, fórmula ou banco direto. Detalhes,
-testes e recuperação estão em `4-DOCUMENTOS/BONIFICADOR/INTERFACE-LOCAL.md`.
+O navegador usa `GET` para consultas e apenas duas ações locais de controle: iniciar e
+parar o processo já conhecido do Bonificador. Ele nunca recebe a chave, não acessa
+tabelas nem chama RPCs diretamente. O servidor local é quem inicia o motor, que mantém
+o writer canônico e seus gates; a tela apenas mostra o estado. Detalhes, testes e
+recuperação estão em `4-DOCUMENTOS/BONIFICADOR/INTERFACE-LOCAL.md`.

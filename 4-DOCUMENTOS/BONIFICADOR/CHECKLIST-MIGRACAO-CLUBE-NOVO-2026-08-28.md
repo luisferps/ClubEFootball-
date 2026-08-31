@@ -340,3 +340,35 @@ consumidor de saída seguem desligados.
 - [x] UI principal, Otimizador, Extrator, banco, lote, fórmulas e dados do jogo não
   foram alterados;
 - [x] recuperação específica em `RECUPERACAO/2026-08-28-ANTES-INTERFACE-LOCAL`.
+
+## Pipeline incremental por linha — 31/08/2026
+
+- [x] o runtime V9 deixou de encerrar ao receber contexto vazio: aguarda intervalo
+  configurável e consulta novamente apenas `bonificador_contexto_escrita_v2`;
+- [x] cada rodada relê a régua, o contexto e as cartas vigentes; não há checkpoint,
+  fila persistida, cache ou segredo novo no disco;
+- [x] a condição de escrita continua ser a linha já concluída pelo Otimizador e apta
+  nos gates canônicos; fórmula, parâmetros, moldes, writer e `SELECT FOR UPDATE` não
+  foram alterados;
+- [x] `Ctrl+C` encerra o pipeline normalmente e resultados já confirmados permanecem
+  transacionais no banco; falha HTTP/validação continua explícita e fail-closed;
+- [x] criado `RODAR-BONIFICADOR-PIPELINE.bat`; um único escritor Bonificador por banco
+  continua recomendado;
+- [x] snapshot anterior em `RECUPERACAO/2026-08-31-ANTES-PIPELINE-INCREMENTAL`;
+- [x] testes offline: vazio → espera → par apto → writer, par incompleto sem writer,
+  smoke de lançamento, writer canônico, trava da fórmula e organização operacional.
+
+## Pipeline pelo aplicativo local — 31/08/2026
+
+- [x] o aplicativo local passou a ser o ponto normal de iniciar/parar o pipeline;
+  o `.bat` permanece apenas técnico;
+- [x] o executor loopback inicia `motor_bonus.py` em processo separado, atualiza estado
+  em memória e continua atendendo consulta/simulação enquanto o motor trabalha;
+- [x] botões expõem estado de iniciando/processando/aguardando/parando/parado/erro,
+  sem chave, URL de banco ou schema no navegador;
+- [x] parada pela UI envia sinal cooperativo: termina a rodada em andamento e não cria
+  arquivo de controle, checkpoint ou fila local;
+- [x] teste offline de responsividade cobre início, leitura imediata de estado e parada
+  de processo falso; POST fora das duas ações de controle continua 405;
+- [x] snapshot antes da integração em
+  `RECUPERACAO/2026-08-31-ANTES-INTEGRACAO-PIPELINE-APP`.

@@ -7,7 +7,6 @@ import hashlib
 import json
 import os
 import re
-import subprocess
 import sys
 import threading
 import urllib.error
@@ -22,12 +21,23 @@ MOTOR_DIR = PASTA.parent
 CONFIG = MOTOR_DIR.parent / "config.txt"
 CARD_ID_VALIDO = re.compile(r"^[A-Za-z0-9@_-]{1,64}$")
 APLICATIVO_ID = "otimizador_clubefootball"
-INTERFACE_VERSAO = "20260831-v20"
+INTERFACE_VERSAO = "20260831-v24"
+FILA_V5_AGUARDANDO_APLICACAO = (
+    "A fila integral V5 está preparada localmente, mas a migração ainda não foi "
+    "aplicada em clube_novo. Nenhuma carta será criada ou processada até essa "
+    "aplicação explícita."
+)
 RPC_PERMITIDAS = {
-    "otimizador_regua_v2", "otimizador_carta_v2",
+    "otimizador_regua_v2", "otimizador_carta_v3",
     "otimizador_catalogos_apresentacao_v1", "otimizador_carta_apresentacao_v1",
-    "otimizador_status_teste_v2", "otimizador_fila_teste_v2",
-    "otimizador_eventos_teste_v2", "otimizador_controlar_lote_teste_v2",
+    "otimizador_producao_status_v3", "otimizador_producao_contexto_lote_v3",
+    "otimizador_producao_controlar_lote_v3",
+    "otimizador_producao_reservar_linha_v3", "otimizador_producao_concluir_linha_v3",
+    "otimizador_producao_bloquear_linha_v3", "otimizador_producao_falhar_lote_v3",
+    "otimizador_producao_status_v5", "otimizador_producao_prevoo_integral_v5",
+    "otimizador_producao_criar_lote_integral_v5", "otimizador_producao_preparar_fatia_v5",
+    "otimizador_producao_controlar_preparo_v5", "otimizador_producao_fila_paginada_v5",
+    "otimizador_producao_eventos_paginados_v5", "otimizador_cartas_apresentacao_v2",
 }
 
 
@@ -52,26 +62,44 @@ def ler_config() -> tuple[str, str]:
     return url, chave
 
 
+def cabecalhos_supabase(chave: str) -> dict[str, str]:
+    """Monta cabeçalhos de backend sem enviar uma chave opaca ``sb_*`` como JWT."""
+    cabecalhos = {
+        "apikey": chave,
+        "Content-Type": "application/json",
+        "User-Agent": "ClubEfootballOtimizadorLocal/1.2",
+    }
+    # Chaves atuais sb_secret/sb_publishable não são JWTs. As chaves JWT legadas
+    # continuam precisando de Authorization para preservar a compatibilidade local.
+    if not chave.startswith("sb_"):
+        cabecalhos["Authorization"] = "Bearer " + chave
+    return cabecalhos
+
+
 class GatewayOtimizador:
     """A única saída do processo local: contratos permitidos e selados."""
 
     def __init__(self):
         self.url, self.chave = ler_config()
 
-    def rpc(self, nome: str, corpo: dict | None = None):
+    def rpc(self, nome: str, corpo: dict | None = None, ausente_ok: bool = False):
         if nome not in RPC_PERMITIDAS:
             raise ErroDaInterface("contrato não permitido nesta interface", 403)
         pedido = urllib.request.Request(
             f"{self.url}/rest/v1/rpc/{nome}",
             data=json.dumps(corpo or {}).encode("utf-8"),
-            headers={"apikey": self.chave, "Authorization": "Bearer " + self.chave,
-                     "Content-Type": "application/json"},
+            headers=cabecalhos_supabase(self.chave),
             method="POST",
         )
         try:
             with urllib.request.urlopen(pedido, timeout=45) as resposta:
                 texto = resposta.read().decode("utf-8")
         except urllib.error.HTTPError as erro:
+            detalhe = erro.read().decode("utf-8", "replace")
+            if (ausente_ok and erro.code in {400, 404}
+                    and "otimizador_producao_" in detalhe
+                    and ("does not exist" in detalhe or "Could not find" in detalhe)):
+                return None
             raise ErroDaInterface(f"contrato recusou a consulta ({erro.code})", 503) from erro
         except Exception as erro:
             raise ErroDaInterface(f"não foi possível consultar o contrato ({type(erro).__name__})", 503) from erro
@@ -87,14 +115,8 @@ class ServicoOtimizador:
         import fonte_unica as fonte
         import equacao as equacao
         import motor as motor
-        import fila_comparacao_legado_50 as fila_teste
         self.gateway = gateway or GatewayOtimizador()
         self.fonte, self.equacao, self.motor = fonte, equacao, motor
-        self.fila_teste = fila_teste
-        self._trava_worker = threading.Lock()
-        self._worker = None
-        self._console = None
-        self._erro_worker = None
         self._nomes_cartas = {}
         self._funcoes_por_id = {}
         self._posicoes_por_id = {}
@@ -102,6 +124,11 @@ class ServicoOtimizador:
         self._habilidades_por_id = {}
         self._impetos_por_id = {}
         self._catalogos_apresentacao = None
+        self._worker_lock = threading.RLock()
+        self._worker_thread = None
+        self._worker_lote_id = None
+        self._preparo_thread = None
+        self._preparo_lote_id = None
 
     def regua(self):
         pacote = self.gateway.rpc("otimizador_regua_v2") or {}
@@ -197,7 +224,7 @@ class ServicoOtimizador:
         if tecnico_id not in catalogo_ui:
             raise ErroDaInterface("técnico canônico não disponível")
 
-        bruto = self.gateway.rpc("otimizador_carta_v2", {"p_card_id": card_id}) or {}
+        bruto = self.gateway.rpc("otimizador_carta_v3", {"p_card_id": card_id}) or {}
         apresentacao = self.gateway.rpc("otimizador_carta_apresentacao_v1", {"p_card_id": card_id}) or {}
         codigo_impeto, nivel_impeto = self._identidade_impeto(bruto, nivel_impeto)
         carta = self.fonte.aplica_impetos_da_linha(
@@ -227,7 +254,7 @@ class ServicoOtimizador:
             "tecnico": catalogo_ui[tecnico_id], "gates": gates,
             "regua": {"contrato": regua.get("contrato"), "versao_molde": regua.get("versao_molde"),
                       "cardinalidades": bruto.get("cardinalidades") or {}},
-            "proveniencia": "navegador -> apresentação separada -> IDs do contrato V2 -> cálculo aprovado",
+            "proveniencia": "navegador -> apresentação separada -> IDs do contrato V3 -> cálculo aprovado",
         }
         if falhas:
             return {**comum, "ok": False, "resultado": None, "falhas": list(dict.fromkeys(falhas))}
@@ -261,7 +288,7 @@ class ServicoOtimizador:
         simulacao = self.simular(card_id, funcao_id, tecnico_id, nivel_impeto)
         if not simulacao.get("ok"):
             return {"ok": False, "simulacao": simulacao, "paridade": None}
-        bruto = self.gateway.rpc("otimizador_carta_v2", {"p_card_id": card_id}) or {}
+        bruto = self.gateway.rpc("otimizador_carta_v3", {"p_card_id": card_id}) or {}
         r = simulacao["resultado"]
         entrada = self.fonte.aplica_impetos_da_linha(
             self.fonte._traduz(bruto),r.get("impeto_condicional_codigo"),r.get("impeto_condicional_nivel"))
@@ -283,47 +310,21 @@ class ServicoOtimizador:
             },
         }
 
-    def _estado_local_do_lote(self):
-        estado = self.fila_teste.le_estado() or {}
-        if not estado.get("lote_id"):
-            raise ErroDaInterface("lote de teste selado local não foi preparado", 503)
-        if not estado.get("fingerprint"):
-            raise ErroDaInterface("fingerprint local do lote de teste ausente", 503)
-        return estado
-
     def _status_fila(self):
-        local = self._estado_local_do_lote()
-        lote_id = local["lote_id"]
-        status = self.gateway.rpc("otimizador_status_teste_v2", {"p_lote_id": lote_id}) or {}
-        estados = {"parado", "rodando", "pausando", "pausado", "encerrando", "encerrado", "concluido", "falhou"}
-        if status.get("contrato") != "otimizador_teste_lote_v14":
-            raise ErroDaInterface("versão inesperada do contrato da fila", 503)
-        if status.get("lote_id") != lote_id or status.get("fingerprint") != local["fingerprint"]:
-            raise ErroDaInterface("selo do lote devolvido pelo contrato não confere", 503)
-        if status.get("modo") != "teste_nao_publicado" or status.get("pode_publicar") is not False:
-            raise ErroDaInterface("contrato recusado: lote não está estritamente em modo de teste", 503)
-        if int(status.get("cards") or 0) < 1 or int(status.get("linhas") or 0) < 1:
-            raise ErroDaInterface("contrato recusado: rodada ativa não possui cartas e linhas", 503)
-        if status.get("estado_lote") not in estados or status.get("estado") not in estados:
-            raise ErroDaInterface("contrato recusado: estado de lote inválido", 503)
-        if not isinstance(status.get("acoes"), dict) or not isinstance(status.get("confirmacao"), dict):
-            raise ErroDaInterface("contrato recusado: selos de ação ausentes", 503)
-        # Defesa de apresentação para contratos antigos que deixaram o lote como
-        # "rodando" depois que a última linha já havia terminado. A migração V15
-        # persiste a mesma transição; esta normalização impede que uma janela já
-        # aberta continue oferecendo Pausar ou mantendo uma linha antiga na tela.
-        sem_trabalho = (int(status.get("pendentes") or 0) == 0
-                        and int(status.get("processando") or 0) == 0)
-        if sem_trabalho and status.get("estado_lote") in {"rodando", "pausando", "pausado"}:
-            status = dict(status)
-            status["estado"] = "concluido"
-            status["estado_lote"] = "concluido"
-            status["corrente"] = []
-            acoes = dict(status["acoes"])
-            for acao in ("iniciar", "pausar", "parar", "retomar"):
-                acoes[acao] = False
-            status["acoes"] = acoes
-        return status
+        """Lê só o contrato V5; ausência da migração é honesta e fechada."""
+        if not hasattr(self, "gateway"):
+            return self._fila_v5_aguardando_aplicacao()
+        try:
+            bruto = self.gateway.rpc("otimizador_producao_status_v5", {}, ausente_ok=True)
+        except TypeError:
+            return self._fila_v5_aguardando_aplicacao()
+        if bruto is None:
+            return self._fila_v5_aguardando_aplicacao()
+        if bruto.get("contrato") != "otimizador_fila_producao_v5":
+            raise ErroDaInterface("contrato da fila integral V5 inesperado", 503)
+        resposta = dict(bruto)
+        resposta["disponivel"] = True
+        return resposta
 
     @staticmethod
     def _totais_fila(status):
@@ -333,7 +334,49 @@ class ServicoOtimizador:
             "concluidas": status.get("concluidas", 0), "bloqueadas": status.get("bloqueadas", 0),
             "interrompidas": status.get("interrompidas", 0),
             "falhas": status.get("falhas", 0),
+            "bonificador_pendentes": status.get("bonificador_pendentes", 0),
+            "preparo_total": (status.get("preparo") or {}).get("total", 0),
+            "preparo_concluido": (status.get("preparo") or {}).get("concluido", 0),
+            "preparo_pendentes": (status.get("preparo") or {}).get("pendentes", 0),
         }
+
+    @staticmethod
+    def _fila_v5_aguardando_aplicacao():
+        totais = {
+            "cartas_selecionadas": 0, "linhas_geradas": 0, "pendentes": 0,
+            "em_processamento": 0, "concluidas": 0, "bloqueadas": 0,
+            "interrompidas": 0, "falhas": 0, "bonificador_pendentes": 0,
+            "preparo_total": 0, "preparo_concluido": 0, "preparo_pendentes": 0,
+        }
+        return {
+            "ok": True, "disponivel": False,
+            "estado": "aguardando_aplicacao_fila_v5", "estado_lote": "aguardando_aplicacao_fila_v5",
+            "acoes": {"criar": False, "iniciar": False, "pausar": False,
+                        "parar": False, "retomar": False, "preparar": False, "console": False},
+            "confirmacao": {"parar_exige_confirmacao": True},
+            "corrente": [], "linha_atual": None, "itens": [], "totais": totais,
+            "preparo": {"estado": "nao_iniciado", "total": 0, "concluido": 0, "pendentes": 0},
+            "mensagem": FILA_V5_AGUARDANDO_APLICACAO,
+            "origem": "clube_novo somente; aguardando aplicação explícita da migração V5",
+            "publicacao": "SEM PUBLICAÇÃO", "pode_publicar": False,
+        }
+
+    def _carregar_nomes_cartas(self, itens):
+        faltantes = sorted({str(x.get("card_id")) for x in itens
+                            if x.get("card_id") is not None} - set(self._nomes_cartas))
+        if not faltantes:
+            return
+        pacote = self.gateway.rpc("otimizador_cartas_apresentacao_v2", {
+            "p_card_ids": faltantes,
+        }) or {}
+        if pacote.get("contrato") != "otimizador_apresentacao_v2":
+            raise ErroDaInterface("catálogo de cartas V2 indisponível", 503)
+        encontrados = {str(x.get("card_id")): x.get("nome")
+                      for x in pacote.get("itens") or [] if x.get("card_id") is not None}
+        for card_id in faltantes:
+            # A ausência fica explícita: jamais se recorre a fonte legada ou texto
+            # inventado para completar um card_id canônico.
+            self._nomes_cartas[card_id] = encontrados.get(card_id)
 
     def _linhas_com_rotulos(self, itens):
         if not self._funcoes_por_id:
@@ -353,10 +396,7 @@ class ServicoOtimizador:
                                         for x in catalogos.get("habilidades") or []}
             self._impetos_por_id = {int(x["codigo_impeto"]): x.get("rotulo")
                                     for x in catalogos.get("impetos") or []}
-        faltantes = sorted({str(x.get("card_id")) for x in itens if x.get("card_id") is not None} - set(self._nomes_cartas))
-        for card_id in faltantes:
-            bruto = self.gateway.rpc("otimizador_carta_apresentacao_v1", {"p_card_id": card_id}) or {}
-            self._nomes_cartas[card_id] = bruto.get("nome") or None
+        self._carregar_nomes_cartas(itens)
         saida = []
         for linha in itens:
             item = dict(linha)
@@ -414,40 +454,71 @@ class ServicoOtimizador:
             saida.append(item)
         return saida
 
-    def painel_fila(self):
+    def painel_fila(self, offset=0, limite=100, somente_finais=False):
         status = self._status_fila()
-        lote_id = status["lote_id"]
-        itens = self._linhas_com_rotulos(self.gateway.rpc("otimizador_fila_teste_v2", {"p_lote_id": lote_id}) or [])
-        corrente = status.get("corrente") or []
-        if corrente:
-            por_linha = {str(item.get("linha_id")): item for item in itens}
-            linha_atual = dict(por_linha.get(str(corrente[0].get("linha_id"))) or self._linhas_com_rotulos(corrente)[0])
-            linha_atual.update(corrente[0])
-        else:
-            linha_atual = None
+        if not status.get("disponivel"):
+            return status
+        lote_id = status.get("lote_id")
+        itens = []
+        pagina = {"total": 0, "offset": int(offset), "limite": int(limite),
+                  "somente_finais": bool(somente_finais)}
+        if lote_id:
+            fila = self.gateway.rpc("otimizador_producao_fila_paginada_v5", {
+                "p_lote_id": lote_id, "p_offset": int(offset), "p_limite": int(limite),
+                "p_somente_finais": bool(somente_finais),
+            }) or {}
+            if fila.get("contrato") != "otimizador_fila_producao_v5":
+                raise ErroDaInterface("leitura paginada da fila V5 inesperada", 503)
+            itens = self._linhas_com_rotulos(fila.get("itens") or [])
+            pagina = {"total": fila.get("total", 0), "offset": fila.get("offset", offset),
+                      "limite": fila.get("limite", limite),
+                      "somente_finais": bool(fila.get("somente_finais"))}
+        por_id = {str(x.get("linha_id")): x for x in itens}
+        correntes = status.get("corrente") or []
+        linha_atual = None
+        if correntes:
+            corrente = correntes[0]
+            linha_atual = por_id.get(str(corrente.get("linha_id")))
+            if linha_atual is None:
+                linha_atual = self._linhas_com_rotulos([corrente])[0]
+            else:
+                linha_atual.update({k: v for k, v in corrente.items() if k not in linha_atual})
         return {
-            **status, "ok": True, "disponivel": True, "execucao": {"estado": status["estado_lote"]},
-            "totais": self._totais_fila(status), "linha_atual": linha_atual,
-            "itens": itens, "origem": "contratos V2 da fila selada, via servidor local",
-            "publicacao": "TESTE / NÃO PUBLICADO",
+            **status, "ok": True, "itens": itens, "linha_atual": linha_atual,
+            "paginacao": pagina,
+            "totais": self._totais_fila(status),
+            "publicacao": "SEM PUBLICAÇÃO", "pode_publicar": False,
+            "origem": "clube_novo -> contrato V5 paginado -> worker local V3 -> Bonificador",
         }
 
-    def eventos_fila(self):
+    def eventos_fila(self, offset=0, limite=100):
         status = self._status_fila()
-        lote_id = status["lote_id"]
-        eventos = self.gateway.rpc("otimizador_eventos_teste_v2", {"p_lote_id": lote_id}) or []
-        return {"ok": True, "disponivel": True, "lote_id": lote_id,
-                "estado": status["estado_lote"], "itens": eventos,
-                "origem": "eventos reais do contrato de teste"}
+        if not status.get("disponivel"):
+            return {"ok": True, "disponivel": False, "estado": status["estado"],
+                    "itens": [], "mensagem": status["mensagem"], "origem": status["origem"]}
+        lote_id = status.get("lote_id")
+        if not lote_id:
+            return {"ok": True, "disponivel": True, "estado": status["estado"], "itens": []}
+        eventos = self.gateway.rpc("otimizador_producao_eventos_paginados_v5", {
+            "p_lote_id": lote_id, "p_offset": int(offset), "p_limite": int(limite),
+        }) or {}
+        if eventos.get("contrato") != "otimizador_fila_producao_v5":
+            raise ErroDaInterface("eventos paginados da fila V5 inesperados", 503)
+        return {"ok": True, "disponivel": True, "estado": status["estado"],
+                "itens": eventos.get("itens") or [], "total": eventos.get("total", 0),
+                "offset": eventos.get("offset", offset), "limite": eventos.get("limite", limite),
+                "origem": "eventos persistidos em clube_novo"}
 
-    def resultados_fila(self):
-        status = self._status_fila()
-        lote_id = status["lote_id"]
-        itens = self._linhas_com_rotulos(self.gateway.rpc("otimizador_fila_teste_v2", {"p_lote_id": lote_id}) or [])
-        finais = [x for x in itens if x.get("estado") in {"concluido", "bloqueado", "interrompido", "falhou"}]
-        return {"ok": True, "disponivel": True, "lote_id": lote_id,
-                "estado": status["estado_lote"], "mensagem": "Resultados reais do lote de teste selado.",
-                "itens": finais, "publicacao": "TESTE / NÃO PUBLICADO"}
+    def resultados_fila(self, offset=0, limite=100):
+        painel = self.painel_fila(offset=offset, limite=limite, somente_finais=True)
+        if not painel.get("disponivel"):
+            return {"ok": True, "disponivel": False, "estado": painel["estado"],
+                    "mensagem": painel["mensagem"], "itens": [], "publicacao": "SEM PUBLICAÇÃO"}
+        return {"ok": True, "disponivel": True, "estado": painel["estado"],
+                "mensagem": painel.get("mensagem"), "itens": painel.get("itens") or [],
+                "paginacao": painel.get("paginacao") or {},
+                "publicacao": "SEM PUBLICAÇÃO", "pode_publicar": False,
+                "lote_id": painel.get("lote_id"), "contrato": painel.get("contrato")}
 
     def _acao_de_inicio(self, status):
         acoes = status["acoes"]
@@ -458,63 +529,143 @@ class ServicoOtimizador:
         raise ErroDaInterface("o selo do contrato não autoriza iniciar nem retomar este lote", 409)
 
     def _worker_ativo(self):
-        return bool(self._worker and self._worker.is_alive())
+        return bool(self._worker_thread and self._worker_thread.is_alive())
 
-    def _rodar_worker_selado(self):
-        try:
-            self.fila_teste.executar_lote_selado()
-        except Exception as erro:
-            self._erro_worker = type(erro).__name__
+    def _preparador_ativo(self):
+        return bool(self._preparo_thread and self._preparo_thread.is_alive())
 
-    def _iniciar_worker_selado(self):
-        with self._trava_worker:
+    def _worker_encerrado(self, worker, _resultado):
+        with self._worker_lock:
+            if self._worker_lote_id == worker.lote_id:
+                self._worker_thread = None
+                self._worker_lote_id = None
+
+    def _preparador_encerrado(self, preparador, _resultado):
+        with self._worker_lock:
+            if self._preparo_lote_id == preparador.lote_id:
+                self._preparo_thread = None
+                self._preparo_lote_id = None
+
+    def _iniciar_worker_producao(self, lote_id):
+        with self._worker_lock:
+            if self._preparador_ativo():
+                raise ErroDaInterface("a preparação integral ainda está ativa", 409)
             if self._worker_ativo():
+                if self._worker_lote_id != str(lote_id):
+                    raise ErroDaInterface("já existe worker local para outro lote V3", 409)
                 return
-            self._erro_worker = None
-            self._worker = threading.Thread(target=self._rodar_worker_selado, name="otimizador-fila-teste", daemon=True)
-            self._worker.start()
+            from fila_producao_v3 import WorkerFilaProducaoV3
+            worker = WorkerFilaProducaoV3(self.gateway, str(lote_id), self._worker_encerrado)
+            thread = threading.Thread(target=worker.executar, name="otimizador-fila-v3", daemon=True)
+            self._worker_lote_id = str(lote_id)
+            self._worker_thread = thread
+            thread.start()
+
+    def _iniciar_preparador_integral(self, lote_id):
+        with self._worker_lock:
+            if self._worker_ativo():
+                raise ErroDaInterface("o worker já está calculando uma fila", 409)
+            if self._preparador_ativo():
+                if self._preparo_lote_id != str(lote_id):
+                    raise ErroDaInterface("já existe preparação local para outro lote", 409)
+                return
+            from preparo_fila_integral_v5 import PreparadorFilaIntegralV5
+            preparador = PreparadorFilaIntegralV5(
+                self.gateway, str(lote_id), self._preparador_encerrado,
+            )
+            thread = threading.Thread(
+                target=preparador.executar, name="otimizador-preparo-v5", daemon=True,
+            )
+            self._preparo_lote_id = str(lote_id)
+            self._preparo_thread = thread
+            thread.start()
+
+    @staticmethod
+    def _formula_e_versao_local():
+        from fila_producao_v3 import FORMULA_APROVADA, MOTOR_VERSAO, formula_fingerprint
+        if formula_fingerprint() != FORMULA_APROVADA:
+            raise ErroDaInterface("a fórmula local não confere com o selo aprovado", 409)
+        return FORMULA_APROVADA, MOTOR_VERSAO
+
+    def criar_fila(self):
+        status = self._status_fila()
+        if not status.get("disponivel"):
+            raise ErroDaInterface(status["mensagem"], 409)
+        if status.get("acoes", {}).get("criar") is not True:
+            raise ErroDaInterface("o contrato não autoriza criar outro lote integral", 409)
+        formula, motor_versao = self._formula_e_versao_local()
+        import uuid
+        prevoo = self.gateway.rpc("otimizador_producao_prevoo_integral_v5", {}) or {}
+        if (prevoo.get("contrato") != "otimizador_fila_producao_v5"
+                or not (prevoo.get("gate_regua") or {}).get("pode_rodar")):
+            raise ErroDaInterface("pré-voo integral recusou a criação da fila", 409)
+        criada = self.gateway.rpc("otimizador_producao_criar_lote_integral_v5", {
+            "p_lote_id": str(uuid.uuid4()), "p_formula_fingerprint": formula,
+            "p_motor_versao": motor_versao,
+        }) or {}
+        if criada.get("contrato") != "otimizador_fila_producao_v5" or not criada.get("lote_id"):
+            raise ErroDaInterface("o contrato não confirmou a criação da fila integral", 503)
+        self._iniciar_preparador_integral(criada["lote_id"])
+        return self.painel_fila()
 
     def iniciar_fila(self):
         status = self._status_fila()
+        if not status.get("disponivel"):
+            raise ErroDaInterface(status["mensagem"], 409)
+        if status.get("acoes", {}).get("criar") is True:
+            status = self.criar_fila()
+            return status
+        estado = status.get("estado_lote") or status.get("estado")
+        if estado == "preparando":
+            self._iniciar_preparador_integral(status.get("lote_id"))
+            return self.painel_fila()
+        if estado == "preparo_pausado":
+            if status.get("acoes", {}).get("retomar") is not True:
+                raise ErroDaInterface("o contrato não autoriza retomar a preparação", 409)
+            self.gateway.rpc("otimizador_producao_controlar_preparo_v5", {
+                "p_lote_id": status.get("lote_id"), "p_acao": "retomar",
+            })
+            self._iniciar_preparador_integral(status.get("lote_id"))
+            return self.painel_fila()
         acao = self._acao_de_inicio(status)
-        lote_id = self._estado_local_do_lote()["lote_id"]
-        self.gateway.rpc("otimizador_controlar_lote_teste_v2", {"p_lote_id": lote_id, "p_acao": acao, "p_confirmado": False})
-        self._iniciar_worker_selado()
+        lote_id = status.get("lote_id")
+        resposta = self.gateway.rpc("otimizador_producao_controlar_lote_v3", {
+            "p_lote_id": lote_id, "p_acao": acao, "p_confirmado": False,
+        }) or {}
+        if resposta.get("contrato") != "otimizador_fila_producao_v3":
+            raise ErroDaInterface("o contrato não confirmou o início da fila V3", 503)
+        self._iniciar_worker_producao(lote_id)
         return self.painel_fila()
 
     def pausar_fila(self):
         status = self._status_fila()
-        if status["acoes"].get("pausar") is not True:
-            raise ErroDaInterface("o selo do contrato não autoriza pausar este lote", 409)
-        lote_id = self._estado_local_do_lote()["lote_id"]
-        self.gateway.rpc("otimizador_controlar_lote_teste_v2", {"p_lote_id": lote_id, "p_acao": "pausar", "p_confirmado": False})
+        if not status.get("disponivel") or status.get("acoes", {}).get("pausar") is not True:
+            raise ErroDaInterface("o contrato não autoriza pausar este lote", 409)
+        if (status.get("estado_lote") or status.get("estado")) == "preparando":
+            self.gateway.rpc("otimizador_producao_controlar_preparo_v5", {
+                "p_lote_id": status.get("lote_id"), "p_acao": "pausar",
+            })
+            return self.painel_fila()
+        self.gateway.rpc("otimizador_producao_controlar_lote_v3", {
+            "p_lote_id": status.get("lote_id"), "p_acao": "pausar", "p_confirmado": False,
+        })
         return self.painel_fila()
 
     def parar_fila(self, confirmado):
+        if confirmado is not True:
+            raise ErroDaInterface("Parar exige confirmação explícita", 409)
         status = self._status_fila()
-        if status["acoes"].get("parar") is not True:
-            raise ErroDaInterface("o selo do contrato não autoriza encerrar este lote", 409)
-        if status["confirmacao"].get("parar_exige_confirmacao") is not True or confirmado is not True:
-            raise ErroDaInterface("encerramento exige confirmação explícita nesta interface", 409)
-        lote_id = self._estado_local_do_lote()["lote_id"]
-        self.gateway.rpc("otimizador_controlar_lote_teste_v2", {"p_lote_id": lote_id, "p_acao": "parar", "p_confirmado": True})
+        if (status.get("estado_lote") or status.get("estado")) in {"preparando", "preparo_pausado"}:
+            raise ErroDaInterface("a preparação não calcula cartas; pause-a e não há lote a encerrar", 409)
+        if not status.get("disponivel") or status.get("acoes", {}).get("parar") is not True:
+            raise ErroDaInterface("o contrato não autoriza encerrar este lote", 409)
+        self.gateway.rpc("otimizador_producao_controlar_lote_v3", {
+            "p_lote_id": status.get("lote_id"), "p_acao": "parar", "p_confirmado": True,
+        })
         return self.painel_fila()
 
     def abrir_console_fila(self):
-        status = self._status_fila()
-        if status["acoes"].get("console") is not True:
-            raise ErroDaInterface("o selo do contrato não autoriza abrir o console", 409)
-        with self._trava_worker:
-            if self._worker_ativo() or (self._console and self._console.poll() is None):
-                raise ErroDaInterface("já existe um worker de teste ativo para este lote", 409)
-            acao = self._acao_de_inicio(status)
-            lote_id = self._estado_local_do_lote()["lote_id"]
-            self.gateway.rpc("otimizador_controlar_lote_teste_v2", {"p_lote_id": lote_id, "p_acao": acao, "p_confirmado": False})
-            self._console = subprocess.Popen(
-                ["cmd.exe", "/k", f'"{sys.executable}" "{MOTOR_DIR / "fila_comparacao_legado_50.py"}" executar-selado'],
-                cwd=str(MOTOR_DIR),
-            )
-        return self.painel_fila()
+        raise ErroDaInterface("a fila integral é operada pelo painel; não existe lançador .bat produtivo", 409)
 
     def saude(self):
         regua = self.regua()
@@ -523,7 +674,7 @@ class ServicoOtimizador:
             "versao_interface": INTERFACE_VERSAO,
             "contrato": regua.get("contrato"),
             "pode_rodar": bool((regua.get("gate") or {}).get("pode_rodar")),
-            "modo": "painel_da_rodada_ativa",
+            "modo": "consulta_local_v3; fila_integral_v5_preparada_sem_execucao_automatica",
             "acesso": "somente contratos selados",
         }
 
@@ -560,7 +711,9 @@ def criar_servidor(servico=None, porta=8767):
                 if not isinstance(corpo, dict):
                     raise ErroDaInterface("corpo local inválido")
                 if caminho.path == "/api/fila/criar":
-                    raise ErroDaInterface("a amostra já está selada; criar outra fila não é permitido nesta interface", 409)
+                    return self.responder_json(200, servico.criar_fila())
+                if caminho.path == "/api/fila/preparar":
+                    return self.responder_json(200, servico.iniciar_fila())
                 if caminho.path == "/api/fila/iniciar":
                     return self.responder_json(200, servico.iniciar_fila())
                 if caminho.path == "/api/fila/pausar":
@@ -589,11 +742,17 @@ def criar_servidor(servico=None, porta=8767):
                     regua = servico.regua()
                     return self.responder_json(200, {"ok": True, "funcoes": servico.funcoes(regua), "tecnicos": servico.tecnicos(regua)})
                 if caminho.path == "/api/fila/status":
-                    return self.responder_json(200, servico.painel_fila())
+                    offset = int((params.get("offset") or ["0"])[0])
+                    limite = int((params.get("limite") or ["100"])[0])
+                    return self.responder_json(200, servico.painel_fila(offset=offset, limite=limite))
                 if caminho.path == "/api/fila/eventos":
-                    return self.responder_json(200, servico.eventos_fila())
+                    offset = int((params.get("offset") or ["0"])[0])
+                    limite = int((params.get("limite") or ["100"])[0])
+                    return self.responder_json(200, servico.eventos_fila(offset=offset, limite=limite))
                 if caminho.path == "/api/resultados":
-                    return self.responder_json(200, servico.resultados_fila())
+                    offset = int((params.get("offset") or ["0"])[0])
+                    limite = int((params.get("limite") or ["100"])[0])
+                    return self.responder_json(200, servico.resultados_fila(offset=offset, limite=limite))
                 if caminho.path in {"/api/simular", "/api/validar"}:
                     card = (params.get("card_id") or [""])[0]
                     funcao = int((params.get("funcao_id") or [""])[0])

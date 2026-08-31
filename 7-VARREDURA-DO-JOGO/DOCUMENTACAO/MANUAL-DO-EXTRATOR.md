@@ -1,12 +1,21 @@
 # Manual do Extrator eFootball
 
-**Versão:** 4.6.12 · 29 de agosto de 2026  
-**Estado:** contrato V4.6 ativo; varredura orientada pelo banco, isolada por família, responsiva e com conferência intermediária obrigatória antes de qualquer escrita  
+**Versão operacional:** 5.3.0 · 31 de agosto de 2026
+
+**Estado:** aplicativo desktop autônomo; varredura somente leitura; envio de dados e proteção dos motores são ações explícitas, separadas e conferidas
+
 **Pasta operacional:** `7-VARREDURA-DO-JOGO`
+
+As seções marcadas como V4.6 ou V5.1 abaixo preservam o histórico de como o
+contrato e os leitores foram validados. Elas não descrevem os cliques atuais.
+Para o uso diário, siga **Operação autônoma diária** e **Revisão manual e
+sequência de cliques**.
 
 ## Regra estrutural
 
-O Extrator já possui lógica de extração validada. A V4.6 não muda fórmula, sequência, semântica ou regra de extração.
+O Extrator preserva a lógica de extração validada. A V5.3 acrescenta a operação
+desktop autônoma e a proteção separada dos motores; não muda fórmula, sequência,
+semântica nem regra de leitura do jogo.
 
 > **A tabela/catálogo canônico de `clube_novo` diz o que deve ser buscado e onde está o dado. O Extrator valida, lê, compara e devolve um relatório.**
 
@@ -162,14 +171,14 @@ A ativação libera leitura e comparação. Ela não constitui aprovação autom
 - `windows-app/ClubEfootballExtractorLauncher.cs`;
 - `windows-app/COMPILAR-APLICATIVO.ps1`.
 
-A versão operacional é V5.2.0. O único fluxo de abertura é
-`ABRIR-EXTRATOR.cmd` -> `Extrator eFootball.exe` V5.2.0 ->
+A versão operacional é V5.3.0. O único fluxo de abertura é
+`ABRIR-EXTRATOR.cmd` -> `Extrator eFootball.exe` V5.3.0 ->
 `executor/desktop_worker.py`. O launcher cria uma pasta única em
 `artefatos/desktop/`, chama o worker com `--root`, `--run-dir` e `--cancel`,
 e mostra os eventos JSON de progresso. Ele não abre navegador, localhost nem
 servidor HTTP.
 
-O launcher também envia `--protocol-version 5.1.0`. O worker declara a mesma
+O launcher também envia `--protocol-version 5.3.0`. O worker declara a mesma
 versão e falha fechada antes de abrir banco ou fonte se o selo for diferente;
 assim EXE, launcher e runtime não podem operar misturados.
 
@@ -256,7 +265,7 @@ iniciam uma varredura. Atalhos `INICIAR-EXTRATOR-V46.cmd` apenas encaminham
 para `ABRIR-EXTRATOR.cmd` por compatibilidade.
 
 Quando `ClubEfootballExtractorLauncher.cs` ou `desktop_worker.py` mudar,
-execute `windows-app/COMPILAR-APLICATIVO.ps1` para instalar o EXE V5.2.0
+execute `windows-app/COMPILAR-APLICATIVO.ps1` para instalar o EXE V5.3.0
 correspondente. O botão `4-BAIXAR-DO-GITHUB.bat` sincroniza o código e
 recompila o aplicativo, preservando `config.txt`.
 
@@ -701,7 +710,7 @@ iguais. No controle `{7, 9}` versus `{7, 11}`, retornou exatamente uma
 habilidade nova e uma removida. Não houve conexão ou escrita de domínio nesse
 teste.
 
-## Operação autônoma diária — 30/08/2026
+## Operação autônoma diária — atualizada em 31/08/2026
 
 O fluxo normal do operador usa exclusivamente `ABRIR-EXTRATOR.cmd` (ou
 `Extrator eFootball.exe`) na própria pasta operacional:
@@ -720,6 +729,19 @@ O fluxo normal do operador usa exclusivamente `ABRIR-EXTRATOR.cmd` (ou
 5. conferir a quantidade marcada, clicar **APROVAR PACOTE** e confirmar;
 6. somente depois, clicar **APLICAR PACOTE** e confirmar a ação separada;
 7. usar **ABRIR LOG** para consultar o log persistido em `logs`.
+
+A aplicação é permitida somente quando a execução terminou com confirmação
+final, há dados atuais novos ou alterados disponíveis para seleção, o operador
+marcou pelo menos um item, o pacote corresponde à execução atual e a aprovação
+continua válida. Mesmo assim, **APLICAR PACOTE** exige uma confirmação separada
+e repete as conferências antes da transação.
+
+A aplicação não é permitida quando a varredura falhou ou ficou incompleta,
+quando existe trava estrutural, quando o pacote/aprovação ficou desatualizado ou
+quando o resultado é **nada para enviar**. Avisos conhecidos, registros antigos
+e registros isolados pelo Radar V2 permanecem visíveis, mas nunca são caixas
+marcáveis. Uma observação amarela que declara não bloquear outras mudanças não
+impede selecionar e aplicar os demais itens comprovados.
 
 Cada execução preserva em `artefatos/desktop/run-<data-hora>` o resultado
 técnico, o HTML de revisão, o manifesto, o pacote selado e
@@ -745,13 +767,14 @@ readback independente. O desenvolvimento e os testes desta entrega usam apenas
 pacotes sintéticos e resultados salvos: não executam varredura viva nem
 aplicação no banco.
 
-## Encerramento operacional do Extrator V5.1 — 30/08/2026
+## Registro histórico do encerramento do Extrator V5.1 — 30/08/2026
 
-Esta frente está encerrada para o uso diário pelo operador. A versão instalada
-é `Extrator eFootball.exe` V5.1.0.0, aberta por `ABRIR-EXTRATOR.cmd`. O fluxo
-oficial é: varredura somente leitura, relatório humano, seleção explícita,
-aprovação separada e aplicação transacional separada. Nada vem previamente
-marcado para envio.
+Esta seção preserva a prova da rodada que encerrou a V5.1; ela não informa a
+versão atualmente instalada. A versão operacional atual está no início deste
+manual. Naquela rodada, `Extrator eFootball.exe` V5.1.0.0 já comprovava o fluxo
+de varredura somente leitura, relatório humano, seleção explícita, aprovação
+separada e aplicação transacional separada. Nada vinha previamente marcado para
+envio.
 
 A execução real de fechamento foi `run-20260830-132440`, registrada em
 `logs/extrator-desktop-20260830-132138.log`. O worker V5.1.0 iniciou às 13:24:40
@@ -785,7 +808,7 @@ nem que a lista física completa de Estilos de IA foi localizada; afirma que as
 partes cobertas e comparadas nessa rodada correspondiam ao estado salvo em
 `clube_novo`.
 
-## Radar diário, cards pré-carregados e uso nos motores — V5.2 — 31/08/2026
+## Radar diário V2, cards pré-carregados e uso nos motores — V5.3 — 31/08/2026
 
 A varredura deve ser executada diariamente quando o objetivo for descobrir
 lançamentos antes da tela do jogo. A Konami pode pré-carregar cards e boxes
@@ -803,6 +826,62 @@ segunda rodada comparável, o relatório separa box nova, box já conhecida,
 cards acrescentados e cards que deixaram de aparecer. O radar não confirma que
 a box já foi liberada na tela, não decide publicação e não entra sozinho no
 pacote do banco.
+
+Alguns registros físicos podem trazer um `card_id` válido e deixar inteiramente
+vazio o espaço reservado ao nome da box. Isso não comprova uma box e também não
+é motivo para derrubar todas as outras relações válidas. Nessa situação, o
+Radar isola o registro em `ignored_records`, guarda índice, offset e hash da
+prova física e mostra um aviso em linguagem simples. O registro isolado:
+
+- não é chamado de lançamento;
+- não recebe nome de box por tentativa;
+- não entra nas boxes, no pacote ou no banco;
+- não bloqueia outras mudanças comprovadas;
+- volta a ser avaliado em toda nova varredura e entra normalmente no Radar se
+  uma atualização futura preencher o nome.
+
+O arquivo também pode conservar uma relação card/box completa para um
+`card_id` que já não aparece no `Player.bin` atual. Quando a conferência usa os
+dois arquivos da mesma rodada, essa relação é classificada como referência
+física antiga e fica fora das boxes atuais, da publicação e do pacote. Ela não
+derruba o Radar e não autoriza recriar ou trocar o identificador do card. A
+prova preserva nome da box, `card_id`, índice, offset e hash do registro.
+
+O comportamento continua fechado para casos realmente ambíguos. Nome de box
+sem `card_id`, bytes residuais em um registro aparentemente vazio, identidade
+duplicada e UTF-8 inválido continuam interrompendo o Radar e aparecem como
+problema técnico. Somente situações fisicamente inequívocas são isoladas sem
+inventar dados: card sem nome de box, registro totalmente vazio e relação
+completa cujo card não pertence mais ao `Player.bin` atual.
+
+### Como reconhecer sucesso, aviso acompanhado e falha real
+
+O estado de sucesso da janela é **conferência concluída — somente leitura**. O
+botão **VER RESULTADO** deve abrir `resultado.html`, o texto inicial deve
+declarar que nada foi alterado e a pasta da execução deve conter
+`radar-lancamentos.json`. Uma execução pode ser válida e ainda mostrar avisos:
+
+- **registro físico possui card, mas ainda não possui nome de box** é um aviso
+  acompanhado. Só esse registro fica fora da conclusão de lançamento;
+- **referência física antiga, fora dos lançamentos atuais** informa uma relação
+  preservada para auditoria, mas fora do jogo atual;
+- os dois avisos devem explicar o significado, o efeito nos dados de hoje, o
+  que fica bloqueado e o que o operador deve fazer;
+- nenhum deles torna outras mudanças comprovadas inelegíveis para seleção.
+
+O dry-run físico de validação do Radar V2 em 31/08/2026 leu 13.411 registros:
+13.366 tinham layout card/box completo; após a junção com o `Player.bin` atual,
+13.363 relações formaram 2.002 boxes. Quarenta e cinco registros com card sem
+nome de box e três relações completas para cards fora do `Player.bin` atual
+foram isolados. Esses números comprovam essa fotografia e podem mudar em
+atualizações futuras.
+
+Há falha real quando a janela mostra **worker encerrado com código 2**, quando
+termina sem confirmação final completa, quando o resumo HTML não existe ou
+quando o relatório apresenta problema técnico vermelho/Radar indisponível.
+Nesse estado, aplicação e conclusão sobre lançamentos ficam bloqueadas. O
+operador deve usar **ABRIR LOG**, corrigir a causa e executar outra varredura;
+selecionar menos itens não corrige uma leitura incompleta.
 
 Publicar e rodar motores são decisões independentes. Um card pré-carregado pode
 ser enviado ao banco e mostrado no site ou na home para anunciar a novidade.
@@ -875,7 +954,7 @@ A marcação `incompleto_confirmado` nunca bloqueia publicação ou o envio norm
 do card; bloqueia apenas Otimizador e Bonificador. Desmarcar uma observação não
 força o estado “completo”: a leitura automática continua sendo a autoridade.
 
-O fluxo diário V5.2 é:
+O fluxo diário V5.3 é:
 
 1. quando houver atualização pública, abrir o jogo e esperar o download;
 2. clicar duas vezes em `ABRIR-EXTRATOR.cmd`;
@@ -887,10 +966,15 @@ O fluxo diário V5.2 é:
    sabidamente parciais e salvar;
 7. clicar **ESCOLHER O QUE ENVIAR** para selecionar, separadamente, os dados
    novos ou alterados que irão ao banco;
-8. clicar **APROVAR PACOTE** e depois **APLICAR PACOTE**.
+8. clicar **APROVAR PACOTE** e depois **APLICAR PACOTE**;
+9. se algum dado foi aplicado, iniciar outra varredura somente leitura. Quando
+   ela confirmar **nada para enviar**, clicar **INSTALAR/ATUALIZAR PROTEÇÃO DOS
+   MOTORES**, ler a prévia e decidir. A atualização registra somente os cards
+   novos ou alterados; se a proteção já estiver atual, nada é gravado.
 
-**INSTALAR PROTEÇÃO DOS MOTORES** não é o passo 9 da rotina diária. É uma ação
-única e separada para ativar no banco as travas do Otimizador e do Bonificador.
+**INSTALAR/ATUALIZAR PROTEÇÃO DOS MOTORES** não substitui o envio normal dos
+dados. É uma ação separada: serve para a primeira ativação e, depois, para
+registrar nos motores somente cards novos ou alterados já conferidos.
 O botão só fica disponível depois de uma varredura concluída com
 `no_changes`, prontidão materializada e seed íntegro. Ele não aparece como
 alternativa para ignorar dados novos: se houver algo para enviar, primeiro é
@@ -911,9 +995,10 @@ inferidos de campo vazio. A carga inicial cria uma fotografia versionada; nas
 rodadas seguintes só card novo ou fingerprint alterado precisa ser atualizado.
 Marca manual é armazenada separadamente da prova física.
 
-A instalação da migração é uma ação explícita e separada. O botão **INSTALAR
-PROTEÇÃO DOS MOTORES** primeiro executa uma prévia realmente somente leitura.
-Essa prévia compara as 43.072 identidades do seed com todas as cartas do banco,
+A instalação ou atualização da proteção é uma ação explícita e separada. O
+botão **INSTALAR/ATUALIZAR PROTEÇÃO DOS MOTORES** primeiro executa uma prévia
+realmente somente leitura. Essa prévia compara todas as identidades da execução
+atual com todas as cartas do banco,
 reconfere o contrato vigente e calcula no estado atual do banco quantos
 resultados de teste serão marcados inválidos para refazer. O número mostrado na
 confirmação vem dessa consulta; não é um número fixado no aplicativo.
@@ -924,9 +1009,11 @@ Otimizador e Bonificador; e resultados atuais incompatíveis precisarão ser
 refeitos. Cancelar nessa tela não executa nenhuma escrita.
 
 Somente a confirmação positiva inicia uma transação produtiva dedicada. Nela,
-o banco recebe a migração de completude, o escritor transacional do
-Bonificador, uma execução aceita, uma aplicação auditada e os 11 componentes
-de cada uma das 43.072 cartas. O `aplicacao_id` não vem pronto no arquivo: ele é
+na primeira ativação o banco recebe a migração de completude, o escritor
+transacional do Bonificador, uma execução aceita, uma aplicação auditada e os
+11 componentes de cada carta atual. Nas atualizações seguintes, a migração não
+é repetida e somente cards novos ou alterados são registrados. O `aplicacao_id`
+não vem pronto no arquivo: ele é
 o ID real retornado pelo banco nessa mesma transação e é então usado pelo
 registrador. O seed é enviado por tabela temporária em fluxo, evitando 43 mil
 conexões ou chamadas individuais. Qualquer falha anterior ao commit desfaz o
@@ -940,6 +1027,14 @@ Essa ação nunca é disparada por **INICIAR VARREDURA**, **ESCOLHER O QUE
 ENVIAR**, **APROVAR PACOTE** ou **APLICAR PACOTE**. Enquanto não tiver sido
 confirmada e relida, a situação correta continua sendo **preparado, mas ainda
 não instalado no banco**.
+
+Depois do aceite na janela, o EXE cria uma autorização curta, de uso único,
+vinculada à execução, ao seed, ao resumo mostrado e ao próprio processo da
+janela. O worker recusa a escrita se for chamado diretamente fora desse clique.
+Antes do COMMIT, ele confere a partição completa dos resultados que ficam,
+mudam ou serão refeitos. Se a confirmação do COMMIT ficar incerta, a janela
+manda não repetir a operação, mesmo que o arquivo local de resultado não possa
+ser salvo.
 
 O lote antigo do Bonificador não faz parte do fluxo clicável e não deve ser
 iniciado manualmente. Ele ainda tenta gravar em `clube.build`. A instalação V1

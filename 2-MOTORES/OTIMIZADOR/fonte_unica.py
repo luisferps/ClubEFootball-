@@ -4,7 +4,8 @@ FONTE ÚNICA — contrato versionado do Otimizador.
 
 O QUE MUDOU
   Antes:  dados/base_unica.json  (um arquivo que alguém tinha que baixar)
-  Agora:  o Supabase, somente pelas portas operacionais ``public.otimizador_*_v2``.
+  Agora:  o Supabase, somente pelas portas operacionais ``public.otimizador_*_v3``
+          para carta e ``public.otimizador_regua_v2`` para a régua.
 
 ⛔ A FÓRMULA NÃO MUDA. Este módulo troca somente endereços e identidades de
    entrada. Cálculo, pesos e ordem continuam fora daqui.
@@ -46,7 +47,21 @@ if _os.path.exists('config.txt'):
             cfg[k.strip()] = v.strip()
 URL = cfg.get('SUPABASE_URL', '').rstrip('/')
 KEY = cfg.get('SUPABASE_KEY', '')
-CAB = {'apikey': KEY, 'Authorization': 'Bearer ' + KEY, 'Content-Type': 'application/json'}
+
+
+def _cabecalhos_supabase(chave):
+    """Chave opaca sb_* segue apenas em apikey; JWT legado preserva Authorization."""
+    cabecalhos = {
+        'apikey': chave,
+        'Content-Type': 'application/json',
+        'User-Agent': 'ClubEfootballOtimizadorLocal/1.2',
+    }
+    if not chave.startswith('sb_'):
+        cabecalhos['Authorization'] = 'Bearer ' + chave
+    return cabecalhos
+
+
+CAB = _cabecalhos_supabase(KEY)
 
 
 def _rpc(nome, corpo=None, timeout=180, tentativas=4):
@@ -81,9 +96,11 @@ def existe():
 _CACHE = {}
 
 def _traduz(j):
-    """Contrato V2 -> estrutura interna; o motor recebe somente IDs e valores."""
+    """Contrato V3 -> estrutura interna; o motor recebe somente IDs e valores."""
     if not j:
         return None
+    if j.get('contrato') != 'otimizador_entradas_v3':
+        raise SystemExit('PAROU: contrato de carta inesperado; esperado otimizador_entradas_v3.')
     cid = str(j.get('card_id'))
     esc = j.get('escalares') or {}
     gate = j.get('gate') or {}
@@ -170,7 +187,7 @@ def carta(card_id):
     """Uma carta, do banco. Guarda em memoria."""
     cid = str(card_id).split('@')[0]
     if cid not in _CACHE:
-        _CACHE[cid] = _traduz(_rpc('otimizador_carta_v2', {'p_card_id': cid}))
+        _CACHE[cid] = _traduz(_rpc('otimizador_carta_v3', {'p_card_id': cid}))
     return _CACHE[cid]
 
 
@@ -182,17 +199,16 @@ def carrega_base(ids=None):
     if ids is None:
         raise SystemExit('PAROU: a fila legada foi desativada; informe os IDs da fila clube_novo.')
 
-    # 27/08 — EM LOTE. Antes era uma chamada HTTP por carta: 20.845 idas ao
-    # banco, e isso DUAS vezes (um carregamento por processo). Levava horas so
-    # para comecar. Agora vai de 500 em 500 pelo cartas_do_motor.
+    # Carregamento em lote exclusivamente pelo contrato V3 de clube_novo.
+    # Isso reduz chamadas por carta sem criar cache ou projeção paralela.
     base = {}
     ids = [str(c) for c in ids]
     LOTE = 500
     for i in range(0, len(ids), LOTE):
         pedaco = ids[i:i + LOTE]
-        linhas = _rpc('otimizador_cartas_v2', {'p_ids': pedaco})
+        linhas = _rpc('otimizador_cartas_v3', {'p_ids': pedaco})
         if linhas is None:
-            raise SystemExit('PAROU: otimizador_cartas_v2 nao devolveu o lote; sem fallback.')
+            raise SystemExit('PAROU: otimizador_cartas_v3 nao devolveu o lote; sem fallback.')
         for j in linhas:
             c = _traduz(j)
             if c:
@@ -205,14 +221,15 @@ def carrega_base(ids=None):
 # ------------------------------------------------------------------ insumos
 _INSUMOS = None
 
-def carrega_tudo():
-    """Todos os insumos, do banco, no formato que o motor espera."""
-    global _INSUMOS
-    if _INSUMOS is not None:
-        return _INSUMOS
-    rp = _rpc('otimizador_regua_v2') or {}
+def _traduz_regua_v2(rp):
+    """Traduz o pacote selado da régua sem alterar qualquer regra de cálculo.
+
+    A fila produtiva V3 entrega uma fotografia do mesmo contrato V2 para que o
+    worker não recarregue pesos, molde ou técnico no meio de um lote. Esta função
+    só adapta IDs e números para o formato interno que já existia.
+    """
     gate = rp.get('gate') or {}
-    if not gate.get('pode_rodar'):
+    if rp.get('contrato') != 'otimizador_regua_v2' or not gate.get('pode_rodar'):
         raise SystemExit('PAROU: gate de otimizador_regua_v2 recusou a regua; sem fallback.')
 
     molde = []
@@ -269,7 +286,7 @@ def carrega_tudo():
                         for x in (impeto.get('efeitos') or [])},
         }
 
-    _INSUMOS = {
+    return {
         'contrato': rp.get('contrato'), 'gate': gate,
         'molde': molde,
         'funcoes': funcoes,
@@ -286,6 +303,26 @@ def carrega_tudo():
         'impeto': impetos_catalogo,
         'versao_molde': rp.get('versao_molde'),
     }
+
+
+def carrega_tudo():
+    """Todos os insumos, do contrato ativo, no formato que o motor espera."""
+    global _INSUMOS
+    if _INSUMOS is not None:
+        return _INSUMOS
+    _INSUMOS = _traduz_regua_v2(_rpc('otimizador_regua_v2') or {})
+    return _INSUMOS
+
+
+def carrega_tudo_do_snapshot_v3(pacote):
+    """Instala a régua já selada de um lote V3, sem consultar fonte paralela.
+
+    É uma porta interna do worker; o navegador nunca recebe esta fotografia nem
+    credenciais. O contrato e o gate continuam obrigatórios e a fórmula não é
+    interpretada aqui.
+    """
+    global _INSUMOS
+    _INSUMOS = _traduz_regua_v2(dict(pacote or {}))
     return _INSUMOS
 
 
@@ -315,7 +352,7 @@ def estado():
 # ------------------------------------------------------- insumos que eram arquivo
 # Ate 27/08 o equacao.py abria tabm_medido.json e HAB_EFEITOS_FINAL.json, e o
 # motor.py abria CAT_dom.json. As regras agora moram nas tabelas oficiais de
-# clube_novo e descem pelo contrato V2. A conta nao mudou - so a porta.
+# clube_novo e descem pelos contratos V3/V2. A conta nao mudou - so a porta.
 
 def tabela_multiplicador():
     """{ponto: multiplicador} - o que era tabm_medido.json."""

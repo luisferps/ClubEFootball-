@@ -1,6 +1,6 @@
 # Manual do Otimizador — ClubEfootball
 
-**Versão 1.7 · 28/08/2026**
+**Versão 1.9 · 31/08/2026**
 
 ## 1. Finalidade e nome
 
@@ -169,8 +169,8 @@ desempatar somente qual representante aparece; não altera a nota.
 | técnicos canônicos do banco | `clube_novo.tecnico_jogo`, `tecnico_estilo_jogo`, `tecnico_atributo_jogo` |
 
 As portas de **entrada** atuais do lote e da cópia local do serviço são
-`otimizador_carta_v2`, `otimizador_cartas_v2`, `otimizador_regua_v2` e
-`otimizador_pool_habilidades_v2`. Elas entregam somente IDs, números, bits e vetores.
+`otimizador_carta_v3`, `otimizador_cartas_v3`, `otimizador_regua_v2` e
+`otimizador_pool_habilidades_v3`. Elas entregam somente IDs, números, bits e vetores.
 Rótulos entram por portas separadas, `otimizador_catalogos_apresentacao_v1` e
 `otimizador_carta_apresentacao_v1`, e nunca voltam para o cálculo.
 
@@ -187,7 +187,7 @@ não participam do caminho oficial V2.
 
 ### Estado da migração de entradas
 
-O lote local e a cópia local do serviço foram migrados para o contrato V2. Os dados
+O lote local e a cópia local do serviço foram migrados para carta/pool V3 e régua V2. Os dados
 de carta, atributos, corpo, posições, habilidades, estilo IA, identidades físicas,
 dimensões e técnicos chegam por IDs estáveis/FKs. Nome ou texto só é anexado depois,
 para apresentação e diagnóstico. A prova de renomeação confirma que trocar todos os
@@ -209,14 +209,15 @@ consumidor e não foram alteradas nesta etapa.
 Quando alguém roda **RODAR O MOTOR**, o lançador abre o aplicativo oficial do
 Otimizador. O worker lê as linhas autorizadas em `build_linha_card`; cada linha chega
 como carta, função, posição e, quando houver, código e nível do Ímpeto condicional.
-Em seguida ele pede a ficha da carta, régua, técnicos e habilidades ao contrato V2.
+Em seguida ele pede a ficha da carta e o pool ao contrato V3, e a régua/técnicos ao
+contrato V2.
 Tudo chega de `clube_novo`, com IDs ou bits físicos. Só a interface transforma esses
 IDs em texto.
 
 ```text
 RODAR-O-MOTOR.bat / RODAR-TUDO.bat
   -> OTIMIZADOR/RODAR-OTIMIZADOR.bat -> interface/servidor.py + fila_comparacao_legado_50.py
-  -> roda_lote_v6.py -> fonte_unica.py -> RPCs otimizador_*_v2
+  -> roda_lote_v6.py -> fonte_unica.py -> carta/pool V3 + régua V2
   -> equacao.py + regua.py + motor.py + travas.py -> resultado de build
   -> otimizador_concluir_linha_teste_v2 -> clube_novo.build_otimizador
 ```
@@ -231,7 +232,7 @@ O serviço local tem outra porta de entrada, mas a mesma origem:
 
 ```text
 Procfile: gunicorn app:app
-  -> app.py -> banco.py -> RPCs otimizador_*_v2
+  -> app.py -> banco.py -> carta/pool V3 + régua V2
   -> monta_regua.py + regua_do_banco.py -> avaliador.py + otimizador.py
 ```
 
@@ -365,7 +366,96 @@ não uma falha de execução do caminho V2 atual.
 - [x] testes antigos da hipótese revogada substituídos por regressões de 104;
 - [x] banco, esquema, Extrator e consumidores permaneceram desligados e sem alteração.
 
-## 11. Histórico
+## 11. Fila integral V5: preparar antes de calcular
+
+A fila integral não reutiliza o lote-piloto concluído. O piloto
+`100635db-56d9-4297-b22c-6cde52bf81c8` continua como evidência: 3 cartas, 45
+linhas, todas concluídas e sem publicação. A fila geral possui outro `lote_id` e
+linhagem explícita em cada linha de `clube_novo.build_linha_card`.
+
+O caminho é deliberadamente dividido em duas decisões do operador:
+
+```text
+Preparar fila integral
+  -> fotografia ordenada de candidatas (overall DESC, card_id)
+  -> fatias de até 10 cartas: entrada V3, gate, posições/funções por IDs, snapshot
+  -> fila selada, estado "Pronto para iniciar"
+  -> [decisão separada] Iniciar
+  -> worker V3 calcula uma linha reservada por vez
+```
+
+Enquanto o estado for **Preparando fila** ou **Preparação pausada**, nenhuma
+função matemática roda: não há chamada a `roda_lote_v6.py`, não há `b1`, nem
+resultado do Otimizador. Pausar espera a fatia atômica já em curso e preserva as
+demais candidatas. Somente quando todas as candidatas estiverem fotografadas e
+o banco mudar para `parado` o botão passa a significar **Iniciar**.
+
+Cada candidata guarda `card_id`, `overall`, a versão física da carta e a ordem da
+fotografia. Antes de criar sua linha, a V5 compara a versão atual da carta com a
+fotografia; se houver mudança, o lote falha fechado. Carta bloqueada pelo contrato
+fica registrada como incompleta; carta sem posição/função canônica fica registrada
+como sem linha. Nenhum dos dois casos é substituído por uma fonte antiga ou nome
+textual.
+
+As telas de Fila e Resultados consultam `otimizador_producao_fila_paginada_v5` em
+blocos de no máximo 100 linhas. A UI recebe rótulos apenas de
+`otimizador_cartas_apresentacao_v2` e dos catálogos existentes por ID. Isso evita
+carregar a fila integral inteira no navegador e mantém o browser sem credencial.
+As RPCs novas e a tabela de candidatas têm RLS, acesso direto revogado e execução
+concedida exclusivamente ao backend `service_role`.
+
+O contrato continua com `pode_publicar=false`; o Bonificador não inicia por esse
+fluxo; Ímpetos condicionais seguem excluídos desde a fotografia inicial. A fórmula,
+pesos, moldes, seleção de build e ordem de cálculo não são tocados pela V5.
+
+### Como operar quando a V5 estiver aplicada
+
+1. Abrir `2-MOTORES/OTIMIZADOR/RODAR-OTIMIZADOR.bat` ou o executável.
+2. Conferir o selo **Motor pronto** e o pré-voo mostrado pela interface.
+3. Clicar **Preparar fila integral**. A tela passa a mostrar candidatas preparadas
+   e linhas já geradas; isso ainda não roda o Otimizador.
+4. Se necessário, clicar **Pausar**; depois **Retomar preparação**. Não use
+   **Parar** durante o preparo, pois ainda não existe execução de builds a encerrar.
+5. Quando o estado chegar a **Pronto para iniciar**, conferir contagens, exclusões,
+   fingerprint e uma página de linhas. Só então clicar **Iniciar** para calcular.
+6. Para recuperar antes da criação do lote integral, usar o snapshot
+   `4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260831-antes-preparo-integral-v4/` e o
+   rollback V5. Depois de um lote integral existir, o rollback falha fechado: a
+   recuperação deve usar snapshot aprovado, sem apagar evidência.
+
+### Estado de liberação em 31/08/2026
+
+A V5 está aplicada e o pré-voo foi relido no banco: 19.363 candidatas básicas,
+1.169 exclusões condicionais, fórmula aprovada e publicação desligada. Um ensaio
+transacional preparou uma candidata e 18 linhas e foi revertido; portanto nenhuma
+fila integral foi criada nem calculada como efeito da validação. A interface V24 e
+o executável foram testados contra as RPCs V5 em loopback. A ação restante é apenas
+operacional: clicar **Preparar fila integral**, conferir o lote selado e, em decisão
+separada, clicar **Iniciar**.
+
+### Roteiro operacional da fila completa
+
+O Otimizador está **pronto para preparar todas as 19.363 cartas atualmente
+elegíveis**. As 1.169 cartas com Ímpeto condicional não entram nesta rodada porque
+esse consumidor continua deliberadamente desligado; isso não é falha nem fallback.
+
+1. Abra o executável e, na aba **Fila automatizada**, confirme o selo **Motor
+   pronto** e o rótulo **SEM PUBLICAÇÃO**.
+2. Clique **Preparar fila integral** uma única vez. A preparação cria snapshots e
+   linhas por fatias, sem calcular builds. Acompanhe `Candidatas preparadas` até
+   o estado **Pronto para iniciar**.
+3. Confira contagens, exclusões e fingerprint. Se precisar interromper apenas a
+   preparação, use **Pausar** e depois **Retomar preparação**; as candidatas já
+   seladas não são perdidas.
+4. Somente depois dessa conferência clique **Iniciar**. Esse é o único passo que
+   calcula linhas; o resultado continua de teste, sem publicação e sem Bonificador.
+
+O snapshot de recuperação pré-V5 e o rollback continuam indicados no item 6 acima.
+O rollback falha fechado se uma fila integral já existir, para não apagar a evidência
+de execução. A validação de liberação executou 48 testes e não alterou fórmula,
+pesos, moldes ou regras de negócio.
+
+## 12. Histórico
 
 | data | decisão |
 |---|---|
@@ -409,7 +499,7 @@ Uso: informe o `card_id`, escolha a função e o técnico; clique **Simular**. A
 mostra os IDs/entradas, barras e resultado, gates, cardinalidades e proveniência.
 **Validar paridade** compara a função legível da equação aprovada contra o cálculo
 inline do próprio Otimizador para a mesma simulação. No módulo Individual, a aplicação
-usa `otimizador_regua_v2` e `otimizador_carta_v2`, que entregam somente IDs e valores
+usa `otimizador_regua_v2` e `otimizador_carta_v3`, que entregam somente IDs e valores
 ao motor. Os nomes vêm separadamente de `otimizador_catalogos_apresentacao_v1` e
 `otimizador_carta_apresentacao_v1`. O módulo Fila usa os contratos V2 de status,
 fila, eventos e conclusão, além do controle V2 já existente. A página continua sem
@@ -666,16 +756,16 @@ histórica: suas linhas e resultados não existem mais no banco oficial, e os ar
 locais `teste-100/estado-lote.json` e `teste-100/execucao.log` foram removidos. Nenhum
 dado desse lote participa da nova rodada.
 
-### Fila atual de comparação com o arquivo anterior
+### Registro histórico encerrado da comparação anterior
 
-A migração
+A migração histórica
 `MIGRACAO-ENTRADAS/MIGRACAO-FILA-COMPARACAO-LEGADO-50-V14.sql` criou a porta selada
 da rodada atual. Ela só aceita criar a fila quando `build_linha_card`,
 `build_otimizador` e `build_bonificador` estiverem zeradas. O arquivo
 `clube.build_arquivo_2608` é somente referência: escolhe os cards e confirma o par
 `card_id + funcao_codigo`; nenhuma linha é gravada, atualizada ou apagada nele.
 
-Fila criada em 30/08/2026:
+Registro criado em 30/08/2026:
 
 - lote `18690c93-4bb4-4b86-827a-f472fc92cc68`;
 - fingerprint `d4552dcc5e768e435c3225f1ac456d5b8a660a45627d3a325091f352154cf465`;
@@ -686,7 +776,231 @@ Fila criada em 30/08/2026:
 - 613 resultados do Otimizador preservados, sem publicação e sem execução do Bonificador;
 - estado `concluido`, modo `teste_nao_publicado`.
 
-O executor oficial dessa fila é `fila_comparacao_legado_50.py`. O atalho manual é
-`RODAR-COMPARACAO-LEGADO-50-CARDS.bat`, e o estado local fica em
-`teste-legado-50/estado-lote.json`. Fórmula, contrato, lote e versão do worker são
-conferidos novamente antes de qualquer linha começar.
+Não existe executor nem atalho operacional para esse registro. A entrada e o
+lançador históricos encerram imediatamente, sem ler o estado local, consultar RPC
+ou iniciar worker. A interface atual também não os importa.
+
+## 12. Fecho da migração de entradas — V16 a V20 (31/08/2026)
+
+Esta seção prevalece sobre referências históricas a V1/V2 no restante do manual.
+A fórmula aprovada não foi alterada: barras com teto 99 -> proficiência com piso
+40/teto 99 -> boost do técnico -> Ímpetos. Pesos, alvos, moldes, ordem e critérios
+de seleção também não foram alterados.
+
+### Contratos ativos
+
+| Slot do Otimizador | Contrato/tabela atual | Chaves aceitas | Proteção |
+| --- | --- | --- | --- |
+| ficha de carta, atributos, corpo, pé, posições, IA, habilidades, dimensões e Ímpetos físicos | public.otimizador_carta_v3 / otimizador_cartas_v3 | card_id, IDs físicos/FKs | recusa contrato diferente; não há fallback |
+| pool de habilidades por função | public.otimizador_pool_habilidades_v3 | card_id + funcao_id | somente skill_id; gate da carta e da função |
+| régua, 19 moldes, técnicos, pesos e multiplicadores | public.otimizador_regua_v2 + tabelas clube_novo.otimizador_* | funcao_id, tecnico_id, índice de atributo | régua selada; nenhum rótulo decide cálculo |
+| compatibilidade função/posição usada para gerar linhas | clube_novo.otimizador_funcao_posicao | funcao_id + posicao_id | 30 pares, 19 funções, 2 FKs, RLS ativo |
+| fila e resultados de teste | clube_novo.build_linha_card + clube_novo.build_otimizador | IDs da linha, carta, função e posição | teste/não publicado; gravação atômica selada |
+| textos de tela | RPCs de apresentação V1 | IDs já resolvidos | não retornam ao cálculo |
+
+V16 corrigiu somente o gate de dimensão: clube ou liga fisicamente ausentes não
+são inventados nem bloqueiam por si. Chave física não nula sem catálogo apto segue
+bloqueando. A prova é a carta 105647068843182: V2 devolvia
+clube_bloqueado + liga_bloqueada; V3 devolve gate apto. Uma carta com vínculo físico
+inválido (105553116303042) continua recusada.
+
+V17 faz as três fábricas de amostra selarem a ficha V3. V18 materializou a tradução
+já comprovada dos 30 pares de posição dos 19 moldes em FKs; depois da migração, a
+geração consulta somente funcao_id + posicao_id, e não codigo_pt/rótulo. V19/V20
+retiraram do service_role as portas históricas de clube.fila, clube.build,
+gravar_build e pool_da_funcao. Elas foram preservadas apenas para recuperação,
+mas o Otimizador não consegue chamá-las.
+
+O lote concluído 18690c93-4bb4-4b86-827a-f472fc92cc68 permanece fotografia V2
+histórica (613/613). Ele não é reexecutado nem misturado ao V3. Uma nova amostra
+nasce com V3, selos próprios e a mesma fórmula.
+
+### Recuperação e verificação
+
+- Snapshot antes dos gates: RECUPERACAO/20260831-antes-gate-dimensoes-v16/.
+- Snapshot antes da ativação do executável V21:
+  RECUPERACAO/20260831-antes-ativacao-v21/.
+- Rollbacks SQL isolados: ROLLBACK-OTIMIZADOR-GATE-DIMENSOES-V16.sql,
+  ROLLBACK-FILA-SNAPSHOT-CARTA-V3-V17.sql,
+  ROLLBACK-FUNCAO-POSICAO-IDS-V18.sql,
+  ROLLBACK-BLOQUEIO-RPCS-LEGADAS-V19.sql e
+  ROLLBACK-FECHO-POOL-LEGADO-V20.sql.
+- TESTES/teste_contrato_v3_migracao.py protege consumidores V3, selos, FKs e o
+  bloqueio do legado. O teste de fórmula continua independente.
+- TESTES/teste_trava_formula_migracao.py compara o ZIP anterior quando ele está
+  disponível; nesta cópia oficial, em que o ZIP não acompanha o checkout, ele
+  compara o arquivo rastreado com o `HEAD` Git limpo para provar que esta
+  migração não mudou a fórmula. As duas réplicas datadas ausentes continuam
+  histórico, sem serem recolocadas no runtime apenas para teste.
+
+O executável local era versão 20260831-v22 nesta etapa histórica. A versão V23
+descrita abaixo exige reinicialização controlada ao encontrar servidor mais
+antigo, para nunca mostrar código anterior como se fosse a fila produtiva.
+
+## 13. Fecho definitivo da frente de legado — V22 (31/08/2026)
+
+`clube_novo` é a única autoridade operacional. A interface local, o serviço, o
+carregador de cartas, a auditoria e os lançadores ativos usam exclusivamente os
+contratos atuais por ID. Não existe fallback, consulta comparativa, fila, build ou
+arquivo histórico em caminho operacional.
+
+A aba Fila não apresenta uma rodada antiga: enquanto não houver contrato de fila
+V3 explicitamente autorizado, ela mostra **Fila V3 não autorizada**, mantém todos
+os controles desabilitados e não faz RPC de fila. Individual continua disponível
+para consulta e validação local segura por `card_id`, `funcao_id` e `tecnico_id`.
+
+O snapshot `RECUPERACAO/20260831-antes-fecho-legado-v22/` permite recuperar os
+arquivos anteriores se houver autorização específica. Ele é evidência histórica,
+não é importado, lido nem usado pelo Otimizador.
+
+Validação V22: o executável recompilado respondeu em loopback com a versão V22,
+fila e resultados indisponíveis, todos os controles desabilitados e POST de
+Iniciar recusado com HTTP 409. O servidor usado nesse teste foi encerrado ao fim.
+
+## 14. Preparação histórica da fila produtiva V3 (31/08/2026)
+
+Esta seção registra o estado anterior à aplicação. Ela foi superada pela seção 15;
+não descreve o estado operacional atual. A
+fórmula continua imutável: **barras com teto 99 -> proficiência com piso 40 e
+teto 99 -> boost do técnico -> Ímpetos**. Pesos, moldes, critérios de busca e
+resultado da mesma carta também não foram alterados.
+
+O que foi preparado localmente é uma fila produtiva completa, mas **sem
+publicação**. A cadeia planejada é:
+
+`executável/Edge -> servidor somente em 127.0.0.1 -> RPCs V3 seladas -> lote e
+snapshots em clube_novo -> worker local -> build_otimizador -> build_linha_card
+concluída -> entrada pendente para o Bonificador`.
+
+O navegador não recebe chave de banco e não chama Supabase. O worker é criado
+somente pelo servidor loopback depois de uma ação autorizada pelo contrato. Ele
+reserva uma linha de cada vez, recebe a fotografia selada da carta e da régua,
+executa a mesma fórmula local e devolve o resultado com seus selos. Não há
+fallback para `clube.fila`, `clube.build`, arquivos de fila, nomes/rótulos ou
+projeções antigas.
+
+### Contrato V3 preparado
+
+Os artefatos ainda não aplicados são:
+
+- `OTIMIZADOR/FILA-PRODUCAO-V3/MIGRACAO-FILA-PRODUCAO-V3.sql`;
+- `OTIMIZADOR/FILA-PRODUCAO-V3/ROLLBACK-FILA-PRODUCAO-V3.sql`.
+
+Quando aplicada explicitamente, a migração cria quatro registros privados em
+`clube_novo`: lote, snapshot de carta, linha reservável e evento. As únicas
+portas públicas de leitura/controle são RPCs V3 com `SECURITY DEFINER`,
+`search_path` vazio, RLS ligado e execução somente para `service_role`. O
+rollback recusa apagar qualquer coisa se já houver lote V3 criado.
+
+A criação usa apenas cartões com gate de carta e vínculos aptos, relação canônica
+`funcao_id + posicao_id`, gate do Bonificador e `overall` conhecido. A ordem é
+determinística: maior overall, depois `card_id`, `funcao_id` e `posicao_id`.
+Cartas com Ímpeto condicional são excluídas; esse consumidor continua desligado.
+`posicao_id = 0` continua sendo o Goleiro canônico, não erro.
+
+### Operação depois da aplicação explícita
+
+Na aba **Fila produtiva**, o botão **Criar e iniciar** forma uma única fila
+completa das cartas aptas, começando pelas mais fortes, e inicia o worker local.
+**Pausar** conclui ou bloqueia a linha atômica atual e preserva as pendentes.
+**Parar** pede confirmação e marca as pendentes como interrompidas, sem apagar
+as concluídas e sem publicar. A conclusão do Otimizador deixa builds elegíveis
+para o Bonificador, mas não o executa automaticamente; Bonificador e publicação
+são passos separados.
+
+Enquanto a migração não for aplicada, a interface V23 mostra
+`Aguardando aplicação da fila V3`, deixa todos os controles desabilitados e
+responde 409 às tentativas de criar/iniciar. Isso é intencional: nesta preparação
+não foi criado lote, não foi iniciada linha, não foi gravado resultado e não foi
+publicado nada.
+
+### Recuperação e conferência
+
+- Snapshot local pré-V23:
+  `OTIMIZADOR/RECUPERACAO/20260831-antes-fila-producao-v23/`.
+- Worker: `2-MOTORES/OTIMIZADOR/fila_producao_v3.py`.
+- Teste offline do protocolo: `OTIMIZADOR/TESTES/teste_fila_producao_v3.py`.
+- O executável requer servidor `20260831-v23`, impedindo que uma janela antiga
+  se apresente como esta versão.
+
+Este parágrafo é histórico. A infraestrutura e um piloto limitado foram
+executados depois; o estado atual está na seção 16.
+
+## 15. Fila produtiva V3 aplicada, sem lote — registro histórico (31/08/2026)
+
+A infraestrutura oficial da fila produtiva V3 está aplicada em `clube_novo`. Isso
+**não** criou uma fila, não processou carta, não produziu build e não iniciou o
+Bonificador. O estado atual devolvido pelo contrato é `sem_lote`, com `criar=true`
+e `pode_publicar=false`.
+
+As migrações registradas são `20260831133727_otimizador_fila_producao_v3` e
+`20260831134002_otimizador_fila_producao_v3_indices_v2`. Elas criam a fotografia
+de lote/carta, a fila por linha e os eventos privados, além dos índices que cobrem
+as FKs. A reserva física só aceita uma linha quando o lote está `rodando`; a
+fórmula selada permanece
+`7aaa3cccb536ae8fbe77a3fd91a447738132d6f1b89706bc375314e8028a80ad`.
+
+O navegador continua falando somente com o servidor em `127.0.0.1`. A credencial
+moderna do backend fica em `2-MOTORES/config.txt`, segue apenas no cabeçalho
+`apikey` e nunca é enviada ao browser. A interface real foi validada em loopback:
+saúde da régua, Fila, Eventos e Resultados retornaram contrato V3, `sem_lote`,
+zero resultados e publicação desligada. O servidor temporário de validação foi
+encerrado.
+
+As quatro tabelas V3 têm RLS e nenhum acesso direto para `anon` ou
+`authenticated`; as RPCs `otimizador_producao_*_v3` só têm execução por
+`service_role`. O aviso do advisor sobre RLS sem política é esperado neste desenho:
+as tabelas não recebem acesso direto; as portas seladas fazem toda a mediação.
+
+Recuperação: o snapshot local é
+`OTIMIZADOR/RECUPERACAO/20260831-antes-aplicacao-v3-credencial/`. Enquanto não
+existe lote, `ROLLBACK-FILA-PRODUCAO-V3.sql` pode desfazer a infraestrutura; depois
+de existir lote ele falha fechado para não apagar histórico. O rollback isolado dos
+índices é `ROLLBACK-FILA-PRODUCAO-V3-INDICES-V2.sql`.
+
+O próximo passo descrito nesta seção foi superado pelo piloto limitado da seção
+16. Ímpetos condicionais, Bonificador e publicação continuam desligados e
+independentes.
+
+## 16. Piloto limitado V3 concluído, sem publicação (31/08/2026)
+
+Foi criado um único lote piloto `100635db-56d9-4297-b22c-6cde52bf81c8`, limitado
+a 3 cartas e 45 linhas. Ele não é uma liberação da fila completa. Depois da
+primeira linha e de mais cinco, uma autorização de cobertura transversal executou
+exatamente 22 linhas: as 12 pendentes da primeira carta, as 9 da segunda e uma
+da terceira. A autorização seguinte concluiu as 17 restantes. O lote está
+`concluido`, com 45 concluídas, nenhuma pendente, nenhuma em processamento e
+nenhuma bloqueada. `pode_publicar=false`; as 45 linhas aguardam Bonificador como
+etapa separada e nada foi publicado.
+
+O piloto revelou dois defeitos de infraestrutura, corrigidos sem alterar fórmula,
+pesos, moldes, cartas ou regras de negócio:
+
+- V3.1/V3.2 aplicam o limite de um piloto antes das projeções, sem tocar no
+  caminho integral; V3.3 usa o `lote_id` correto ao criar as linhas;
+- V3.4 respeita que `clube_novo.build_otimizador.id` é `GENERATED ALWAYS AS
+  IDENTITY`: o `INSERT` não informa a PK e recebe o ID retornado pelo banco.
+
+O readback físico da V3.4 confirmou ausência de `nextval`, ausência de `id` no
+`INSERT` e preservação dos selos. O histórico de migrações contém duas entradas
+V3.4 com o mesmo conteúdo idempotente (`CREATE OR REPLACE`); não houve duplicação
+de linha, build ou cálculo.
+
+O contrato atual das três cartas foi igual aos respectivos snapshots selados. A
+reexecução local de uma linha representativa de cada carta conferiu exatamente
+com o resultado persistido; a primeira teve pontuação `-52,1`, técnico, barras,
+habilidades, Ímpeto adicional, 11 builds comparadas e 39 possíveis. As 45 linhas
+concluídas tiveram os fingerprints de fórmula, contrato, carta e resultado
+conferidos. Nenhuma saída foi publicada e o Bonificador não rodou. As 1.169 cartas
+com Ímpeto condicional continuam excluídas.
+
+Recuperação: os snapshots estão em
+`OTIMIZADOR/RECUPERACAO/20260831-antes-aplicacao-v3-credencial/` e
+`OTIMIZADOR/RECUPERACAO/20260831-antes-piloto-limitado-v3/`. Como o lote existe,
+o rollback-base V3 é fail-closed para não apagar histórico. Os rollbacks V3.1 a
+V3.4 são apenas recuperação técnica e não devem ser aplicados sem decisão
+explícita de retenção/arquivamento e readback.
+
+O próximo passo **não é rodar todas as cartas**: requer paridade independente
+suficiente e autorização explícita para criar uma fila integral. O navegador
+continua somente em loopback; a credencial fica no backend, nunca no browser.

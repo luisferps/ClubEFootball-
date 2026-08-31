@@ -1,0 +1,14 @@
+--- a/2-MOTORES/OTIMIZADOR/windows-app/ClubEfootballOtimizadorLauncher.cs
++++ b/2-MOTORES/OTIMIZADOR/windows-app/ClubEfootballOtimizadorLauncher.cs
+@@ -14,2 +14,2 @@
+-[assembly: AssemblyVersion("1.2.0.0")]
+-[assembly: AssemblyFileVersion("1.2.0.0")]
++[assembly: AssemblyVersion("1.1.0.0")]
++[assembly: AssemblyFileVersion("1.1.0.0")]
+@@ -21,4 +21,4 @@
+-        private const string AppUrl = "http://127.0.0.1:8767/?v=20260831-v23";
++        private const string AppUrl = "http://127.0.0.1:8767/?v=20260831-v22";
+         private const string StatusUrl = "http://127.0.0.1:8767/api/saude";
+         private const string ExpectedApp = "\"aplicativo\": \"otimizador_clubefootball\"";
+-        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v23\"";
++        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v22\"";

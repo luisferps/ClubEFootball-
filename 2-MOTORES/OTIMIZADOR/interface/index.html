@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Otimizador ClubEfootball</title>
-  <link rel="stylesheet" href="/style.css?v=20260830-v18">
+  <link rel="stylesheet" href="/style.css?v=20260831-v23">
 </head>
 <body>
 <header class="topo">
@@ -18,7 +18,7 @@
 
 <main>
   <nav class="abas" aria-label="Áreas do Otimizador">
-    <button class="aba-ativa" data-aba="fila">Rodada ativa</button>
+    <button class="aba-ativa" data-aba="fila">Fila integral</button>
     <button data-aba="individual">Testar uma carta</button>
     <button data-aba="resultados">Resultados</button>
   </nav>
@@ -27,10 +27,10 @@
     <div class="cabecalho-secao">
       <div>
         <p class="sobrelinha">ACOMPANHAMENTO</p>
-        <h2>Rodada ativa</h2>
-        <p>Veja o andamento, controle a execução e encontre rapidamente a linha atual.</p>
+        <h2>Fila integral</h2>
+        <p>Prepare a fila por snapshots, acompanhe a execução e encontre rapidamente a linha atual. Nenhum resultado é publicado por esta tela.</p>
       </div>
-      <span id="modo-rodada" class="tag-teste">TESTE · NÃO PUBLICA</span>
+      <span id="modo-rodada" class="tag-teste">PRODUÇÃO V5 · SEM PUBLICAÇÃO</span>
     </div>
 
     <section class="painel painel-controle">
@@ -50,7 +50,7 @@
       <div class="barra-progresso" role="progressbar" aria-label="Progresso da rodada" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
         <span id="barra-progresso-preenchida"></span>
       </div>
-      <p class="orientacao"><strong>Pausar</strong> termina a linha atual e preserva as próximas. <strong>Parar</strong> encerra esta rodada sem publicar.</p>
+      <p class="orientacao"><strong>Preparar fila integral</strong> só sela snapshots e linhas, sem calcular cartas. Depois, <strong>Iniciar</strong> começa o Otimizador. <strong>Pausar</strong> termina a unidade atômica atual e <strong>Parar</strong> encerra sem publicar.</p>
       <p id="fila-aviso" class="aviso" aria-live="polite">Consultando a fila ativa…</p>
       <p id="progresso-ao-vivo" class="progresso-ao-vivo" hidden></p>
     </section>
@@ -105,7 +105,6 @@
     <details class="painel detalhes-tecnicos">
       <summary>Detalhes técnicos e eventos recentes</summary>
       <dl id="detalhes-lote"></dl>
-      <div class="acoes detalhes-acoes"><button id="abrir-console" type="button" class="discreto" disabled>Abrir console</button></div>
       <pre id="eventos-fila">Nenhum evento carregado.</pre>
     </details>
   </section>
@@ -129,7 +128,7 @@
   <section id="aba-resultados" class="aba" hidden>
     <div class="cabecalho-secao">
       <div><p class="sobrelinha">SAÍDAS GRAVADAS</p><h2>Resultados</h2><p>Consulte as linhas concluídas e abra apenas a build campeã de cada uma.</p></div>
-      <span class="tag-teste">TESTE · NÃO PUBLICA</span>
+      <span class="tag-teste">PRODUÇÃO V5 · SEM PUBLICAÇÃO</span>
     </div>
     <p id="resultados-aviso" class="aviso">Aguardando os resultados da rodada.</p>
     <section class="painel painel-tabela">
@@ -147,6 +146,6 @@
 
 <dialog id="dialog-build-campea" class="dialog-build"><article><div class="dialog-build-cabecalho"><h2>Build campeã</h2><button id="fechar-build-campea" type="button" class="discreto">Fechar</button></div><p id="build-campea-aviso" class="aviso"></p><dl id="build-campea-detalhe"></dl></article></dialog>
 <template id="linha"><div><dt></dt><dd></dd></div></template>
-<script src="/app.js?v=20260830-v18"></script>
+<script src="/app.js?v=20260831-v24"></script>
 </body>
 </html>

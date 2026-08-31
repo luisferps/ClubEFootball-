@@ -212,11 +212,11 @@ def _insumos_da_base():
 
 
 def _recarrega_cards(ids=None):
-    """Relê cartas somente por ``otimizador_cartas_v2``; não há fallback."""
+    """Relê cartas somente por ``otimizador_cartas_v3``; não há fallback."""
     return _recarrega_cards_da_base(ids)
 
 
-def _carrega_no_processo(ids=None):
+def _carrega_no_processo(ids=None, carregar_cartas=True):
     import motor as M
     # 🔴 MEDIDO EM 08/08 18:03 — A MARGEM DO MOTOR **NAO** E EXATA. NAO DESLIGUE O 1e18.
     #   Paul Scholes / Volante de construcao:
@@ -249,9 +249,50 @@ def _carrega_no_processo(ids=None):
     _W['INSUMOS'] = {'fonte': 'otimizador_regua_v2',
                      'fingerprint_ids': _fingerprint_insumos(_b)}
     _W['REGRAS'] = _carimbo_das_regras()
-    _recarrega_cards(ids)
+    # A fila V3 já entrega uma fotografia de cada carta na reserva. Nesse modo,
+    # não se consulta novamente a RPC de carta nem se calcula um carimbo vivo:
+    # o lote deve usar exatamente o snapshot que foi selado na criação.
+    if carregar_cartas:
+        _W.pop('snapshot_only', None)
+        _recarrega_cards(ids)
+    else:
+        _W['BASE'] = {}
     _W['COMUNS'] = _comuns_do_jogo(_W['BASE'])
     _W['FILA'] = _fila_incid()
+
+
+def prepara_lote_producao_v3(regua_snapshot):
+    """Prepara o mesmo executor para uma fotografia selada da fila V3.
+
+    Não toca em fórmula, peso, molde nem ordem da busca. A mudança é só de
+    endereço: em vez de reler a régua durante a rodada, instala a fotografia
+    entregue pelo contrato de lote e deixa as cartas entrarem por snapshots V3.
+    """
+    import fonte_unica
+    _W.clear()
+    fonte_unica.carrega_tudo_do_snapshot_v3(regua_snapshot)
+    _carrega_no_processo([], carregar_cartas=False)
+    _W['mtime'] = 'snapshot_lote_producao_v3'
+    _W['snapshot_only'] = True
+
+
+def carrega_carta_snapshot_producao_v3(pacote):
+    """Coloca uma única carta V3 selada na base do executor local.
+
+    A reserva da linha já recusa Ímpetos condicionais. Repetir a conferência
+    aqui evita que um contrato errado consiga ligar esse consumidor por acaso.
+    """
+    if not _W:
+        raise RuntimeError('executor V3 ainda não recebeu a régua selada')
+    import fonte_unica
+    carta = fonte_unica._traduz(pacote)
+    if not carta or not (carta.get('gate') or {}).get('pode_rodar'):
+        raise RuntimeError('snapshot da carta V3 recusado pelo gate')
+    if any(bool(x.get('condicional')) for x in (carta.get('impetos') or [])):
+        raise RuntimeError('Ímpeto condicional permanece desligado na fila produtiva V3')
+    card_id = str(carta['id']).split('@')[0]
+    _W.setdefault('BASE', {})[card_id] = carta
+    return carta
 
 # ====================== A REGRA DO POOL (Luis, 08/08) ======================
 # "Nao se faz escolha por quantidade de incidencia na comunidade. Faz escolha pelo
@@ -387,7 +428,7 @@ def trabalha(r):
     bid = str(r['card_id']).split('@')[0]
     fid = int(r['funcao_id'])
     c0 = _W['BASE'].get(bid)
-    if not c0:
+    if not c0 and not _W.get('snapshot_only'):
         # pode ser card que o alimentador acrescentou depois deste processo nascer
         try:
             atual = _mtime_das_fontes()
@@ -397,7 +438,7 @@ def trabalha(r):
         except Exception:
             pass
     if not c0:
-        return {'ERRO': 'card %s nao veio de otimizador_cartas_v2' % bid, 'n': r.get('n')}
+        return {'ERRO': 'card %s nao veio de otimizador_cartas_v3' % bid, 'n': r.get('n')}
     import fonte_unica as _fonte_ids
     try:
         c = _fonte_ids.aplica_impetos_da_linha(

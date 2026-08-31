@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Interface local, somente leitura, do Bonificador.
+"""Interface local do Bonificador, em loopback e sem expor credenciais.
 
-O navegador fala apenas com este servidor em 127.0.0.1. A credencial fica no
-config.txt compartilhado dos motores e só este processo chama os contratos v1.
+O navegador fala somente com este servidor em 127.0.0.1. Consultas seguem
+somente leitura; o pipeline, quando o operador o inicia, roda como processo local
+separado e usa exclusivamente os contratos canônicos do próprio motor.
 """
 
 from __future__ import annotations
@@ -13,6 +14,10 @@ import hashlib
 import json
 import os
 import re
+import signal
+import subprocess
+import sys
+import threading
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -143,6 +148,8 @@ class ServicoBonificador:
             for pos, dado in ordem.items()
             if (dado or {}).get("nosso") is not None
         }
+
+
         for molde in (copia.get("molde_corpo") or {}).values():
             for medida, regra in molde.items():
                 regra["idx"] = indice.get(medida, regra.get("idx"))
@@ -243,7 +250,7 @@ class ServicoBonificador:
         regua = self.regua()
         texto = MOTOR.read_bytes()
         return {
-            "modo": "somente leitura — não existe endpoint de lote ou gravação",
+            "modo": "simulação somente leitura; controle local do pipeline em processo separado",
             "contrato": regua.get("contrato"), "regua_apta": regua.get("pode_rodar"),
             "falta_o_que": regua.get("falta_o_que") or [],
             "cardinalidades": regua.get("cardinalidades"), "proveniencia": regua.get("proveniencia"),
@@ -253,8 +260,91 @@ class ServicoBonificador:
         }
 
 
-def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766) -> ThreadingHTTPServer:
+class PipelineBonificador:
+    """Controla um processo do motor sem guardar fila ou credencial no navegador."""
+
+    def __init__(self, popen_factory=None):
+        self._popen = popen_factory or subprocess.Popen
+        self._lock = threading.RLock()
+        self._processo = None
+        self._parada_solicitada = False
+        self._estado = {"estado": "parado", "mensagem": "Pipeline não iniciado.",
+                        "aguardando": False, "confirmados": 0, "codigo_saida": None}
+
+    def estado(self) -> dict:
+        with self._lock:
+            return {**self._estado, "ativo": self._processo is not None and self._processo.poll() is None}
+
+    def _atualizar(self, **campos) -> None:
+        with self._lock:
+            self._estado.update(campos)
+
+    def iniciar(self) -> dict:
+        with self._lock:
+            if self._processo is not None and self._processo.poll() is None:
+                return self.estado()
+            opcoes = {"cwd": str(MOTOR.parent), "stdin": subprocess.DEVNULL,
+                       "stdout": subprocess.PIPE, "stderr": subprocess.STDOUT,
+                       "text": True, "encoding": "utf-8", "errors": "replace", "bufsize": 1,
+                       "env": {**os.environ, "PYTHONUTF8": "1"}}
+            if os.name == "nt":
+                opcoes["creationflags"] = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
+            self._processo = self._popen([sys.executable, "-u", str(MOTOR)], **opcoes)
+            self._parada_solicitada = False
+            self._estado = {"estado": "iniciando", "mensagem": "Iniciando o pipeline canônico...",
+                            "aguardando": False, "confirmados": 0, "codigo_saida": None}
+            processo = self._processo
+        threading.Thread(target=self._ler_saida, args=(processo,), daemon=True).start()
+        threading.Thread(target=self._aguardar_saida, args=(processo,), daemon=True).start()
+        return self.estado()
+
+    def parar(self) -> dict:
+        with self._lock:
+            processo = self._processo
+            if processo is None or processo.poll() is not None:
+                return self.estado()
+            self._parada_solicitada = True
+            self._estado.update(estado="parando", mensagem="Parada solicitada; terminando a rodada atual.")
+        try:
+            processo.send_signal(signal.CTRL_BREAK_EVENT if os.name == "nt" and hasattr(signal, "CTRL_BREAK_EVENT") else signal.SIGINT)
+        except Exception as erro:
+            self._atualizar(estado="erro", mensagem="Não foi possível solicitar a parada: %s" % type(erro).__name__)
+        return self.estado()
+
+    def _ler_saida(self, processo) -> None:
+        for linha in getattr(processo, "stdout", ()):
+            texto = linha.strip()
+            if not texto:
+                continue
+            campos = {"mensagem": texto}
+            if "AGUARDANDO NOVAS LINHAS" in texto:
+                campos.update(estado="aguardando", aguardando=True)
+            elif "CONTINUANDO:" in texto or "[2/4]" in texto or "[3/4]" in texto or "[4/4]" in texto:
+                campos.update(estado="processando", aguardando=False)
+            elif "PARADA NORMAL" in texto:
+                campos.update(estado="parado", aguardando=False)
+            elif "PAREI:" in texto or "ERRO" in texto:
+                campos.update(estado="erro", aguardando=False)
+            if "resultados confirmados" in texto and texto.split()[0].isdigit():
+                campos["confirmados"] = int(texto.split()[0])
+            self._atualizar(**campos)
+
+    def _aguardar_saida(self, processo) -> None:
+        codigo = processo.wait()
+        with self._lock:
+            if processo is not self._processo:
+                return
+            self._estado.update(codigo_saida=codigo, aguardando=False)
+            if self._parada_solicitada or codigo == 0:
+                self._estado.update(estado="parado", mensagem="Pipeline parado normalmente.")
+            else:
+                self._estado.update(estado="erro", mensagem="Pipeline terminou com código %s." % codigo)
+
+
+def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
+                  pipeline: PipelineBonificador | None = None) -> ThreadingHTTPServer:
     servico = servico or ServicoBonificador()
+    pipeline = pipeline or PipelineBonificador()
 
     class Manipulador(BaseHTTPRequestHandler):
         def log_message(self, formato, *args):
@@ -282,7 +372,22 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766)
             self.wfile.write(corpo)
 
         def do_POST(self):
-            self.responder_json(HTTPStatus.METHOD_NOT_ALLOWED, {"ok": False, "erro": "interface somente leitura"})
+            caminho = urllib.parse.urlparse(self.path)
+            try:
+                tamanho = int(self.headers.get("Content-Length") or "0")
+                if tamanho > 8192:
+                    raise ErroDaInterface("pedido local muito grande", 413)
+                if tamanho:
+                    self.rfile.read(tamanho)
+                if caminho.path == "/api/pipeline/iniciar":
+                    return self.responder_json(200, {"ok": True, "pipeline": pipeline.iniciar()})
+                if caminho.path == "/api/pipeline/parar":
+                    return self.responder_json(200, {"ok": True, "pipeline": pipeline.parar()})
+                return self.responder_json(HTTPStatus.METHOD_NOT_ALLOWED, {"ok": False, "erro": "ação local não permitida"})
+            except ErroDaInterface as erro:
+                return self.responder_json(erro.status, {"ok": False, "erro": str(erro)})
+            except Exception as erro:
+                return self.responder_json(500, {"ok": False, "erro": "falha local no controle do pipeline: %s" % type(erro).__name__})
 
         def do_GET(self):
             caminho = urllib.parse.urlparse(self.path)
@@ -308,6 +413,8 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766)
                     return self.responder_json(200, servico.simular(card_id, funcao_id))
                 if caminho.path == "/api/auditoria":
                     return self.responder_json(200, {"ok": True, "auditoria": servico.auditoria()})
+                if caminho.path == "/api/pipeline/estado":
+                    return self.responder_json(200, {"ok": True, "pipeline": pipeline.estado()})
                 return self.responder_json(404, {"ok": False, "erro": "rota local não encontrada"})
             except ErroDaInterface as erro:
                 return self.responder_json(erro.status, {"ok": False, "erro": str(erro)})

@@ -20,6 +20,7 @@ def main():
     assert MOTOR.is_file()
     harness = f"""
 import json
+import os
 import runpy
 import urllib.request
 
@@ -44,12 +45,13 @@ def abrir(req, timeout=0):
     raise AssertionError('RPC não permitida no smoke test: ' + nome)
 
 urllib.request.urlopen = abrir
+os.environ['CLUBEF_BONIFICADOR_MAX_RODADAS'] = '1'
 try:
     runpy.run_path({str(MOTOR)!r}, run_name='__main__')
 except SystemExit as erro:
     assert erro.code == 0, erro.code
 assert chamadas == ['bonificador_regua_v1', 'bonificador_contexto_escrita_v2'], chamadas
-print('LANCAMENTO_ISOLADO_OK rpc=regua,contexto_v2 sem_pendencia=sucesso gravacao=nao')
+print('LANCAMENTO_ISOLADO_OK pipeline=max_rodadas_1 regua,contexto_v2 sem_pendencia=sucesso gravacao=nao')
 """
     resultado = subprocess.run(
         [sys.executable, "-c", harness],

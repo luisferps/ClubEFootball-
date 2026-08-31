@@ -13,13 +13,14 @@
   const core = global.CLUBEF_CORE;
   if (!core) throw new Error('radar-lancamentos.js requer extrator-core.js');
 
-  const CONTRACT_VERSION = 'clubef-radar-lancamentos-fisicos-v1';
-  const PARSER_VERSION = 'player-variation-detail-168-v1';
+  const CONTRACT_VERSION = 'clubef-radar-lancamentos-fisicos-v2';
+  const PARSER_VERSION = 'player-variation-detail-168-v2';
   const RECORD_SIZE = 168;
   const NAME_OFFSET = 12;
   const MAX_CARD_ID = 1n << 50n;
   const HASH_RE = /^[0-9a-f]{64}$/;
   const VALID_STATES = new Set(['nova', 'ja_conhecida', 'sem_historico']);
+  const IGNORED_CLASSIFICATIONS = new Set(['card_without_box_name', 'empty_padding_record', 'box_relation_card_absent_from_current_player']);
 
   function assert(condition, message) {
     if (!condition) throw new Error(message);
@@ -39,6 +40,11 @@
       return a < b ? -1 : (a > b ? 1 : 0);
     });
   }
+  function nonZeroOffsets(bytes) {
+    const output = [];
+    for (let index = 0; index < bytes.length; index += 1) if (bytes[index] !== 0) output.push(index);
+    return output;
+  }
 
   /**
    * Parser fail-closed do layout físico comprovado: u64 LE no offset 0 e
@@ -50,6 +56,7 @@
     assert(raw.length % RECORD_SIZE === 0, `PlayerVariationDetail.bin incompatível: ${raw.length} bytes não formam registros de ${RECORD_SIZE}.`);
     const decoder = new TextDecoder('utf-8', { fatal: true });
     const records = [];
+    const ignoredRecords = [];
     const seenCardIds = new Set();
     for (let offset = 0, recordIndex = 0; offset < raw.length; offset += RECORD_SIZE, recordIndex += 1) {
       const cardId = u64String(raw, offset);
@@ -64,22 +71,67 @@
       }
       const emptyId = cardId === '0';
       const emptyName = boxName.length === 0;
-      if (emptyId && emptyName) continue;
-      assert(!emptyId && !emptyName, `PlayerVariationDetail.bin registro ${recordIndex}: card_id e nome da box estão incompletos.`);
+      const recordBytes = raw.slice(offset, offset + RECORD_SIZE);
+      const recordAllZero = recordBytes.every((value) => value === 0);
+      const tailAfterIdAllZero = recordBytes.subarray(8).every((value) => value === 0);
+      if (emptyId && emptyName) {
+        assert(recordAllZero, `PlayerVariationDetail.bin registro ${recordIndex}: registro sem identidade contém dados residuais não comprovados.`);
+        ignoredRecords.push({
+          classification: 'empty_padding_record',
+          card_id: null,
+          record_index: recordIndex,
+          byte_offset: offset,
+          record_bytes: recordBytes,
+          nonzero_offsets: [],
+          name_region_all_zero: true,
+          record_tail_after_id_all_zero: true,
+          meaning: 'Registro físico inteiramente vazio; tratado somente como espaço sem relação card/box.',
+          affects_today: 'Não. Ele não identifica card nem box e não entra nas contagens de lançamentos.',
+          operator_action: 'Nenhuma ação. O Extrator guarda a evidência local e continua a leitura.',
+          publication_eligible: false,
+          radar_relation_eligible: false,
+          package_eligible: false,
+          database_write: false
+        });
+        continue;
+      }
+      assert(!(emptyId && !emptyName), `PlayerVariationDetail.bin registro ${recordIndex}: existe nome de box sem card_id; a relação física não pode ser comprovada.`);
       const numericId = BigInt(cardId);
       assert(numericId > 0n && numericId < MAX_CARD_ID, `PlayerVariationDetail.bin registro ${recordIndex}: card_id fora do domínio físico.`);
-      assert(!/[\u0000-\u001f\u007f]/u.test(boxName), `PlayerVariationDetail.bin registro ${recordIndex}: nome da box contém caractere de controle.`);
       assert(!seenCardIds.has(cardId), `PlayerVariationDetail.bin contém card_id duplicado: ${cardId}.`);
       seenCardIds.add(cardId);
+      if (emptyName) {
+        assert(tailAfterIdAllZero, `PlayerVariationDetail.bin registro ${recordIndex}: card_id sem nome de box contém dados residuais não comprovados.`);
+        ignoredRecords.push({
+          classification: 'card_without_box_name',
+          card_id: cardId,
+          record_index: recordIndex,
+          byte_offset: offset,
+          record_bytes: recordBytes,
+          nonzero_offsets: nonZeroOffsets(recordBytes),
+          name_region_all_zero: true,
+          record_tail_after_id_all_zero: true,
+          meaning: 'O arquivo físico identifica o card, mas não atribui nenhum nome de box a este registro.',
+          affects_today: 'Somente este registro não pode ser usado para anunciar ou relacionar uma box. As relações card/box completas continuam válidas.',
+          operator_action: 'Não invente uma box. Aguarde uma futura varredura; se a Konami preencher o nome, o card entrará normalmente no radar.',
+          publication_eligible: false,
+          radar_relation_eligible: false,
+          package_eligible: false,
+          database_write: false
+        });
+        continue;
+      }
+      assert(!/[\u0000-\u001f\u007f]/u.test(boxName), `PlayerVariationDetail.bin registro ${recordIndex}: nome da box contém caractere de controle.`);
       records.push({
         card_id: cardId,
         nome_box_fisico: boxName,
         record_index: recordIndex,
-        byte_offset: offset
+        byte_offset: offset,
+        record_bytes: recordBytes
       });
     }
     assert(records.length > 0, 'PlayerVariationDetail.bin não contém relações card/box utilizáveis.');
-    return records;
+    return { records, ignored_records: ignoredRecords };
   }
 
   function sanitizeSource(source) {
@@ -97,7 +149,15 @@
   }
 
   async function observeRaw(raw, metadata) {
-    const records = parsePlayerVariationDetail(raw);
+    const parsed = parsePlayerVariationDetail(raw);
+    const records = await Promise.all(parsed.records.map(async (record) => {
+      const { record_bytes: recordBytes, ...evidence } = record;
+      return { ...evidence, record_sha256: await core.sha256(recordBytes) };
+    }));
+    const ignoredRecords = await Promise.all(parsed.ignored_records.map(async (record) => {
+      const { record_bytes: recordBytes, ...evidence } = record;
+      return { ...evidence, record_sha256: await core.sha256(recordBytes) };
+    }));
     const rawSha256 = await core.sha256(raw);
     if (metadata?.member?.raw_sha256) {
       assert(rawSha256 === metadata.member.raw_sha256, 'Fingerprint descompactado de PlayerVariationDetail.bin divergente.');
@@ -112,10 +172,16 @@
         raw_bytes: raw.length,
         raw_sha256: rawSha256,
         records_total: raw.length / RECORD_SIZE,
-        relations_valid: records.length
+        relations_valid: records.length,
+        records_ignored: ignoredRecords.length,
+        ignored_by_classification: ignoredRecords.reduce((counts, record) => {
+          counts[record.classification] = (counts[record.classification] || 0) + 1;
+          return counts;
+        }, {})
       },
       contract_verification: metadata?.contract_verification || null,
-      records
+      records,
+      ignored_records: ignoredRecords
     };
   }
 
@@ -140,6 +206,7 @@
     assert(Array.isArray(radar.boxes), 'Artefato anterior não contém lista de boxes.');
     assert(radar.provenance?.source?.role, 'Artefato anterior não informa o papel da fonte.');
     assert(radar.provenance?.member?.file === (core.BOX_RADAR_MEMBER || 'PlayerVariationDetail.bin'), 'Artefato anterior não veio de PlayerVariationDetail.bin.');
+    assert(Array.isArray(radar.ignored_records), 'Artefato anterior não preserva os registros físicos ignorados.');
     const identities = new Set();
     const allCards = new Set();
     const counts = { nova: 0, ja_conhecida: 0, sem_historico: 0 };
@@ -153,19 +220,52 @@
       for (const card of box.cartas) {
         const key = String(card.card_id);
         assert(!allCards.has(key), `Artefato relaciona o card ${key} a mais de uma box.`);
+        assert(HASH_RE.test(String(card.record_sha256 || '')), `Card ${key} ficou sem hash do registro físico da box.`);
         allCards.add(key);
       }
       counts[box.estado] += 1;
     }
+    const ignoredKeys = new Set();
+    const ignoredCounts = {};
+    for (const record of radar.ignored_records) {
+      assert(IGNORED_CLASSIFICATIONS.has(record.classification), `Classificação de registro ignorado inválida: ${record.classification}.`);
+      assert(Number.isInteger(record.record_index) && record.record_index >= 0, 'Registro ignorado sem índice físico válido.');
+      assert(Number.isInteger(record.byte_offset) && record.byte_offset === record.record_index * RECORD_SIZE, 'Registro ignorado com offset físico inconsistente.');
+      assert(HASH_RE.test(String(record.record_sha256 || '')), 'Registro ignorado sem fingerprint físico válido.');
+      assert(record.publication_eligible === false && record.radar_relation_eligible === false && record.package_eligible === false && record.database_write === false, 'Registro ignorado ganhou destino indevido.');
+      if (record.classification === 'card_without_box_name') {
+        assert(record.card_id != null && record.name_region_all_zero === true && record.record_tail_after_id_all_zero === true, 'Registro de card sem box não comprova a região física vazia.');
+      } else if (record.classification === 'empty_padding_record') {
+        assert(record.card_id == null && record.name_region_all_zero === true, 'Registro vazio contém identidade ou nome indevido.');
+      } else if (record.classification === 'box_relation_card_absent_from_current_player') {
+        assert(record.card_id != null && typeof record.nome_box_fisico === 'string' && record.nome_box_fisico.length > 0, 'Relação física antiga perdeu card ou nome de box.');
+        assert(record.card_join_checked === true && record.card_present_in_current_player === false, 'Relação física antiga não comprova ausência no Player.bin atual.');
+      }
+      if (record.card_id != null && radar.provenance?.card_join_checked === true) {
+        assert(typeof record.card_present_in_current_player === 'boolean', 'Registro ignorado não informa se o card existe no Player.bin atual.');
+      }
+      const ignoredKey = `${record.record_index}:${record.record_sha256}`;
+      assert(!ignoredKeys.has(ignoredKey), 'Artefato contém evidência ignorada duplicada.');
+      ignoredKeys.add(ignoredKey);
+      if (record.card_id != null) assert(!allCards.has(String(record.card_id)), `Card ignorado ${record.card_id} entrou também em uma box.`);
+      ignoredCounts[record.classification] = (ignoredCounts[record.classification] || 0) + 1;
+    }
     assert(radar.counts?.boxes === radar.boxes.length, 'Contagem total de boxes inconsistente.');
     assert(radar.counts?.cards_mapped === allCards.size, 'Contagem total de cards do radar inconsistente.');
+    assert(radar.counts?.records_ignored === radar.ignored_records.length, 'Contagem de registros ignorados inconsistente.');
+    assert(radar.counts?.ignored_absent_from_current_player === radar.ignored_records.filter((record) => record.card_id != null && record.card_present_in_current_player === false).length, 'Contagem de registros sem card no Player.bin atual inconsistente.');
+    for (const classification of IGNORED_CLASSIFICATIONS) {
+      assert((radar.counts?.ignored_by_classification?.[classification] || 0) === (ignoredCounts[classification] || 0), `Contagem ignorada de ${classification} inconsistente.`);
+    }
+    assert(radar.provenance?.member?.records_total === radar.provenance?.member?.relations_valid + radar.provenance?.member?.records_ignored, 'Total físico não fecha entre relações de layout válido e registros ignorados pelo parser.');
     const absentBoxes = radar.comparison?.boxes_ausentes_desde_anterior;
     assert(Array.isArray(absentBoxes), 'Comparação não informa as boxes ausentes desde a rodada anterior.');
     assert(radar.counts?.boxes_ausentes_desde_anterior === absentBoxes.length, 'Contagem de boxes ausentes inconsistente.');
     assert(absentBoxes.every((box) => box.database_write === false), 'Uma box ausente acionou exclusão automática indevida.');
     for (const state of VALID_STATES) assert(radar.counts?.by_state?.[state] === counts[state], `Contagem do estado ${state} inconsistente.`);
-    assert(radar.apply_scope?.radar_fields_included === false && radar.apply_scope?.destination === null, 'Dados observacionais de box entraram indevidamente no destino de aplicação.');
+    assert(radar.apply_scope?.radar_fields_included === false && radar.apply_scope?.ignored_records_included === false && radar.apply_scope?.destination === null, 'Dados observacionais de box entraram indevidamente no destino de aplicação.');
     assert(radar.publication_decision?.evaluated === false && radar.publication_decision?.blocked === false, 'Radar de boxes decidiu ou bloqueou publicação de card indevidamente.');
+    assert(radar.publication_decision?.ignored_records_evaluated === true && radar.publication_decision?.ignored_records_publishable === false, 'Registros sem box ganharam permissão de publicação indevida.');
     assert(radar.integration_contract?.status === 'prepared_not_enabled', 'Envelope do radar não está preparado para integração futura.');
     assert(radar.integration_contract?.write_enabled === false && radar.integration_contract?.current_destination === null, 'Integração futura de boxes foi habilitada sem migração.');
     return true;
@@ -228,7 +328,8 @@
             card_id: cardId,
             nome_card: card ? String(card.name || card.nome || '') || null : null,
             record_index: source.record_index,
-            byte_offset: source.byte_offset
+            byte_offset: source.byte_offset,
+            record_sha256: source.record_sha256
           };
         })
       });
@@ -237,8 +338,41 @@
   }
 
   async function buildRadar(observation, previous, options = {}) {
-    assert(observation && Array.isArray(observation.records), 'Observação física de boxes inválida.');
-    const currentBoxes = await groupBoxes(observation, options.cards);
+    assert(observation && Array.isArray(observation.records) && Array.isArray(observation.ignored_records), 'Observação física de boxes inválida.');
+    const canonicalCardIds = options.cards != null
+      ? new Set(options.cards.map((card) => String(card.card_id)))
+      : null;
+    const parserIgnoredRecords = observation.ignored_records.map((record) => ({
+      ...record,
+      card_join_checked: canonicalCardIds != null,
+      card_present_in_current_player: record.card_id == null || canonicalCardIds == null
+        ? null
+        : canonicalCardIds.has(String(record.card_id))
+    }));
+    const absentCurrentCardRecords = canonicalCardIds == null
+      ? []
+      : observation.records.filter((record) => !canonicalCardIds.has(String(record.card_id))).map((record) => ({
+        classification: 'box_relation_card_absent_from_current_player',
+        card_id: record.card_id,
+        nome_box_fisico: record.nome_box_fisico,
+        record_index: record.record_index,
+        byte_offset: record.byte_offset,
+        record_sha256: record.record_sha256,
+        meaning: 'O arquivo de boxes contém uma relação completa, mas o card não existe no Player.bin atual da mesma rodada.',
+        affects_today: 'Não entra no Radar atual porque não identifica um card disponível na base física atual do jogo.',
+        operator_action: 'Nenhuma ação manual. Preserve como referência física histórica e não recrie o card por tentativa.',
+        publication_eligible: false,
+        radar_relation_eligible: false,
+        package_eligible: false,
+        database_write: false,
+        card_join_checked: true,
+        card_present_in_current_player: false
+      }));
+    const ignoredRecords = [...parserIgnoredRecords, ...absentCurrentCardRecords];
+    const groupingObservation = canonicalCardIds == null
+      ? observation
+      : { ...observation, records: observation.records.filter((record) => canonicalCardIds.has(String(record.card_id))) };
+    const currentBoxes = await groupBoxes(groupingObservation, options.cards);
     const comparable = comparability(previous, observation);
     const previousByIdentity = new Map(comparable.comparable ? previous.boxes.map((box) => [box.fingerprint_identidade, box]) : []);
     const boxes = currentBoxes.map((box) => {
@@ -285,7 +419,14 @@
         fingerprint_box: box.fingerprint_box,
         estado: box.estado
       })),
-      boxes_ausentes_desde_anterior: absentBoxes.map((box) => box.fingerprint_identidade)
+      boxes_ausentes_desde_anterior: absentBoxes.map((box) => box.fingerprint_identidade),
+      ignored_records: ignoredRecords.map((record) => ({
+        classification: record.classification,
+        card_id: record.card_id,
+        record_index: record.record_index,
+        record_sha256: record.record_sha256,
+        card_present_in_current_player: record.card_present_in_current_player
+      }))
     }));
     const artifact = {
       contract: CONTRACT_VERSION,
@@ -299,7 +440,10 @@
       publication_decision: {
         evaluated: false,
         blocked: false,
-        reason: 'O radar informa a box física, mas não autoriza nem impede publicar ou selecionar o card no site.'
+        reason: 'O radar informa a box física, mas não autoriza nem impede publicar ou selecionar o card no site.',
+        ignored_records_evaluated: true,
+        ignored_records_publishable: false,
+        ignored_records_reason: 'Um registro sem relação card/box atual comprovada não comprova um lançamento e permanece fora do radar publicável.'
       },
       motor_decision: {
         evaluated: false,
@@ -307,6 +451,7 @@
       },
       apply_scope: {
         radar_fields_included: false,
+        ignored_records_included: false,
         destination: null,
         reason: 'Box é observação local fora da identidade canônica e fora do pacote de aplicação enquanto não houver contrato/migração próprios.'
       },
@@ -333,6 +478,12 @@
       counts: {
         boxes: boxes.length,
         cards_mapped: boxes.reduce((sum, box) => sum + box.quantidade_cartas, 0),
+        records_ignored: ignoredRecords.length,
+        ignored_absent_from_current_player: ignoredRecords.filter((record) => record.card_id != null && record.card_present_in_current_player === false).length,
+        ignored_by_classification: ignoredRecords.reduce((counts, record) => {
+          counts[record.classification] = (counts[record.classification] || 0) + 1;
+          return counts;
+        }, {}),
         boxes_ausentes_desde_anterior: absentBoxes.length,
         by_state: byState
       },
@@ -343,6 +494,7 @@
         card_join_checked: options.cards != null,
         card_join_source: options.cards != null ? 'cartas-fisicas-canonicas.json / Player.bin da mesma rodada' : null
       },
+      ignored_records: ignoredRecords,
       boxes
     };
     validateRadarStructure(artifact);

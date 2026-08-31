@@ -19,7 +19,7 @@ if not exist "%WORKER%" (
 set "VERSAO_EXE="
 if exist "%APLICATIVO%" for /f "usebackq delims=" %%V in (`powershell.exe -NoProfile -Command "(Get-Item -LiteralPath '%APLICATIVO%').VersionInfo.ProductVersion"`) do set "VERSAO_EXE=%%V"
 
-if /I "%VERSAO_EXE:~0,5%"=="5.2.0" (
+if /I "%VERSAO_EXE:~0,5%"=="5.3.0" (
   start "Extrator eFootball" "%APLICATIVO%"
   exit /b 0
 )
@@ -29,10 +29,10 @@ echo ============================================================
 echo  EXTRATOR EFOOTBALL DESKTOP
 echo ============================================================
 echo.
-echo O executavel desktop V5.2 ainda nao foi compilado nesta pasta.
+echo O executavel desktop V5.3 ainda nao foi compilado nesta pasta.
 echo Um EXE anterior nao sera aberto, pois ele usa a interface web antiga.
 echo Use uma unica vez:
-echo  COMPILAR-EXTRATOR-V46.cmd
+echo  COMPILAR-EXTRATOR-DESKTOP.cmd
 echo.
 echo A nova aplicacao nao abre navegador, servidor local ou pagina HTML.
 echo Fonte do aplicativo:

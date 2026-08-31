@@ -12,6 +12,9 @@
 ## O que fica onde
 
 - `2-MOTORES/BONIFICADOR/motor_bonus.py` é a única cópia executável do motor.
+- `2-MOTORES/BONIFICADOR/RODAR-BONIFICADOR-PIPELINE.bat` inicia o pipeline vivo. Ele
+  consulta somente linhas confirmadas pelo Otimizador, espera quando não houver linha e
+  aceita `Ctrl+C` como parada normal; não cria estado persistente local.
 - `2-MOTORES/config.txt` permanece comum porque também é procurado/usado pelos
   demais motores. O Bonificador sobe até esse diretório para encontrá-lo; não existe
   cópia de configuração dentro de `BONIFICADOR`.
@@ -37,7 +40,9 @@ arquivo de volta; ela não restaura nem cria uma cópia paralela.
   ausência de import local e a dependência compartilhada de configuração, sem rede e
   sem escrita.
 - `TESTES/testar_lancamento_isolado.py` lança o executável em processo isolado, simula
-  régua apta e zero pares e prova que ele para antes de `gravar_bonus`.
+  régua apta e zero pares e prova que o pipeline não escreve nessa rodada.
+- `TESTES/testar_pipeline_incremental.py` prova offline a sequência fila vazia → espera
+  → nova linha apta → writer e a recusa de linha incompleta, sem rede, banco ou arquivo.
 - `TESTES/testar_migracao_bonificador.py --online` valida as três RPCs e as funções
   puras sem chamar `gravar_bonus`.
 - O lote produtivo continua desligado; a projeção de pares está vazia. Não execute o

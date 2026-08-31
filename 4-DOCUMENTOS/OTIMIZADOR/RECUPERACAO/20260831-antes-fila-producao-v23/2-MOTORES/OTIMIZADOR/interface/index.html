@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Otimizador ClubEfootball</title>
+  <link rel="stylesheet" href="/style.css?v=20260830-v18">
+</head>
+<body>
+<header class="topo">
+  <div>
+    <p class="marca">CLUBEFOOTBALL</p>
+    <h1>Otimizador</h1>
+    <p>Painel de execução, acompanhamento e conferência</p>
+  </div>
+  <span id="estado" class="selo">Verificando o motor…</span>
+</header>
+
+<main>
+  <nav class="abas" aria-label="Áreas do Otimizador">
+    <button class="aba-ativa" data-aba="fila">Rodada ativa</button>
+    <button data-aba="individual">Testar uma carta</button>
+    <button data-aba="resultados">Resultados</button>
+  </nav>
+
+  <section id="aba-fila" class="aba">
+    <div class="cabecalho-secao">
+      <div>
+        <p class="sobrelinha">ACOMPANHAMENTO</p>
+        <h2>Rodada ativa</h2>
+        <p>Veja o andamento, controle a execução e encontre rapidamente a linha atual.</p>
+      </div>
+      <span id="modo-rodada" class="tag-teste">TESTE · NÃO PUBLICA</span>
+    </div>
+
+    <section class="painel painel-controle">
+      <div class="estado-rodada">
+        <div>
+          <span class="rotulo-pequeno">Estado da rodada</span>
+          <strong id="estado-execucao">Carregando…</strong>
+        </div>
+        <p id="resumo-andamento">Consultando a fila ativa.</p>
+      </div>
+      <div class="acoes fila-acoes">
+        <button id="iniciar-fila" type="button" disabled>Iniciar</button>
+        <button id="pausar-fila" type="button" class="secundario" disabled>Pausar</button>
+        <button id="parar-fila" type="button" class="perigo" disabled>Parar</button>
+        <button id="atualizar-fila" type="button" class="discreto">Atualizar</button>
+      </div>
+      <div class="barra-progresso" role="progressbar" aria-label="Progresso da rodada" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <span id="barra-progresso-preenchida"></span>
+      </div>
+      <p class="orientacao"><strong>Pausar</strong> termina a linha atual e preserva as próximas. <strong>Parar</strong> encerra esta rodada sem publicar.</p>
+      <p id="fila-aviso" class="aviso" aria-live="polite">Consultando a fila ativa…</p>
+      <p id="progresso-ao-vivo" class="progresso-ao-vivo" hidden></p>
+    </section>
+
+    <div id="totais-fila" class="totais" aria-label="Resumo da rodada"></div>
+
+    <section class="painel linha-atual-painel">
+      <div class="painel-cabecalho">
+        <div>
+          <p class="sobrelinha">AGORA</p>
+          <h3>Linha em processamento</h3>
+        </div>
+        <button id="ir-linha-atual" type="button" class="discreto" disabled>Ir para o andamento</button>
+      </div>
+      <dl id="linha-atual"><div><dt>Estado</dt><dd>Nenhuma linha em processamento.</dd></div></dl>
+    </section>
+
+    <section class="painel painel-tabela">
+      <div class="painel-cabecalho">
+        <div>
+          <p class="sobrelinha">FILA COMPLETA</p>
+          <h3>Linhas da rodada</h3>
+        </div>
+        <span id="resumo-linhas" class="resumo-lista">Carregando…</span>
+      </div>
+      <div class="filtros-tabela">
+        <label class="campo-busca">Buscar
+          <input id="filtro-fila" type="search" autocomplete="off" placeholder="Carta, função ou posição">
+        </label>
+        <label>Estado
+          <select id="filtro-estado-fila">
+            <option value="todos">Todos</option>
+            <option value="pendente">Pendentes</option>
+            <option value="processando">Em processamento</option>
+            <option value="concluido">Concluídas</option>
+            <option value="problemas">Problemas</option>
+          </select>
+        </label>
+        <div class="paginacao" aria-label="Navegação das linhas">
+          <button id="pagina-anterior-fila" type="button" class="discreto">Anterior</button>
+          <button id="proxima-pagina-fila" type="button" class="discreto">Próxima</button>
+        </div>
+      </div>
+      <div id="rolagem-fila" class="rolagem rolagem-fila">
+        <table class="tabela-fila">
+          <thead><tr><th>Nº</th><th>Carta</th><th>Função</th><th>Posição</th><th>Ímpeto / nível</th><th>Estado</th><th>Tempo</th><th>Comparadas</th><th>Possíveis</th><th>Motivo</th></tr></thead>
+          <tbody id="linhas-fila"><tr><td colspan="10">Aguardando a fila ativa.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <details class="painel detalhes-tecnicos">
+      <summary>Detalhes técnicos e eventos recentes</summary>
+      <dl id="detalhes-lote"></dl>
+      <div class="acoes detalhes-acoes"><button id="abrir-console" type="button" class="discreto" disabled>Abrir console</button></div>
+      <pre id="eventos-fila">Nenhum evento carregado.</pre>
+    </details>
+  </section>
+
+  <section id="aba-individual" class="aba" hidden>
+    <div class="cabecalho-secao">
+      <div><p class="sobrelinha">CONFERÊNCIA</p><h2>Testar uma carta</h2><p>Calcule uma carta isoladamente, sem acrescentá-la à rodada.</p></div>
+      <span class="tag-leitura">SOMENTE LEITURA</span>
+    </div>
+    <section class="painel consulta">
+      <label>Identificador da carta<input id="card-id" autocomplete="off" placeholder="Ex.: 89138556575063"></label>
+      <label>Função<select id="funcao"><option>Carregando…</option></select></label>
+      <label>Técnico<select id="tecnico"><option>Carregando…</option></select></label>
+      <label>Nível do ímpeto condicional<select id="impeto-nivel"><option value="">Carta sem ímpeto condicional</option><option value="1">Nível 1</option><option value="2">Nível 2</option><option value="3">Nível 3</option><option value="4">Nível 4</option><option value="5">Nível 5</option></select></label>
+      <div class="acoes"><button id="simular" type="button">Simular</button><button id="validar" type="button" class="secundario">Validar resultado</button></div>
+    </section>
+    <section class="painel resultado" id="resumo" aria-live="polite"><h3>Resultado</h3><p>Informe a carta, escolha a função e o técnico.</p></section>
+    <section class="grade" id="detalhes" hidden><article class="painel"><h3>Entradas da carta</h3><dl id="carta"></dl></article><article class="painel"><h3>Resultado da avaliação</h3><dl id="resultado"></dl></article><article class="painel"><h3>Conferências de segurança</h3><ul id="gates" class="lista"></ul></article><article class="painel"><h3>Validação</h3><dl id="validacao"></dl></article></section>
+  </section>
+
+  <section id="aba-resultados" class="aba" hidden>
+    <div class="cabecalho-secao">
+      <div><p class="sobrelinha">SAÍDAS GRAVADAS</p><h2>Resultados</h2><p>Consulte as linhas concluídas e abra apenas a build campeã de cada uma.</p></div>
+      <span class="tag-teste">TESTE · NÃO PUBLICA</span>
+    </div>
+    <p id="resultados-aviso" class="aviso">Aguardando os resultados da rodada.</p>
+    <section class="painel painel-tabela">
+      <div class="filtros-tabela filtros-resultados">
+        <label class="campo-busca">Buscar resultado<input id="filtro-resultados" type="search" autocomplete="off" placeholder="Carta, função ou posição"></label>
+        <div class="paginacao" aria-label="Navegação dos resultados"><button id="pagina-anterior-resultados" type="button" class="discreto">Anterior</button><button id="proxima-pagina-resultados" type="button" class="discreto">Próxima</button></div>
+        <span id="resumo-resultados" class="resumo-lista">Nenhum resultado</span>
+      </div>
+      <div class="rolagem rolagem-resultados">
+        <table class="tabela-resultados"><thead><tr><th>Carta</th><th>Função</th><th>Posição</th><th>Ímpeto / nível</th><th>Estado final</th><th>Pontuação</th><th>Tempo</th><th>Build campeã</th><th>Comparadas</th><th>Possíveis</th><th>Resultado / motivo</th></tr></thead><tbody id="linhas-resultados"><tr><td colspan="11">Nenhum resultado disponível.</td></tr></tbody></table>
+      </div>
+    </section>
+  </section>
+</main>
+
+<dialog id="dialog-build-campea" class="dialog-build"><article><div class="dialog-build-cabecalho"><h2>Build campeã</h2><button id="fechar-build-campea" type="button" class="discreto">Fechar</button></div><p id="build-campea-aviso" class="aviso"></p><dl id="build-campea-detalhe"></dl></article></dialog>
+<template id="linha"><div><dt></dt><dd></dd></div></template>
+<script src="/app.js?v=20260830-v18"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Atualização e abertura simples do Extrator
 
-**Data:** 29 de agosto de 2026
+**Atualizado:** 31 de agosto de 2026
 
 ## Regra operacional
 
@@ -34,7 +34,12 @@ Execute:
 
 O fluxo normal abre o EXE desktop V5. Ele cria uma janela WinForms e inicia a leitura pesada em worker separado; não abre Microsoft Edge, Chrome, `localhost` ou a página HTML.
 
-Quando o código for atualizado, execute uma vez `COMPILAR-EXTRATOR-V46.cmd`. O compilador gera o EXE V5; `ABRIR-EXTRATOR.cmd` recusa abrir um EXE web V4 anterior.
+Quando o código for atualizado, execute uma vez `COMPILAR-EXTRATOR-DESKTOP.cmd`. O compilador gera o EXE V5.3; `ABRIR-EXTRATOR.cmd` recusa abrir um EXE antigo ou incompatível.
+
+Depois de abrir, siga o fluxo atual de varredura, Radar V2, revisão e aplicação
+em [COMO-USAR.md](COMO-USAR.md). Um aviso acompanhado do Radar não é falha da
+varredura; código 2, confirmação final ausente ou problema técnico vermelho são
+pendências reais e mantêm a aplicação bloqueada.
 
 ## Segurança
 

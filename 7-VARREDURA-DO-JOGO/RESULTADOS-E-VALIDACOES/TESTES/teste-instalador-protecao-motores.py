@@ -6,6 +6,7 @@ import hashlib
 import json
 import sys
 import tempfile
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 
@@ -13,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "executor"))
 
 import motor_protection_installer as installer  # noqa: E402
+import desktop_worker as desktop_worker_module  # noqa: E402
 
 
 def canonical(value):
@@ -246,6 +248,7 @@ def main() -> None:
             installer.install_motor_protection(
                 root, run_dir, manifest, seal, "segredo",
                 confirmed_preview_sha256="c" * 64,
+                operator_authorization_sha256="a" * 64,
                 backend=blocked_backend, expected_card_count=2, write_enabled=False,
             )
             raise AssertionError("instalação sem ação explícita não foi bloqueada")
@@ -257,6 +260,7 @@ def main() -> None:
         installed = installer.install_motor_protection(
             root, run_dir, manifest, seal, "segredo",
             confirmed_preview_sha256="c" * 64,
+            operator_authorization_sha256="a" * 64,
             backend=success_backend, expected_card_count=2, write_enabled=True,
         )
         assert installed["state"] == "installed_or_updated_and_independently_verified"
@@ -272,6 +276,7 @@ def main() -> None:
             installer.install_motor_protection(
                 root, run_dir, manifest, seal, "segredo",
                 confirmed_preview_sha256="c" * 64,
+                operator_authorization_sha256="a" * 64,
                 backend=failing_backend, expected_card_count=2, write_enabled=True,
             )
             raise AssertionError("falha sintética não interrompeu a instalação")
@@ -285,6 +290,7 @@ def main() -> None:
         updated = installer.install_motor_protection(
             root, run_dir, manifest, seal, "segredo",
             confirmed_preview_sha256="c" * 64,
+            operator_authorization_sha256="a" * 64,
             backend=update_backend, expected_card_count=2, write_enabled=True,
         )
         assert updated["installed"]["operation_mode"] == "incremental_update"
@@ -294,6 +300,7 @@ def main() -> None:
         current = installer.install_motor_protection(
             root, run_dir, manifest, seal, "segredo",
             confirmed_preview_sha256="c" * 64,
+            operator_authorization_sha256="a" * 64,
             backend=current_backend, expected_card_count=2, write_enabled=True,
         )
         assert current["state"] == "already_up_to_date" and current["database_write"] is False
@@ -303,6 +310,7 @@ def main() -> None:
         recovered = installer.install_motor_protection(
             root, run_dir, manifest, seal, "segredo",
             confirmed_preview_sha256="c" * 64,
+            operator_authorization_sha256="a" * 64,
             backend=recovered_backend, expected_card_count=2, write_enabled=True,
         )
         assert recovered["state"] == "committed_verified_after_uncertain_commit"
@@ -313,6 +321,7 @@ def main() -> None:
             installer.install_motor_protection(
                 root, run_dir, manifest, seal, "segredo",
                 confirmed_preview_sha256="c" * 64,
+                operator_authorization_sha256="a" * 64,
                 backend=unknown_backend, expected_card_count=2, write_enabled=True,
             )
             raise AssertionError("COMMIT incerto não bloqueou a repetição")
@@ -321,6 +330,49 @@ def main() -> None:
         uncertain = json.loads((run_dir / "instalacao-protecao-motores.json").read_text(encoding="utf-8"))
         assert uncertain["state"] == "commit_status_unknown" and uncertain["may_have_written"] is True
 
+        no_report_backend = FakeBackend(fail_commit=True, recovery="commit_status_unknown")
+        real_atomic_json = installer._atomic_json
+        installer._atomic_json = lambda *args, **kwargs: (_ for _ in ()).throw(OSError("disco indisponível"))
+        try:
+            try:
+                installer.install_motor_protection(
+                    root, run_dir, manifest, seal, "segredo",
+                    confirmed_preview_sha256="c" * 64,
+                    operator_authorization_sha256="a" * 64,
+                    backend=no_report_backend, expected_card_count=2, write_enabled=True,
+                )
+                raise AssertionError("COMMIT incerto perdeu o alerta quando o relatório local falhou")
+            except installer.MotorProtectionCommitStatusError as error:
+                assert error.commit_status == "commit_status_unknown" and error.database_write is True
+        finally:
+            installer._atomic_json = real_atomic_json
+
+        authorization_path = run_dir / "autorizacao-protecao-motores-teste.json"
+        issued = datetime.now(timezone.utc)
+        authorization_path.write_text(json.dumps({
+            "schema": "clubef-autorizacao-escrita-ui-v1",
+            "action": "install_motor_protection",
+            "protocol_version": desktop_worker_module.DESKTOP_WORKER_PROTOCOL_VERSION,
+            "manifest_path": str(manifest.resolve()),
+            "confirmation_sha256": "c" * 64,
+            "launcher_pid": 1234,
+            "launcher_executable": str((root / "Extrator eFootball.exe").resolve()),
+            "issued_at": issued.isoformat(),
+            "expires_at": (issued + timedelta(minutes=5)).isoformat(),
+            "nonce": "d" * 64,
+            "database_write_authorized": True,
+        }), encoding="utf-8")
+        real_ancestry_check = desktop_worker_module._windows_launcher_is_ancestor
+        desktop_worker_module._windows_launcher_is_ancestor = lambda pid, executable: pid == 1234
+        try:
+            consumed = desktop_worker_module.consume_operator_write_authorization(
+                root, run_dir, manifest, "c" * 64, str(authorization_path)
+            )
+        finally:
+            desktop_worker_module._windows_launcher_is_ancestor = real_ancestry_check
+        assert len(consumed["sha256"]) == 64
+        assert Path(consumed["consumed_path"]).is_file() and not authorization_path.exists()
+
     launcher = (ROOT / "windows-app" / "ClubEfootballExtractorLauncher.cs").read_text(encoding="utf-8")
     worker = (ROOT / "executor" / "desktop_worker.py").read_text(encoding="utf-8")
     for fragment in (
@@ -328,9 +380,11 @@ def main() -> None:
         'BuildWorkerCommand("--preview-motor-protection", motorProtectionManifestPath, false)',
         'BuildWorkerCommand("--install-motor-protection", motorProtectionManifestPath, true,',
         '"--confirmation-sha256 " + Quote(preview.ConfirmationSha256)',
+        '" --operator-write-authorization " + Quote(authorizationPath)',
         "A instalação protege somente o Otimizador e o Bonificador",
         "Ela NÃO impede inserir, exibir ou publicar cartas",
         "Esta ação é separada de APLICAR PACOTE",
+        "o aviso continua válido mesmo se o arquivo local de resultado não pôde ser gravado",
     ):
         assert fragment in launcher, fragment
     assert "613 resultado" not in launcher
@@ -338,6 +392,8 @@ def main() -> None:
     assert 'parser.add_argument("--preview-motor-protection")' in worker
     assert 'parser.add_argument("--install-motor-protection")' in worker
     assert 'parser.add_argument("--confirmation-sha256")' in worker
+    assert 'parser.add_argument("--operator-write-authorization")' in worker
+    assert "consume_operator_write_authorization" in worker
     assert "application_status.get(\"state\") == \"no_changes\"" in worker
     assert "revalidate_saved_no_changes" in worker
     source = (ROOT / "executor" / "motor_protection_installer.py").read_text(encoding="utf-8")
@@ -345,6 +401,23 @@ def main() -> None:
     assert "lock table {}.{} in share mode" in source
     assert "already_up_to_date" in source and "incremental_update" in source
     assert "commit_status_unknown" in source and "active_rows_snapshot" in source
+    assert "readback anterior ao COMMIT" in source
+    for unsafe_sql in (
+        "commit /*comentario*/;",
+        "select 1; rollback; select 2;",
+        "start transaction;",
+        "abort;",
+        "end;",
+    ):
+        try:
+            installer._assert_no_transaction_control(unsafe_sql, "sintetico.sql")
+            raise AssertionError("controle transacional disfarçado não foi recusado")
+        except installer.MotorProtectionError:
+            pass
+    installer._assert_no_transaction_control(
+        "do $$ begin raise notice 'commit;'; end $$; select 'rollback;'::text;",
+        "sintetico-valido.sql",
+    )
     print("OK: instalar/atualizar, prévia vinculada, rollback, COMMIT incerto e readback integral comprovados offline")
 
 

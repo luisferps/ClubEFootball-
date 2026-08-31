@@ -2,8 +2,13 @@ const $ = (s) => document.querySelector(s);
 const texto = (v) => Array.isArray(v) ? (v.length ? v.join(', ') : 'Nenhum') : (v === null || v === undefined || v === '' ? 'Não informado' : String(v));
 const seguro = (v) => texto(v).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function api(caminho) { const r = await fetch(caminho, {cache:'no-store'}); const d = await r.json(); if (!r.ok || d.ok === false) throw new Error(d.erro || 'Consulta local indisponível'); return d; }
+async function acaoPipeline(caminho) { const r = await fetch(caminho, {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'}); const d = await r.json(); if (!r.ok || d.ok === false) throw new Error(d.erro || 'Ação local indisponível'); return d.pipeline; }
 function preencher(id, pares) { const alvo = $(id); alvo.innerHTML = ''; for (const [nome, valor] of pares) { const d=document.importNode($('#linha').content,true); d.querySelector('dt').textContent=nome; d.querySelector('dd').innerHTML=seguro(valor); alvo.append(d); } }
 function valorBonus(v) { return typeof v === 'number' ? v.toFixed(4) : 'Bloqueado'; }
+function mostrarPipeline(p) { const ativo=!!p.ativo, aguardando=!!p.aguardando; const estado=p.estado || 'desconhecido'; const textoEstado=`${estado}${aguardando ? ' — aguardando novas linhas do Otimizador' : ''} · ${p.mensagem || 'Sem mensagem'}${typeof p.confirmados==='number' ? ` · ${p.confirmados} confirmado(s) na última rodada` : ''}`; $('#pipeline-estado').textContent=textoEstado; $('#iniciar-pipeline').disabled=ativo; $('#parar-pipeline').disabled=!ativo; $('#iniciar-pipeline').textContent=ativo ? 'Bonificador em execução' : 'Iniciar Bonificador'; }
+async function atualizarPipeline() { try { mostrarPipeline((await api('/api/pipeline/estado')).pipeline); } catch(e) { $('#pipeline-estado').textContent=`Controle do pipeline indisponível: ${e.message}`; } }
+async function iniciarPipeline() { try { mostrarPipeline(await acaoPipeline('/api/pipeline/iniciar')); } catch(e) { $('#pipeline-estado').textContent=`Não foi possível iniciar: ${e.message}`; } }
+async function pararPipeline() { try { mostrarPipeline(await acaoPipeline('/api/pipeline/parar')); } catch(e) { $('#pipeline-estado').textContent=`Não foi possível parar: ${e.message}`; } }
 async function carregar() {
   try {
     const [saude, funcoes] = await Promise.all([api('/api/saude'), api('/api/funcoes')]);
@@ -29,3 +34,4 @@ async function simular() {
   finally { $('#simular').disabled=false; $('#simular').textContent='Simular bônus'; }
 }
 $('#simular').addEventListener('click',simular); $('#card-id').addEventListener('keydown',(e)=>{if(e.key==='Enter')simular()}); carregar();
+$('#iniciar-pipeline').addEventListener('click',iniciarPipeline); $('#parar-pipeline').addEventListener('click',pararPipeline); atualizarPipeline(); setInterval(atualizarPipeline,1000);

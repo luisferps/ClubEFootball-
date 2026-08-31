@@ -8,19 +8,21 @@ function trocarAba(nome){document.querySelectorAll('.aba').forEach(x=>x.hidden=x
 function parametros(){return {card:$('#card-id').value.trim(),funcao:$('#funcao').value,tecnico:$('#tecnico').value,impetoNivel:$('#impeto-nivel').value};}
 function caminho(rota){const p=parametros();return rota+'?card_id='+encodeURIComponent(p.card)+'&funcao_id='+encodeURIComponent(p.funcao)+'&tecnico_id='+encodeURIComponent(p.tecnico)+'&impeto_nivel='+encodeURIComponent(p.impetoNivel);}
 function linhaVazia(id,msg,colunas){$(id).innerHTML='<tr><td colspan="'+(colunas||5)+'">'+seguro(msg)+'</td></tr>';}
-const ESTADOS_FILA={parado:'Parado',rodando:'Rodando',pausando:'Pausando',pausado:'Pausado',encerrando:'Encerrando',encerrado:'Encerrado',interrompido:'Interrompido','concluído':'Concluído',concluido:'Concluído',falhou:'Falhou',aguardando_contrato_de_integracao:'Aguardando contrato da Integração'};
+const ESTADOS_FILA={sem_lote:'Pronto para preparar a fila integral',preparando:'Preparando fila',preparo_pausado:'Preparação pausada',parado:'Pronto para iniciar',rodando:'Rodando',pausando:'Pausando',pausado:'Pausado',encerrando:'Encerrando',encerrado:'Encerrado',interrompido:'Interrompido','concluído':'Concluído',concluido:'Concluído',falhou:'Falhou',aguardando_contrato_de_integracao:'Aguardando contrato da Integração',aguardando_fila_v5:'Fila integral não autorizada',aguardando_aplicacao_fila_v5:'Aguardando aplicação da fila integral V5'};
 function rotuloEstado(estado){return ESTADOS_FILA[estado]||texto(estado);}
 let temporizadorLinhaAtual=null;
 let temporizadorFila=null;
 let atualizandoFila=false;
 let ultimoEstadoFila=null;
 const buildsCampeasPorLinha=new Map();
-const TAMANHO_PAGINA=200;
+const TAMANHO_PAGINA=100;
 let linhasFilaAtuais=[];
 let paginaFila=0;
 let linhaFocoId=null;
 let resultadosAtuais=[];
 let paginaResultados=0;
+let paginacaoFila={total:0,offset:0,limite:TAMANHO_PAGINA};
+let paginacaoResultados={total:0,offset:0,limite:TAMANHO_PAGINA};
 function timestampInicio(x){return x&&((x.iniciada_em)||(x.otimizador_iniciado_em));}
 function timestampFim(x){return x&&((x.finalizada_em)||(x.otimizador_finalizado_em));}
 function duracaoLegivel(ms){const total=Math.max(0,Math.floor(ms/1000)),h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=total%60;if(total<60)return s+' s';return (h?h+' h ':'')+(m?m+' min ':'')+s+' s';}
@@ -30,8 +32,8 @@ function duracaoFinalCompacta(x){const segundos=x.duracao_segundos??x.segundos;i
 function atualizarTemposEmProcessamento(){document.querySelectorAll('[data-inicio-processamento]').forEach(alvo=>{const inicio=Date.parse(alvo.dataset.inicioProcessamento);if(Number.isFinite(inicio))alvo.textContent='Em processamento há '+duracaoLegivel(Date.now()-inicio);});}
 function limparContadorLinhaAtual(){if(temporizadorLinhaAtual!==null){window.clearInterval(temporizadorLinhaAtual);temporizadorLinhaAtual=null;}const destaque=$('#progresso-ao-vivo');destaque.hidden=true;destaque.textContent='';}
 function pintarContadorLinhaAtual(linha){limparContadorLinhaAtual();const inicio=Date.parse(timestampInicio(linha));if(!linha||linha.estado!=='processando'||!Number.isFinite(inicio))return;const campo=document.createElement('div');campo.id='tempo-linha-atual';campo.innerHTML='<dt>Em processamento há</dt><dd id="contador-linha-atual"></dd>';$('#linha-atual').append(campo);const atualizar=()=>{const tempo=duracaoLegivel(Date.now()-inicio),alvo=$('#contador-linha-atual'),destaque=$('#progresso-ao-vivo');if(alvo)alvo.textContent=tempo;destaque.hidden=false;destaque.textContent='Processando agora: linha '+linha.linha_id+' · '+(linha.carta_rotulo||linha.card_id)+' · há '+tempo;atualizarTemposEmProcessamento();};atualizar();temporizadorLinhaAtual=window.setInterval(atualizar,1000);}
-function aplicarAcoes(acoes,confirmacao){const a=acoes||{},c=confirmacao||{};$('#iniciar-fila').disabled=!(a.iniciar===true||a.retomar===true);$('#iniciar-fila').textContent=a.iniciar===true?'Iniciar':a.retomar===true?'Retomar':'Iniciar';$('#pausar-fila').disabled=a.pausar!==true;$('#parar-fila').disabled=!(a.parar===true&&c.parar_exige_confirmacao===true);$('#abrir-console').disabled=a.console!==true;}
-function agendarAtualizacaoFila(estado){if(temporizadorFila!==null){window.clearTimeout(temporizadorFila);temporizadorFila=null;}if(['rodando','pausando','encerrando'].includes(estado))temporizadorFila=window.setTimeout(atualizarFila,3000);}
+function aplicarAcoes(acoes,confirmacao,estado){const a=acoes||{},c=confirmacao||{};const iniciar=$('#iniciar-fila');iniciar.disabled=!(a.iniciar===true||a.retomar===true||a.criar===true||a.preparar===true);iniciar.textContent=a.iniciar===true?'Iniciar':estado==='preparo_pausado'?'Retomar preparação':a.retomar===true?'Retomar':a.criar===true?'Preparar fila integral':a.preparar===true?'Preparando fila…':'Iniciar';$('#pausar-fila').disabled=a.pausar!==true;$('#pausar-fila').textContent=estado==='preparando'?'Pausar preparação':'Pausar';$('#parar-fila').disabled=!(a.parar===true&&c.parar_exige_confirmacao===true);}
+function agendarAtualizacaoFila(estado){if(temporizadorFila!==null){window.clearTimeout(temporizadorFila);temporizadorFila=null;}if(['preparando','rodando','pausando','encerrando'].includes(estado))temporizadorFila=window.setTimeout(atualizarFila,3000);}
 function classeLinhaFila(estado){return 'linha-'+String(estado||'desconhecido').replace(/[^a-z0-9_-]/gi,'-');}
 function tempoNaFila(x){const inicio=timestampInicio(x);if(x.estado==='processando'&&inicio&&Number.isFinite(Date.parse(inicio)))return '<span class="tempo-em-processamento" data-inicio-processamento="'+seguro(inicio)+'"></span>';return seguro(duracaoFinal(x));}
 function inteiroBuilds(v){if(v===null||v===undefined||v==='')return null;const s=String(v).trim();return /^\d+$/.test(s)?s.replace(/^0+(?=\d)/,''):null;}
@@ -49,13 +51,12 @@ function linhaBateBusca(x,busca){if(!busca)return true;return normalizarBusca([x
 function linhaBateEstado(x,estado){if(estado==='todos')return true;if(estado==='problemas')return ['bloqueado','falhou','interrompido'].includes(x.estado);return x.estado===estado;}
 function linhasFiltradas(){const busca=normalizarBusca($('#filtro-fila').value),estado=$('#filtro-estado-fila').value;return linhasFilaAtuais.filter(x=>linhaBateBusca(x,busca)&&linhaBateEstado(x,estado));}
 function renderizarLinhasFila(){
-  const linhas=linhasFiltradas(),paginas=Math.max(1,Math.ceil(linhas.length/TAMANHO_PAGINA));
+  const linhas=linhasFiltradas(),total=Number(paginacaoFila.total||0),inicio=total?Number(paginacaoFila.offset||0)+1:0,fim=Math.min(Number(paginacaoFila.offset||0)+linhas.length,total),paginas=Math.max(1,Math.ceil(total/TAMANHO_PAGINA));
   paginaFila=Math.max(0,Math.min(paginaFila,paginas-1));
-  const inicio=paginaFila*TAMANHO_PAGINA,fim=Math.min(inicio+TAMANHO_PAGINA,linhas.length),visiveis=linhas.slice(inicio,fim);
-  $('#resumo-linhas').textContent=linhas.length?`${inicio+1}–${fim} de ${linhas.length} linhas`:'Nenhuma linha encontrada';
+  $('#resumo-linhas').textContent=total?`${inicio}–${fim} de ${total} linhas · filtros nesta página`:'Nenhuma linha encontrada';
   $('#pagina-anterior-fila').disabled=paginaFila===0;
   $('#proxima-pagina-fila').disabled=paginaFila>=paginas-1;
-  $('#linhas-fila').innerHTML=visiveis.map(x=>{
+  $('#linhas-fila').innerHTML=linhas.map(x=>{
     const alvo=String(x.linha_id)===String(linhaFocoId)?' linha-alvo':'';
     return '<tr data-linha-id="'+seguro(x.linha_id)+'" class="'+classeLinhaFila(x.estado)+alvo+'"><td class="indice-fila" title="Linha técnica '+seguro(x.linha_id)+'">'+seguro(x._ordem_visual)+'</td><td>'+seguro(x.carta_rotulo||x.card_id)+'</td><td>'+seguro(x.funcao_rotulo||'ID '+x.funcao_id+' · catálogo ausente')+'</td><td>'+seguro(x.posicao_rotulo||'ID '+x.posicao_id+' · catálogo ausente')+'</td><td>'+seguro(x.impeto_condicional_rotulo)+'</td><td>'+seguro(rotuloEstado(x.estado))+'</td><td>'+tempoNaFila(x)+'</td><td>'+buildsComparadasCompactas(x)+'</td><td>'+buildsPossiveisCompactas(x)+'</td><td>'+seguro(texto(x.motivo||x.erro))+'</td></tr>';
   }).join('')||'<tr><td colspan="10">Nenhuma linha encontrada com estes filtros.</td></tr>';
@@ -65,10 +66,14 @@ function irParaAndamento(){
   const alvo=linhasFilaAtuais.find(x=>String(x.linha_id)===String(linhaFocoId))||linhasFilaAtuais.find(x=>x.estado==='pendente');
   if(!alvo)return;
   $('#filtro-fila').value='';$('#filtro-estado-fila').value='todos';
-  const indice=linhasFilaAtuais.indexOf(alvo);paginaFila=Math.floor(indice/TAMANHO_PAGINA);linhaFocoId=alvo.linha_id;renderizarLinhasFila();
+  linhaFocoId=alvo.linha_id;renderizarLinhasFila();
   window.requestAnimationFrame(()=>{const caixa=$('#rolagem-fila'),linha=caixa.querySelector('[data-linha-id="'+CSS.escape(String(alvo.linha_id))+'"]');if(linha)caixa.scrollTo({top:Math.max(0,linha.offsetTop-(caixa.clientHeight/2)),behavior:'smooth'});});
 }
 function mensagemDaRodada(estado,t){
+  if(estado==='aguardando_aplicacao_fila_v5')return 'A fila integral V5 ainda depende da aplicação explícita da migração no banco.';
+  if(estado==='sem_lote')return 'Nenhuma fila integral existe. Clique em Preparar fila integral; isso ainda não calcula cartas.';
+  if(estado==='preparando')return 'Preparando snapshots e linhas em fatias; o Otimizador ainda não calcula cartas.';
+  if(estado==='preparo_pausado')return 'Preparação pausada; as snapshots já seladas permanecem preservadas.';
   if(estado==='parado')return 'Rodada pronta para iniciar.';
   if(estado==='rodando')return 'Motor trabalhando. A tela acompanha automaticamente.';
   if(estado==='pausado')return 'Rodada pausada com as linhas restantes preservadas.';
@@ -80,23 +85,25 @@ function pintarFila(d){
   const t=d.totais||{},execucao=d.execucao||{},estado=execucao.estado||d.estado;
   ultimoEstadoFila=estado;
   const problemas=numero(t.bloqueadas)+numero(t.falhas),finalizadas=numero(t.concluidas)+numero(t.bloqueadas)+numero(t.interrompidas)+numero(t.falhas),total=numero(t.linhas_geradas),percentual=total?Math.min(100,(finalizadas/total)*100):0;
-  const itens=[['Cartas',t.cartas_selecionadas,''],['Linhas',t.linhas_geradas,''],['Concluídas',t.concluidas,'total-destaque'],['Em andamento',t.em_processamento,''],['Pendentes',t.pendentes,''],['Problemas',problemas,'total-problema']];
+  const preparo=d.preparo||{};
+  const itens=[['Candidatas preparadas',preparo.total?`${preparo.concluido||0}/${preparo.total}`:'—',''],['Cartas',t.cartas_selecionadas,''],['Linhas',t.linhas_geradas,''],['Concluídas',t.concluidas,'total-destaque'],['Em andamento',t.em_processamento,''],['Pendentes',t.pendentes,''],['Problemas',problemas,'total-problema']];
   $('#totais-fila').innerHTML=itens.map(x=>'<div class="total '+x[2]+'"><span>'+seguro(x[0])+'</span><strong>'+seguro(x[1]||0)+'</strong></div>').join('');
   $('#estado-execucao').textContent=rotuloEstado(estado);
-  $('#resumo-andamento').textContent=total?`${finalizadas} de ${total} linhas finalizadas · ${numero(t.pendentes)} aguardando`:'Nenhuma linha carregada.';
+  $('#resumo-andamento').textContent=estado==='preparando'||estado==='preparo_pausado'?`${numero(preparo.concluido)} de ${numero(preparo.total)} candidatas preparadas · ${numero(preparo.pendentes)} aguardando preparação`:total?`${finalizadas} de ${total} linhas finalizadas · ${numero(t.pendentes)} aguardando`:'Nenhuma linha carregada.';
   $('#barra-progresso-preenchida').style.width=percentual.toFixed(2)+'%';
   $('.barra-progresso').setAttribute('aria-valuenow',String(Math.round(percentual)));
   $('#fila-aviso').textContent=d.mensagem||mensagemDaRodada(estado,t);
-  $('#modo-rodada').textContent=d.pode_publicar===false?'TESTE · NÃO PUBLICA':'PUBLICAÇÃO AUTORIZADA';
-  aplicarAcoes(d.acoes,d.confirmacao);
+  $('#modo-rodada').textContent=d.pode_publicar===false?'PRODUÇÃO V5 · SEM PUBLICAÇÃO':'PUBLICAÇÃO AUTORIZADA';
+  aplicarAcoes(d.acoes,d.confirmacao,estado);
   const atual=d.linha_atual;
-  preencher('#linha-atual',atual?[['Linha',atual.linha_id],['Carta',atual.carta_rotulo||atual.card_id],['Função',atual.funcao_rotulo||atual.funcao_id],['Posição',atual.posicao_rotulo||atual.posicao_id],['Ímpeto / nível',atual.impeto_condicional_rotulo],['Estado',rotuloEstado(atual.estado)],['Motivo',texto(atual.motivo)]]:[['Estado','Nenhuma linha em processamento.'],['Próximo passo',estado==='parado'?'Clique em Iniciar quando quiser começar.':estado==='concluido'?'Rodada concluída.':'Aguardando a próxima atualização.']]);
+  preencher('#linha-atual',atual?[['Linha',atual.linha_id],['Carta',atual.carta_rotulo||atual.card_id],['Função',atual.funcao_rotulo||atual.funcao_id],['Posição',atual.posicao_rotulo||atual.posicao_id],['Ímpeto / nível',atual.impeto_condicional_rotulo],['Estado',rotuloEstado(atual.estado)],['Motivo',texto(atual.motivo)]]:[['Estado','Nenhuma linha em processamento.'],['Próximo passo',estado==='aguardando_aplicacao_fila_v5'?'Aplique explicitamente a migração da fila integral V5 antes de criar qualquer lote.':estado==='sem_lote'?'Clique em Preparar fila integral; ela não calcula cartas.':estado==='preparando'?'Acompanhe a preparação ou pause após a fatia atual.':estado==='preparo_pausado'?'Clique em Retomar preparação quando quiser continuar.':estado==='parado'?'Clique em Iniciar quando quiser começar o cálculo.':estado==='concluido'?'Otimizador concluído; o Bonificador só poderá iniciar pelo fluxo separado.':'Aguardando a próxima atualização.']]);
   pintarContadorLinhaAtual(atual);
-  if(!d.disponivel){linhasFilaAtuais=[];linhaFocoId=null;renderizarLinhasFila();$('#eventos-fila').textContent='Fila indisponível: '+texto(d.origem);return;}
-  linhasFilaAtuais=(d.itens||[]).map((x,indice)=>({...x,_ordem_visual:indice+1}));
+  if(!d.disponivel){linhasFilaAtuais=[];linhaFocoId=null;$('#ir-linha-atual').disabled=true;renderizarLinhasFila();$('#eventos-fila').textContent='Fila indisponível: '+texto(d.origem);return;}
+  paginacaoFila=d.paginacao||{total:(d.itens||[]).length,offset:0,limite:TAMANHO_PAGINA};
+  linhasFilaAtuais=(d.itens||[]).map((x,indice)=>({...x,_ordem_visual:x.ordem_fila??(Number(paginacaoFila.offset||0)+indice+1)}));
   linhaFocoId=atual&&atual.linha_id||((linhasFilaAtuais.find(x=>x.estado==='pendente')||{}).linha_id??null);
   $('#ir-linha-atual').disabled=linhaFocoId===null;
-  preencher('#detalhes-lote',[['Identificador da rodada',d.lote_id],['Contrato',d.contrato],['Modo',d.modo],['Publicação',d.pode_publicar===false?'Desligada':'Autorizada'],['Linhas interrompidas',numero(t.interrompidas)],['Impressão digital',d.fingerprint]]);
+  preencher('#detalhes-lote',[['Identificador da rodada',d.lote_id],['Contrato',d.contrato],['Modo',d.modo],['Preparação',preparo.total?`${preparo.concluido||0}/${preparo.total}`:'Não aplicável'],['Publicação',d.pode_publicar===false?'Desligada':'Autorizada'],['Linhas interrompidas',numero(t.interrompidas)],['Impressão digital',d.fingerprint]]);
   renderizarLinhasFila();
 }
 function pontuacaoFinal(x){const nota=x.pontuacao_final??x.b1;if(nota!==null&&nota!==undefined&&nota!=='')return nota;return x.estado==='pendente'?'Aguardando processamento':'Pontuação não informada';}
@@ -106,24 +113,23 @@ function botaoBuildCampea(x){if(x.estado!=='concluido')return '—';const chave=
 function abrirBuildCampea(linhaId){const x=buildsCampeasPorLinha.get(String(linhaId));if(!x)return;const barras=barrasCompactas(x),habilidades=(x.habilidades_adicionais_rotulo||[]);$('#build-campea-aviso').textContent=(x.carta_rotulo||x.card_id)+' · '+(x.funcao_rotulo||('ID '+x.funcao_id))+' · '+(x.posicao_rotulo||('ID '+x.posicao_id));preencher('#build-campea-detalhe',[['Ímpeto condicional / nível',x.impeto_condicional_rotulo],['Barras vencedoras',barras.detalhe||'Não registradas'],['Técnico vencedor',x.tecnico_rotulo||'Não registrado'],['Habilidades adicionais vencedoras',habilidades.length?habilidades.join(' · '):'Nenhuma registrada'],['Ímpeto adicional',x.impeto_adicional_codigo===null||x.impeto_adicional_codigo===undefined?'Não registrado na saída persistida deste lote':x.impeto_adicional_codigo],['Pontuação final',pontuacaoFinal(x)],['Builds comparadas',buildsComparadas(x)],['Builds possíveis na linha',buildsPossiveis(x)]]);const dialog=$('#dialog-build-campea');if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');}
 function resultadosFiltrados(){const busca=normalizarBusca($('#filtro-resultados').value);return resultadosAtuais.filter(x=>linhaBateBusca(x,busca));}
 function renderizarResultados(){
-  const linhas=resultadosFiltrados(),paginas=Math.max(1,Math.ceil(linhas.length/TAMANHO_PAGINA));
+  const linhas=resultadosFiltrados(),total=Number(paginacaoResultados.total||0),inicio=total?Number(paginacaoResultados.offset||0)+1:0,fim=Math.min(Number(paginacaoResultados.offset||0)+linhas.length,total),paginas=Math.max(1,Math.ceil(total/TAMANHO_PAGINA));
   paginaResultados=Math.max(0,Math.min(paginaResultados,paginas-1));
-  const inicio=paginaResultados*TAMANHO_PAGINA,fim=Math.min(inicio+TAMANHO_PAGINA,linhas.length),visiveis=linhas.slice(inicio,fim);
-  $('#resumo-resultados').textContent=linhas.length?`${inicio+1}–${fim} de ${linhas.length} resultados`:'Nenhum resultado';
+  $('#resumo-resultados').textContent=total?`${inicio}–${fim} de ${total} resultados · filtro nesta página`:'Nenhum resultado';
   $('#pagina-anterior-resultados').disabled=paginaResultados===0;
   $('#proxima-pagina-resultados').disabled=paginaResultados>=paginas-1;
   buildsCampeasPorLinha.clear();
-  $('#linhas-resultados').innerHTML=visiveis.map(x=>{const resumo=resultadoOuMotivo(x);return '<tr><td>'+seguro(x.carta_rotulo||x.card_id)+'</td><td>'+seguro(x.funcao_rotulo||'ID '+x.funcao_id+' · catálogo ausente')+'</td><td>'+seguro(x.posicao_rotulo||'ID '+x.posicao_id+' · catálogo ausente')+'</td><td>'+seguro(x.impeto_condicional_rotulo)+'</td><td>'+seguro(rotuloEstado(x.estado))+'</td><td>'+seguro(pontuacaoFinal(x))+'</td><td class="tempo-resultado">'+seguro(duracaoFinalCompacta(x))+'</td><td>'+botaoBuildCampea(x)+'</td><td>'+buildsComparadasCompactas(x)+'</td><td>'+buildsPossiveisCompactas(x)+'</td><td><span class="resultado-resumo" title="'+seguro(resumo.detalhe)+'">'+seguro(resumo.texto)+'</span></td></tr>';}).join('')||'<tr><td colspan="11">Nenhum resultado final.</td></tr>';
+  $('#linhas-resultados').innerHTML=linhas.map(x=>{const resumo=resultadoOuMotivo(x);return '<tr><td>'+seguro(x.carta_rotulo||x.card_id)+'</td><td>'+seguro(x.funcao_rotulo||'ID '+x.funcao_id+' · catálogo ausente')+'</td><td>'+seguro(x.posicao_rotulo||'ID '+x.posicao_id+' · catálogo ausente')+'</td><td>'+seguro(x.impeto_condicional_rotulo)+'</td><td>'+seguro(rotuloEstado(x.estado))+'</td><td>'+seguro(pontuacaoFinal(x))+'</td><td class="tempo-resultado">'+seguro(duracaoFinalCompacta(x))+'</td><td>'+botaoBuildCampea(x)+'</td><td>'+buildsComparadasCompactas(x)+'</td><td>'+buildsPossiveisCompactas(x)+'</td><td><span class="resultado-resumo" title="'+seguro(resumo.detalhe)+'">'+seguro(resumo.texto)+'</span></td></tr>';}).join('')||'<tr><td colspan="11">Nenhum resultado final.</td></tr>';
 }
-function pintarResultados(d){$('#resultados-aviso').textContent=d.mensagem||'Nenhum resultado disponível.';resultadosAtuais=d.disponivel?(d.itens||[]):[];renderizarResultados();}
+function pintarResultados(d){$('#resultados-aviso').textContent=d.mensagem||'Nenhum resultado disponível.';resultadosAtuais=d.disponivel?(d.itens||[]):[];paginacaoResultados=d.paginacao||{total:resultadosAtuais.length,offset:0,limite:TAMANHO_PAGINA};renderizarResultados();}
 function pintarEventos(eventos){
   const ultimos=(eventos||[]).slice(-30).reverse();
   if(!ultimos.length){$('#eventos-fila').textContent='Nenhum evento registrado nesta rodada.';return;}
-  $('#eventos-fila').textContent=ultimos.map(x=>{const quando=x.instante?new Date(x.instante).toLocaleString('pt-BR'):'horário não informado';return `${quando} · linha ${texto(x.linha_id)} · carta ${texto(x.card_id)} · ${rotuloEstado(x.estado)}`;}).join('\n');
+  $('#eventos-fila').textContent=ultimos.map(x=>{const quando=x.criado_em||x.instante?new Date(x.criado_em||x.instante).toLocaleString('pt-BR'):'horário não informado',referencia=x.linha_id?'linha '+x.linha_id:'lote',evento=x.evento||rotuloEstado(x.estado),detalhe=x.detalhe&&typeof x.detalhe==='object'?Object.entries(x.detalhe).map(([chave,valor])=>chave+': '+texto(valor)).join(' · '):texto(x.detalhe);return detalhe&&detalhe!=='Não informado'?`${quando} · ${referencia} · ${evento} · ${detalhe}`:`${quando} · ${referencia} · ${evento}`;}).join('\n');
 }
-async function atualizarFila(){if(atualizandoFila)return;atualizandoFila=true;const botao=$('#atualizar-fila'),textoOriginal=botao.textContent;botao.disabled=true;botao.textContent='Atualizando…';try{const s=await api('/api/fila/status');pintarFila(s);const [e,r]=await Promise.all([api('/api/fila/eventos'),api('/api/resultados')]);pintarResultados(r);pintarEventos(e.itens||[]);}catch(e){$('#fila-aviso').textContent=e.message;}finally{atualizandoFila=false;botao.disabled=false;botao.textContent=textoOriginal;agendarAtualizacaoFila(ultimoEstadoFila);}}
-async function acaoFila(acao,corpo){const botao=acao==='iniciar'?$('#iniciar-fila'):acao==='pausar'?$('#pausar-fila'):acao==='parar'?$('#parar-fila'):null;const original=botao&&botao.textContent;if(botao){botao.disabled=true;botao.textContent=acao==='iniciar'?'Iniciando…':acao==='pausar'?'Pausando…':'Parando…';}$('#fila-aviso').textContent='Enviando comando de '+acao+' ao lote de teste…';try{const r=await fetch('/api/fila/'+acao,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify(corpo||{})}),d=await r.json();if(!r.ok)throw new Error(d.erro||'Ação de fila indisponível');await atualizarFila();}catch(e){$('#fila-aviso').textContent=e.message;}finally{if(botao){botao.disabled=false;botao.textContent=original;}}}
-function confirmarParar(){if(window.confirm('Parar este lote de TESTE? As linhas já concluídas serão preservadas; as pendentes serão marcadas como interrompidas e nada será publicado.'))acaoFila('parar',{confirmado:true});}
+async function atualizarFila(){if(atualizandoFila)return;atualizandoFila=true;const botao=$('#atualizar-fila'),textoOriginal=botao.textContent;botao.disabled=true;botao.textContent='Atualizando…';try{const filaUrl='/api/fila/status?offset='+(paginaFila*TAMANHO_PAGINA)+'&limite='+TAMANHO_PAGINA;const resultadosUrl='/api/resultados?offset='+(paginaResultados*TAMANHO_PAGINA)+'&limite='+TAMANHO_PAGINA;const s=await api(filaUrl);pintarFila(s);const [e,r]=await Promise.all([api('/api/fila/eventos?offset=0&limite=100'),api(resultadosUrl)]);pintarResultados(r);pintarEventos(e.itens||[]);}catch(e){$('#fila-aviso').textContent=e.message;}finally{atualizandoFila=false;botao.disabled=false;botao.textContent=textoOriginal;agendarAtualizacaoFila(ultimoEstadoFila);}}
+async function acaoFila(acao,corpo){const botao=acao==='iniciar'?$('#iniciar-fila'):acao==='pausar'?$('#pausar-fila'):acao==='parar'?$('#parar-fila'):null;const original=botao&&botao.textContent;if(botao){botao.disabled=true;botao.textContent=acao==='iniciar'?'Enviando…':acao==='pausar'?'Pausando…':'Parando…';}$('#fila-aviso').textContent='Enviando comando de '+acao+' à fila integral V5…';try{const r=await fetch('/api/fila/'+acao,{method:'POST',cache:'no-store',headers:{'Content-Type':'application/json'},body:JSON.stringify(corpo||{})}),d=await r.json();if(!r.ok)throw new Error(d.erro||'Ação de fila indisponível');await atualizarFila();}catch(e){$('#fila-aviso').textContent=e.message;}finally{if(botao){botao.disabled=false;botao.textContent=original;}}}
+function confirmarParar(){if(window.confirm('Parar esta fila integral? As linhas já concluídas serão preservadas como não publicadas; as pendentes serão marcadas como interrompidas. O Bonificador não será acionado automaticamente.'))acaoFila('parar',{confirmado:true});}
 function apresentar(r,paridade){const c=r.carta,out=r.resultado||{};$('#resumo').innerHTML=r.ok?'<h3>Resultado — '+seguro(c.nome||c.card_id)+'</h3><p class="nota">Nota: '+seguro(out.nota)+'</p><p>Função '+seguro(r.funcao.nome)+' · Técnico '+seguro(r.tecnico.nome)+' · multiplicador '+seguro(r.tecnico.multiplicador)+'</p>':'<h3>Simulação bloqueada</h3><p class="aviso">'+seguro(texto(r.falhas||['gate recusou a avaliação']))+'</p>';preencher('#carta',[['Carta',(c.nome||'Sem nome')+' (#'+(c.card_id||'—')+')'],['Posição',c.posicao],['Overall',c.overall],['Orçamento',c.orcamento],['Dimensões por ID',JSON.stringify(c.dimensoes)],['Atributos',(c.atributos||[]).map(x=>(x.codigo||x.indice_otimizador)+': '+x.valor).join(' · ')],['Habilidades por ID',(c.habilidades||[]).map(h=>'#'+h.skill_id).join(', ')||'Nenhuma'],['Cardinalidades',JSON.stringify(c.cardinalidades)]]);preencher('#resultado',r.ok?[['Ímpeto condicional (ID)',texto(out.impeto_condicional_codigo)],['Nível do ímpeto',texto(out.impeto_condicional_nivel)],['Barras',JSON.stringify(out.barras)],['Gasto',out.gasto],['Sobra',out.sobra],['Boosts (índices)',texto(out.boost_indices)],['Habilidades escolhidas (IDs)',texto(out.habilidades)],['Ímpetos fabricados',texto(out.impetos_fabricados)],['Atributos em campo',texto(out.atributos_em_campo)]]:[['Contrato',r.regua.contrato],['Motivos',texto(r.falhas)]]);$('#gates').innerHTML=(r.gates||[]).map(g=>'<li class="'+(g.ok?'ok':'falha')+'">'+(g.ok?'✓':'×')+' <strong>'+seguro(g.nome)+'</strong> — '+seguro(JSON.stringify(g.detalhe))+'</li>').join('');preencher('#validacao',paridade?[['Paridade',paridade.ok?'Aprovada':'Reprovada'],['Tipo',paridade.tipo],['Vetor esperado',paridade.vetor_esperado_sha256],['Vetor calculado',paridade.vetor_calculado_sha256],['Rótulos',paridade.renomear_texto_nao_muda_calculo?'Não influenciam o cálculo':'Falha']]:[['Modo','Clique em Validar paridade para comparar a equação aprovada com o cálculo inline.'],['Contrato',r.regua.contrato],['Proveniência',r.proveniencia]]);$('#detalhes').hidden=false;}
 async function executar(validar){const p=parametros();if(!p.card||!p.funcao||!p.tecnico)return;const b=validar?$('#validar'):$('#simular');b.disabled=true;b.textContent='Consultando…';try{const d=await api(caminho(validar?'/api/validar':'/api/simular'));apresentar(validar?d.simulacao:d,validar?d.paridade:null);}catch(e){$('#resumo').innerHTML='<h3>Resultado</h3><p class="falha">'+seguro(e.message)+'</p>';$('#detalhes').hidden=true;}finally{b.disabled=false;b.textContent=validar?'Validar paridade':'Simular';}}
 async function carregar(){try{const x=await Promise.all([api('/api/saude'),api('/api/catalogos')]),s=x[0],c=x[1];$('#estado').textContent=s.pode_rodar?'Motor pronto':'Motor precisa de atenção';$('#estado').title=(s.contrato||'')+(s.versao_interface?' · interface '+s.versao_interface:'');$('#estado').className='selo '+(s.pode_rodar?'ok':'erro');$('#funcao').innerHTML=c.funcoes.map(x=>'<option value="'+x.funcao_id+'">'+seguro(x.nome)+' (#'+x.funcao_id+')</option>').join('');$('#tecnico').innerHTML=c.tecnicos.map(x=>'<option value="'+x.tecnico_id+'">'+seguro(x.nome)+' (#'+x.tecnico_id+' · '+seguro(x.proficiencia)+')</option>').join('');await atualizarFila();}catch(e){$('#estado').textContent='Motor indisponível';$('#estado').className='selo erro';$('#fila-aviso').textContent=e.message;}}
@@ -133,16 +139,15 @@ $('#validar').addEventListener('click',()=>executar(true));
 $('#iniciar-fila').addEventListener('click',()=>acaoFila('iniciar'));
 $('#pausar-fila').addEventListener('click',()=>acaoFila('pausar'));
 $('#parar-fila').addEventListener('click',confirmarParar);
-$('#abrir-console').addEventListener('click',()=>acaoFila('console'));
 $('#atualizar-fila').addEventListener('click',atualizarFila);
 $('#ir-linha-atual').addEventListener('click',irParaAndamento);
 $('#filtro-fila').addEventListener('input',()=>{paginaFila=0;renderizarLinhasFila();});
 $('#filtro-estado-fila').addEventListener('change',()=>{paginaFila=0;renderizarLinhasFila();});
-$('#pagina-anterior-fila').addEventListener('click',()=>{paginaFila--;renderizarLinhasFila();$('#rolagem-fila').scrollTop=0;});
-$('#proxima-pagina-fila').addEventListener('click',()=>{paginaFila++;renderizarLinhasFila();$('#rolagem-fila').scrollTop=0;});
+$('#pagina-anterior-fila').addEventListener('click',()=>{if(paginaFila>0){paginaFila--;atualizarFila();$('#rolagem-fila').scrollTop=0;}});
+$('#proxima-pagina-fila').addEventListener('click',()=>{paginaFila++;atualizarFila();$('#rolagem-fila').scrollTop=0;});
 $('#filtro-resultados').addEventListener('input',()=>{paginaResultados=0;renderizarResultados();});
-$('#pagina-anterior-resultados').addEventListener('click',()=>{paginaResultados--;renderizarResultados();});
-$('#proxima-pagina-resultados').addEventListener('click',()=>{paginaResultados++;renderizarResultados();});
+$('#pagina-anterior-resultados').addEventListener('click',()=>{if(paginaResultados>0){paginaResultados--;atualizarFila();}});
+$('#proxima-pagina-resultados').addEventListener('click',()=>{paginaResultados++;atualizarFila();});
 $('#card-id').addEventListener('keydown',e=>{if(e.key==='Enter')executar(false)});
 $('#linhas-resultados').addEventListener('click',e=>{const botao=e.target.closest('.ver-build-campea');if(botao)abrirBuildCampea(botao.dataset.linhaId)});
 $('#fechar-build-campea').addEventListener('click',()=>$('#dialog-build-campea').close());

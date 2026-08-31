@@ -205,6 +205,9 @@ def _launch_radar_context(run_dir: Path, header: dict[str, Any]) -> dict[str, An
         "counts": artifact.get("counts") if isinstance(artifact.get("counts"), dict) else {
             "boxes": summary.get("boxes"),
             "cards_mapped": summary.get("cards_mapped"),
+            "records_ignored": summary.get("records_ignored"),
+            "ignored_absent_from_current_player": summary.get("ignored_absent_from_current_player"),
+            "ignored_by_classification": summary.get("ignored_by_classification") or {},
             "by_state": summary.get("by_state") or {},
         },
         "comparison": comparison if comparison else {
@@ -215,6 +218,7 @@ def _launch_radar_context(run_dir: Path, header: dict[str, Any]) -> dict[str, An
         "meaning": artifact.get("meaning"),
         "interesting_boxes": interesting[:30],
         "interesting_total": len(interesting),
+        "ignored_records": artifact.get("ignored_records")[:80] if isinstance(artifact.get("ignored_records"), list) else [],
         "database_write": False,
         "publication_independent": True,
     }
@@ -1473,12 +1477,66 @@ def _render_html(model: dict[str, Any]) -> str:
             "<div><b>O que fica bloqueado?</b><p>Nada é bloqueado para publicação. O radar também não envia a box ao banco sozinho e não libera card para os motores.</p></div>"
             "<div><b>O que você deve fazer</b><p>Use como sinal de lançamento, confira a completude dos cards e decida separadamente o que deseja publicar ou enviar.</p></div></div></article>"
         )
+    radar_ignored_html = ""
+    ignored_total = int(radar_counts.get("records_ignored") or 0)
+    ignored_by_classification = radar_counts.get("ignored_by_classification") if isinstance(radar_counts.get("ignored_by_classification"), dict) else {}
+    cards_without_box = int(ignored_by_classification.get("card_without_box_name") or 0)
+    if cards_without_box:
+        ignored_examples = []
+        for record in radar.get("ignored_records") or []:
+            if not isinstance(record, dict) or record.get("classification") != "card_without_box_name":
+                continue
+            ignored_examples.append(
+                "registro " + str(record.get("record_index"))
+                + " — card " + str(record.get("card_id"))
+                + " — prova " + str(record.get("record_sha256") or "")[:12] + "…"
+            )
+            if len(ignored_examples) >= 8:
+                break
+        technical_examples = "".join("<li>" + esc(example) + "</li>" for example in ignored_examples)
+        radar_ignored_html = (
+            "<article class=\"warning-card\"><header><div><p class=\"eyebrow\">Aviso acompanhado, não é falha da varredura</p>"
+            "<h3>" + esc(_amount(cards_without_box, "registro físico possui card, mas ainda não possui nome de box", "registros físicos possuem card, mas ainda não possuem nome de box")) + "</h3></div>"
+            "<span class=\"count-badge\">" + esc(_amount(cards_without_box, "card isolado", "cards isolados")) + "</span></header>"
+            "<div class=\"answer-grid\"><div><b>O que significa</b><p>O arquivo do jogo trouxe o identificador do card, mas deixou completamente vazio o espaço do nome da box. O Extrator não inventou um nome e não tratou isso como lançamento.</p></div>"
+            "<div><b>Afeta os dados de hoje?</b><p>Afeta somente a conclusão de box destes cards. As relações completas entre card e box continuam válidas e foram conferidas normalmente.</p></div>"
+            "<div><b>O que fica bloqueado?</b><p>Somente usar estes registros como anúncio de box ou enviá-los em um pacote. Eles não bloqueiam o envio de outras mudanças comprovadas e não entram no banco.</p></div>"
+            "<div><b>O que você deve fazer</b><p>Nada manualmente. Continue observando o aviso; em uma futura varredura, se a Konami preencher o nome, o card entrará normalmente no Radar.</p></div></div>"
+            + ("<details><summary>Detalhes técnicos</summary><p>Índice, card e início do hash físico dos primeiros casos:</p><ul>" + technical_examples + "</ul></details>" if technical_examples else "")
+            + "</article>"
+        )
+    historical_relations = int(ignored_by_classification.get("box_relation_card_absent_from_current_player") or 0)
+    if historical_relations:
+        historical_examples = []
+        for record in radar.get("ignored_records") or []:
+            if not isinstance(record, dict) or record.get("classification") != "box_relation_card_absent_from_current_player":
+                continue
+            historical_examples.append(
+                str(record.get("nome_box_fisico") or "box sem nome")
+                + " — card " + str(record.get("card_id"))
+                + " — registro " + str(record.get("record_index"))
+            )
+            if len(historical_examples) >= 8:
+                break
+        historical_details = "".join("<li>" + esc(example) + "</li>" for example in historical_examples)
+        radar_ignored_html += (
+            "<article class=\"warning-card info\"><header><div><p class=\"eyebrow\">Referência física antiga, fora dos lançamentos atuais</p>"
+            "<h3>" + esc(_amount(historical_relations, "ligação de box aponta para um card que não existe no jogo atual", "ligações de box apontam para cards que não existem no jogo atual")) + "</h3></div>"
+            "<span class=\"count-badge\">" + esc(_amount(historical_relations, "relação isolada", "relações isoladas")) + "</span></header>"
+            "<div class=\"answer-grid\"><div><b>O que significa</b><p>O arquivo de boxes ainda guarda a ligação completa, mas o mesmo identificador não aparece no Player.bin atual. Por isso ela é mantida apenas como referência física antiga.</p></div>"
+            "<div><b>Afeta os dados de hoje?</b><p>Não. Estes cards não fazem parte da lista física atual e não são tratados como lançamento.</p></div>"
+            "<div><b>O que fica bloqueado?</b><p>Somente esta ligação antiga fica fora do Radar atual, da publicação e do pacote. As boxes e os cards atuais continuam normalmente.</p></div>"
+            "<div><b>O que você deve fazer</b><p>Nenhuma correção manual. Não recrie o card nem troque o identificador; o Extrator continuará conferindo a relação em futuras varreduras.</p></div></div>"
+            + ("<details><summary>Detalhes técnicos</summary><ul>" + historical_details + "</ul></details>" if historical_details else "")
+            + "</article>"
+        )
     if radar.get("available"):
         comparison_status = radar_comparison.get("status")
         new_boxes = int((radar_counts.get("by_state") or {}).get("nova") or 0) if isinstance(radar_counts.get("by_state"), dict) else 0
         radar_intro = (
             f"Foram encontradas {_amount(radar_counts.get('boxes'), 'box física', 'boxes físicas')} ligadas a {_amount(radar_counts.get('cards_mapped'), 'card', 'cards')}. "
             + (f"{_amount(new_boxes, 'box não existia', 'boxes não existiam')} na rodada anterior comparável." if comparison_status == "comparado" else "Como ainda não havia uma rodada comparável, esta leitura é a primeira referência local e não chama todas as boxes de novas.")
+            + (f" Além disso, {_amount(ignored_total, 'registro sem relação card/box comprovada foi isolado e não entrou nas boxes', 'registros sem relação card/box comprovada foram isolados e não entraram nas boxes')}." if ignored_total else "")
         )
         integration_warning = ""
         if radar_integration.get("status") == "prepared_not_enabled":
@@ -1489,7 +1547,7 @@ def _render_html(model: dict[str, Any]) -> str:
                 "<div><b>O que fica bloqueado?</b><p>Somente o envio automático da ligação box/card ao banco. Publicar ou anunciar a carta não é bloqueado.</p></div>"
                 "<div><b>O que você deve fazer</b><p>Não tente cadastrar a ligação por fora. Instale e valide a migração própria antes de habilitar este campo no pacote do Extrator.</p></div></div></article>"
             )
-        radar_section = "<section><h2>Radar de boxes e possíveis lançamentos</h2><p>" + esc(radar_intro) + "</p>" + (radar_box_html or "<p class=\"all-clear\">Nenhuma box nova nem alteração de conteúdo apareceu em relação à rodada anterior.</p>") + integration_warning + "</section>"
+        radar_section = "<section><h2>Radar de boxes e possíveis lançamentos</h2><p>" + esc(radar_intro) + "</p>" + radar_ignored_html + (radar_box_html or "<p class=\"all-clear\">Nenhuma box nova nem alteração de conteúdo apareceu em relação à rodada anterior.</p>") + integration_warning + "</section>"
         radar_overview = f"{_amount(new_boxes, 'box nova', 'boxes novas')}" if comparison_status == "comparado" else "primeira referência de boxes"
     else:
         radar_overview = "radar não disponível nesta rodada"

@@ -58,12 +58,14 @@ BONUS_WRITER_SQL = (
     "APLICAR-ESCRITOR-TRANSACIONAL-BONIFICADOR-V1-COMPOSAVEL.sql"
 )
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
-_FORBIDDEN_TOP_LEVEL = {
-    "begin;",
-    "begin transaction;",
-    "commit;",
-    "rollback;",
-}
+_DOLLAR_TAG = re.compile(r"\$(?:[A-Za-z_][A-Za-z0-9_]*)?\$")
+_TRANSACTION_CONTROL = re.compile(
+    r"(?:\A|;)\s*(?:"
+    r"begin\b|start\s+transaction\b|commit\b|end\b|rollback\b|abort\b|"
+    r"savepoint\b|release\s+savepoint\b|prepare\s+transaction\b|"
+    r"set\s+transaction\b)",
+    re.IGNORECASE | re.DOTALL,
+)
 
 
 class MotorProtectionError(RuntimeError):
@@ -95,6 +97,78 @@ def _sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
     return digest.hexdigest()
 
 
+def _mask_sql_literals_and_comments(source: str) -> str:
+    """Mascara corpos/strings para procurar controle transacional no nível SQL."""
+    output: list[str] = []
+    index = 0
+    length = len(source)
+
+    def masked(piece: str) -> str:
+        return "".join("\n" if char == "\n" else " " for char in piece)
+
+    while index < length:
+        if source.startswith("--", index):
+            end = source.find("\n", index + 2)
+            end = length if end < 0 else end
+            output.append(masked(source[index:end]))
+            index = end
+            continue
+        if source.startswith("/*", index):
+            start = index
+            depth = 1
+            index += 2
+            while index < length and depth:
+                if source.startswith("/*", index):
+                    depth += 1
+                    index += 2
+                elif source.startswith("*/", index):
+                    depth -= 1
+                    index += 2
+                else:
+                    index += 1
+            if depth:
+                raise MotorProtectionError("script SQL contém comentário de bloco incompleto")
+            output.append(masked(source[start:index]))
+            continue
+        if source[index] in ("'", '"'):
+            quote = source[index]
+            start = index
+            index += 1
+            while index < length:
+                if source[index] == quote:
+                    if index + 1 < length and source[index + 1] == quote:
+                        index += 2
+                        continue
+                    index += 1
+                    break
+                index += 1
+            else:
+                raise MotorProtectionError("script SQL contém texto ou identificador incompleto")
+            output.append(masked(source[start:index]))
+            continue
+        if source[index] == "$":
+            tag_match = _DOLLAR_TAG.match(source, index)
+            if tag_match:
+                tag = tag_match.group(0)
+                end = source.find(tag, tag_match.end())
+                if end < 0:
+                    raise MotorProtectionError("script SQL contém bloco dollar-quoted incompleto")
+                end += len(tag)
+                output.append(masked(source[index:end]))
+                index = end
+                continue
+        output.append(source[index])
+        index += 1
+    return "".join(output)
+
+
+def _assert_no_transaction_control(source: str, script_name: str) -> None:
+    if _TRANSACTION_CONTROL.search(_mask_sql_literals_and_comments(source)):
+        raise MotorProtectionError(
+            f"{script_name}: controle transacional interno proibido; a transação pertence ao instalador"
+        )
+
+
 def _ordinary_file(path: Path, *, maximum_bytes: int | None = None) -> None:
     if not path.is_file() or path.is_symlink():
         raise MotorProtectionError(f"arquivo obrigatório ausente ou não local: {path.name}")
@@ -116,6 +190,16 @@ def _atomic_json(path: Path, payload: Any) -> None:
     except Exception:
         temporary.unlink(missing_ok=True)
         raise
+
+
+def _best_effort_failure_json(path: Path, payload: dict[str, Any]) -> None:
+    """O alerta de COMMIT nunca pode ser substituído por uma falha de disco local."""
+    try:
+        _atomic_json(path, payload)
+    except Exception:
+        # O worker ainda emite commit_status/database_write no stdout e no log
+        # persistente da janela. O estado do banco tem prioridade sobre o arquivo.
+        pass
 
 
 def _load_object(path: Path) -> dict[str, Any]:
@@ -379,9 +463,7 @@ def _read_composable_script(repo_root: Path, relative: str) -> tuple[str, str]:
         raise MotorProtectionError("script de proteção saiu da pasta operacional") from error
     _ordinary_file(path, maximum_bytes=4 * 1024 * 1024)
     text = path.read_text(encoding="utf-8-sig")
-    for line in text.splitlines():
-        if line.strip().lower() in _FORBIDDEN_TOP_LEVEL:
-            raise MotorProtectionError(f"{path.name}: controle transacional interno proibido")
+    _assert_no_transaction_control(text, path.name)
     return text, _sha256_file(path)
 
 
@@ -1012,6 +1094,7 @@ class PostgresBackend:
                 for name, item in scripts.items()
             },
             "operation_mode": operation_mode,
+            "operator_authorization_sha256": preview["operator_authorization_sha256"],
             "locked_clube_novo_tables": locked_tables,
             "preview": {
                 "confirmation_sha256": preview["confirmation_sha256"],
@@ -1124,6 +1207,7 @@ class PostgresBackend:
             "application_id": application_id,
             "idempotency_key": idempotency_key,
             "operation_mode": operation_mode,
+            "operator_authorization_sha256": preview["operator_authorization_sha256"],
             "cards_registered": preview["cards_to_register"],
             "database_cards": package.count,
             "components": package.count * len(REQUIRED_COMPONENTS),
@@ -1209,6 +1293,8 @@ class PostgresBackend:
             or audit.get("seed_sha256") != package.package_sha256
             or
             audit.get("operation_mode") != installed["operation_mode"]
+            or audit.get("operator_authorization_sha256")
+                != installed["operator_authorization_sha256"]
             or (audit.get("preview") or {}).get("confirmation_sha256") != preview["confirmation_sha256"]
             or (audit.get("scripts") or {}) != installed["scripts"]
         ):
@@ -1341,6 +1427,7 @@ def install_motor_protection(
     dsn: str,
     *,
     confirmed_preview_sha256: str,
+    operator_authorization_sha256: str,
     backend: Any | None = None,
     expected_card_count: int | None = None,
     write_enabled: bool | None = None,
@@ -1352,6 +1439,10 @@ def install_motor_protection(
         )
     if not isinstance(confirmed_preview_sha256, str) or not _SHA256.fullmatch(confirmed_preview_sha256):
         raise MotorProtectionError("a confirmação exibida ao operador não foi vinculada à instalação")
+    if not isinstance(operator_authorization_sha256, str) or not _SHA256.fullmatch(
+        operator_authorization_sha256
+    ):
+        raise MotorProtectionError("a autorização de escrita criada pela janela não foi comprovada")
     package = validate_package(
         root, run_dir, manifest_path, expected_card_count=expected_card_count
     )
@@ -1384,6 +1475,7 @@ def install_motor_protection(
             "automatic_install": False,
             "publication_blocked": False,
             "confirmation_sha256": confirmed_preview_sha256,
+            "operator_authorization_sha256": operator_authorization_sha256,
             "preview": _public_preview(preview),
         }
         report_path = run_dir / "instalacao-protecao-motores.json"
@@ -1395,7 +1487,9 @@ def install_motor_protection(
 
     write_connection = active_backend.open(read_only=False)
     try:
-        installed = active_backend.install(write_connection, package, preview, scripts)
+        installation_preview = dict(preview)
+        installation_preview["operator_authorization_sha256"] = operator_authorization_sha256
+        installed = active_backend.install(write_connection, package, installation_preview, scripts)
     except Exception:
         try:
             write_connection.rollback()
@@ -1430,7 +1524,7 @@ def install_motor_protection(
                 "confirmation_sha256": confirmed_preview_sha256,
                 "message": "A confirmação do banco falhou, mas uma nova conexão comprovou o rollback integral."
             }
-            _atomic_json(run_dir / "instalacao-protecao-motores.json", failure)
+            _best_effort_failure_json(run_dir / "instalacao-protecao-motores.json", failure)
             raise MotorProtectionCommitStatusError(
                 "o banco confirmou que nada foi gravado; faça uma nova prévia antes de tentar novamente",
                 commit_status="rolled_back_confirmed",
@@ -1448,7 +1542,7 @@ def install_motor_protection(
                 "application_id": installed.get("application_id"),
                 "message": "Não foi possível provar se o COMMIT confirmou. Não tente novamente sem auditoria."
             }
-            _atomic_json(run_dir / "instalacao-protecao-motores.json", failure)
+            _best_effort_failure_json(run_dir / "instalacao-protecao-motores.json", failure)
             raise MotorProtectionCommitStatusError(
                 failure["message"], commit_status="commit_status_unknown", database_write=True
             ) from commit_error
@@ -1486,7 +1580,7 @@ def install_motor_protection(
                 else "A transação confirmou, mas a nova conexão não confirmou o readback integral. Não tente novamente sem auditoria."
             ),
         }
-        _atomic_json(run_dir / "instalacao-protecao-motores.json", failure)
+        _best_effort_failure_json(run_dir / "instalacao-protecao-motores.json", failure)
         raise MotorProtectionCommitStatusError(
             failure["message"], commit_status=state, database_write=True
         ) from readback_error
@@ -1509,6 +1603,7 @@ def install_motor_protection(
         "rollback_on_precommit_failure": True,
         "publication_blocked": False,
         "confirmation_sha256": confirmed_preview_sha256,
+        "operator_authorization_sha256": operator_authorization_sha256,
         "commit_status": "committed_verified" if recovered_commit else "committed",
         "installed": installed,
         "independent_readback": independent,

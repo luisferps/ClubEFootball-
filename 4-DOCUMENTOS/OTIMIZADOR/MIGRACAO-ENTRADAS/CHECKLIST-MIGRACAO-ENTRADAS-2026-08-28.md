@@ -245,6 +245,39 @@ Data: 28/08/2026. Estado inicial: **não ativado em produção**.
 - [ ] nenhuma troca adicional em satélite/UI antes de snapshot, endpoint implantado
   comprovado e auditoria de sombra recuperável por ID/campo.
 
+## Fecho V16–V20 — 31/08/2026
+
+- [x] snapshot recuperável criado antes da troca de gate:
+  RECUPERACAO/20260831-antes-gate-dimensoes-v16/;
+- [x] V16 criou carta, lote e pool V3, com SECURITY DEFINER, search_path vazio,
+  execução só por service_role e rollback isolado;
+- [x] a carta 105647068843182 (clube/liga físicos ausentes) passou no V3; a
+  105553116303042, com vínculo físico inválido, continuou bloqueada;
+- [x] V17 fez as três fábricas de fila selarem o fingerprint de
+  otimizador_carta_v3; o lote V2 já concluído foi preservado, sem reexecução;
+- [x] V18 confirmou 19 funções e 30 relações uma-a-uma, materializou
+  clube_novo.otimizador_funcao_posicao com 2 FKs e RLS, e trocou o consumidor
+  para funcao_id + posicao_id; zero divergências entre a relação e a tradução
+  física/canônica de origem;
+- [x] V19/V20 retiraram do service_role e do PUBLIC as portas históricas que
+  liam/escreviam clube.fila ou clube.build; readback confirmou 10/10 sem execute;
+- [x] consumidores ativos locais (fonte_unica.py, roda_lote_v6.py,
+  interface/servidor.py), worker e banco.py do serviço usam carta/pool V3 e
+  recusam versão inesperada; a régua permanece V2;
+- [x] a auditoria de paridade passou a consultar ficha V3 e valida sua versão;
+  a referência `cartas_do_motor` ficou restrita à comparação somente leitura e
+  a opção de fila histórica agora falha explicitamente, sem chamar `clube.fila`;
+- [x] fórmula, pesos, moldes, critérios de seleção e publicação não foram
+  alterados; os testes de fórmula continuam independentes;
+- [x] teste local completo: 35 testes verdes. Quando o ZIP histórico de
+  28/08 não acompanha este checkout, a trava de arquivo do serviço compara o
+  `HEAD` Git limpo (prova de que esta migração não o modificou), enquanto o
+  cenário determinístico da fórmula continua independente. As duas réplicas
+  datadas ausentes continuam apenas históricas e não foram recriadas no runtime;
+- [x] executável elevado a interface 20260831-v21 para não aceitar processo V20
+  como se fosse o código V3; snapshot pré-ativação em
+  RECUPERACAO/20260831-antes-ativacao-v21/.
+
 ## Rollback
 
 1. Repor somente os hunks de consumidor pelo patch/snapshot da etapa.
@@ -252,3 +285,159 @@ Data: 28/08/2026. Estado inicial: **não ativado em produção**.
 3. Não restaurar arquivos inteiros nem desfazer mudanças preexistentes do usuário.
 4. Reexecutar os testes somente leitura e confirmar que fórmula, fila, builds e
    `clube_novo` não foram alterados.
+
+## Fecho da frente de legado — V22 (31/08/2026)
+
+- [x] snapshot recuperável pré-fecho criado em
+  `RECUPERACAO/20260831-antes-fecho-legado-v22/`;
+- [x] auditoria de entradas convertida para validar somente
+  `otimizador_cartas_v3`; não recebe, compara ou consulta fonte histórica;
+- [x] o lançador e a entrada histórica encerram antes de qualquer leitura de
+  arquivo, RPC, worker ou escrita;
+- [x] interface V22 removeu os contratos de fila V2 da lista permitida, não
+  importa runner histórico e devolve estado explícito `aguardando_fila_v3`, com
+  Iniciar/Pausar/Parar/Console recusados até contrato V3 autorizado;
+- [x] executável V22 recompilado e aberto em validação controlada: saúde local
+  retornou V22, fila/resultados indisponíveis, quatro ações desabilitadas e
+  POST Iniciar recusado com HTTP 409; o servidor temporário foi encerrado e a
+  porta 8767 ficou livre;
+- [x] nenhuma migração de banco, criação de fila, execução de lote ou publicação
+  foi disparada neste fecho;
+- [ ] antes de uma fila operacional, exigir contrato V3 específico, autorizado e
+  testado em `clube_novo`; não reabrir nenhum caminho histórico.
+
+## Preparação da fila produtiva V3 — 31/08/2026
+
+- [x] snapshot recuperável pré-V23 criado em
+  `RECUPERACAO/20260831-antes-fila-producao-v23/`, com manifesto SHA-256;
+- [x] migração e rollback V3 preparados em
+  `FILA-PRODUCAO-V3/`; rollback falha fechado se um lote V3 existir;
+- [x] contrato desenhado por IDs e FKs: lote, snapshot de carta, linha reservada
+  e evento; browser usa somente servidor em loopback, sem credenciais;
+- [x] criação preparada para todas as cartas aptas ordenadas por
+  `overall DESC, card_id, funcao_id, posicao_id`; uma mesma fila V3 não é
+  recriada silenciosamente;
+- [x] cada reserva contém a fotografia V3 de carta e da régua; o worker não relê
+  carta/régua durante o lote e recusa selo, gate ou Ímpeto condicional divergente;
+- [x] conclusão preparada para gravar somente `build_otimizador` e fechar a
+  linha por token de reserva, deixando Bonificador como etapa separada e sem
+  publicação;
+- [x] controles V23 preparados: Criar/Iniciar ou Retomar, Pausar atômico e Parar
+  confirmado; estado, ações e eventos vêm do contrato, sem console/lote legado;
+- [x] fórmula, pesos, moldes, ordem da busca e regra de negócio não foram
+  alterados; o selo aprovado continua
+  `7aaa3cccb536ae8fbe77a3fd91a447738132d6f1b89706bc375314e8028a80ad`;
+- [x] bateria local: 41 testes Python verdes, incluindo protocolo V3, interface,
+  entradas, moldes e fórmula; `teste_interface_formula_aprovada.js` não foi
+  executado porque este Windows não tem Node instalado;
+- [x] pré-voo de credencial: a chave anterior que devolvia HTTP 401 foi
+  substituída pelo operador; o backend validou `otimizador_regua_v2` e
+  `otimizador_carta_v3` sem expor a credencial;
+- [x] `MIGRACAO-FILA-PRODUCAO-V3.sql` aplicada explicitamente no Supabase;
+- [x] readback de DDL/RLS/grants/RPCs concluído antes do primeiro lote;
+- [x] piloto mínimo validou snapshot, reserva, pausa, resultado e handoff
+  pendente ao Bonificador; isso não libera a fila completa.
+
+## Aplicação da fila produtiva V3 — 31/08/2026
+
+- [x] autorização explícita recebida somente para aplicar o schema V3; ela não
+  autorizou criar nem iniciar lote;
+- [x] snapshot recuperável pré-aplicação criado em
+  `RECUPERACAO/20260831-antes-aplicacao-v3-credencial/`; o manifesto SHA-256 foi
+  conferido imediatamente antes do DDL e não contém `config.txt` ou credencial;
+- [x] credencial moderna validada somente no backend: `otimizador_regua_v2` e
+  `otimizador_carta_v3(8538111)` responderam HTTP 200. Os consumidores locais
+  `interface/servidor.py`, `fonte_unica.py` e a auditoria passaram a enviar chave
+  `sb_*` apenas em `apikey`; JWT legado preserva `Authorization`;
+- [x] aplicada `20260831133727_otimizador_fila_producao_v3`: quatro tabelas V3,
+  RPCs privadas, RLS, FKs, snapshots, controle atômico e selo de fórmula;
+- [x] aplicada `20260831134002_otimizador_fila_producao_v3_indices_v2`: índices
+  de cobertura para as três FKs apontadas pelo advisor, sem dados ou mudança de
+  comportamento;
+- [x] readback: `status_v3` devolve `sem_lote`, `criar=true` e
+  `pode_publicar=false`; há zero lote e zero linha V3. `anon` e `authenticated`
+  não têm execução das 10 RPCs; `service_role` tem. As quatro tabelas têm RLS e
+  nenhum `SELECT` direto de cliente;
+- [x] validação real em servidor temporário `127.0.0.1:8768`: Saúde, Fila,
+  Eventos e Resultados responderam com contrato ativo, zero itens e publicação
+  desligada. O processo de teste foi encerrado; nenhuma porta produtiva ou lote
+  foi iniciado;
+- [x] testes locais focados: 18 verdes (protocolo V3, interface e trava de
+  fórmula), incluindo o cenário Messi 104. Não houve alteração de fórmula, pesos,
+  moldes, Ímpetos condicionais, Bonificador ou publicação;
+- [x] autorização operacional separada foi usada exclusivamente para o piloto
+  limitado de 3 cartas; não criou a fila completa, não publicou e não iniciou
+  Bonificador.
+
+## Piloto limitado V3 — plano autorizado em 31/08/2026
+
+- [x] autorização operacional recebida para um piloto de **3 cartas**, sem
+  Bonificador, publicação ou liberação da fila completa;
+- [x] descoberta de pré-voo: a V3 original aplicava `p_limite_cards` somente
+  depois de projetar todas as 20.532 candidatas básicas; um piloto pequeno podia
+  ultrapassar o timeout de 2 minutos;
+- [x] aplicada a migração `otimizador_fila_producao_v3_piloto_limitado_v1`
+  (versão registrada no histórico do Supabase):
+  a janela passou a ser limitada antes das projeções somente para piloto; a
+  tentativa controlada não criou lote, pois 60 candidatas ainda excederam o
+  timeout REST;
+- [x] aplicada `MIGRACAO-FILA-PRODUCAO-V3-PILOTO-JANELA-V2.sql`: para 3 cartas,
+  consultar no máximo 5 candidatas antes das projeções; a produção integral
+  (`p_limite_cards=0`) permanece com a seleção V3 original;
+- [x] aplicada a migração `otimizador_fila_producao_v3_piloto_janela_v2` e
+  provada em transação: a criação passou do timeout, mas a leitura revelou a
+  referência inválida `s_card.lote_id`; a transação foi revertida, sem lote;
+- [x] aplicada `MIGRACAO-FILA-PRODUCAO-V3-PILOTO-LOTE-ID-V3.sql`, que troca
+  exclusivamente essa referência por `p_lote_id`; a prova transacional criou
+  3 cartas/45 linhas e foi revertida antes do lote real.
+- [x] prova do lote real encontrou `build_otimizador.id` como `GENERATED ALWAYS
+  AS IDENTITY`; a conclusão tentou passar `nextval(...)`, foi recusada e deixou
+  a única linha atual em `processando` dentro de um lote `pausando`;
+- [x] aplicada `MIGRACAO-FILA-PRODUCAO-V3-CONCLUSAO-IDENTITY-V4.sql`: omite
+  apenas a PK `GENERATED ALWAYS` do `INSERT`; a definição relida não tem
+  `nextval`, preserva selos e concluiu a mesma reserva. O histórico contém duas
+  aplicações idempotentes da mesma V4 (`CREATE OR REPLACE`), sem reexecução;
+- [x] definição, permissões, readback e artefatos de rollback conferidos antes
+  da continuação da reserva já existente;
+- [x] concluído o único lote-piloto de 3 cartas/45 linhas. Depois da primeira
+  reserva, das cinco seguintes e da cobertura transversal, as 17 restantes foram
+  executadas: 45 concluídas, 0 pendentes, 0 processando, 0 bloqueadas,
+  `pode_publicar=false` e 45 handoffs pendentes ao Bonificador. Snapshot
+  atual=selado; uma linha representativa de cada uma das três cartas teve segundo
+  cálculo local conferido e as 45 tiveram selos de fórmula, contrato, carta e
+  resultado conferidos;
+- [ ] não criar lote completo enquanto esse piloto não tiver evidência de paridade
+  suficiente e uma decisão explícita de arquivamento/retenção do lote-piloto.
+
+## Preparação segura da fila integral V5 — aplicada e validada em 31/08/2026
+
+- [x] autorização recebida para deixar o Otimizador pronto para a fila de todas
+  as cartas, sem criação ou execução automática do lote integral;
+- [x] snapshot recuperável pré-V5 criado em
+  `RECUPERACAO/20260831-antes-preparo-integral-v4/`, com manifesto SHA-256;
+- [x] risco confirmado: a criação V3 completa projetava 20.532 candidatas numa
+  transação, enquanto o piloto V3 concluído bloqueava novo lote e a leitura antiga
+  devolvia todas as linhas de uma vez;
+- [x] desenhada migração V5 e rollback fechado: candidato ordenado por ID/overall,
+  preparação em fatias de 1–20 cartas, fotografia da versão física, linhagem por
+  `lote_producao_id`, RLS/FKs/grants e paginação de no máximo 200 linhas por RPC;
+- [x] antes de liberar execução, a UI deve fazer pré-voo de régua, fórmula e
+  versão do worker; o browser segue somente em loopback e sem credencial;
+- [x] plano de paridade: conferir após preparo a contagem de candidatas, exclusões
+  por gate/Ímpeto condicional/sem linha, fingerprints, cardinalidade de linhas e
+  uma página rotulada por IDs; depois, a execução continua sob os mesmos testes
+  de fórmula e reserva V3 já aprovados;
+- [x] fórmula, pesos, moldes, ordem de busca, Ímpetos condicionais, Bonificador e
+  publicação são explicitamente fora da V5;
+- [x] V5 aplicada no banco; readback confirmou `RLS=true` na candidata, grants
+  diretos revogados, FKs de linhagem e RPCs V5 `SECURITY DEFINER` acessíveis
+  somente ao backend `service_role`;
+- [x] pré-voo sem escrita confirmou fórmula aprovada, **19.363** candidatas básicas,
+  **1.169** exclusões condicionais e `pode_publicar=false`;
+- [x] ensaio transacional controlado criou e preparou exatamente uma candidata
+  (18 linhas) e foi integralmente revertido; após o rollback permaneceram somente
+  as 45 linhas do piloto e zero candidatas integrais persistidas;
+- [x] loopback V24 validado por `/api/saude`, status/paginação V5, Resultados e
+  Eventos reais; o executável abre contra essa versão sem iniciar lote;
+- [ ] criar/preparar/iniciar a fila integral somente mediante o clique/decisão
+  operacional seguinte do usuário; nenhum dos três passos é implícito.
