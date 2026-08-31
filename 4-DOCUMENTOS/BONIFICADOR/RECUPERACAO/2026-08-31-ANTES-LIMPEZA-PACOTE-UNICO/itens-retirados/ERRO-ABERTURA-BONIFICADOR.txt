@@ -1,0 +1,3 @@
+Não foi possível abrir o Bonificador ClubEfootball.
+
+O componente local do Bonificador não iniciou. Confira COMPONENTE-LOCAL-BONIFICADOR.log e a pasta runtime desta cópia.

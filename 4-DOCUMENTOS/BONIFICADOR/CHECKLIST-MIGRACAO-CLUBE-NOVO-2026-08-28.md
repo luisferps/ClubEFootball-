@@ -333,8 +333,8 @@ consumidor de saída seguem desligados.
 
 - [x] padrão do Extrator documentado antes da implementação: EXE WinForms, ícone,
   executor Python oculto em loopback, health-check e janela de aplicativo;
-- [x] criado `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe`, ícone próprio e
-  `RODAR-INTERFACE-BONIFICADOR.bat`;
+- [x] criado `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe` com ícone próprio;
+  o lançador auxiliar inicial foi retirado posteriormente na limpeza V2.0.7;
 - [x] executor exclusivo limita-se a `127.0.0.1:8766`, `GET`,
   `bonificador_regua_v1` e `bonificador_carta_v1`; `POST` retorna `405`;
 - [x] navegador não recebe segredo, schema, tabela, lote ou endpoint de escrita;
@@ -360,8 +360,9 @@ consumidor de saída seguem desligados.
   foram alterados;
 - [x] `Ctrl+C` encerra o pipeline normalmente e resultados já confirmados permanecem
   transacionais no banco; falha HTTP/validação continua explícita e fail-closed;
-- [x] criado `RODAR-BONIFICADOR-PIPELINE.bat`; um único escritor Bonificador por banco
-  continua recomendado;
+- [x] o acionamento paralelo inicial foi retirado posteriormente na limpeza V2.0.7;
+  o EXE local é a única entrada operacional e um único escritor por banco continua
+  recomendado;
 - [x] snapshot anterior em `RECUPERACAO/2026-08-31-ANTES-PIPELINE-INCREMENTAL`;
 - [x] testes offline: vazio → espera → par apto → writer, par incompleto sem writer,
   smoke de lançamento, writer canônico, trava da fórmula e organização operacional.
@@ -397,3 +398,34 @@ consumidor de saída seguem desligados.
 - [!] leitura viva bloqueada com evidência: `bonificador_regua_v1` apta, porém
   `bonificador_contexto_escrita_v2` ausente da cache do PostgREST (`PGRST202`). Banco
   não foi modificado nesta revisão; o pipeline permanece fail-closed e sem lote.
+
+## Responsividade do aplicativo nativo V2.0.7 — 31/08/2026
+
+- [x] eliminadas chamadas HTTP síncronas da thread visual em abertura, atualização de
+  fila, simulação, auditoria e controles iniciar/parar;
+- [x] consulta de contrato/fila executada em trabalhador em segundo plano, com estado
+  visível durante a espera e limite local de 10 segundos por requisição;
+- [x] executável recompilado com componente local incorporado, versão `2.0.7.0`;
+- [x] teste de abertura do EXE confirmou janela com título nativo e processo
+  `Responding=True` durante a consulta inicial;
+- [x] snapshot recuperável criado em
+  `RECUPERACAO/SNAPSHOT-UI-ANTES-ASSINCRONO-20260831-194509.cs`;
+- [x] fórmulas, pesos, moldes, regras, banco, fila produtiva, Otimizador e Extrator
+  não foram alterados.
+
+## Limpeza do pacote operacional V2.0.15 — 31/08/2026
+
+- [x] definido um único aplicativo abrível na raiz: `Bonificador ClubEfootball.exe`;
+- [x] o payload que o EXE incorpora foi movido para
+  `windows-app/assets/BonificadorComponente.bin`, sem segundo `.exe` visível;
+- [x] removidos runtime portátil, caches Python, log de abertura antigo e lançadores
+  paralelos que não participavam do fluxo oficial do aplicativo;
+- [x] fonte do motor, fonte do componente, fonte da janela e ferramenta de compilação
+  foram preservados por serem necessários para manutenção, não cópias de runtime.
+- [x] removidas também as rotas e arquivos da antiga interface web; o componente expõe
+  somente API loopback para a janela nativa;
+- [x] cada janela cria o próprio componente em porta livre e encerra sua árvore de
+  processos ao fechar, sem reaproveitar ou deixar servidor antigo vivo.
+- [x] retiradas gravações automáticas de log/erro da raiz; erros de abertura ficam no
+  diálogo do aplicativo.
+- [x] a cópia interna extraída para execução é apagada no fechamento normal da janela.

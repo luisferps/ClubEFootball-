@@ -248,8 +248,6 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         self.assertIn("Build campeã", interface)
         self.assertIn("<th>Tempo</th>", interface)
         self.assertIn("ESTEIRA V6 · SEM PUBLICAÇÃO", interface)
-        self.assertIn("Mais recentes", interface)
-        self.assertIn("Mais antigas", interface)
         self.assertNotIn('id="abrir-console"', interface)
         self.assertIn("pontuacao_final", js)
         self.assertIn("duracao_segundos", js)
@@ -263,7 +261,6 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         self.assertIn("pintarContadorLinhaAtual(workerLocalAusente?null:atual)", js)
         self.assertIn("consulta_indisponivel", js)
         self.assertIn("tentando novamente em 5 s.", js)
-        self.assertIn("mais recentes primeiro", js)
         self.assertIn("recuperar-fila", js)
         self.assertIn("confirmarRecuperar", js)
         self.assertIn("/api/fila/recuperar", SERVIDOR.read_text(encoding="utf-8"))
@@ -323,57 +320,6 @@ class InterfaceOtimizadorTest(unittest.TestCase):
             ("otimizador_producao_status_v5", {"p_lote_id": None}, True),
         ])
 
-    def test_paginacao_visual_mostra_recentes_primeiro_sem_mudar_a_ordem_canonica(self):
-        class Gateway:
-            def __init__(self):
-                self.chamadas = []
-                self.itens = [
-                    {"linha_id": indice, "ordem_fila": indice, "card_id": str(indice),
-                     "funcao_id": 1, "posicao_id": 12, "estado": "concluido"}
-                    for indice in range(1, 6)
-                ]
-
-            def rpc(self, nome, corpo=None):
-                self.chamadas.append((nome, corpo))
-                if nome != "otimizador_producao_fila_paginada_v5":
-                    raise AssertionError(nome)
-                inicio = corpo["p_offset"]
-                fim = inicio + corpo["p_limite"]
-                return {
-                    "contrato": "otimizador_fila_producao_v5", "total": len(self.itens),
-                    "offset": inicio, "limite": corpo["p_limite"],
-                    "somente_finais": corpo["p_somente_finais"],
-                    "itens": self.itens[inicio:fim],
-                }
-
-        status = {
-            "disponivel": True, "lote_id": "lote-visual", "estado": "rodando",
-            "acoes": {}, "confirmacao": {}, "corrente": [], "linhas": 5,
-            "concluidas": 5, "bloqueadas": 0, "interrompidas": 0, "falhas": 0,
-        }
-        servico = object.__new__(mod.ServicoOtimizador)
-        servico.gateway = Gateway()
-        servico._status_fila = lambda: status
-        servico._recuperacao_reserva_orfa_disponivel = lambda _: False
-        servico._linhas_com_rotulos = lambda itens: itens
-
-        primeira = servico.painel_fila(offset=0, limite=2)
-        self.assertEqual([x["linha_id"] for x in primeira["itens"]], [5, 4])
-        self.assertEqual(primeira["paginacao"], {
-            "total": 5, "offset": 0, "limite": 2, "somente_finais": False,
-            "ordem": "mais_recentes_primeiro",
-        })
-        segunda = servico.painel_fila(offset=2, limite=2)
-        self.assertEqual([x["linha_id"] for x in segunda["itens"]], [3, 2])
-        ultima = servico.painel_fila(offset=4, limite=2)
-        self.assertEqual([x["linha_id"] for x in ultima["itens"]], [1])
-        resultados = servico.resultados_fila(offset=0, limite=2)
-        self.assertEqual([x["linha_id"] for x in resultados["itens"]], [5, 4])
-
-        chamadas = servico.gateway.chamadas
-        self.assertEqual([x[1]["p_offset"] for x in chamadas], [3, 1, 0, 3])
-        self.assertEqual([x[1]["p_somente_finais"] for x in chamadas], [False, False, False, True])
-
     def test_saude_local_nao_dependa_de_regua_ou_fila(self):
         servico = object.__new__(mod.ServicoOtimizador)
         saude = servico.saude()
@@ -411,7 +357,7 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         self.assertIn("linha 3389", saude["worker_resumo"])
         self.assertIsInstance(saude["worker_decorrido_segundos"], int)
 
-    def test_executavel_portatil_mantem_o_estado_local_da_interface_v32(self):
+    def test_executavel_portatil_mantem_o_estado_local_da_interface_v31(self):
         raiz_motor = SERVIDOR.parent.parent
         launcher = (raiz_motor / "windows-app" / "ClubEfootballOtimizadorLauncher.cs").read_text(encoding="utf-8")
         compilador = (raiz_motor / "windows-app" / "COMPILAR-APLICATIVO.ps1").read_text(encoding="utf-8")
@@ -419,7 +365,7 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         bootstrap = (raiz_motor / "servico_portatil.py").read_text(encoding="utf-8")
         atalho = (raiz_motor / "RODAR-OTIMIZADOR.bat").read_text(encoding="utf-8")
         self.assertIn('ExpectedApp = "\\\"aplicativo\\\": \\"otimizador_clubefootball\\\""', launcher)
-        self.assertIn('ExpectedVersion = "\\\"versao_interface\\\": \\"20260831-v32\\\""', launcher)
+        self.assertIn('ExpectedVersion = "\\\"versao_interface\\\": \\"20260831-v31\\\""', launcher)
         self.assertIn("OtimizadorServico.exe", launcher)
         self.assertIn("CLUBEF_OTIMIZADOR_ROOT", launcher)
         self.assertNotIn("FindPythonW", launcher)

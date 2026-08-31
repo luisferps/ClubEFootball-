@@ -5,16 +5,20 @@
 ```text
 2-MOTORES/
 ├── BONIFICADOR/
-│   └── motor_bonus.py        executável exclusivo do Bonificador
+│   ├── Bonificador ClubEfootball.exe   único aplicativo abrível do operador
+│   ├── motor_bonus.py                  fonte exclusivo do motor
+│   ├── interface/                      fonte do componente local
+│   └── windows-app/                    fonte/ícone/payload de compilação nativo
 └── config.txt                configuração compartilhada dos motores
 ```
 
 ## O que fica onde
 
 - `2-MOTORES/BONIFICADOR/motor_bonus.py` é a única cópia executável do motor.
-- `2-MOTORES/BONIFICADOR/RODAR-BONIFICADOR-PIPELINE.bat` inicia o pipeline vivo. Ele
-  consulta somente linhas confirmadas pelo Otimizador, espera quando não houver linha e
-  aceita `Ctrl+C` como parada normal; não cria estado persistente local.
+- `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe` é o único item que o operador
+  abre. Ele carrega o componente local incorporado; não há segundo aplicativo na raiz.
+- `windows-app/assets/BonificadorComponente.bin` é um payload de compilação, não é
+  executável pelo operador. O compilador o incorpora no EXE principal.
 - `2-MOTORES/config.txt` permanece comum porque também é procurado/usado pelos
   demais motores. O Bonificador sobe até esse diretório para encontrá-lo; não existe
   cópia de configuração dentro de `BONIFICADOR`.

@@ -58,7 +58,7 @@ function linhasFiltradas(){const busca=normalizarBusca($('#filtro-fila').value),
 function renderizarLinhasFila(){
   const linhas=linhasFiltradas(),total=Number(paginacaoFila.total||0),inicio=total?Number(paginacaoFila.offset||0)+1:0,fim=Math.min(Number(paginacaoFila.offset||0)+linhas.length,total),paginas=Math.max(1,Math.ceil(total/TAMANHO_PAGINA));
   paginaFila=Math.max(0,Math.min(paginaFila,paginas-1));
-  $('#resumo-linhas').textContent=total?`${inicio}–${fim} de ${total} linhas · mais recentes primeiro · filtros nesta página`:'Nenhuma linha encontrada';
+  $('#resumo-linhas').textContent=total?`${inicio}–${fim} de ${total} linhas · filtros nesta página`:'Nenhuma linha encontrada';
   $('#pagina-anterior-fila').disabled=paginaFila===0;
   $('#proxima-pagina-fila').disabled=paginaFila>=paginas-1;
   $('#linhas-fila').innerHTML=linhas.map(x=>{
@@ -121,7 +121,7 @@ function resultadosFiltrados(){const busca=normalizarBusca($('#filtro-resultados
 function renderizarResultados(){
   const linhas=resultadosFiltrados(),total=Number(paginacaoResultados.total||0),inicio=total?Number(paginacaoResultados.offset||0)+1:0,fim=Math.min(Number(paginacaoResultados.offset||0)+linhas.length,total),paginas=Math.max(1,Math.ceil(total/TAMANHO_PAGINA));
   paginaResultados=Math.max(0,Math.min(paginaResultados,paginas-1));
-  $('#resumo-resultados').textContent=total?`${inicio}–${fim} de ${total} resultados · mais recentes primeiro · filtro nesta página`:'Nenhum resultado';
+  $('#resumo-resultados').textContent=total?`${inicio}–${fim} de ${total} resultados · filtro nesta página`:'Nenhum resultado';
   $('#pagina-anterior-resultados').disabled=paginaResultados===0;
   $('#proxima-pagina-resultados').disabled=paginaResultados>=paginas-1;
   buildsCampeasPorLinha.clear();

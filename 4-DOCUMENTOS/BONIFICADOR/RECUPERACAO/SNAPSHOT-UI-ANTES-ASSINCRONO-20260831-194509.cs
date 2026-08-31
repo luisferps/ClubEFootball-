@@ -15,8 +15,8 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Fila, conferência e auditoria local do Bonificador")]
 [assembly: AssemblyProduct("Bonificador ClubEfootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("2.0.15.0")]
-[assembly: AssemblyFileVersion("2.0.15.0")]
+[assembly: AssemblyVersion("2.0.6.0")]
+[assembly: AssemblyFileVersion("2.0.6.0")]
 
 namespace ClubEfootballBonificador
 {
@@ -26,8 +26,6 @@ namespace ClubEfootballBonificador
         internal static string BaseUrl { get { return "http://127.0.0.1:" + AppPort; } }
         private const string ExpectedApp = "\"aplicativo\": \"bonificador_clubefootball\"";
         private const string ExpectedVersion = "\"versao_interface\": \"20260831-v2-native\"";
-        private static Process localComponent;
-        private static string localComponentPath;
 
         [STAThread]
         private static void Main()
@@ -36,30 +34,20 @@ namespace ClubEfootballBonificador
             string root = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
             try
             {
-                AppPort = EscolherPortaLivre(); ValidatePackage(root); StartHiddenServer(root); WaitForServer();
+                if (!ServerReady()) { AppPort = EscolherPortaLivre(); ValidatePackage(root); StartHiddenServer(root); WaitForServer(); }
                 Application.Run(new BonificadorForm());
             }
             catch (Exception error)
             {
                 string message = "Não foi possível abrir o Bonificador ClubEfootball.\r\n\r\n" + error.Message;
+                try { File.WriteAllText(Path.Combine(root, "ERRO-ABERTURA-BONIFICADOR.txt"), message); } catch { }
                 MessageBox.Show(message, "Bonificador ClubEfootball", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            finally { StopHiddenServer(); }
         }
-        private const int LocalRequestTimeoutMs = 10000;
-        private sealed class LocalWebClient : WebClient
-        {
-            protected override WebRequest GetWebRequest(Uri address)
-            {
-                WebRequest request = base.GetWebRequest(address);
-                request.Timeout = LocalRequestTimeoutMs;
-                return request;
-            }
-        }
-        internal static string Get(string path) { using (LocalWebClient c = new LocalWebClient()) { c.Proxy = null; return c.DownloadString(BaseUrl + path); } }
-        internal static string Post(string path) { using (LocalWebClient c = new LocalWebClient()) { c.Proxy = null; c.Headers[HttpRequestHeader.ContentType] = "application/json"; return c.UploadString(BaseUrl + path, "POST", "{}"); } }
+        internal static string Get(string path) { using (WebClient c = new WebClient()) { c.Proxy = null; return c.DownloadString(BaseUrl + path); } }
+        internal static string Post(string path) { using (WebClient c = new WebClient()) { c.Proxy = null; c.Headers[HttpRequestHeader.ContentType] = "application/json"; return c.UploadString(BaseUrl + path, "POST", "{}"); } }
         private static bool ServerReady() { try { string b = Get("/api/ping"); return b.Contains(ExpectedApp) && b.Contains(ExpectedVersion); } catch { return false; } }
-        private static void WaitForServer() { for (int i = 0; i < 100; i++) { if (ServerReady()) return; Thread.Sleep(200); } throw new InvalidOperationException("O componente local do Bonificador não iniciou dentro do tempo esperado."); }
+        private static void WaitForServer() { for (int i = 0; i < 100; i++) { if (ServerReady()) return; Thread.Sleep(200); } throw new InvalidOperationException("O componente local do Bonificador não iniciou. Confira COMPONENTE-LOCAL-BONIFICADOR.log."); }
         private static int EscolherPortaLivre()
         {
             TcpListener probe = new TcpListener(IPAddress.Loopback, 0);
@@ -75,42 +63,17 @@ namespace ClubEfootballBonificador
         private static void StartHiddenServer(string root)
         {
             string component = PrepararComponenteIncorporado();
-            ProcessStartInfo p = new ProcessStartInfo { FileName = component, Arguments = "--porta=" + AppPort, WorkingDirectory = root, UseShellExecute = false, CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden, RedirectStandardOutput = false, RedirectStandardError = false };
+            string log = Path.Combine(root, "COMPONENTE-LOCAL-BONIFICADOR.log");
+            ProcessStartInfo p = new ProcessStartInfo { FileName = component, Arguments = "--porta=" + AppPort, WorkingDirectory = root, UseShellExecute = false, CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden, RedirectStandardOutput = true, RedirectStandardError = true };
             p.EnvironmentVariables["CLUBEF_BONIFICADOR_PORT"] = AppPort.ToString(); p.EnvironmentVariables["PYTHONUTF8"] = "1";
             p.EnvironmentVariables["CLUBEF_BONIFICADOR_CONFIG"] = Path.Combine(Directory.GetParent(root).FullName, "config.txt");
-            Process child = Process.Start(p); if (child == null) throw new InvalidOperationException("Não foi possível iniciar o componente local."); localComponent = child;
-        }
-        private static void StopHiddenServer()
-        {
-            Process child = localComponent; localComponent = null;
-            string component = localComponentPath; localComponentPath = null;
-            if (child != null) try
-            {
-                if (!child.HasExited)
-                {
-                    ProcessStartInfo stop = new ProcessStartInfo { FileName = "taskkill.exe", Arguments = "/PID " + child.Id + " /T /F", UseShellExecute = false, CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden };
-                    using (Process killer = Process.Start(stop)) { if (killer != null) killer.WaitForExit(5000); }
-                }
-            }
-            catch { try { if (!child.HasExited) child.Kill(); } catch { } }
-            if (child != null) try { child.WaitForExit(3000); } catch { }
-            if (child != null) try { child.Dispose(); } catch { }
-            try
-            {
-                for (int attempt = 0; attempt < 20 && !String.IsNullOrEmpty(component) && File.Exists(component); attempt++)
-                {
-                    try { File.Delete(component); } catch { Thread.Sleep(100); }
-                }
-                string folder = String.IsNullOrEmpty(component) ? null : Path.GetDirectoryName(component);
-                if (!String.IsNullOrEmpty(folder) && Directory.Exists(folder) && Directory.GetFiles(folder).Length == 0 && Directory.GetDirectories(folder).Length == 0) Directory.Delete(folder);
-            }
-            catch { }
+            Process child = Process.Start(p); if (child == null) throw new InvalidOperationException("Não foi possível iniciar o componente local.");
+            ThreadPool.QueueUserWorkItem(delegate { try { File.AppendAllText(log, child.StandardOutput.ReadToEnd() + child.StandardError.ReadToEnd()); } catch { } });
         }
         private static string PrepararComponenteIncorporado()
         {
             string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ClubEfootball", "Bonificador", Assembly.GetExecutingAssembly().GetName().Version.ToString());
             string component = Path.Combine(folder, "Bonificador Componente Local.exe");
-            localComponentPath = component;
             if (File.Exists(component) && new FileInfo(component).Length > 1000000) return component;
             Directory.CreateDirectory(folder);
             using (Stream source = Assembly.GetExecutingAssembly().GetManifestResourceStream("BonificadorComponente"))
@@ -135,8 +98,8 @@ namespace ClubEfootballBonificador
 
         internal BonificadorForm()
         {
-            Text = "Bonificador ClubEfootball V2.0.15 — fila e conferência"; MinimumSize = new Size(980, 680); Size = new Size(1220, 820); StartPosition = FormStartPosition.CenterScreen; Font = new Font("Segoe UI", 9F);
-            BuildLayout(); timer.Interval = 2000; timer.Tick += delegate { RefreshQueue(false); }; Shown += delegate { status.Text = "Contrato: consultando em segundo plano"; andamento.Text = "Estado: carregando fila sem bloquear a tela"; LoadFunctions(); RefreshQueue(true); timer.Start(); }; FormClosing += delegate { timer.Stop(); };
+            Text = "Bonificador ClubEfootball V2 — fila e conferência"; MinimumSize = new Size(980, 680); Size = new Size(1220, 820); StartPosition = FormStartPosition.CenterScreen; Font = new Font("Segoe UI", 9F);
+            BuildLayout(); timer.Interval = 2000; timer.Tick += delegate { RefreshQueue(false); }; Shown += delegate { LoadFunctions(); RefreshQueue(true); timer.Start(); }; FormClosing += delegate { timer.Stop(); };
         }
         private void BuildLayout()
         {
@@ -165,70 +128,28 @@ namespace ClubEfootballBonificador
         {
             fila.Dock = DockStyle.Fill; fila.ReadOnly = true; fila.AllowUserToAddRows = false; fila.AllowUserToDeleteRows = false; fila.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; fila.SelectionMode = DataGridViewSelectionMode.FullRowSelect; fila.Columns.Add("Linha", "Linha"); fila.Columns.Add("Carta", "Carta / card_id"); fila.Columns.Add("Função", "Função"); fila.Columns.Add("Posição", "Posição ID"); fila.Columns.Add("Estado", "Estado"); fila.Columns.Add("Versão", "Versão da carta"); fila.Columns.Add("Fingerprint", "Fingerprint");
         }
-        private void OnUi(Action action)
-        {
-            if (IsDisposed || Disposing || !IsHandleCreated) return;
-            try { BeginInvoke(action); } catch (InvalidOperationException) { }
-        }
         private void LoadFunctions()
         {
-            ThreadPool.QueueUserWorkItem(delegate
-            {
-                try
-                {
-                    string body = Program.Get("/api/funcoes");
-                    OnUi(delegate
-                    {
-                        try
-                        {
-                            Dictionary<string, object> root = Map(body); funcao.Items.Clear();
-                            foreach (object item in List(root, "funcoes")) { Dictionary<string, object> row = item as Dictionary<string, object>; if (row != null) funcao.Items.Add(new FuncaoChoice { Id = Value(row, "id"), Nome = Value(row, "nome") }); }
-                            if (funcao.Items.Count > 0) funcao.SelectedIndex = 0;
-                        }
-                        catch (Exception error) { status.Text = "Contrato indisponível: " + error.Message; }
-                    });
-                }
-                catch (Exception error) { OnUi(delegate { status.Text = "Contrato indisponível: " + error.Message; }); }
-            });
+            try { Dictionary<string, object> root = Map(Program.Get("/api/funcoes")); foreach (object item in List(root, "funcoes")) { Dictionary<string, object> row = item as Dictionary<string, object>; if (row != null) funcao.Items.Add(new FuncaoChoice { Id = Value(row, "id"), Nome = Value(row, "nome") }); } if (funcao.Items.Count > 0) funcao.SelectedIndex = 0; } catch (Exception error) { status.Text = "Contrato indisponível: " + error.Message; }
         }
-        private void ActionPipeline(string route)
-        {
-            iniciar.Enabled = false; parar.Enabled = false; andamento.Text = "Estado: enviando comando sem bloquear a tela";
-            ThreadPool.QueueUserWorkItem(delegate
-            {
-                try { Program.Post(route); OnUi(delegate { RefreshQueue(true); }); }
-                catch (Exception error) { OnUi(delegate { andamento.Text = "Comando recusado: " + error.Message; RefreshQueue(true); }); }
-            });
-        }
+        private void ActionPipeline(string route) { try { Program.Post(route); RefreshQueue(true); } catch (Exception error) { andamento.Text = "Comando recusado: " + error.Message; } }
         private void RefreshQueue(bool force)
         {
-            if (consultando) return; consultando = true; andamento.Text = "Estado: consultando fila em segundo plano";
-            ThreadPool.QueueUserWorkItem(delegate
+            if (consultando && !force) return; consultando = true;
+            try
             {
-                try
-                {
-                    string healthBody = Program.Get("/api/saude"), queueBody = Program.Get("/api/fila/status");
-                    OnUi(delegate
-                    {
-                        try
-                        {
-                            Dictionary<string, object> health = Map(healthBody), root = Map(queueBody), data = Map(root["fila"]), pipe = Map(data["pipeline"]); status.Text = Bool(health, "pode_rodar") ? "Contrato canônico apto" : "Contrato bloqueado"; string state = Value(pipe, "estado"), message = Value(pipe, "mensagem"); andamento.Text = "Estado: " + state + " — " + message; bool active = Bool(pipe, "ativo"); iniciar.Enabled = !active; parar.Enabled = active;
-                            int pending = Number(data, "total"), total = Number(pipe, "total_rodada"), calculated = Number(pipe, "calculados"), confirmed = Number(pipe, "confirmados"); totais.Text = "Pendentes agora: " + pending + "  |  Rodada: " + total + "  |  Calculados: " + calculated + "  |  Confirmados: " + confirmed; Dictionary<string, object> current = pipe.ContainsKey("linha_atual") && pipe["linha_atual"] is Dictionary<string, object> ? (Dictionary<string, object>)pipe["linha_atual"] : new Dictionary<string, object>(); linhaAtual.Text = current.Count == 0 ? "Linha atual: nenhuma" : "Linha atual: " + Value(current, "linha_id") + " · carta " + Value(current, "card_id") + " · função " + Value(current, "funcao_id"); int denominator = Math.Max(total, calculated + pending); progresso.Value = denominator == 0 ? 0 : Math.Min(100, Math.Max(0, (int)Math.Round(100.0 * calculated / denominator)));
-                            fila.Rows.Clear(); foreach (object item in List(data, "itens")) { Dictionary<string, object> row = item as Dictionary<string, object>; if (row != null) fila.Rows.Add(Value(row, "linha_id"), Value(row, "card_id"), Value(row, "funcao_nome") + " (" + Value(row, "funcao_codigo") + ")", Value(row, "posicao_id"), Value(row, "estado"), Value(row, "carta_versao"), Value(row, "carta_fingerprint")); } log.Text = String.Join(Environment.NewLine, List(pipe, "eventos").ConvertAll(delegate(object x) { return Convert.ToString(x); }));
-                        }
-                        catch (Exception error) { status.Text = "Fila indisponível"; andamento.Text = error.Message; }
-                        finally { consultando = false; }
-                    });
-                }
-                catch (Exception error) { OnUi(delegate { status.Text = "Fila indisponível"; andamento.Text = error.Message; consultando = false; }); }
-            });
+                Dictionary<string, object> health = Map(Program.Get("/api/saude")), root = Map(Program.Get("/api/fila/status")), data = Map(root["fila"]), pipe = Map(data["pipeline"]); status.Text = Bool(health, "pode_rodar") ? "Contrato canônico apto" : "Contrato bloqueado"; string state = Value(pipe, "estado"), message = Value(pipe, "mensagem"); andamento.Text = "Estado: " + state + " — " + message; bool active = Bool(pipe, "ativo"); iniciar.Enabled = !active; parar.Enabled = active;
+                int pending = Number(data, "total"), total = Number(pipe, "total_rodada"), calculated = Number(pipe, "calculados"), confirmed = Number(pipe, "confirmados"); totais.Text = "Pendentes agora: " + pending + "  |  Rodada: " + total + "  |  Calculados: " + calculated + "  |  Confirmados: " + confirmed; Dictionary<string, object> current = pipe.ContainsKey("linha_atual") && pipe["linha_atual"] is Dictionary<string, object> ? (Dictionary<string, object>)pipe["linha_atual"] : new Dictionary<string, object>(); linhaAtual.Text = current.Count == 0 ? "Linha atual: nenhuma" : "Linha atual: " + Value(current, "linha_id") + " · carta " + Value(current, "card_id") + " · função " + Value(current, "funcao_id"); int denominator = Math.Max(total, calculated + pending); progresso.Value = denominator == 0 ? 0 : Math.Min(100, Math.Max(0, (int)Math.Round(100.0 * calculated / denominator)));
+                fila.Rows.Clear(); foreach (object item in List(data, "itens")) { Dictionary<string, object> row = item as Dictionary<string, object>; if (row != null) fila.Rows.Add(Value(row, "linha_id"), Value(row, "card_id"), Value(row, "funcao_nome") + " (" + Value(row, "funcao_codigo") + ")", Value(row, "posicao_id"), Value(row, "estado"), Value(row, "carta_versao"), Value(row, "carta_fingerprint")); } log.Text = String.Join(Environment.NewLine, List(pipe, "eventos").ConvertAll(delegate(object x) { return Convert.ToString(x); }));
+            }
+            catch (Exception error) { status.Text = "Fila indisponível"; andamento.Text = error.Message; }
+            finally { consultando = false; }
         }
         private void Simular()
         {
-            FuncaoChoice selected = funcao.SelectedItem as FuncaoChoice; if (selected == null || String.IsNullOrWhiteSpace(cardId.Text)) { resultado.Text = "Informe card_id e função."; return; } string id = cardId.Text.Trim(), functionId = selected.Id; resultado.Text = "Consultando simulação em segundo plano...";
-            ThreadPool.QueueUserWorkItem(delegate { try { string body = Program.Get("/api/simular?card_id=" + Uri.EscapeDataString(id) + "&funcao_id=" + Uri.EscapeDataString(functionId)); OnUi(delegate { try { resultado.Text = json.Serialize(Map(body)); } catch (Exception error) { resultado.Text = "Simulação recusada: " + error.Message; } }); } catch (Exception error) { OnUi(delegate { resultado.Text = "Simulação recusada: " + error.Message; }); } });
+            FuncaoChoice selected = funcao.SelectedItem as FuncaoChoice; if (selected == null || String.IsNullOrWhiteSpace(cardId.Text)) { resultado.Text = "Informe card_id e função."; return; } try { resultado.Text = json.Serialize(Map(Program.Get("/api/simular?card_id=" + Uri.EscapeDataString(cardId.Text.Trim()) + "&funcao_id=" + Uri.EscapeDataString(selected.Id)))); } catch (Exception error) { resultado.Text = "Simulação recusada: " + error.Message; }
         }
-        private void Audit() { RichTextBox target = auditoria.Tag as RichTextBox; target.Text = "Consultando auditoria em segundo plano..."; ThreadPool.QueueUserWorkItem(delegate { try { string body = Program.Get("/api/auditoria"); OnUi(delegate { try { target.Text = json.Serialize(Map(body)); } catch (Exception error) { target.Text = "Auditoria indisponível: " + error.Message; } }); } catch (Exception error) { OnUi(delegate { target.Text = "Auditoria indisponível: " + error.Message; }); } }); }
+        private void Audit() { RichTextBox target = auditoria.Tag as RichTextBox; try { target.Text = json.Serialize(Map(Program.Get("/api/auditoria"))); } catch (Exception error) { target.Text = "Auditoria indisponível: " + error.Message; } }
         private Dictionary<string, object> Map(object value) { Dictionary<string, object> map = value as Dictionary<string, object>; if (map == null) throw new InvalidOperationException("Resposta local inválida."); return map; }
         private Dictionary<string, object> Map(string body) { return Map(json.DeserializeObject(body)); }
         private List<object> List(Dictionary<string, object> map, string key) { ArrayList list = map.ContainsKey(key) ? map[key] as ArrayList : null; return list == null ? new List<object>() : new List<object>(list.ToArray()); }

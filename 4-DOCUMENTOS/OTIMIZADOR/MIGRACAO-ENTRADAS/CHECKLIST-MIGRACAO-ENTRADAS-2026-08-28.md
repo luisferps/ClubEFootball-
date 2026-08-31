@@ -538,3 +538,21 @@ Data: 28/08/2026. Estado inicial: **não ativado em produção**.
   status do mesmo lote `pausado`, 0 processando e publicação desligada;
 - [x] fórmula, pesos, moldes, ordem de busca, entradas canônicas, Ímpetos
   condicionais, Bonificador e publicação não foram alterados.
+
+## Interface V32 — ordem visual recente primeiro (31/08/2026)
+
+- [x] snapshot recuperável pré-V32 criado em
+  `RECUPERACAO/20260831-antes-ordem-recentes-v32/`;
+- [x] Fila e Resultados passaram a expor a página visual mais recente primeiro,
+  com navegação **Mais recentes** / **Mais antigas**; a `ordem_fila` canônica,
+  a reserva e a ordem de execução não foram modificadas;
+- [x] teste offline cobre página inicial, páginas posteriores e Resultados,
+  comprovando a tradução de offset canônico para visual sem duplicar ou omitir
+  uma linha dentro de uma fotografia estável; `py_compile`, `node --check` e 13
+  testes de interface passaram;
+- [x] executável recompilado para arquivo `1.6.1.0`, interface
+  `20260831-v32`; HTML/JavaScript e `/api/saude` V32 foram lidos em loopback;
+- [ ] bloqueio factual a resolver antes de declarar o painel integral pronto:
+  `otimizador_producao_status_v5` retorna `57014 statement timeout` no lote de
+  184.702 linhas. Nenhuma migração de desempenho, alteração de fila ou retry de
+  execução foi aplicada nesta etapa.

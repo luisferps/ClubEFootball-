@@ -1199,3 +1199,31 @@ explícita de retenção/arquivamento e readback.
 O próximo passo **não é rodar todas as cartas**: requer paridade independente
 suficiente e autorização explícita para criar uma fila integral. O navegador
 continua somente em loopback; a credencial fica no backend, nunca no browser.
+
+## 17. Ordem visual mais recente primeiro — V32 (31/08/2026)
+
+Esta alteração é somente de apresentação. A aba **Fila integral** e a aba
+**Resultados** mostram primeiro as linhas mais recentes; os botões de página
+passaram a se chamar **Mais recentes** e **Mais antigas**. A primeira página
+visual corresponde ao fim da paginação canônica e as páginas seguintes seguem
+para linhas mais antigas.
+
+O banco, a ordem real de execução (`ordem_fila` crescente), a fórmula, pesos,
+moldes, gates, estados, publicação e o worker não foram alterados. O servidor
+local usa o total devolvido pelo contrato V5 para pedir o intervalo canônico
+equivalente e inverte somente a resposta enviada à tela. Se o total mudar entre
+as duas leituras, ele faz no máximo uma releitura de alinhamento; não há fallback
+para tabela legada nem mudança da ordem da fila.
+
+Snapshot recuperável: `OTIMIZADOR/RECUPERACAO/20260831-antes-ordem-recentes-v32/`.
+O executável foi elevado a interface `20260831-v32` / arquivo `1.6.1.0`, e a
+saúde, HTML e JavaScript V32 foram conferidos em loopback. O teste offline cobre
+as páginas visuais `5,4`, depois `3,2`, depois `1`, preservando a paginação
+canônica crescente no contrato.
+
+Na data deste registro, a consulta real do lote integral com 184.702 linhas foi
+recusada pelo banco com `57014: statement timeout` no contrato
+`otimizador_producao_status_v5`. Portanto, a ordenação V32 está pronta, mas não
+deve ser considerada validada sobre esse lote enquanto a consulta de status não
+for otimizada e retestada. Isto é um bloqueio de desempenho do contrato, não uma
+alteração de fórmula ou resultado.

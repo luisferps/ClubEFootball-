@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Componente local do Bonificador, em loopback e sem expor credenciais.
+"""Interface local do Bonificador, em loopback e sem expor credenciais.
 
-A janela nativa fala somente com este servidor em 127.0.0.1. Consultas seguem
+O navegador fala somente com este servidor em 127.0.0.1. Consultas seguem
 somente leitura; o pipeline, quando o operador o inicia, roda como processo local
 separado e usa exclusivamente os contratos canônicos do próprio motor.
 """
@@ -26,10 +26,11 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 
-PASTA = Path(sys._MEIPASS) if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
 if getattr(sys, "frozen", False):
+    PASTA = Path(sys._MEIPASS) / "interface"
     MOTOR = Path(sys._MEIPASS) / "motor_bonus.py"
 else:
+    PASTA = Path(__file__).resolve().parent
     MOTOR = PASTA.parent / "motor_bonus.py"
 CARD_ID_VALIDO = re.compile(r"^[A-Za-z0-9@_-]{1,64}$")
 FUNCOES_PURAS = {
@@ -443,6 +444,18 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
             self.end_headers()
             self.wfile.write(corpo)
 
+        def responder_arquivo(self, nome: str, tipo: str):
+            arquivo = PASTA / nome
+            if not arquivo.is_file():
+                self.responder_json(404, {"ok": False, "erro": "arquivo local ausente"})
+                return
+            corpo = arquivo.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", tipo)
+            self.send_header("Content-Length", str(len(corpo)))
+            self.end_headers()
+            self.wfile.write(corpo)
+
         def do_POST(self):
             caminho = urllib.parse.urlparse(self.path)
             try:
@@ -465,6 +478,12 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
             caminho = urllib.parse.urlparse(self.path)
             parametros = urllib.parse.parse_qs(caminho.query)
             try:
+                if caminho.path == "/":
+                    return self.responder_arquivo("index.html", "text/html; charset=utf-8")
+                if caminho.path == "/app.js":
+                    return self.responder_arquivo("app.js", "text/javascript; charset=utf-8")
+                if caminho.path == "/style.css":
+                    return self.responder_arquivo("style.css", "text/css; charset=utf-8")
                 if caminho.path == "/api/ping":
                     return self.responder_json(200, {"ok": True, "aplicativo": "bonificador_clubefootball", "versao_interface": "20260831-v2-native"})
                 if caminho.path == "/api/saude":

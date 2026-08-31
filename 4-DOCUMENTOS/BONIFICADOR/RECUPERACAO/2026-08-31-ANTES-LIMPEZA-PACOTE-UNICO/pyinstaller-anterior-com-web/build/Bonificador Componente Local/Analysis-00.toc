@@ -1,0 +1,1429 @@
+(['C:\\Users\\Luis '
+  'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\servidor.py'],
+ ['C:\\Users\\Luis '
+  'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface'],
+ [],
+ [('C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\site-packages\\numpy\\_pyinstaller',
+   0),
+  ('C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks',
+   -1000),
+  ('C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\site-packages\\_pyinstaller_hooks_contrib',
+   -1000)],
+ {},
+ [],
+ [],
+ False,
+ {},
+ 0,
+ [],
+ [('interface\\__pycache__\\servidor.cpython-312.pyc',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\__pycache__\\servidor.cpython-312.pyc',
+   'DATA'),
+  ('interface\\__pycache__\\servidor.cpython-314.pyc',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\__pycache__\\servidor.cpython-314.pyc',
+   'DATA'),
+  ('interface\\app.js',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\app.js',
+   'DATA'),
+  ('interface\\index.html',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\index.html',
+   'DATA'),
+  ('interface\\servidor.py',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\servidor.py',
+   'DATA'),
+  ('interface\\style.css',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\style.css',
+   'DATA'),
+  ('motor_bonus.py',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\motor_bonus.py',
+   'DATA')],
+ '3.12.13 (main, Aug  7 2026, 02:26:41) [MSC v.1944 64 bit (AMD64)]',
+ [('pyi_rth_inspect',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_inspect.py',
+   'PYSOURCE'),
+  ('servidor',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\servidor.py',
+   'PYSOURCE')],
+ [('zipfile',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\zipfile\\__init__.py',
+   'PYMODULE'),
+  ('zipfile._path',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\zipfile\\_path\\__init__.py',
+   'PYMODULE'),
+  ('zipfile._path.glob',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\zipfile\\_path\\glob.py',
+   'PYMODULE'),
+  ('contextlib',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\contextlib.py',
+   'PYMODULE'),
+  ('argparse',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\argparse.py',
+   'PYMODULE'),
+  ('textwrap',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\textwrap.py',
+   'PYMODULE'),
+  ('gettext',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\gettext.py',
+   'PYMODULE'),
+  ('py_compile',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\py_compile.py',
+   'PYMODULE'),
+  ('importlib.machinery',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\machinery.py',
+   'PYMODULE'),
+  ('importlib',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\__init__.py',
+   'PYMODULE'),
+  ('importlib._bootstrap',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\_bootstrap.py',
+   'PYMODULE'),
+  ('importlib._bootstrap_external',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\_bootstrap_external.py',
+   'PYMODULE'),
+  ('importlib.metadata',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\metadata\\__init__.py',
+   'PYMODULE'),
+  ('typing',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\typing.py',
+   'PYMODULE'),
+  ('importlib.abc',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\abc.py',
+   'PYMODULE'),
+  ('importlib.resources.abc',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\resources\\abc.py',
+   'PYMODULE'),
+  ('importlib.resources',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\resources\\__init__.py',
+   'PYMODULE'),
+  ('importlib.resources._legacy',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\resources\\_legacy.py',
+   'PYMODULE'),
+  ('importlib.resources._common',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\resources\\_common.py',
+   'PYMODULE'),
+  ('importlib.resources._adapters',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\resources\\_adapters.py',
+   'PYMODULE'),
+  ('tempfile',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\tempfile.py',
+   'PYMODULE'),
+  ('random',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\random.py',
+   'PYMODULE'),
+  ('statistics',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\statistics.py',
+   'PYMODULE'),
+  ('decimal',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\decimal.py',
+   'PYMODULE'),
+  ('_pydecimal',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\_pydecimal.py',
+   'PYMODULE'),
+  ('contextvars',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\contextvars.py',
+   'PYMODULE'),
+  ('fractions',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\fractions.py',
+   'PYMODULE'),
+  ('numbers',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\numbers.py',
+   'PYMODULE'),
+  ('bisect',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\bisect.py',
+   'PYMODULE'),
+  ('importlib._abc',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\_abc.py',
+   'PYMODULE'),
+  ('importlib.metadata._itertools',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\metadata\\_itertools.py',
+   'PYMODULE'),
+  ('importlib.metadata._functools',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\metadata\\_functools.py',
+   'PYMODULE'),
+  ('importlib.metadata._collections',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\metadata\\_collections.py',
+   'PYMODULE'),
+  ('importlib.metadata._meta',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\metadata\\_meta.py',
+   'PYMODULE'),
+  ('importlib.metadata._adapters',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\metadata\\_adapters.py',
+   'PYMODULE'),
+  ('importlib.metadata._text',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\metadata\\_text.py',
+   'PYMODULE'),
+  ('email.message',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\message.py',
+   'PYMODULE'),
+  ('email.policy',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\policy.py',
+   'PYMODULE'),
+  ('email.contentmanager',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\contentmanager.py',
+   'PYMODULE'),
+  ('email.quoprimime',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\quoprimime.py',
+   'PYMODULE'),
+  ('string',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\string.py',
+   'PYMODULE'),
+  ('email.headerregistry',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\headerregistry.py',
+   'PYMODULE'),
+  ('email._header_value_parser',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\_header_value_parser.py',
+   'PYMODULE'),
+  ('urllib',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\urllib\\__init__.py',
+   'PYMODULE'),
+  ('email.iterators',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\iterators.py',
+   'PYMODULE'),
+  ('email.generator',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\generator.py',
+   'PYMODULE'),
+  ('email._encoded_words',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\_encoded_words.py',
+   'PYMODULE'),
+  ('base64',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\base64.py',
+   'PYMODULE'),
+  ('getopt',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\getopt.py',
+   'PYMODULE'),
+  ('email.charset',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\charset.py',
+   'PYMODULE'),
+  ('email.encoders',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\encoders.py',
+   'PYMODULE'),
+  ('email.base64mime',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\base64mime.py',
+   'PYMODULE'),
+  ('email._policybase',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\_policybase.py',
+   'PYMODULE'),
+  ('email.header',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\header.py',
+   'PYMODULE'),
+  ('email.errors',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\errors.py',
+   'PYMODULE'),
+  ('email.utils',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\utils.py',
+   'PYMODULE'),
+  ('email._parseaddr',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\_parseaddr.py',
+   'PYMODULE'),
+  ('calendar',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\calendar.py',
+   'PYMODULE'),
+  ('datetime',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\datetime.py',
+   'PYMODULE'),
+  ('_pydatetime',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\_pydatetime.py',
+   'PYMODULE'),
+  ('_strptime',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\_strptime.py',
+   'PYMODULE'),
+  ('socket',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\socket.py',
+   'PYMODULE'),
+  ('selectors',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\selectors.py',
+   'PYMODULE'),
+  ('quopri',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\quopri.py',
+   'PYMODULE'),
+  ('email',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\__init__.py',
+   'PYMODULE'),
+  ('email.parser',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\parser.py',
+   'PYMODULE'),
+  ('email.feedparser',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\email\\feedparser.py',
+   'PYMODULE'),
+  ('csv',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\csv.py',
+   'PYMODULE'),
+  ('importlib.readers',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\readers.py',
+   'PYMODULE'),
+  ('importlib.resources.readers',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\resources\\readers.py',
+   'PYMODULE'),
+  ('importlib.resources._itertools',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\resources\\_itertools.py',
+   'PYMODULE'),
+  ('tokenize',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\tokenize.py',
+   'PYMODULE'),
+  ('token',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\token.py',
+   'PYMODULE'),
+  ('lzma',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\lzma.py',
+   'PYMODULE'),
+  ('_compression',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\_compression.py',
+   'PYMODULE'),
+  ('bz2',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\bz2.py',
+   'PYMODULE'),
+  ('struct',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\struct.py',
+   'PYMODULE'),
+  ('shutil',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\shutil.py',
+   'PYMODULE'),
+  ('tarfile',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\tarfile.py',
+   'PYMODULE'),
+  ('gzip',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\gzip.py',
+   'PYMODULE'),
+  ('fnmatch',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\fnmatch.py',
+   'PYMODULE'),
+  ('importlib.util',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\util.py',
+   'PYMODULE'),
+  ('inspect',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\inspect.py',
+   'PYMODULE'),
+  ('dis',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\dis.py',
+   'PYMODULE'),
+  ('opcode',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\opcode.py',
+   'PYMODULE'),
+  ('stringprep',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\stringprep.py',
+   'PYMODULE'),
+  ('_py_abc',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\_py_abc.py',
+   'PYMODULE'),
+  ('tracemalloc',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\tracemalloc.py',
+   'PYMODULE'),
+  ('pickle',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\pickle.py',
+   'PYMODULE'),
+  ('pprint',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\pprint.py',
+   'PYMODULE'),
+  ('dataclasses',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\dataclasses.py',
+   'PYMODULE'),
+  ('_compat_pickle',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\_compat_pickle.py',
+   'PYMODULE'),
+  ('pathlib',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\pathlib.py',
+   'PYMODULE'),
+  ('http.server',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\http\\server.py',
+   'PYMODULE'),
+  ('socketserver',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\socketserver.py',
+   'PYMODULE'),
+  ('mimetypes',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\mimetypes.py',
+   'PYMODULE'),
+  ('http.client',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\http\\client.py',
+   'PYMODULE'),
+  ('ssl',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\ssl.py',
+   'PYMODULE'),
+  ('html',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\html\\__init__.py',
+   'PYMODULE'),
+  ('html.entities',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\html\\entities.py',
+   'PYMODULE'),
+  ('http',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\http\\__init__.py',
+   'PYMODULE'),
+  ('urllib.request',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\urllib\\request.py',
+   'PYMODULE'),
+  ('ipaddress',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\ipaddress.py',
+   'PYMODULE'),
+  ('getpass',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\getpass.py',
+   'PYMODULE'),
+  ('nturl2path',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\nturl2path.py',
+   'PYMODULE'),
+  ('ftplib',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\ftplib.py',
+   'PYMODULE'),
+  ('netrc',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\netrc.py',
+   'PYMODULE'),
+  ('http.cookiejar',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\http\\cookiejar.py',
+   'PYMODULE'),
+  ('logging',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\logging\\__init__.py',
+   'PYMODULE'),
+  ('urllib.response',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\urllib\\response.py',
+   'PYMODULE'),
+  ('urllib.parse',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\urllib\\parse.py',
+   'PYMODULE'),
+  ('urllib.error',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\urllib\\error.py',
+   'PYMODULE'),
+  ('threading',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\threading.py',
+   'PYMODULE'),
+  ('_threading_local',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\_threading_local.py',
+   'PYMODULE'),
+  ('subprocess',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\subprocess.py',
+   'PYMODULE'),
+  ('signal',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\signal.py',
+   'PYMODULE'),
+  ('json',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\json\\__init__.py',
+   'PYMODULE'),
+  ('json.encoder',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\json\\encoder.py',
+   'PYMODULE'),
+  ('json.decoder',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\json\\decoder.py',
+   'PYMODULE'),
+  ('json.scanner',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\json\\scanner.py',
+   'PYMODULE'),
+  ('hashlib',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\hashlib.py',
+   'PYMODULE'),
+  ('copy',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\copy.py',
+   'PYMODULE'),
+  ('ast',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\ast.py',
+   'PYMODULE'),
+  ('__future__',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\__future__.py',
+   'PYMODULE')],
+ [('python312.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python312.dll',
+   'BINARY'),
+  ('_decimal.pyd',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\DLLs\\_decimal.pyd',
+   'EXTENSION'),
+  ('select.pyd',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\DLLs\\select.pyd',
+   'EXTENSION'),
+  ('_socket.pyd',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\DLLs\\_socket.pyd',
+   'EXTENSION'),
+  ('_lzma.pyd',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\DLLs\\_lzma.pyd',
+   'EXTENSION'),
+  ('_bz2.pyd',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\DLLs\\_bz2.pyd',
+   'EXTENSION'),
+  ('unicodedata.pyd',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\DLLs\\unicodedata.pyd',
+   'EXTENSION'),
+  ('_ssl.pyd',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\DLLs\\_ssl.pyd',
+   'EXTENSION'),
+  ('_hashlib.pyd',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\DLLs\\_hashlib.pyd',
+   'EXTENSION'),
+  ('api-ms-win-crt-stdio-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-crt-stdio-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-convert-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-crt-convert-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-locale-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-crt-locale-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-string-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-crt-string-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-runtime-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-crt-runtime-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-process-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-crt-process-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-time-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-crt-time-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-math-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-crt-math-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-environment-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-crt-environment-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-conio-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-crt-conio-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-crt-heap-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-crt-heap-l1-1-0.dll',
+   'BINARY'),
+  ('VCRUNTIME140.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\VCRUNTIME140.dll',
+   'BINARY'),
+  ('api-ms-win-crt-filesystem-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-crt-filesystem-l1-1-0.dll',
+   'BINARY'),
+  ('libcrypto-3-x64.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\DLLs\\libcrypto-3-x64.dll',
+   'BINARY'),
+  ('libssl-3-x64.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\DLLs\\libssl-3-x64.dll',
+   'BINARY'),
+  ('ucrtbase.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\ucrtbase.dll',
+   'BINARY'),
+  ('api-ms-win-crt-utility-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-crt-utility-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-processthreads-l1-1-1.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-processthreads-l1-1-1.dll',
+   'BINARY'),
+  ('api-ms-win-core-debug-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-debug-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-string-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-string-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-file-l2-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-file-l2-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-heap-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-heap-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-memory-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-memory-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-handle-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-handle-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-profile-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-profile-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-libraryloader-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-libraryloader-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-console-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-console-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-processenvironment-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-processenvironment-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-datetime-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-datetime-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-file-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-file-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-fibers-l1-1-1.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-fibers-l1-1-1.dll',
+   'BINARY'),
+  ('api-ms-win-core-synch-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-synch-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-processthreads-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-processthreads-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-timezone-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-timezone-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-namedpipe-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-namedpipe-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-interlocked-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-interlocked-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-sysinfo-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-sysinfo-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-kernel32-legacy-l1-1-1.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-kernel32-legacy-l1-1-1.dll',
+   'BINARY'),
+  ('api-ms-win-core-sysinfo-l1-2-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-sysinfo-l1-2-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-file-l1-2-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-file-l1-2-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-localization-l1-2-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-localization-l1-2-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-synch-l1-2-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-synch-l1-2-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-util-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-util-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-rtlsupport-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-rtlsupport-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-fibers-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-fibers-l1-1-0.dll',
+   'BINARY'),
+  ('api-ms-win-core-errorhandling-l1-1-0.dll',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\libheif\\libheif\\bin\\api-ms-win-core-errorhandling-l1-1-0.dll',
+   'BINARY')],
+ [],
+ [],
+ [('interface\\__pycache__\\servidor.cpython-312.pyc',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\__pycache__\\servidor.cpython-312.pyc',
+   'DATA'),
+  ('interface\\__pycache__\\servidor.cpython-314.pyc',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\__pycache__\\servidor.cpython-314.pyc',
+   'DATA'),
+  ('interface\\app.js',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\app.js',
+   'DATA'),
+  ('interface\\index.html',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\index.html',
+   'DATA'),
+  ('interface\\servidor.py',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\servidor.py',
+   'DATA'),
+  ('interface\\style.css',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\interface\\style.css',
+   'DATA'),
+  ('motor_bonus.py',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\2-MOTORES\\BONIFICADOR\\motor_bonus.py',
+   'DATA'),
+  ('base_library.zip',
+   'C:\\Users\\Luis '
+   'Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\4-DOCUMENTOS\\BONIFICADOR\\TEMP-PYINSTALLER\\build\\Bonificador '
+   'Componente Local\\base_library.zip',
+   'DATA')],
+ [('codecs',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\codecs.py',
+   'PYMODULE'),
+  ('collections.abc',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\collections\\abc.py',
+   'PYMODULE'),
+  ('collections',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\collections\\__init__.py',
+   'PYMODULE'),
+  ('stat',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\stat.py',
+   'PYMODULE'),
+  ('copyreg',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\copyreg.py',
+   'PYMODULE'),
+  ('reprlib',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\reprlib.py',
+   'PYMODULE'),
+  ('sre_parse',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\sre_parse.py',
+   'PYMODULE'),
+  ('heapq',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\heapq.py',
+   'PYMODULE'),
+  ('sre_compile',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\sre_compile.py',
+   'PYMODULE'),
+  ('io',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\io.py',
+   'PYMODULE'),
+  ('types',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\types.py',
+   'PYMODULE'),
+  ('locale',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\locale.py',
+   'PYMODULE'),
+  ('encodings.zlib_codec',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\zlib_codec.py',
+   'PYMODULE'),
+  ('encodings.uu_codec',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\uu_codec.py',
+   'PYMODULE'),
+  ('encodings.utf_8_sig',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\utf_8_sig.py',
+   'PYMODULE'),
+  ('encodings.utf_8',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\utf_8.py',
+   'PYMODULE'),
+  ('encodings.utf_7',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\utf_7.py',
+   'PYMODULE'),
+  ('encodings.utf_32_le',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\utf_32_le.py',
+   'PYMODULE'),
+  ('encodings.utf_32_be',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\utf_32_be.py',
+   'PYMODULE'),
+  ('encodings.utf_32',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\utf_32.py',
+   'PYMODULE'),
+  ('encodings.utf_16_le',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\utf_16_le.py',
+   'PYMODULE'),
+  ('encodings.utf_16_be',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\utf_16_be.py',
+   'PYMODULE'),
+  ('encodings.utf_16',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\utf_16.py',
+   'PYMODULE'),
+  ('encodings.unicode_escape',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\unicode_escape.py',
+   'PYMODULE'),
+  ('encodings.undefined',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\undefined.py',
+   'PYMODULE'),
+  ('encodings.tis_620',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\tis_620.py',
+   'PYMODULE'),
+  ('encodings.shift_jisx0213',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\shift_jisx0213.py',
+   'PYMODULE'),
+  ('encodings.shift_jis_2004',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\shift_jis_2004.py',
+   'PYMODULE'),
+  ('encodings.shift_jis',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\shift_jis.py',
+   'PYMODULE'),
+  ('encodings.rot_13',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\rot_13.py',
+   'PYMODULE'),
+  ('encodings.raw_unicode_escape',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\raw_unicode_escape.py',
+   'PYMODULE'),
+  ('encodings.quopri_codec',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\quopri_codec.py',
+   'PYMODULE'),
+  ('encodings.punycode',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\punycode.py',
+   'PYMODULE'),
+  ('encodings.ptcp154',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\ptcp154.py',
+   'PYMODULE'),
+  ('encodings.palmos',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\palmos.py',
+   'PYMODULE'),
+  ('encodings.oem',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\oem.py',
+   'PYMODULE'),
+  ('encodings.mbcs',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\mbcs.py',
+   'PYMODULE'),
+  ('encodings.mac_turkish',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\mac_turkish.py',
+   'PYMODULE'),
+  ('encodings.mac_romanian',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\mac_romanian.py',
+   'PYMODULE'),
+  ('encodings.mac_roman',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\mac_roman.py',
+   'PYMODULE'),
+  ('encodings.mac_latin2',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\mac_latin2.py',
+   'PYMODULE'),
+  ('encodings.mac_iceland',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\mac_iceland.py',
+   'PYMODULE'),
+  ('encodings.mac_greek',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\mac_greek.py',
+   'PYMODULE'),
+  ('encodings.mac_farsi',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\mac_farsi.py',
+   'PYMODULE'),
+  ('encodings.mac_cyrillic',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\mac_cyrillic.py',
+   'PYMODULE'),
+  ('encodings.mac_croatian',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\mac_croatian.py',
+   'PYMODULE'),
+  ('encodings.mac_arabic',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\mac_arabic.py',
+   'PYMODULE'),
+  ('encodings.latin_1',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\latin_1.py',
+   'PYMODULE'),
+  ('encodings.kz1048',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\kz1048.py',
+   'PYMODULE'),
+  ('encodings.koi8_u',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\koi8_u.py',
+   'PYMODULE'),
+  ('encodings.koi8_t',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\koi8_t.py',
+   'PYMODULE'),
+  ('encodings.koi8_r',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\koi8_r.py',
+   'PYMODULE'),
+  ('encodings.johab',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\johab.py',
+   'PYMODULE'),
+  ('encodings.iso8859_9',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_9.py',
+   'PYMODULE'),
+  ('encodings.iso8859_8',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_8.py',
+   'PYMODULE'),
+  ('encodings.iso8859_7',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_7.py',
+   'PYMODULE'),
+  ('encodings.iso8859_6',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_6.py',
+   'PYMODULE'),
+  ('encodings.iso8859_5',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_5.py',
+   'PYMODULE'),
+  ('encodings.iso8859_4',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_4.py',
+   'PYMODULE'),
+  ('encodings.iso8859_3',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_3.py',
+   'PYMODULE'),
+  ('encodings.iso8859_2',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_2.py',
+   'PYMODULE'),
+  ('encodings.iso8859_16',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_16.py',
+   'PYMODULE'),
+  ('encodings.iso8859_15',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_15.py',
+   'PYMODULE'),
+  ('encodings.iso8859_14',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_14.py',
+   'PYMODULE'),
+  ('encodings.iso8859_13',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_13.py',
+   'PYMODULE'),
+  ('encodings.iso8859_11',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_11.py',
+   'PYMODULE'),
+  ('encodings.iso8859_10',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_10.py',
+   'PYMODULE'),
+  ('encodings.iso8859_1',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso8859_1.py',
+   'PYMODULE'),
+  ('encodings.iso2022_kr',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso2022_kr.py',
+   'PYMODULE'),
+  ('encodings.iso2022_jp_ext',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso2022_jp_ext.py',
+   'PYMODULE'),
+  ('encodings.iso2022_jp_3',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso2022_jp_3.py',
+   'PYMODULE'),
+  ('encodings.iso2022_jp_2004',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso2022_jp_2004.py',
+   'PYMODULE'),
+  ('encodings.iso2022_jp_2',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso2022_jp_2.py',
+   'PYMODULE'),
+  ('encodings.iso2022_jp_1',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso2022_jp_1.py',
+   'PYMODULE'),
+  ('encodings.iso2022_jp',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\iso2022_jp.py',
+   'PYMODULE'),
+  ('encodings.idna',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\idna.py',
+   'PYMODULE'),
+  ('encodings.hz',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\hz.py',
+   'PYMODULE'),
+  ('encodings.hp_roman8',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\hp_roman8.py',
+   'PYMODULE'),
+  ('encodings.hex_codec',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\hex_codec.py',
+   'PYMODULE'),
+  ('encodings.gbk',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\gbk.py',
+   'PYMODULE'),
+  ('encodings.gb2312',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\gb2312.py',
+   'PYMODULE'),
+  ('encodings.gb18030',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\gb18030.py',
+   'PYMODULE'),
+  ('encodings.euc_kr',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\euc_kr.py',
+   'PYMODULE'),
+  ('encodings.euc_jp',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\euc_jp.py',
+   'PYMODULE'),
+  ('encodings.euc_jisx0213',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\euc_jisx0213.py',
+   'PYMODULE'),
+  ('encodings.euc_jis_2004',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\euc_jis_2004.py',
+   'PYMODULE'),
+  ('encodings.cp950',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp950.py',
+   'PYMODULE'),
+  ('encodings.cp949',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp949.py',
+   'PYMODULE'),
+  ('encodings.cp932',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp932.py',
+   'PYMODULE'),
+  ('encodings.cp875',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp875.py',
+   'PYMODULE'),
+  ('encodings.cp874',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp874.py',
+   'PYMODULE'),
+  ('encodings.cp869',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp869.py',
+   'PYMODULE'),
+  ('encodings.cp866',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp866.py',
+   'PYMODULE'),
+  ('encodings.cp865',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp865.py',
+   'PYMODULE'),
+  ('encodings.cp864',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp864.py',
+   'PYMODULE'),
+  ('encodings.cp863',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp863.py',
+   'PYMODULE'),
+  ('encodings.cp862',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp862.py',
+   'PYMODULE'),
+  ('encodings.cp861',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp861.py',
+   'PYMODULE'),
+  ('encodings.cp860',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp860.py',
+   'PYMODULE'),
+  ('encodings.cp858',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp858.py',
+   'PYMODULE'),
+  ('encodings.cp857',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp857.py',
+   'PYMODULE'),
+  ('encodings.cp856',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp856.py',
+   'PYMODULE'),
+  ('encodings.cp855',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp855.py',
+   'PYMODULE'),
+  ('encodings.cp852',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp852.py',
+   'PYMODULE'),
+  ('encodings.cp850',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp850.py',
+   'PYMODULE'),
+  ('encodings.cp775',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp775.py',
+   'PYMODULE'),
+  ('encodings.cp737',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp737.py',
+   'PYMODULE'),
+  ('encodings.cp720',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp720.py',
+   'PYMODULE'),
+  ('encodings.cp500',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp500.py',
+   'PYMODULE'),
+  ('encodings.cp437',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp437.py',
+   'PYMODULE'),
+  ('encodings.cp424',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp424.py',
+   'PYMODULE'),
+  ('encodings.cp273',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp273.py',
+   'PYMODULE'),
+  ('encodings.cp1258',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp1258.py',
+   'PYMODULE'),
+  ('encodings.cp1257',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp1257.py',
+   'PYMODULE'),
+  ('encodings.cp1256',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp1256.py',
+   'PYMODULE'),
+  ('encodings.cp1255',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp1255.py',
+   'PYMODULE'),
+  ('encodings.cp1254',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp1254.py',
+   'PYMODULE'),
+  ('encodings.cp1253',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp1253.py',
+   'PYMODULE'),
+  ('encodings.cp1252',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp1252.py',
+   'PYMODULE'),
+  ('encodings.cp1251',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp1251.py',
+   'PYMODULE'),
+  ('encodings.cp1250',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp1250.py',
+   'PYMODULE'),
+  ('encodings.cp1140',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp1140.py',
+   'PYMODULE'),
+  ('encodings.cp1125',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp1125.py',
+   'PYMODULE'),
+  ('encodings.cp1026',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp1026.py',
+   'PYMODULE'),
+  ('encodings.cp1006',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp1006.py',
+   'PYMODULE'),
+  ('encodings.cp037',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\cp037.py',
+   'PYMODULE'),
+  ('encodings.charmap',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\charmap.py',
+   'PYMODULE'),
+  ('encodings.bz2_codec',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\bz2_codec.py',
+   'PYMODULE'),
+  ('encodings.big5hkscs',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\big5hkscs.py',
+   'PYMODULE'),
+  ('encodings.big5',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\big5.py',
+   'PYMODULE'),
+  ('encodings.base64_codec',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\base64_codec.py',
+   'PYMODULE'),
+  ('encodings.ascii',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\ascii.py',
+   'PYMODULE'),
+  ('encodings.aliases',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\aliases.py',
+   'PYMODULE'),
+  ('encodings',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\encodings\\__init__.py',
+   'PYMODULE'),
+  ('enum',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\enum.py',
+   'PYMODULE'),
+  ('traceback',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\traceback.py',
+   'PYMODULE'),
+  ('abc',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\abc.py',
+   'PYMODULE'),
+  ('linecache',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\linecache.py',
+   'PYMODULE'),
+  ('operator',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\operator.py',
+   'PYMODULE'),
+  ('_weakrefset',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\_weakrefset.py',
+   'PYMODULE'),
+  ('functools',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\functools.py',
+   'PYMODULE'),
+  ('warnings',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\warnings.py',
+   'PYMODULE'),
+  ('keyword',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\keyword.py',
+   'PYMODULE'),
+  ('ntpath',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\ntpath.py',
+   'PYMODULE'),
+  ('posixpath',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\posixpath.py',
+   'PYMODULE'),
+  ('_collections_abc',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\_collections_abc.py',
+   'PYMODULE'),
+  ('re._parser',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\re\\_parser.py',
+   'PYMODULE'),
+  ('re._constants',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\re\\_constants.py',
+   'PYMODULE'),
+  ('re._compiler',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\re\\_compiler.py',
+   'PYMODULE'),
+  ('re._casefix',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\re\\_casefix.py',
+   'PYMODULE'),
+  ('sre_constants',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\sre_constants.py',
+   'PYMODULE'),
+  ('weakref',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\weakref.py',
+   'PYMODULE'),
+  ('genericpath',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\genericpath.py',
+   'PYMODULE'),
+  ('re',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\re\\__init__.py',
+   'PYMODULE'),
+  ('os',
+   'C:\\Users\\Luis '
+   'Fernando\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\os.py',
+   'PYMODULE')])

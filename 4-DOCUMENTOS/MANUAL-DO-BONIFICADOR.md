@@ -1,6 +1,9 @@
 # Manual do Bonificador — ClubEfootball
 
-**Versão 1.3 · 31/08/2026**
+**Versão 1.4 · 31/08/2026**
+
+**Aplicativo local atual: V2.0.15.** Há um único ícone para o operador:
+`2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe`.
 
 ## Fila canônica V3
 
@@ -65,9 +68,9 @@ nunca inventa zero para uma ausência.
 
 ### Origem canônica e contratos
 
-O motor de lote não abre tabelas diretamente. Ele lê `bonificador_regua_v1`,
-`bonificador_carta_v1` e `public.bonificador_contexto_escrita_v2`, e grava somente
-por `public.gravar_build_bonificador_v1`. Esses contratos usam
+O motor de lote não abre tabelas diretamente. Ele lê `bonificador_regua_v2`,
+`bonificador_carta_v2` e `public.bonificador_contexto_fila_v3`, e grava somente
+por `public.gravar_build_bonificador_v3`. Esses contratos usam
 IDs físicos/canônicos para carta, posição, playstyle, corpo e função. A referência
 legada sobrevive apenas como fotografia de auditoria e recuperação, fora de gates e da
 decisão do motor.
@@ -75,7 +78,7 @@ decisão do motor.
 O motor de lote permanece em `2-MOTORES/BONIFICADOR/motor_bonus.py`. O ponto normal de
 uso é o aplicativo local `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe`: seus
 botões iniciam, acompanham e param o processo local do motor sem expor a chave ou o
-schema ao navegador. Testes, SQL e recuperação permanecem em
+schema à janela. Testes, SQL e recuperação permanecem em
 `4-DOCUMENTOS/BONIFICADOR`, fora do runtime.
 
 ### Auditoria, paridade e recuperação
@@ -107,12 +110,11 @@ Bonificador.
 |---|---|
 | motor de lote incremental | `2-MOTORES/BONIFICADOR/motor_bonus.py` |
 | aplicativo local de consulta e controle | `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe` |
-| lançador técnico opcional | `2-MOTORES/BONIFICADOR/RODAR-BONIFICADOR-PIPELINE.bat` |
-| lançador de compatibilidade | `2-MOTORES/BONIFICADOR/RODAR-INTERFACE-BONIFICADOR.bat` |
-| receita | `public.bonificador_regua_v1()` |
-| carta | `public.bonificador_carta_v1(card_id)` |
-| contexto de escrita | `public.bonificador_contexto_escrita_v2(limit, offset)` → linhas pendentes e selos calculados pelo banco |
-| gravação preparada | `public.gravar_build_bonificador_v1(p_resultado jsonb)` |
+| payload interno de compilação | `2-MOTORES/BONIFICADOR/windows-app/assets/BonificadorComponente.bin` |
+| receita | `public.bonificador_regua_v2()` |
+| carta | `public.bonificador_carta_v2(card_id)` |
+| fila canônica | `public.bonificador_contexto_fila_v3(limit, offset)` → linhas pendentes e selos calculados pelo banco |
+| gravação preparada | `public.gravar_build_bonificador_v3(p_resultado jsonb)` |
 | destino | `clube_novo.build_bonificador` ligado à linha exata em `build_linha_card` |
 
 `RODAR-O-MOTOR.bat` e `RODAR-TUDO.bat` executam somente o Otimizador
@@ -140,7 +142,7 @@ gravada nem impressa. O lote produtivo não foi executado nesta migração.
 | estilos de IA | JSON `clube.carta_jogo.estilos_ia` | quantidade de bits de IA ligados na carta | `clube_novo.carta_estilo_ia_jogo` + `estilo_ia` | (`card_id`,`bit_estilo_ia`); catálogo pelo bit físico e `pode_rodar` |
 | pares card × função | `clube.build` | universo já calculado pelo Otimizador | `clube_novo.bonificador_par` | projeção privada com FKs (`card_id`,`funcao_id`); está vazia, pois não houve lote autorizado |
 | parâmetros não físicos | `clube.bonus_parametro` | tetos e pesos da regra ClubEfootball | `clube_novo.bonificador_parametro` | 14 valores preservados, sem semântica por texto legado |
-| saída | `clube.build.b_*` via writer legado | fotografia histórica | `clube_novo.build_bonificador` via `gravar_build_bonificador_v1` | writer novo preparado; nenhuma execução produtiva autorizada |
+| saída | `clube.build.b_*` via writer legado | fotografia histórica | `clube_novo.build_bonificador` via `gravar_build_bonificador_v3` | writer canônico; nenhuma execução produtiva autorizada |
 
 As dimensões de nacionalidade, clube, liga e tipo, as habilidades, as posições
 secundárias, os técnicos e os ímpetos foram inventariados e deliberadamente não entram
@@ -152,11 +154,11 @@ A aplicação não lê `clube_novo` diretamente. A migração cria somente três
 allowlisted em `public`, todas `SECURITY DEFINER`, com `search_path` vazio, referências
 qualificadas e `EXECUTE` apenas para `service_role`:
 
-- `bonificador_regua_v1()` — receita allowlisted, chaves estáveis e gates;
-- `bonificador_carta_v1(card_id)` — somente os campos usados pelo Bonificador, com
+- `bonificador_regua_v2()` — receita allowlisted, chaves estáveis e gates;
+- `bonificador_carta_v2(card_id)` — somente os campos usados pelo Bonificador, com
   proveniência, cardinalidades, completude vigente, versões, fingerprints e
   `pode_rodar`;
-- `public.bonificador_contexto_escrita_v2(limit, offset)` — identidade exata da
+- `public.bonificador_contexto_fila_v3(limit, offset)` — identidade exata da
   linha pendente, card, função, posição e fingerprints calculados pelo banco.
 
 `PUBLIC`, `anon` e `authenticated` não recebem execução. Nenhuma tabela de
@@ -164,7 +166,7 @@ qualificadas e `EXECUTE` apenas para `service_role`:
 
 O runtime produtivo não chama mais `public.gravar_bonus` e não escreve em
 `clube.build`. Para cada resultado apto ele chama exclusivamente
-`public.gravar_build_bonificador_v1`, que relê a completude, confere identidade,
+`public.gravar_build_bonificador_v3`, que relê a completude, confere identidade,
 selos, parcelas, total e ligação, tudo na mesma transação. O retorno só é aceito se
 trouxer `readback=ok`, a mesma linha, os mesmos selos e um fingerprint SHA-256.
 `bonus_fisico_detalhe` leva a contribuição efetiva de cada medida e sua soma decimal
@@ -269,7 +271,8 @@ para aceitar `funcao_id`, e o chamador passa esse ID a `bonus_do_corpo` e
 documentados separadamente:
 
 - `regua_bonus()` não devolvia `casa`/`liga`, embora o código as lesse; o resultado era
-  zero silencioso. O contrato v1 entrega as mesmas regras reindexadas por IDs;
+  zero silencioso. O contrato canônico atual entrega as mesmas regras reindexadas por
+  IDs;
 - a referência código técnico → rótulo do molde estava quebrada e foi corrigida pela
   ponte canônica autorizada, sem tocar no conteúdo do molde;
 - `molde_corpo.direcao` é numérico (`-1/0/1`), enquanto o código histórico testa o
@@ -287,75 +290,59 @@ O consumidor `casa_tela` permanece intacto. A validação visual do aplicativo l
 registrada em `4-DOCUMENTOS/BONIFICADOR/INTERFACE-LOCAL.md`; ela não toca a UI
 principal, o Otimizador ou o Extrator.
 
-## 11. Estado operacional final
+## 11. Estado operacional e gates
 
-As portas de leitura do lote V9 são `bonificador_regua_v1`,
-`bonificador_carta_v1` e `public.bonificador_contexto_escrita_v2`. A auditoria de suas definições
-confirmou zero referência a `clube.*`; elas leem exclusivamente relações privadas de
-`clube_novo`, indexadas por IDs e com gates fail-closed. O legado subsiste apenas como
-snapshot/contraprova de migração, fora do caminho decisório.
+O caminho efetivo lê `bonificador_regua_v2`, `bonificador_carta_v2` e
+`bonificador_contexto_fila_v3`. A gravação, quando autorizada, passa somente por
+`gravar_build_bonificador_v3`. As relações de `clube_novo` continuam privadas: a
+janela não recebe URL de banco, chave, schema nem acesso direto a tabela.
 
-`funcao_id` é a chave interna de todos os pares, moldes e regras de estilo. O writer
-novo recebe também `build_linha_card_id` e `posicao_id`; `funcao_codigo` permanece
-apenas informativo e não decide a gravação.
+`funcao_id` é a chave que liga o par, o molde e a regra de playstyle. `funcao_codigo`
+e rótulos humanos servem só para mostrar a informação; não escolhem regra nem liberam
+gate. Carta incompleta, catálogo sem `pode_rodar`, fingerprint divergente ou contrato
+indisponível deixam a linha bloqueada. Não existe fallback legado.
 
-### Compatibilidade necessária antes de ligar o lote
+Quando não há linha apta, o motor fica em **aguardando** e consulta a fila novamente.
+Ele não fabrica fila, checkpoint, cache ou resultado local. Um lote produtivo continua
+dependendo dos gates e da autorização operacional; este manual não autoriza dispará-lo.
 
-O runtime V9 está preparado, mas permanece fail-closed enquanto os contratos vivos não
-entregarem toda a identidade. `bonificador_contexto_escrita_v2` precisa devolver
-`build_linha_card_id`, card, função, posição, versões e fingerprints calculados pelo
-próprio banco. `bonificador_carta_v1` precisa confirmar os mesmos `carta_versao` e
-`carta_fingerprint`, além de `completude_motor.apto_motor=true`. Campo ausente ou
-retorno divergente encerra o lote antes da escrita. O writer e o RPC de contexto ainda
-precisam ser instalados e relidos no banco por uma ação separada; este ajuste de runtime
-não os instalou e não executou lote real. As duas portas ficam em `public` com acesso
-controlado; o schema privado `clube_novo` não precisa e não deve ser exposto no Data API.
-Quando o contexto retorna zero linhas pendentes, o pipeline informa que está aguardando,
-espera cinco segundos por padrão e consulta de novo. O intervalo é configurável pela
-variável de ambiente `CLUBEF_BONIFICADOR_INTERVALO_SEGUNDOS` (mínimo de um segundo).
-Uma rodada confirma somente suas linhas; assim que o Otimizador confirmar outra, ela
-entra na próxima consulta, sem esperar o lote inteiro. `Ctrl+C` faz a parada normal;
-resultados já confirmados continuam no banco.
+## 12. Aplicativo local único
 
-## 13. Pipeline incremental para produção
+Abra somente **Bonificador ClubEfootball.exe** pelo ícone. Ele é uma janela nativa do
+Windows: não abre Edge, navegador nem página web. Ao abrir, o EXE cria um componente
+interno temporário em porta livre de `127.0.0.1`, confirma o `ping` e mostra a janela.
+O componente não é um segundo aplicativo: fica invisível, é encerrado junto com a
+janela e sua cópia temporária é apagada ao fechar.
 
-No computador dedicado, abra **Bonificador ClubEfootball.exe** e use o botão
-**Iniciar Bonificador**. A tela informa se está processando, aguardando novas linhas ou
-parando; o botão **Parar normalmente** pede o fim após a rodada em andamento. Mantenha
-**um único escritor Bonificador** para o mesmo banco. O `.bat` de pipeline permanece
-somente como lançador técnico para diagnóstico, não como caminho normal do operador.
-O motor não cria checkpoint, fila ou cache local: o estado durável é `clube_novo`, e
-cada ciclo busca de novo somente as linhas já concluídas pelo Otimizador.
+A raiz `2-MOTORES/BONIFICADOR` contém um único `.exe`. O motor-fonte, o servidor-fonte
+e os arquivos de compilação permanecem porque são necessários para manutenção; runtime
+portátil, cache Python, interface web, lançadores `.bat` paralelos e logs automáticos
+não fazem parte do pacote operacional.
 
-Falha de rede aparece como falha, e falha de gate/validação interrompe a rodada; nenhuma
-delas é tratada como sucesso. Linhas incompletas permanecem excluídas do writer e são
-registradas no relatório local `NAO-SEI.txt` da rodada, sem receber valor inventado.
+### O que a tela mostra
 
-Os dados materializados preservam 14 parâmetros, 228 moldes (19 × 12), 13 slots e 90
-regras de playstyle (31 IDs). A paridade contra o snapshot confirmou igualdade de
-parâmetros, moldes, ordem corporal, casa, liga e slots; a única extensão comprovada é
-`playstyle.id_jogo=291` para GO. O rollback foi ensaiado dentro de transação e revertido.
-Nenhum lote produtivo foi executado e a projeção de pares permanece vazia.
+- **Fila do Bonificador:** estado, progresso, linha atual, pendentes, calculadas,
+  confirmadas, eventos e pares retornados pela fila V3.
+- **Testar uma carta:** consulta somente leitura de corpo, pé ruim, posição principal,
+  slots 1 e 2 de playstyle, IA, molde, régua, parcelas e gates.
+- **Auditoria e paridade:** contrato, proveniência, cardinalidades e fingerprints.
 
-## 12. Aplicativo local e fila do Bonificador
+As consultas rodam em segundo plano. Se contrato, rede ou banco demorarem, a janela
+continua responsiva e informa a falha; ela não fica presa em “Não está respondendo”.
+O tempo máximo de uma chamada local é de dez segundos.
 
-Abra `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe` pelo ícone próprio. É uma
-janela nativa do Windows, no padrão do Extrator: não abre Edge nem uma página web. O
-EXE inicia somente o serviço local oculto em `127.0.0.1:8766`; a janela conversa com
-ele e ele, por sua vez, chama os contratos seguros. A chave fica fora da janela.
+## 13. Operação segura
 
-A primeira aba é **Fila do Bonificador**, no padrão da fila do Otimizador. Ela mostra
-estado, progresso da rodada, linha atual, pendências, calculadas, confirmadas, eventos
-e uma tabela de pares. Cada linha vem exclusivamente de
-`bonificador_contexto_escrita_v2`: linha canônica, `card_id`, função/ID, posição/ID e
-selos da carta. Não consulta `clube.build`, não monta uma fila local e não usa nomes
-legados como gate. A aba **Testar uma carta** continua somente leitura e mostra corpo,
-pé ruim, posição, dois playstyles, IA, molde, régua, parcelas e gates. A aba
-**Auditoria e paridade** expõe contrato, proveniência e fingerprints.
+O botão **Iniciar Bonificador** inicia o único processo local do motor. O botão
+**Parar normalmente** pede que ele conclua a rodada atual e não inicie outra. Mantenha
+um único escritor Bonificador para o mesmo banco.
 
-Em 31/08/2026, a régua viva foi relida como apta, mas a projeção de fila ainda não está
-instalada no banco: a chamada canônica devolveu `PGRST202` para
-`bonificador_contexto_escrita_v2`. Por isso a janela apresenta a causa e o motor para
-fail-closed; não há fallback para a função antiga nem para `clube.build`. Esta revisão
-não aplicou banco nem executou lote. Detalhes, testes e recuperação estão em
-`4-DOCUMENTOS/BONIFICADOR/INTERFACE-LOCAL.md`.
+Falha de rede, contrato ou gate nunca vira sucesso silencioso. A linha sem todos os
+insumos canônicos permanece fora da gravação, marcada como ausência conhecida, sem
+valor inventado. Fórmulas, pesos, ordem de cálculo, moldes e regras de jogo não são
+alterados pela aplicação.
+
+Para recuperação, auditoria e prova de paridade, consulte
+`4-DOCUMENTOS/BONIFICADOR/INTERFACE-LOCAL.md`, o checklist oficial e
+`4-DOCUMENTOS/BONIFICADOR/RECUPERACAO`. A limpeza do pacote único tem recuperação em
+`RECUPERACAO/2026-08-31-ANTES-LIMPEZA-PACOTE-UNICO`.

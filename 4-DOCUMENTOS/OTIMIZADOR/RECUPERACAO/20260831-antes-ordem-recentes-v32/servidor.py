@@ -29,7 +29,7 @@ else:
 CONFIG_CANDIDATAS = (MOTOR_DIR.parent / "config.txt", MOTOR_DIR / "config.txt")
 CARD_ID_VALIDO = re.compile(r"^[A-Za-z0-9@_-]{1,64}$")
 APLICATIVO_ID = "otimizador_clubefootball"
-INTERFACE_VERSAO = "20260831-v32"
+INTERFACE_VERSAO = "20260831-v31"
 FILA_V5_AGUARDANDO_APLICACAO = (
     "A fila integral V5 está preparada localmente, mas a migração ainda não foi "
     "aplicada em clube_novo. Nenhuma carta será criada ou processada até essa "
@@ -480,82 +480,6 @@ class ServicoOtimizador:
             saida.append(item)
         return saida
 
-    @staticmethod
-    def _plano_pagina_mais_recente(total, offset, limite):
-        """Converte a paginação canônica crescente em uma página visual decrescente.
-
-        A fila continua imutável e é sempre executada pela sua ``ordem_fila``
-        crescente. Isto só muda a janela que o painel lê: página visual 0 mostra
-        as últimas linhas, e as páginas seguintes caminham para as mais antigas.
-        """
-        total = max(0, int(total or 0))
-        offset = max(0, int(offset or 0))
-        limite = int(limite or 0)
-        if limite not in range(1, 201):
-            raise ErroDaInterface("limite de paginação fora da faixa", 400)
-        quantidade = min(limite, max(0, total - offset))
-        return {
-            "total": total,
-            "offset_visual": offset,
-            "limite": limite,
-            "quantidade": quantidade,
-            "offset_canonico": max(0, total - offset - quantidade),
-        }
-
-    def _ler_pagina_mais_recente(self, lote_id, offset, limite, somente_finais, total_esperado):
-        """Lê o contrato V5 sem alterá-lo e devolve o recorte mais recente primeiro.
-
-        O RPC canônico só expõe ``ordem_fila`` crescente. Usamos o total selado
-        no status para pedir o intervalo equivalente e inverter exclusivamente
-        a resposta de apresentação. Se a fila mudou entre status e leitura,
-        fazemos uma única releitura com o total que o próprio contrato devolveu.
-        """
-        plano = self._plano_pagina_mais_recente(total_esperado, offset, limite)
-
-        def consultar(plano_atual):
-            if plano_atual["quantidade"] == 0:
-                return None
-            resposta = self.gateway.rpc("otimizador_producao_fila_paginada_v5", {
-                "p_lote_id": lote_id,
-                "p_offset": plano_atual["offset_canonico"],
-                "p_limite": plano_atual["quantidade"],
-                "p_somente_finais": bool(somente_finais),
-            }) or {}
-            if resposta.get("contrato") != "otimizador_fila_producao_v5":
-                raise ErroDaInterface("leitura paginada da fila V5 inesperada", 503)
-            return resposta
-
-        fila = consultar(plano)
-        if fila is None:
-            # Não há página naquela posição. O próximo refresh de status traz
-            # linhas recém-gravadas sem fazer uma leitura de tabela paralela.
-            return [], {
-                "total": plano["total"], "offset": plano["offset_visual"],
-                "limite": plano["limite"], "somente_finais": bool(somente_finais),
-                "ordem": "mais_recentes_primeiro",
-            }
-
-        total_observado = max(0, int(fila.get("total") or 0))
-        if total_observado != plano["total"]:
-            # No máximo uma tentativa de alinhamento: evita um loop de leitura
-            # quando o worker conclui uma linha enquanto o painel atualiza.
-            plano = self._plano_pagina_mais_recente(total_observado, offset, limite)
-            fila = consultar(plano)
-            if fila is None:
-                return [], {
-                    "total": plano["total"], "offset": plano["offset_visual"],
-                    "limite": plano["limite"], "somente_finais": bool(somente_finais),
-                    "ordem": "mais_recentes_primeiro",
-                }
-            total_observado = max(0, int(fila.get("total") or 0))
-
-        itens = list(reversed((fila.get("itens") or [])[:plano["quantidade"]]))
-        return itens, {
-            "total": total_observado, "offset": plano["offset_visual"],
-            "limite": plano["limite"], "somente_finais": bool(somente_finais),
-            "ordem": "mais_recentes_primeiro",
-        }
-
     def painel_fila(self, offset=0, limite=100, somente_finais=False):
         status = dict(self._status_fila())
         if not status.get("disponivel"):
@@ -569,20 +493,18 @@ class ServicoOtimizador:
         lote_id = status.get("lote_id")
         itens = []
         pagina = {"total": 0, "offset": int(offset), "limite": int(limite),
-                  "somente_finais": bool(somente_finais),
-                  "ordem": "mais_recentes_primeiro"}
+                  "somente_finais": bool(somente_finais)}
         if lote_id:
-            if somente_finais:
-                total_esperado = sum(
-                    int(status.get(chave) or 0)
-                    for chave in ("concluidas", "bloqueadas", "interrompidas", "falhas")
-                )
-            else:
-                total_esperado = int(status.get("linhas") or 0)
-            bruto, pagina = self._ler_pagina_mais_recente(
-                lote_id, offset, limite, somente_finais, total_esperado
-            )
-            itens = self._linhas_com_rotulos(bruto)
+            fila = self.gateway.rpc("otimizador_producao_fila_paginada_v5", {
+                "p_lote_id": lote_id, "p_offset": int(offset), "p_limite": int(limite),
+                "p_somente_finais": bool(somente_finais),
+            }) or {}
+            if fila.get("contrato") != "otimizador_fila_producao_v5":
+                raise ErroDaInterface("leitura paginada da fila V5 inesperada", 503)
+            itens = self._linhas_com_rotulos(fila.get("itens") or [])
+            pagina = {"total": fila.get("total", 0), "offset": fila.get("offset", offset),
+                      "limite": fila.get("limite", limite),
+                      "somente_finais": bool(fila.get("somente_finais"))}
         por_id = {str(x.get("linha_id")): x for x in itens}
         correntes = status.get("corrente") or []
         linha_atual = None

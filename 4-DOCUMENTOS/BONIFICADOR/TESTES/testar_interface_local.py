@@ -140,7 +140,11 @@ def main():
     servidor = SERVIDOR.read_text(encoding="utf-8")
     assert "bonificador_contexto_fila_v3" in servidor
     assert '"clube_novo"' not in servidor
-    print("INTERFACE_LOCAL_OK simulacao=casillas fila_canonica=1 pipeline_inicio_parada_assincronos=sim post=405")
+    assert "responder_arquivo" not in servidor
+    assert not (SERVIDOR.parent / "index.html").exists()
+    assert not (SERVIDOR.parent / "app.js").exists()
+    assert not (SERVIDOR.parent / "style.css").exists()
+    print("INTERFACE_LOCAL_OK simulacao=casillas fila_canonica=1 pipeline_inicio_parada_assincronos=sim post=405 sem_web=sim")
 
 
 if __name__ == "__main__":
