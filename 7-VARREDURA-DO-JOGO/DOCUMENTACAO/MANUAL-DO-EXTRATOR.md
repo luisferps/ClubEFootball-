@@ -162,14 +162,14 @@ A ativação libera leitura e comparação. Ela não constitui aprovação autom
 - `windows-app/ClubEfootballExtractorLauncher.cs`;
 - `windows-app/COMPILAR-APLICATIVO.ps1`.
 
-A versão operacional é V5.0.0. O único fluxo de abertura é
-`ABRIR-EXTRATOR.cmd` -> `Extrator eFootball.exe` V5.0.0 ->
+A versão operacional é V5.2.0. O único fluxo de abertura é
+`ABRIR-EXTRATOR.cmd` -> `Extrator eFootball.exe` V5.2.0 ->
 `executor/desktop_worker.py`. O launcher cria uma pasta única em
 `artefatos/desktop/`, chama o worker com `--root`, `--run-dir` e `--cancel`,
 e mostra os eventos JSON de progresso. Ele não abre navegador, localhost nem
 servidor HTTP.
 
-O launcher também envia `--protocol-version 5.0.0`. O worker declara a mesma
+O launcher também envia `--protocol-version 5.1.0`. O worker declara a mesma
 versão e falha fechada antes de abrir banco ou fonte se o selo for diferente;
 assim EXE, launcher e runtime não podem operar misturados.
 
@@ -183,7 +183,7 @@ normalizado ao fluxo de `clube_novo`, sem criar uma carga manual paralela.
 
 Depois de gravar o `resultado.json`, o worker gera, na mesma pasta
 `artefatos/desktop/run-...`, o `resultado.html` e o
-`manifesto-execucao.json`. O botão **VER DIVERGÊNCIAS** abre apenas o HTML no
+`manifesto-execucao.json`. O botão **VER RESULTADO** abre apenas o HTML no
 navegador padrão; ele nunca abre o JSON técnico no Bloco de Notas. O HTML é
 permanentemente **humano-primeiro**: mostra primeiro cartas/jogadores,
 habilidades, estilos de IA, posições, atributos, clubes, ligas,
@@ -195,8 +195,10 @@ nome nunca identifica, une ou altera registros.
 A página começa pelo resumo e organiza os exemplos em grupos fechados de dados
 do jogo e, dentro deles, pelo tipo de mudança. Cada grupo mostra dez exemplos
 por vez e libera os próximos sob demanda, para abrir rapidamente mesmo quando
-o resultado técnico é grande. Dados sem rótulo de jogo aparecem sob
-**Informações técnicas para investigar**, também fechados por padrão. IDs,
+o resultado técnico é grande. Cada assunto recebe um nome concreto para o
+operador, como **Listas e nomes usados pelo jogo** ou **Arquivos necessários
+para a leitura**; a tela principal não usa o rótulo vago “Informações técnicas
+para investigar”. IDs,
 chaves, bits, hashes, arquivos, offsets, valores brutos e demais diagnóstico
 ficam exclusivamente no expansível **Detalhes técnicos** de cada exemplo. As
 contagens vêm da varredura integral do resultado salvo; o limite é somente de
@@ -227,11 +229,12 @@ integral `incomplete`. Divergência de conteúdo é classificada como `novo`,
 Relações, Ímpetos, Técnicos, Textos nem Catálogos.
 
 O pedido define o que deve ser lido e a leitura sempre percorre tudo que ele
-declara. Diagnósticos não selecionam registros, não aguardam autorização nem
-se tornam uma seleção manual de dados. O worker atual não contém aplicador de dados do
-jogo; a fronteira de escrita permanece bloqueada para impedir schema errado,
-mas o resultado normalizado e selado está pronto para retorno ao fluxo de
-`clube_novo`.
+declara. Diagnósticos e avisos não alteram nem selecionam registros durante a
+varredura. Somente depois da leitura, mudanças `novas` ou `alteradas` com
+destino, chave, tipo e procedência completos ficam disponíveis em **ESCOLHER O
+QUE ENVIAR**. O pacote selecionado ainda exige aprovação e aplicação separadas;
+abrir o aplicativo, iniciar a varredura ou visualizar o relatório nunca concede
+permissão de escrita.
 
 ## Varredura integral, sem teto de cardinalidade — 29/08/2026
 
@@ -253,7 +256,7 @@ iniciam uma varredura. Atalhos `INICIAR-EXTRATOR-V46.cmd` apenas encaminham
 para `ABRIR-EXTRATOR.cmd` por compatibilidade.
 
 Quando `ClubEfootballExtractorLauncher.cs` ou `desktop_worker.py` mudar,
-execute `windows-app/COMPILAR-APLICATIVO.ps1` para instalar o EXE V5.0.0
+execute `windows-app/COMPILAR-APLICATIVO.ps1` para instalar o EXE V5.2.0
 correspondente. O botão `4-BAIXAR-DO-GITHUB.bat` sincroniza o código e
 recompila o aplicativo, preservando `config.txt`.
 
@@ -569,26 +572,34 @@ aplicação; não seleciona nem suspende a leitura integral. Migração:
 
 ## Aplicador transacional após aceite V5 — 29/08/2026
 
-O botão **APROVAR PACOTE** da janela V5 invoca o worker local com o caminho do
-`pacote-revisao.json`. Antes de registrar a decisão, o worker recalcula o SHA-256
+O botão **ESCOLHER O QUE ENVIAR** abre uma lista na qual nada vem marcado. Só
+dados `novos` ou `alterados` com destino, tipo, chave e procedência completos
+podem ser marcados. Pendências conhecidas, registros históricos, remoções,
+duplicidades e itens inválidos continuam no relatório, mas não são convertidos
+em dados de envio. A escolha gera `pacote-selecionado.json` e
+`plano-selecionado.json`, preservando o pacote original.
+
+O botão **APROVAR PACOTE** da janela V5 invoca o worker local somente com
+`pacote-selecionado.json`. Antes de registrar a decisão, o worker recalcula o SHA-256
 do pacote, relê o contrato ativo, confere o selo completo (contrato, versão do
 jogo, fontes e catálogos), confirma a cobertura técnica por família e verifica
 as fontes declaradas. A decisão persistida contém exatamente o hash e o selo;
 ela não autoriza qualquer outro pacote.
 
 O botão **APLICAR PACOTE** chama o aplicador interno. Ele bloqueia se a decisão
-não for do mesmo hash/selo, se qualquer fonte sumiu, se a cobertura deixou de
-ser integral ou se houver divergência no readback. Em uma única transação ele
+não for do mesmo hash/selo/seleção, se qualquer fonte sumiu, se algum item
+marcado deixou de ser representável ou se houver divergência no readback. Em uma única transação ele
 estagia `execucao_leitura_contrato`, registra a auditoria por família em
 `clube_novo.aplicacao_pacote_revisao_extrator`, lê de volta os selos e só então
 teria permissão de confirmar os envelopes tipados. Identidade e FK são sempre
 as chaves canônicas declaradas; rótulos nunca são usados como chave ou destino.
 
-Durante este desenvolvimento `PRODUCTIVE_WRITES_LOCKED` permanece verdadeiro.
-O pacote atual contém diagnóstico/comparação, não envelopes normalizados de
-escrita de domínio; por isso o aplicador recusa produção antes de qualquer dado
-real. O smoke controlado usa transação integral com rollback e só valida o
-gate, estágio, auditoria e readback. A migração e seu rollback são
+`PRODUCTIVE_WRITES_LOCKED` permanece verdadeiro no aplicativo, na varredura, na
+visualização, na seleção e na aprovação. Somente o processo novo criado depois
+da confirmação em **APLICAR PACOTE** recebe autorização efêmera para executar
+os envelopes normalizados que o operador marcou. O smoke controlado usa a mesma
+transação integral, força rollback e valida gate, estágio, auditoria e readback
+sem confirmar dados reais. A migração e seu rollback são
 `APLICAR-APLICADOR-TRANSACIONAL-EXTRATOR-V1.sql` e
 `ROLLBACK-APLICADOR-TRANSACIONAL-EXTRATOR-V1.sql`.
 
@@ -625,8 +636,8 @@ declaradas e concluiu a conferência de todas as famílias sem escrita. Seu paco
 SHA-256 é `2eea6148608e9184869960d98fc8cdb7985e089f6ae5a56421d05419508cd156`.
 O aceite e `--apply-review --test-rollback` confirmaram estágio, auditoria e
 readback para os 29 destinos declarados, retornando rollback integral; o aceite
-de teste foi restaurado. `PRODUCTIVE_WRITES_LOCKED=true` permanece: não houve
-dados reais de jogo aplicados.
+de teste foi restaurado. Nesse smoke, `PRODUCTIVE_WRITES_LOCKED=true` foi
+mantido e nenhum dado real de jogo foi aplicado.
 
 ### Comparação canônica de Cartas — 29/08/2026
 
@@ -689,3 +700,250 @@ distintas e retornou `exact_match=true`, `mismatch_count=0` e fingerprints
 iguais. No controle `{7, 9}` versus `{7, 11}`, retornou exatamente uma
 habilidade nova e uma removida. Não houve conexão ou escrita de domínio nesse
 teste.
+
+## Operação autônoma diária — 30/08/2026
+
+O fluxo normal do operador usa exclusivamente `ABRIR-EXTRATOR.cmd` (ou
+`Extrator eFootball.exe`) na própria pasta operacional:
+
+1. clicar **INICIAR VARREDURA** para criar uma nova execução somente leitura;
+2. aguardar a conclusão e clicar **VER RESULTADO**;
+3. ler primeiro **Resultado geral da varredura** e **O que você deve fazer
+   agora**. Todo aviso responde, no próprio HTML: **O que significa**, **Afeta
+   os dados de hoje?**, **Impede enviar alterações ao banco?** e **O que você
+   deve fazer**. `Pendência já conhecida` continua visível até ser resolvida,
+   sem ser chamada de falha da extração. `Registro antigo guardado como
+   referência` explica que o item pertence a uma versão antiga e não é tratado
+   como mudança do jogo atual;
+4. se houver dados novos ou alterados, clicar **ESCOLHER O QUE ENVIAR**. Nada
+   vem marcado: selecionar somente os itens que devem subir e criar o pacote;
+5. conferir a quantidade marcada, clicar **APROVAR PACOTE** e confirmar;
+6. somente depois, clicar **APLICAR PACOTE** e confirmar a ação separada;
+7. usar **ABRIR LOG** para consultar o log persistido em `logs`.
+
+Cada execução preserva em `artefatos/desktop/run-<data-hora>` o resultado
+técnico, o HTML de revisão, o manifesto, o pacote selado e
+`plano-aplicacao.json`. Falha de conexão, fonte ausente, erro do worker,
+aprovação recusada ou aplicação recusada aparece na janela e também no log
+local. Abrir o aplicativo ou iniciar a varredura nunca define a permissão de
+escrita.
+
+O plano de aplicação é fail-closed. Ele materializa apenas `UPSERT` cuja
+família, tabela, chaves, colunas, tipos e procedência estão declarados no pedido
+ativo do `clube_novo`. Remoções não são inferidas por ausência. Remoção,
+duplicidade, item inválido, pendência conhecida, registro histórico ou mudança
+sem destino físico unívoco permanece visível, mas não aparece como caixa
+marcável. Uma falha estrutural do contrato bloqueia o pacote; uma observação
+não selecionada não bloqueia os itens válidos marcados. O botão de aplicação só
+injeta a autorização de escrita no processo criado depois da confirmação do
+operador.
+
+A aplicação usa uma única transação. Todos os valores gravados são relidos por
+`SELECT` antes do `COMMIT`; qualquer diferença causa `ROLLBACK`. Depois do
+`COMMIT`, uma segunda conexão relê os mesmos valores e grava no log o hash do
+readback independente. O desenvolvimento e os testes desta entrega usam apenas
+pacotes sintéticos e resultados salvos: não executam varredura viva nem
+aplicação no banco.
+
+## Encerramento operacional do Extrator V5.1 — 30/08/2026
+
+Esta frente está encerrada para o uso diário pelo operador. A versão instalada
+é `Extrator eFootball.exe` V5.1.0.0, aberta por `ABRIR-EXTRATOR.cmd`. O fluxo
+oficial é: varredura somente leitura, relatório humano, seleção explícita,
+aprovação separada e aplicação transacional separada. Nada vem previamente
+marcado para envio.
+
+A execução real de fechamento foi `run-20260830-132440`, registrada em
+`logs/extrator-desktop-20260830-132138.log`. O worker V5.1.0 iniciou às 13:24:40
+e concluiu às 13:27:09. As quatro fontes obrigatórias foram localizadas. Foram
+lidas 43.072 cartas, 72 habilidades, 11.679 textos e 1.478 técnicos, além das
+demais famílias declaradas pelo pedido ativo.
+
+As oito comparações registraram `classification_complete=true` e
+`technical_integrity=true`. O resultado final teve:
+
+- 0 dados novos;
+- 0 dados alterados;
+- 0 dados removidos;
+- 0 duplicidades;
+- 0 itens inválidos;
+- 0 itens disponíveis para seleção;
+- 0 envelopes de aplicação;
+- 0 bloqueios no pacote.
+
+O plano terminou em `no_changes`, com `database_write=false`. O log não contém
+erro, falha, recusa ou traceback, e os 13 artefatos do manifesto conferiram em
+tamanho e SHA-256. Portanto, nessa execução, não havia nada para subir e nenhuma
+escrita automática foi feita.
+
+Continuam visíveis uma pendência conhecida do catálogo completo de Estilos de
+IA e 101 registros históricos de Ímpeto. Eles são observações preservadas para
+auditoria: não são mudanças atuais, não viram dados de envio e não bloqueiam
+outras mudanças válidas que venham a aparecer numa execução futura. Este
+encerramento não afirma que os arquivos brutos do jogo são armazenados no banco
+nem que a lista física completa de Estilos de IA foi localizada; afirma que as
+partes cobertas e comparadas nessa rodada correspondiam ao estado salvo em
+`clube_novo`.
+
+## Radar diário, cards pré-carregados e uso nos motores — V5.2 — 31/08/2026
+
+A varredura deve ser executada diariamente quando o objetivo for descobrir
+lançamentos antes da tela do jogo. A Konami pode pré-carregar cards e boxes
+antes dos horários públicos. Nos horários de liberação conhecidos — domingo às
+23h e quarta-feira de madrugada — o operador primeiro abre o jogo e espera a
+atualização terminar; somente depois abre o Extrator. Fora desses horários, uma
+varredura diária continua útil porque uma pré-carga pode aparecer a qualquer
+momento.
+
+O radar lê `PlayerVariationDetail.bin` no DT870 atualizado e liga cada
+`card_id` ao nome físico da box. Ele grava `radar-lancamentos.json` com origem,
+hash, índice do registro e comparação com a rodada anterior. A primeira rodada
+é apenas a referência local e não chama todas as boxes de novas. A partir da
+segunda rodada comparável, o relatório separa box nova, box já conhecida,
+cards acrescentados e cards que deixaram de aparecer. O radar não confirma que
+a box já foi liberada na tela, não decide publicação e não entra sozinho no
+pacote do banco.
+
+Publicar e rodar motores são decisões independentes. Um card pré-carregado pode
+ser enviado ao banco e mostrado no site ou na home para anunciar a novidade.
+Isso não libera o mesmo card no Otimizador ou no Bonificador. Os dois motores
+só podem usar um card quando a versão atual de todos os insumos necessários
+estiver comprovada; a mesma verificação é repetida antes de aceitar o trabalho
+e antes de salvar o resultado. Se o fingerprint dos insumos mudar, o resultado
+antigo fica vencido e o card volta à fila como trabalho novo.
+
+### O que significa card completo
+
+Cada componente guarda um estado explícito:
+
+- `conferido_com_valor`: foi lido e possui valor;
+- `conferido_sem_valor`: foi lido e o card realmente não possui aquele item;
+- `conferido_sem_vinculo_atual`: o código histórico foi lido, mas o catálogo
+  atual já não contém o vínculo;
+- `nao_conferido`: a região ou o campo não foi lido;
+- `leitura_com_problema`: a leitura ocorreu, mas falhou ou voltou inválida.
+
+Lista vazia, zero ou `NULL` nunca prova sozinho que o dado foi conferido. A
+prova vem do leitor e de sua procedência. Quando essa prova existe, zero itens é
+uma resposta completa. Na fotografia salva de 43.072 cards, 9.551 cards sem
+habilidade, 18.218 sem Estilo de IA e 40.748 sem Ímpeto foram corretamente
+classificados como conferidos sem valor.
+
+Os 354 cards cujo código de clube permanece no `Player.bin`, mas cujo clube não
+existe mais no `Team.bin`, são cards órfãos por mudança de licença. Eles estão
+completos: o código original é preservado, o relatório explica a ausência e
+nenhum clube substituto é inventado. Um cálculo que dependa do clube atual os
+trata explicitamente como sem vínculo atual.
+
+O segundo estilo de jogo usa índice físico, enquanto o primeiro usa o bit
+equivalente a `índice × 4`. Por isso o segundo slot é resolvido por
+`playstyle.indice`, não por `id_jogo` nem pelo bit. Exemplos já comprovados:
+índice 9 é **O destruidor** (`id_jogo=329`), índice 17 é **Goleiro defensivo**
+(`337`) e índice 30 é **Mestre da linha alta** (`350`). Esses estilos não são
+pendências nem cards incompletos.
+
+### Configurar a conexão do banco
+
+Se a janela mostrar **Banco: disconnected**, **senha recusada** ou encerrar o
+worker com código 2, use o botão **CONFIGURAR CONEXÃO**. No painel do Supabase,
+abra o projeto, clique em **Connect** e copie a connection string Postgres
+completa. Confirme que `[YOUR-PASSWORD]` foi substituído pela senha atual. Se a
+conexão direta não funcionar na rede do computador, copie a opção **Session
+pooler** mostrada no mesmo painel.
+
+Cole a string no campo mascarado e clique **TESTAR E SALVAR**. O teste abre uma
+transação marcada pelo próprio Postgres como somente leitura, confirma com uma
+leitura mínima e desfaz a transação. Somente depois desse teste a string é
+salva em
+`artefatos/estado-operador/credencial-banco.windows-dpapi.json`, cifrada pelo
+Windows DPAPI para o usuário atual. A senha não é gravada em texto aberto, não
+entra no relatório, não aparece no log e não é passada na linha de comando.
+
+O launcher remove senhas herdadas do ambiente e entrega a string decifrada
+somente no ambiente privado do processo worker. Arquivo ausente, alterado,
+truncado, de outro usuário do Windows ou substituído por link é recusado por
+segurança. Uma falha de teste fica explicada no log local sem endereço, usuário
+ou senha. Configurar a conexão não instala migração, não ativa motores e não
+altera dados.
+
+### Revisão manual e sequência de cliques
+
+Depois da varredura, **REVISAR USO NOS MOTORES** abre uma tela pesquisável de
+cards colecionáveis. Nada é bloqueado manualmente por padrão. O operador marca
+somente o card que sabe ter sido pré-carregado parcialmente e escreve o motivo.
+A marcação `incompleto_confirmado` nunca bloqueia publicação ou o envio normal
+do card; bloqueia apenas Otimizador e Bonificador. Desmarcar uma observação não
+força o estado “completo”: a leitura automática continua sendo a autoridade.
+
+O fluxo diário V5.2 é:
+
+1. quando houver atualização pública, abrir o jogo e esperar o download;
+2. clicar duas vezes em `ABRIR-EXTRATOR.cmd`;
+3. somente no primeiro uso ou após troca de senha, clicar **CONFIGURAR
+   CONEXÃO**, colar a string do botão Connect e clicar **TESTAR E SALVAR**;
+4. clicar **INICIAR VARREDURA**;
+5. clicar **VER RESULTADO** e ler o resumo de mudanças, boxes e motores;
+6. se necessário, clicar **REVISAR USO NOS MOTORES**, marcar somente cards
+   sabidamente parciais e salvar;
+7. clicar **ESCOLHER O QUE ENVIAR** para selecionar, separadamente, os dados
+   novos ou alterados que irão ao banco;
+8. clicar **APROVAR PACOTE** e depois **APLICAR PACOTE**.
+
+**INSTALAR PROTEÇÃO DOS MOTORES** não é o passo 9 da rotina diária. É uma ação
+única e separada para ativar no banco as travas do Otimizador e do Bonificador.
+O botão só fica disponível depois de uma varredura concluída com
+`no_changes`, prontidão materializada e seed íntegro. Ele não aparece como
+alternativa para ignorar dados novos: se houver algo para enviar, primeiro é
+necessário resolver o pacote normal e fazer outra varredura de confirmação.
+
+A revisão local gera `prontidao-motores.json`,
+`resumo-prontidao-motores.json` e `revisao-prontidao-motores.json`. Marcações do
+operador ficam em
+`artefatos/estado-operador/prontidao-motores-operador.json`. Nenhum desses
+arquivos escreve no banco por existir ou por ser aberto.
+
+### Banco e consumidores
+
+O banco deve guardar, por card e componente, estado de coleta, estado de
+resolução, procedência, versão da regra, fingerprint dos insumos e data da
+validação. Ausência confirmada e card órfão são estados próprios; não são
+inferidos de campo vazio. A carga inicial cria uma fotografia versionada; nas
+rodadas seguintes só card novo ou fingerprint alterado precisa ser atualizado.
+Marca manual é armazenada separadamente da prova física.
+
+A instalação da migração é uma ação explícita e separada. O botão **INSTALAR
+PROTEÇÃO DOS MOTORES** primeiro executa uma prévia realmente somente leitura.
+Essa prévia compara as 43.072 identidades do seed com todas as cartas do banco,
+reconfere o contrato vigente e calcula no estado atual do banco quantos
+resultados de teste serão marcados inválidos para refazer. O número mostrado na
+confirmação vem dessa consulta; não é um número fixado no aplicativo.
+
+Depois da prévia, a janela explica três pontos antes de pedir o aceite: a
+proteção não bloqueia inserir, exibir ou publicar cartas; afeta somente
+Otimizador e Bonificador; e resultados atuais incompatíveis precisarão ser
+refeitos. Cancelar nessa tela não executa nenhuma escrita.
+
+Somente a confirmação positiva inicia uma transação produtiva dedicada. Nela,
+o banco recebe a migração de completude, o escritor transacional do
+Bonificador, uma execução aceita, uma aplicação auditada e os 11 componentes
+de cada uma das 43.072 cartas. O `aplicacao_id` não vem pronto no arquivo: ele é
+o ID real retornado pelo banco nessa mesma transação e é então usado pelo
+registrador. O seed é enviado por tabela temporária em fluxo, evitando 43 mil
+conexões ou chamadas individuais. Qualquer falha anterior ao commit desfaz o
+conjunto inteiro. Depois do commit, uma nova conexão somente leitura confere
+aplicação, totais, 11 componentes por carta, resultados invalidados e escritor
+do Bonificador. O resultado local fica em
+`instalacao-protecao-motores.json`; a prévia fica em
+`previa-protecao-motores.json`.
+
+Essa ação nunca é disparada por **INICIAR VARREDURA**, **ESCOLHER O QUE
+ENVIAR**, **APROVAR PACOTE** ou **APLICAR PACOTE**. Enquanto não tiver sido
+confirmada e relida, a situação correta continua sendo **preparado, mas ainda
+não instalado no banco**.
+
+O lote antigo do Bonificador não faz parte do fluxo clicável e não deve ser
+iniciado manualmente. Ele ainda tenta gravar em `clube.build`. A instalação V1
+fecha essa porta de forma explícita e recuperável, sem redirecionar a gravação,
+e instala o escritor novo para `clube_novo.build_bonificador` dentro da mesma
+transação do gate e do seed. O uso produtivo do escritor continua condicionado
+ao readback final. A interface local de consulta continua somente leitura.

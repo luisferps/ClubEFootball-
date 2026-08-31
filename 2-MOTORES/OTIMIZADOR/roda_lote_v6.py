@@ -55,14 +55,13 @@ if _MEU_LUGAR in _sys.path:
     _sys.path.remove(_MEU_LUGAR)
 _sys.path.insert(0, _MEU_LUGAR)          # `programas` vem PRIMEIRO
 # --------------------------------------------------------------------------
-import hashlib, json, os, sys, time, collections, datetime
+import hashlib, json, os, sys, time, collections, datetime, math
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.chdir(_CASA or os.path.dirname(os.path.abspath(__file__)))
 
 
-# Ímpetos/condições não entram no contrato v1. Nenhuma resolução por nome fica
-# disponível enquanto o gate próprio desse consumidor estiver desligado.
+# Ímpetos entram por código e nível da linha. Rótulos nunca chegam ao motor.
 
 # Quantas linhas por arquivo de saida. 1 = uma linha por gravacao (o padrao).
 # Nao existe mais "lote de calculo": o pool entrega em fluxo, linha a linha.
@@ -123,12 +122,11 @@ _W = {}
 #  ⚠️ MUDOU A LOGICA DO CODIGO (nao um arquivo)? Suba o VERSAO_REGRAS. E o unico
 #     jeito de o sistema saber que a conta de ontem nao vale mais.
 # ============================================================================
-VERSAO_REGRAS = 6      # 6 = tabela de posicao + super substituto + 3 degraus do
-                       #     condicional + trava da data com lista de conferidos
+VERSAO_REGRAS = 7      # 7 = IDs puros + uma linha para cada nível físico do ímpeto
 
 def _carimbo_das_regras():
     b = _W.get('INSUMOS_BASE') or {}
-    c = {'v': VERSAO_REGRAS, 'pool': POOL, 'fonte': 'otimizador_regua_v1',
+    c = {'v': VERSAO_REGRAS, 'pool': POOL, 'fonte': 'otimizador_regua_v2',
          'corte10': bool(CORTE10), 'corte11': bool(CORTE11_LIGADO),
          'corte9': bool(CORTE9_LIGADO), 'margem': 'sem corte (1e18)',
          'contrato': b.get('contrato'), 'versao_molde': b.get('versao_molde'),
@@ -162,9 +160,9 @@ def _fingerprint_insumos(b):
 #  FONTE UNICA  (Luis, 14/08/2026)
 #  "O motor tem que procurar num lugar so."
 #
-#  A porta é fixa: ``public.otimizador_*_v1``. Não existe fallback por arquivo.
+#  A porta é fixa: ``public.otimizador_*_v2``. Não existe fallback por arquivo.
 # ============================================================================
-# ⛔ 27/08 — SEM INTERRUPTOR. A fonte é exclusivamente o contrato v1.
+# ⛔ SEM INTERRUPTOR. A fonte operacional é exclusivamente clube_novo pelo V2.
 
 try:
     import grava_direto as _gd
@@ -214,7 +212,7 @@ def _insumos_da_base():
 
 
 def _recarrega_cards(ids=None):
-    """Relê cartas somente por ``otimizador_cartas_v1``; não há fallback."""
+    """Relê cartas somente por ``otimizador_cartas_v2``; não há fallback."""
     return _recarrega_cards_da_base(ids)
 
 
@@ -248,7 +246,7 @@ def _carrega_no_processo(ids=None):
     _W['TECS'] = _FUt.carrega_tecnicos_do_banco()
     _W['RARAS'] = {}
     _W['FALTA'] = {}
-    _W['INSUMOS'] = {'fonte': 'otimizador_regua_v1',
+    _W['INSUMOS'] = {'fonte': 'otimizador_regua_v2',
                      'fingerprint_ids': _fingerprint_insumos(_b)}
     _W['REGRAS'] = _carimbo_das_regras()
     _recarrega_cards(ids)
@@ -325,6 +323,62 @@ def _fila_incid():
     return {int(fid): {int(sid): float(v) for sid, v in valores.items()}
             for fid, valores in J.items()}
 
+
+def _conta_distribuicoes_barras(c, M):
+    """Conta todas as distribuições de níveis fisicamente cabíveis no orçamento."""
+    card = M.Card(c, m=1.0)
+    orcamento = int(card.orc or 0)
+    maneiras = [0] * (orcamento + 1)
+    maneiras[0] = 1
+    for barra in M.MBK:
+        maximo = min(int(card.nmax_barra[barra]), len(M.ACCU) - 1)
+        custos = [int(M.ACCU[nivel]) for nivel in range(maximo + 1)
+                  if int(M.ACCU[nivel]) <= orcamento]
+        proximas = [0] * (orcamento + 1)
+        for gasto, quantidade in enumerate(maneiras):
+            if not quantidade:
+                continue
+            for custo in custos:
+                if gasto + custo <= orcamento:
+                    proximas[gasto + custo] += quantidade
+        maneiras = proximas
+    return sum(maneiras)
+
+
+def _conta_builds_possiveis(c, M, tecnicos, pool_habilidades):
+    """Universo completo antes das podas exatas do motor."""
+    barras = _conta_distribuicoes_barras(c, M)
+    card = M.Card(c, m=1.0)
+    impetos_adicionais = max(1, len(M._cands_impeto(card)))
+    pesos = {int(x[0]) for x in c.get('arows') or [] if x[1]}
+    tecnicos_possiveis = sum(
+        1 for tecnico in tecnicos
+        if any(int(indice) in pesos for indice in (tecnico.get('boost') or []))
+    )
+    tecnicos_possiveis = max(1, tecnicos_possiveis)
+    quantidade_habilidades = len(pool_habilidades or [])
+    escolhas_habilidades = (1 if quantidade_habilidades <= 5
+                             else math.comb(quantidade_habilidades, 5))
+    return barras * impetos_adicionais * tecnicos_possiveis * escolhas_habilidades
+
+
+def _executa_busca_contando_builds(M, carta, tecnicos, fila_incidencia):
+    """Executa a busca intacta e soma as candidatas finais realmente avaliadas."""
+    original = M._melhor_tecnico
+    comparadas = [0]
+
+    def contada(*args, **kwargs):
+        resultado = original(*args, **kwargs)
+        comparadas[0] += int((resultado or {}).get('_aval') or 0)
+        return resultado
+
+    try:
+        M._melhor_tecnico = contada
+        build = M.build_completo2(dict(carta), tecnicos, fila_incidencia)
+    finally:
+        M._melhor_tecnico = original
+    return build, (max(1, comparadas[0]) if build else comparadas[0])
+
 def trabalha(r):
     """UMA linha card x funcao. Devolve o resultado COM A CADEIA INTEIRA."""
     t0 = time.time()
@@ -343,8 +397,13 @@ def trabalha(r):
         except Exception:
             pass
     if not c0:
-        return {'ERRO': 'card %s nao veio de otimizador_cartas_v1' % bid, 'n': r.get('n')}
-    c = dict(c0)
+        return {'ERRO': 'card %s nao veio de otimizador_cartas_v2' % bid, 'n': r.get('n')}
+    import fonte_unica as _fonte_ids
+    try:
+        c = _fonte_ids.aplica_impetos_da_linha(
+            c0,r.get('impeto_condicional_codigo'),r.get('impeto_condicional_nivel'))
+    except (TypeError,ValueError) as erro:
+        return {'ERRO': '%s / %s: %s' % (bid,fid,erro), 'n': r.get('n'), 'TRAVADA': True}
     c['arows'] = [x[:] for x in _W['MOLDE'][fid]]
     # com o banco, as raras vem na propria carta. Sem este `or`, o pool ficava
     # errado: o motor oferecia habilidade que a carta JA TEM.
@@ -370,6 +429,7 @@ def trabalha(r):
     _forcar_sug = [h for h in VETADAS if h in c['falta']]
     if _forcar_sug:
         c['falta'] = [h for h in c['falta'] if h not in VETADAS]
+    _pool_universo = list(c['falta'])
 
     # ============== CORTE 10 — DOMINANCIA ENTRE HABILIDADES ==============
     # ✅ CHANCE ZERO. Escrito FORA do motor de proposito: o motor monta o cand com
@@ -434,6 +494,7 @@ def trabalha(r):
     # deixa comprar, e a nota saia inflada.
     if not (c.get('orc') or 0):
         c['falta'] = []
+        _pool_universo = []
 
     # ===== O PORTAO (Luis, 27/08) =====
     # Nenhuma carta com insumo faltando calcula. O resultado sairia com cara de
@@ -446,31 +507,18 @@ def trabalha(r):
         _falta = []
     if _falta:
         return {'ERRO': '%s / %s: NAO RODOU - falta %s'
-                        % (c.get('nome'), fid, '; '.join(_falta)),
+                        % (bid, fid, '; '.join(_falta)),
                 'n': r.get('n'), 'TRAVADA': True}
 
-    # Telemetria externa à fórmula: conta cada chamada de ``build_mult`` feita
-    # pela busca já aprovada. Não muda candidato, peso, ordem ou desempate.
-    _build_mult_original = M.build_mult
-    _builds_comparadas = [0]
-    def _build_mult_contada(*args, **kwargs):
-        _builds_comparadas[0] += 1
-        return _build_mult_original(*args, **kwargs)
     try:
-        M.build_mult = _build_mult_contada
-        b = M.build_completo2(dict(c), _W['TECS'],
-                              (_W.get('FILA') or {}).get(fid))
+        b, builds_comparadas = _executa_busca_contando_builds(
+            M, c, _W['TECS'], (_W.get('FILA') or {}).get(fid))
     except Exception as e:
-        return {'ERRO': '%s / %s: %s' % (c.get('nome'), fid, e), 'n': r.get('n')}
-    finally:
-        M.build_mult = _build_mult_original
+        return {'ERRO': '%s / %s: %s' % (bid, fid, e), 'n': r.get('n')}
     if not b:
-        return {'ERRO': '%s / %s: build vazia' % (c.get('nome'), fid), 'n': r.get('n')}
+        return {'ERRO': '%s / %s: build vazia' % (bid, fid), 'n': r.get('n')}
 
-    # Ímpetos/condições seguem fora do consumidor v1. Cartas equipadas já foram
-    # recusadas pelo gate da carta antes de chegar ao cálculo; não existe busca
-    # por nome, inferência de efeito ou ativação parcial nesta etapa.
-    cond = {}
+    builds_possiveis = _conta_builds_possiveis(c,M,_W['TECS'],_pool_universo)
 
     # ===== "DE FORA" — as que da pra selecionar e NAO MUDAM A NOTA =====
     # Ordem do Luis (08/08): a caixa de habilidades tem tres listas — nativas,
@@ -616,15 +664,18 @@ def trabalha(r):
                        'vs_alvo': (None if al is None else round(e3 - al, 2))})
 
     return {
-        'n': r.get('n'), 'card_id': bid, 'nome': c.get('nome'),
-        'funcao_id': fid, 'funcao_codigo_compat': r.get('funcao_codigo_compat'),
+        'n': r.get('n'), 'card_id': bid,
+        'funcao_id': fid,
+        'impeto_condicional_codigo': c.get('impeto_condicional_codigo'),
+        'impeto_condicional_nivel': c.get('impeto_condicional_nivel'),
         'origem': r.get('origem'), 'estilo': r.get('estilo'),
         'tier': r.get('tier'), 'ovr': r.get('ovr'), 'orc': c.get('orc'),
         'box': r.get('box'),   # de qual campanha o card veio (so os da home)
         'b1': round(b['nota'], 4),
-        'builds_comparadas': _builds_comparadas[0],
+        'builds_comparadas': builds_comparadas,
+        'builds_possiveis': builds_possiveis,
         'barras': b.get('lvl'), 'vals': v_final,
-        'impeto': b.get('fab'), 'tecnico': b.get('tecnico'),
+        'impeto_adicional_codigo': ((b.get('fab') or [None])[0]),
         # ⛔ 14/08: a linha passou a guardar o ID do tecnico.
         # Sao 1.664 tecnicos e 1.528 nomes: 5 "Jose Mourinho" diferentes,
         # 4 "F. Beckenbauer". So o nome nao diz qual entrou na build.
@@ -633,9 +684,6 @@ def trabalha(r):
         'neutras': neutras,
         'vetada_vale': vetada_vale,           # quanto a vetada valeria, e no lugar de quem
         'tecnicos_iguais': tecnicos_iguais,   # outro tecnico, mesma nota exata
-        # as tres notas do impeto condicional: a oficial (nivel 1) e o b1 acima;
-        # cond['2'] e cond['3'] sao os degraus, cada um com a build INTEIRA.
-        'cond': cond,
         'pool': POOL, 'n_pool': len(c['falta']),
         'cadeia': cadeia,
         'vals_carta': v_carta, 'vals_tela': v_tela,
@@ -721,6 +769,10 @@ def apaga_o_vivo():
 # ------------------------------------------------------------------ main
 
 def main():
+    raise SystemExit(
+        'PAROU: este iniciador de fila historica foi desativado. '
+        'Use RODAR-OTIMIZADOR.bat e a fila selada de clube_novo.'
+    )
     import multiprocessing as mp
     os.makedirs(SAIDA, exist_ok=True)
     if os.path.exists(PARAR): os.remove(PARAR)

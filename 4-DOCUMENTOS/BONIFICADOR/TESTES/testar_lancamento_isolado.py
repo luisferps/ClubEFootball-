@@ -39,7 +39,7 @@ def abrir(req, timeout=0):
             'molde_corpo': {{}}, 'corpo_ordem': {{}}, 'casa': {{}},
             'liga': {{}}, 'posicao_slot': {{}}
         }})
-    if nome == 'bonificador_pares_v1':
+    if nome == 'bonificador_contexto_escrita_v2':
         return Resposta([])
     raise AssertionError('RPC não permitida no smoke test: ' + nome)
 
@@ -47,9 +47,9 @@ urllib.request.urlopen = abrir
 try:
     runpy.run_path({str(MOTOR)!r}, run_name='__main__')
 except SystemExit as erro:
-    assert erro.code == 1, erro.code
-assert chamadas == ['bonificador_regua_v1', 'bonificador_pares_v1'], chamadas
-print('LANCAMENTO_ISOLADO_OK rpc=regua,pares gravacao=nao')
+    assert erro.code == 0, erro.code
+assert chamadas == ['bonificador_regua_v1', 'bonificador_contexto_escrita_v2'], chamadas
+print('LANCAMENTO_ISOLADO_OK rpc=regua,contexto_v2 sem_pendencia=sucesso gravacao=nao')
 """
     resultado = subprocess.run(
         [sys.executable, "-c", harness],

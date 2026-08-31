@@ -1,0 +1,5 @@
+Artefato de desenvolvimento substituído porque o horário fixado no manifesto
+ficou adiantado. Não usar para instalação.
+
+Artefato validado que o substitui:
+../run-20260830-132440-seed-v2/manifest-seed-completude-motores.json

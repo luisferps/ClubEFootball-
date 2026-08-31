@@ -79,10 +79,11 @@ BOOLEAN_COLUMNS = {
 }
 JSON_COLUMNS = {"atributos", "habilidades", "aptidoes", "estilos_ia", "corpo"}
 ALLOWED_MODES = {"card_diff", "card_full", "metadata_diff"}
-# A autorização vigente cobre construção, leitura e validação do contrato, não
-# uma carga produtiva. Este bloqueio independe do arquivo de configuração e só
-# poderá ser removido por uma autorização posterior, explícita e auditável.
-PRODUCTIVE_WRITES_LOCKED = True
+# A leitura normal sempre remove esta variável. Somente o botão separado de
+# aplicação da janela desktop a define depois das duas confirmações do
+# operador. Assim, abrir o programa ou iniciar uma varredura nunca herda
+# permissão de escrita produtiva.
+PRODUCTIVE_WRITES_LOCKED = os.environ.get("CLUBEF_ENABLE_REAL_WRITE") != "1"
 REVIEW_GATE_CONTRACT = "clubef-review-gate-v1"
 
 

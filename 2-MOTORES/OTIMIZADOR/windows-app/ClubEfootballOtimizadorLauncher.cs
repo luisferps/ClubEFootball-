@@ -8,18 +8,20 @@ using System.Threading;
 using System.Windows.Forms;
 
 [assembly: AssemblyTitle("Otimizador ClubEfootball")]
-[assembly: AssemblyDescription("Consulta e simulação local, somente leitura, do Otimizador")]
+[assembly: AssemblyDescription("Painel local de execução e acompanhamento do Otimizador")]
 [assembly: AssemblyProduct("Otimizador ClubEfootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
 
 namespace ClubEfootballOtimizador
 {
     internal static class Program
     {
-    private const string AppUrl = "http://127.0.0.1:8767/?v=20260828-v16";
+        private const string AppUrl = "http://127.0.0.1:8767/?v=20260831-v20";
         private const string StatusUrl = "http://127.0.0.1:8767/api/saude";
+        private const string ExpectedApp = "\"aplicativo\": \"otimizador_clubefootball\"";
+        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v20\"";
 
         [STAThread]
         private static void Main()
@@ -29,7 +31,14 @@ namespace ClubEfootballOtimizador
             try
             {
                 string root = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
-                if (!ServerReady()) { StartHiddenServer(root); WaitForServer(); }
+                string health = ReadHealth();
+                if (!ExpectedServer(health))
+                {
+                    if (health != null)
+                        throw new InvalidOperationException("Já existe outra versão usando a porta do Otimizador. Feche a janela antiga e abra novamente.");
+                    StartHiddenServer(root);
+                    WaitForServer();
+                }
                 if (Environment.GetEnvironmentVariable("CLUBEF_OTIMIZADOR_NO_BROWSER") == "1") return;
                 string edge = FindEdge();
                 if (edge == null) throw new InvalidOperationException("Microsoft Edge não foi encontrado neste Windows.");
@@ -48,18 +57,29 @@ namespace ClubEfootballOtimizador
             }
         }
 
-        private static bool ServerReady()
+        private static string ReadHealth()
         {
             try
             {
                 using (WebClient client = new WebClient())
                 {
                     client.Proxy = null;
-                    string status = client.DownloadString(StatusUrl);
-                    return status.Contains("\"ok\": true") || status.Contains("\"ok\":true");
+                    return client.DownloadString(StatusUrl);
                 }
             }
-            catch { return false; }
+            catch { return null; }
+        }
+
+        private static bool ExpectedServer(string status)
+        {
+            if (status == null) return false;
+            bool ok = status.Contains("\"ok\": true") || status.Contains("\"ok\":true");
+            return ok && status.Contains(ExpectedApp) && status.Contains(ExpectedVersion);
+        }
+
+        private static bool ServerReady()
+        {
+            return ExpectedServer(ReadHealth());
         }
 
         private static void WaitForServer()
@@ -97,11 +117,17 @@ namespace ClubEfootballOtimizador
             candidates.Add(Path.Combine(user, ".cache", "codex-runtimes", "codex-primary-runtime", "dependencies", "python", "pythonw.exe"));
             string local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             string programs = Path.Combine(local, "Programs", "Python");
+            candidates.Add(Path.Combine(local, "Microsoft", "WindowsApps", "pythonw.exe"));
             if (Directory.Exists(programs))
             {
                 string[] folders = Directory.GetDirectories(programs, "Python*");
                 Array.Sort(folders); Array.Reverse(folders);
                 foreach (string folder in folders) candidates.Add(Path.Combine(folder, "pythonw.exe"));
+            }
+            string path = Environment.GetEnvironmentVariable("PATH") ?? "";
+            foreach (string folder in path.Split(Path.PathSeparator))
+            {
+                if (!String.IsNullOrWhiteSpace(folder)) candidates.Add(Path.Combine(folder.Trim(), "pythonw.exe"));
             }
             foreach (string candidate in candidates) if (File.Exists(candidate)) return candidate;
             return null;

@@ -1,0 +1,86 @@
+TARGET '.pak' rva=0x66d4d59 file=0x66d4159
+  XREF none (pode ser indireta ou receber relocacao)
+TARGET '.pak' rva=0x6d30d04 file=0x6d30104
+  XREF rva=0x4578082 file=0x4577482
+TARGET '.ucas' rva=0x6d30d0c file=0x6d3010c
+  XREF rva=0x45780bb file=0x45774bb
+  XREF rva=0x45780de file=0x45774de
+TARGET '.utoc' rva=0x6d30d14 file=0x6d30114
+  XREF rva=0x457811a file=0x457751a
+  XREF rva=0x4578135 file=0x4577535
+TARGET '.pak' rva=0x6d30d64 file=0x6d30164
+  XREF rva=0x4577863 file=0x4576c63
+TARGET '.ucas' rva=0x6d30d6c file=0x6d3016c
+  XREF rva=0x457789d file=0x4576c9d
+  XREF rva=0x45778c0 file=0x4576cc0
+TARGET '.utoc' rva=0x6d30d74 file=0x6d30174
+  XREF rva=0x45778fb file=0x4576cfb
+  XREF rva=0x457791e file=0x4576d1e
+TARGET '.utoc' rva=0x6d4c854 file=0x6d4bc54
+  XREF rva=0x45aa265 file=0x45a9665
+TARGET '.pak' rva=0x6d4c85c file=0x6d4bc5c
+  XREF rva=0x45aa3bf file=0x45a97bf
+TARGET '.utoc' rva=0x6d4c864 file=0x6d4bc64
+  XREF none (pode ser indireta ou receber relocacao)
+TARGET '.ucas' rva=0x6d4c86c file=0x6d4bc6c
+  XREF rva=0x45aa443 file=0x45a9843
+TARGET '.pak' rva=0x6d4c874 file=0x6d4bc74
+  XREF rva=0x45aa4da file=0x45a98da
+TARGET '.ucas' rva=0x6d4c87c file=0x6d4bc7c
+  XREF none (pode ser indireta ou receber relocacao)
+TARGET '.pak' rva=0x6dbee9c file=0x6dbe29c
+  XREF none (pode ser indireta ou receber relocacao)
+TARGET '.utoc' rva=0x6dbeea4 file=0x6dbe2a4
+  XREF none (pode ser indireta ou receber relocacao)
+TARGET '.ucas' rva=0x6dbeeac file=0x6dbe2ac
+  XREF none (pode ser indireta ou receber relocacao)
+TARGET '.ucas' rva=0x6dd11dc file=0x6dd05dc
+  XREF rva=0x4627929 file=0x4626d29
+TARGET '.pak' rva=0x6dd1464 file=0x6dd0864
+  XREF rva=0x4627932 file=0x4626d32
+TARGET '.utoc' rva=0x6dd146c file=0x6dd086c
+  XREF rva=0x4627920 file=0x4626d20
+TARGET '.pak' rva=0x71b7fc1 file=0x71b73c1
+  XREF none (pode ser indireta ou receber relocacao)
+TARGET '.pak' rva=0x71b7fc8 file=0x71b73c8
+  XREF rva=0x4a0c68b file=0x4a0ba8b
+TARGET 'TempData/' rva=0x73cf938 file=0x73ced38
+  XREF rva=0x4f8cdeb file=0x4f8c1eb
+TARGET 'Download/' rva=0x73cf958 file=0x73ced58
+  XREF rva=0x4f8c2a9 file=0x4f8b6a9
+  XREF rva=0x4f8ce7c file=0x4f8c27c
+TARGET 'CmdGetLivedata.php' rva=0x757e900 file=0x757dd00
+  XREF rva=0x52e5ade file=0x52e4ede
+  XREF rva=0x52e5ce4 file=0x52e50e4
+TARGET 'version_file' rva=0x757ea68 file=0x757de68
+  XREF none (pode ser indireta ou receber relocacao)
+TARGET 'version_file' rva=0x757ea78 file=0x757de78
+  XREF rva=0x52e63e9 file=0x52e57e9
+TARGET 'version_file' rva=0x757ea98 file=0x757de98
+  XREF rva=0x52e6408 file=0x52e5808
+TARGET 'livedata_list' rva=0x757eaa8 file=0x757dea8
+  XREF rva=0x52e6432 file=0x52e5832
+TARGET 'version_file' rva=0x757ebd8 file=0x757dfd8
+  XREF rva=0x52e6994 file=0x52e5d94
+TARGET 'livedata_list' rva=0x757ec02 file=0x757e002
+  XREF none (pode ser indireta ou receber relocacao)
+TARGET 'livedata_list' rva=0x757ec90 file=0x757e090
+  XREF rva=0x52e6a59 file=0x52e5e59
+TARGET 'livedata_list' rva=0x757ed10 file=0x757e110
+  XREF none (pode ser indireta ou receber relocacao)
+TARGET 'version_file' rva=0x7827580 file=0x7826980
+  XREF none (pode ser indireta ou receber relocacao)
+TARGET 'version_file' rva=0x7827590 file=0x7826990
+  XREF rva=0x57d88ae file=0x57d7cae
+TARGET 'version_file' rva=0x78275b0 file=0x78269b0
+  XREF rva=0x57d88c9 file=0x57d7cc9
+TARGET 'livedata_list' rva=0x78275c0 file=0x78269c0
+  XREF rva=0x57d88eb file=0x57d7ceb
+TARGET 'version_file' rva=0x7827798 file=0x7826b98
+  XREF rva=0x57d8577 file=0x57d7977
+TARGET 'livedata_list' rva=0x78277c2 file=0x7826bc2
+  XREF none (pode ser indireta ou receber relocacao)
+TARGET 'livedata_list' rva=0x7827860 file=0x7826c60
+  XREF rva=0x57d8670 file=0x57d7a70
+TARGET 'livedata_list' rva=0x78278f0 file=0x7826cf0
+  XREF none (pode ser indireta ou receber relocacao)

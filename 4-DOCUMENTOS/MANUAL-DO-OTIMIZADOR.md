@@ -168,54 +168,57 @@ desempatar somente qual representante aparece; não altera a nota.
 | fotografia publicada da tela | `SITE-ATUALIZADO-2026-08-24/motor-e-ficha-base.js` e `TELA-CLUBEFOOTBALL-UNICA.html` |
 | técnicos canônicos do banco | `clube_novo.tecnico_jogo`, `tecnico_estilo_jogo`, `tecnico_atributo_jogo` |
 
-As portas de **entrada** atuais do lote e da cópia local do serviço são:
+As portas de **entrada** atuais do lote e da cópia local do serviço são
+`otimizador_carta_v2`, `otimizador_cartas_v2`, `otimizador_regua_v2` e
+`otimizador_pool_habilidades_v2`. Elas entregam somente IDs, números, bits e vetores.
+Rótulos entram por portas separadas, `otimizador_catalogos_apresentacao_v1` e
+`otimizador_carta_apresentacao_v1`, e nunca voltam para o cálculo.
 
-- `otimizador_carta_v1` e `otimizador_cartas_v1`, para cartas e relações por IDs;
-- `otimizador_regua_v1`, para moldes, regras operacionais e técnicos;
-- `otimizador_pool_habilidades_v1`, por `skill_id + funcao_id`;
-- `otimizador_proxima_fila_v1`, que traduz a fila operacional para `funcao_id`;
-- `otimizador_peso_ordem_v1`, para o estado operacional da ordem.
+A fila oficial usa `clube_novo.build_linha_card`. O resultado usa
+`clube_novo.build_otimizador`. No lote da amostra, criação V3, estado/fila/eventos V2
+e conclusão V2 operam essas mesmas tabelas. Os controles atômicos de iniciar,
+pausar, parar e bloquear permanecem nas versões que já estavam seladas e também
+atuam somente em `clube_novo`.
 
-Todas são `SECURITY DEFINER`, têm `search_path=''`, usam nomes de objeto totalmente
-qualificados e podem ser executadas somente por `service_role`. A UI não acessa
-`clube_novo` diretamente. As portas históricas de leitura permanecem apenas para os
-comparadores independentes; não há fallback silencioso no caminho migrado.
-`gravar_build` continua sendo uma porta de **saída** e não foi executada nesta
-migração.
+As portas são `SECURITY DEFINER`, têm `search_path=''`, usam nomes de objeto
+totalmente qualificados e podem ser executadas somente por `service_role`. A UI não
+acessa `clube_novo` diretamente. Os contratos V1 e `gravar_build` são históricos e
+não participam do caminho oficial V2.
 
 ### Estado da migração de entradas
 
-O lote local e a cópia local do serviço foram migrados para o contrato v1. Os dados
+O lote local e a cópia local do serviço foram migrados para o contrato V2. Os dados
 de carta, atributos, corpo, posições, habilidades, estilo IA, identidades físicas,
 dimensões e técnicos chegam por IDs estáveis/FKs. Nome ou texto só é anexado depois,
 para apresentação e diagnóstico. A prova de renomeação confirma que trocar todos os
 rótulos não muda vínculos, cálculo ou seleção dos 19 moldes.
 
-Ímpetos, condições e faixas continuam desligados: o contrato devolve catálogo ativo
-vazio e recusa cartas afetadas pelo gate, sem tratá-las como efeito incondicional.
-Tipos 4/0 e 7/0 continuam provisórios. `motor_bonus.py` continua separado e não foi
-ativado.
+Ímpetos já equipados estão ligados por `codigo_impeto`. O fixo entra em todas as
+linhas; o condicional cria uma linha para cada nível físico de 1 até o máximo. O
+motor não decide se a condição está ativa numa partida. Ímpeto adicional fabricável
+continua fechado porque ainda não existe catálogo oficial correspondente em
+`clube_novo`. `motor_bonus.py` continua separado e não foi ativado.
 
-As três réplicas de tela ainda **não estão migradas**. Elas conservam catálogos
-embutidos e não há prova de qual serviço está efetivamente publicado; o próprio
-diretório local do Railway informa que não representa necessariamente a implantação
-atual. Migrá-las exige primeiro um endpoint seguro implantado que entregue os IDs
-canônicos. Até isso existir, elas foram preservadas byte a byte, sem expor chave
-privada nem reimplementar a regra por nomes.
+A interface própria do Otimizador está migrada: acompanha fila e resultados reais,
+mostra rótulos somente após receber os IDs e exibe nível do Ímpeto, candidatas
+avaliadas e total possível. As réplicas da tela principal do ClubeEfootball são outro
+consumidor e não foram alteradas nesta etapa.
 
 ### A cadeia completa, em linguagem de jogo
 
-Quando alguém roda **RODAR O MOTOR**, o lote pede ao banco quais pares de carta e
-função estão na fila. Cada par chega como `card_id + funcao_id`. Em seguida ele pede
-a ficha da carta: os 26 atributos, posições, corpo, habilidades, técnico e travas.
-Esses itens chegam pelo contrato v1 a partir de `clube_novo`, sempre com IDs ou bits
-físicos. Só depois o Otimizador dá um nome legível ao resultado para mostrar no log
-ou na ficha.
+Quando alguém roda **RODAR O MOTOR**, o lançador abre o aplicativo oficial do
+Otimizador. O worker lê as linhas autorizadas em `build_linha_card`; cada linha chega
+como carta, função, posição e, quando houver, código e nível do Ímpeto condicional.
+Em seguida ele pede a ficha da carta, régua, técnicos e habilidades ao contrato V2.
+Tudo chega de `clube_novo`, com IDs ou bits físicos. Só a interface transforma esses
+IDs em texto.
 
 ```text
 RODAR-O-MOTOR.bat / RODAR-TUDO.bat
-  -> OTIMIZADOR/roda_lote_v6.py -> fonte_unica.py -> RPCs otimizador_*_v1
+  -> OTIMIZADOR/RODAR-OTIMIZADOR.bat -> interface/servidor.py + fila_comparacao_legado_50.py
+  -> roda_lote_v6.py -> fonte_unica.py -> RPCs otimizador_*_v2
   -> equacao.py + regua.py + motor.py + travas.py -> resultado de build
+  -> otimizador_concluir_linha_teste_v2 -> clube_novo.build_otimizador
 ```
 
 `fonte_unica.py` é o porteiro: se a RPC nova não responder ou algum gate recusar a
@@ -228,40 +231,19 @@ O serviço local tem outra porta de entrada, mas a mesma origem:
 
 ```text
 Procfile: gunicorn app:app
-  -> app.py -> banco.py -> RPCs otimizador_*_v1
+  -> app.py -> banco.py -> RPCs otimizador_*_v2
   -> monta_regua.py + regua_do_banco.py -> avaliador.py + otimizador.py
 ```
 
 Ele aceita `card_id`, `funcao_id`, `tecnico_id`, `skill_ids` e barras. Assim, a
 interface nunca deve mandar “Capello”, “centroavante móvel” ou o nome de uma
-habilidade como chave de cálculo. Ímpeto escolhido, nome de ímpeto e condição são
-recusados enquanto o gate de Ímpetos estiver desligado.
+habilidade como chave de cálculo. Para Ímpeto condicional, ela manda somente código
+e nível; a condição de uso na partida continua sendo assunto de apresentação.
 
-Há três cuidados importantes nesta fotografia:
-
-- `gravar_build` ainda grava a **saída** na estrutura histórica de build/fila. Há
-  uma tradução de `funcao_id` para o código técnico legado somente na borda de
-  gravação. Ela não entra de volta no cálculo e não autoriza tabela histórica como
-  entrada nova.
-- `grava_direto.py` é carregado pelo lote, mas não recebe payload na rota atual;
-  permanece como escritor histórico alternativo e não pode ser religado como fallback.
-- `servidor.py` e `motor-no-servidor.js` existem no repositório, mas não são a rota
-  alcançada: o `Procfile` sobe `app.py` e o `index.html` não carrega o adaptador.
-  Esse adaptador antigo usa formato incompatível e não prova uma integração.
-
-### O que a tela ainda faz e por que isso bloqueia a conclusão
-
-A tela operacional carrega `motor-e-ficha-base.js`, `ficha-ajustes.js`,
-`dados-e-catalogos.js`, `elenco.js`, `modulos-elenco-paginas.js` e
-`arows-sob-demanda.js`. Ela consulta as projeções públicas históricas `casa_lista`,
-`casa_arows` e `bonus_posicao` e também conserva catálogos e cálculos embutidos. A
-cópia publicada e o HTML único repetem essa mesma situação.
-
-Portanto, **lote local e serviço local já recebem as entradas novas por IDs; a UI não**.
-Não é aceitável entregar a chave privada à tela, acessar `clube_novo` diretamente ou
-adivinhar IDs a partir de rótulos. Antes de qualquer troca da tela, é preciso provar
-qual serviço está implantado e publicar um contrato seguro que transporte os mesmos
-IDs. A fórmula de navegador não será alterada por essa troca de endereço.
+`gravar_build`, `grava_direto.py` e o corpo antigo de execução direta de
+`roda_lote_v6.py` não fazem parte do lançamento oficial. A entrada direta antiga do
+runner falha fechada para impedir que uma chamada acidental volte a `clube.fila` ou
+`clube.build`.
 
 ## 9. O que está confirmado e o que continua pendente
 
@@ -306,6 +288,10 @@ Os testes permanentes ficam em `4-DOCUMENTOS/OTIMIZADOR/TESTES`:
   fallback e invariância sob renomeação de rótulos;
 - `teste_auditoria_moldes.py` cobre os 19 moldes, 494 linhas e bloqueio de qualquer
   ponte sem ID comprovado.
+- `teste_impetos_linhas_v12.py` cobre níveis 1 a 5, identidade da linha, contagem
+  real de candidatas avaliadas e universo total possível.
+- `teste_interface_local_otimizador.py` cobre a fila, os rótulos separados dos IDs
+  e a exibição dos dois contadores.
 
 Critério discriminante obrigatório: Messi `99 → proficiência 99 → boost 100 → Precisão
 104`; sintaxe Python e JavaScript sem erro e concordância entre as implementações. A
@@ -335,10 +321,40 @@ O grafo de todos os satélites, suas entradas/saídas, linguagens, contratos e p
 paridade está em
 `4-DOCUMENTOS/OTIMIZADOR/MIGRACAO-ENTRADAS/AUDITORIA-CADEIA-SATELITES-2026-08-28.md`.
 Antes de qualquer hunk novo, a paridade deverá comparar por `card_id` e campo:
-origem antiga, contrato v1, IDs, cardinalidades, fingerprints, gates e a saída da
+origem antiga, contrato V2, IDs, cardinalidades, fingerprints, gates e a saída da
 tela quando ela for afetada. Um rótulo renomeado não pode mudar a seleção. O rollback
 restaura apenas o adaptador daquele elo a partir do snapshot da etapa; nunca repõe
 um arquivo inteiro nem muda a fórmula.
+
+### Comparação controlada com a versão anterior em 30/08/2026
+
+O arquivo `clube.build_arquivo_2608` foi usado somente como referência de
+comparação, nunca como entrada nem destino operacional. A ligação foi feita pela
+chave `card_id + funcao_codigo`. Todos os insumos da execução atual vieram do
+contrato V2 e das tabelas de `clube_novo`.
+
+Uma amostra determinística de 50 linhas elegíveis terminou sem erro. Ela foi
+limitada a linhas com orçamento zero, teto de nível 1 e sem Ímpeto condicional,
+para permitir uma conferência curta sem disparar lote produtivo. O resultado foi:
+
+- 20/50 tiveram a mesma nota `b1`;
+- 9/50 tiveram a mesma nota `b1` e o mesmo vetor final dos 26 atributos;
+- 11/50 empataram na nota `b1`, mas terminaram com vetor de atributos diferente;
+- 30/50 tiveram nota `b1` diferente;
+- portanto, 41/50 não foram integralmente iguais à referência anterior.
+
+Esse resultado não aprova a integridade entre versões, mas também não prova sozinho
+uma falha da fórmula: a execução atual usa os dados atuais de `clube_novo`, enquanto
+o arquivo guarda uma fotografia anterior. Continua pendente separar, linha por linha,
+o que é mudança legítima de insumo do que seria divergência com os mesmos insumos
+selados. Como a amostra tinha orçamento zero, ela também não cobre distribuição de
+barras nem os níveis do Ímpeto condicional.
+
+Na cópia operacional atual, os testes vigentes do V12 passam. Dois guardas históricos
+de recuperação não conseguem concluir porque não estão presentes o ZIP antigo de
+`2026-08-28-ANTES-MIGRACAO-ENTRADAS` e os arquivos da pasta antiga
+`SITE-ATUALIZADO-2026-08-24`. Essa ausência é uma pendência de recuperação histórica,
+não uma falha de execução do caminho V2 atual.
 
 ### Checklist da reversão de 28/08/2026
 
@@ -365,25 +381,40 @@ um arquivo inteiro nem muda a fórmula.
 | 28/08/2026 | 43.072 cartas auditadas contra extração física; 269 adições e 34 alterações físicas classificadas, zero divergência técnica remanescente. |
 | 28/08/2026 | Réplicas de UI permaneceram não migradas e byte a byte intactas até existir endpoint seguro efetivamente implantado por IDs. |
 | 28/08/2026 | Auditoria satélite confirmou que lançadores, lote e `app.py` local usam contrato v1; UI, projeções públicas e catálogos embutidos continuam bloqueio explícito de migração ponta a ponta. |
+| 30/08/2026 | Contrato V2 passou a usar somente `clube_novo`, com linhas separadas por código e nível do Ímpeto condicional e entrada/saída exclusivamente por IDs. |
+| 30/08/2026 | A saída passou a guardar separadamente candidatas realmente avaliadas e universo total possível da linha; prova real controlada registrou 9 de 41 nos níveis 1 e 3. |
+| 30/08/2026 | V13 tornou os dois contadores obrigatórios no próprio banco e fechou a aceitação acidental de resultado com uma das chaves ausente. |
+| 30/08/2026 | Comparação controlada de 50 linhas com `clube.build_arquivo_2608` encontrou 9 linhas integralmente iguais e 41 divergências ainda pendentes de separação entre mudança de insumo e diferença de cálculo. |
+| 30/08/2026 | O lote anterior de 896 linhas foi removido do banco e dos arquivos locais; a V14 criou do zero uma fila parada com 50 cards do arquivo anterior e 613 linhas atuais, todas comparáveis por card + função. |
+| 30/08/2026 | A V15 corrigiu o fechamento natural da rodada e a renovação do painel: sem pendentes/processando, o lote vira concluído, a linha atual some e Pausar é desligado. |
 
 ## 12. Aplicativo local do Otimizador
 
 Para abrir sem depender da interface web antiga, dê dois cliques em
-`2-MOTORES/OTIMIZADOR/Otimizador ClubEfootball.exe`. Se o arquivo ainda não existir,
-use uma vez `RODAR-OTIMIZADOR.bat`; ele compila o mesmo executável e o abre. O ícone
+`RODAR-O-MOTOR.bat` na pasta principal ou em
+`2-MOTORES/OTIMIZADOR/Otimizador ClubEfootball.exe`. O atalho
+`RODAR-OTIMIZADOR.bat` confere a data do código e recompila o executável quando ele
+estiver ausente ou desatualizado; depois abre a aplicação. O ícone
 inicia um pequeno servidor privado em `127.0.0.1` e abre uma única janela de app no
 navegador. A chave fica no `2-MOTORES/config.txt` compartilhado e nunca é entregue à
 página.
+
+O executável V1.1 só aceita como servidor já aberto a aplicação
+`otimizador_clubefootball` na versão de interface esperada. Se outra cópia ou versão
+antiga estiver usando a mesma porta, ele não abre silenciosamente a tela errada:
+informa que a janela antiga deve ser fechada. O localizador do Python também consulta
+o runtime empacotado, instalações locais, WindowsApps e o `PATH`.
 
 Uso: informe o `card_id`, escolha a função e o técnico; clique **Simular**. A tela
 mostra os IDs/entradas, barras e resultado, gates, cardinalidades e proveniência.
 **Validar paridade** compara a função legível da equação aprovada contra o cálculo
 inline do próprio Otimizador para a mesma simulação. No módulo Individual, a aplicação
-permite somente `otimizador_regua_v1` e `otimizador_carta_v1`. O módulo Fila usa, no
-mesmo processo local, os contratos de teste `otimizador_status_teste_v1`,
-`otimizador_fila_teste_v1`, `otimizador_eventos_teste_v1` e
-`otimizador_controlar_lote_teste_v2`. A página continua sem credencial, acesso direto
-ao schema, `gravar_build`, lote produtivo ou consumidor de Ímpetos condicionais.
+usa `otimizador_regua_v2` e `otimizador_carta_v2`, que entregam somente IDs e valores
+ao motor. Os nomes vêm separadamente de `otimizador_catalogos_apresentacao_v1` e
+`otimizador_carta_apresentacao_v1`. O módulo Fila usa os contratos V2 de status,
+fila, eventos e conclusão, além do controle V2 já existente. A página continua sem
+credencial, acesso direto ao schema, `gravar_build`, lote produtivo ou cálculo de
+condição do Ímpeto.
 
 Arquivos da aplicação: `interface/servidor.py`, `interface/index.html`,
 `interface/app.js`, `interface/style.css`, `windows-app/ClubEfootballOtimizadorLauncher.cs`
@@ -392,26 +423,61 @@ e `windows-app/COMPILAR-APLICATIVO.ps1`. O snapshot imediatamente anterior está
 remove apenas esses arquivos novos e restaura os itens daquele ZIP, sem tocar em
 fórmulas, banco, UI geral, Extrator ou Bonificador.
 
-Prova operacional de gate: a consulta local de Messi `89138556575063` com função
-`2` e Capello `17601312850052` foi recusada com
-`impetos_consumidor_desligado`. A tela apresenta essa recusa; não tenta retirar o
-Ímpeto, consultar legado ou gravar uma build para produzir uma resposta.
+O motor não decide quando a condição de um Ímpeto acontece. Para uma carta com
+Ímpeto condicional, a fila cria uma linha por nível físico, e a tela identifica o
+código e o nível. A condição de exibição continua sendo responsabilidade da tela.
 
-## 13. Abas do executável local
+## 13. Painel permanente e abas do executável local
 
-O executável é uma única aplicação com três abas. **Fila automatizada** é a tela
-principal: acompanha linhas `card_id + funcao_id + posicao_id`, seu estado, motivo,
+O executável é uma única aplicação com três abas. **Rodada ativa** é a tela
+principal e não possui texto, botão ou quantidade fixos de uma amostra antiga. Ela
+acompanha a rodada selada que estiver ativa e mostra somente o resumo operacional,
+os controles autorizados, a linha corrente e a lista pesquisável. A rodada atual tem
+50 cartas e 613 linhas porque esses são os números devolvidos pelo contrato V14, não
+porque a interface foi desenhada para essa quantidade.
+
+**Rodada ativa** acompanha linhas `card_id + funcao_id + posicao_id +
+impeto_condicional_codigo + impeto_condicional_nivel`, seu estado, motivo,
 linha atual, totais e eventos reais do worker. **Resultados** mostra as mesmas linhas
 depois de executadas, com a saída do Otimizador ou o bloqueio/falha final. Ambos são
-sempre marcados como **TESTE / NÃO PUBLICADO**. **Teste unitário** conserva a consulta
+marcados conforme `pode_publicar`; o lote vigente aparece como **TESTE · NÃO
+PUBLICA**. **Testar uma carta** conserva a consulta
 manual por `card_id`, função e técnico para investigar uma carta isolada.
 
-O contrato real está ligado ao lote selado
-`912c518e-091c-4583-ae91-97b3e717517e`, de exatamente 100 cartas e 896 linhas. A
-seleção é fixa no processo local: o navegador não pode mandar outro `lote_id`. Antes
-de qualquer leitura ou controle, a ponte confere ID, fingerprint, 100 cartas, modo
+A lista da rodada fica em uma área própria de rolagem, com altura limitada e
+cabeçalho congelado. Assim uma fila de milhares de linhas não aumenta a página até o
+fim. O navegador mantém no máximo 200 linhas desenhadas por página, oferece busca por
+carta/função/posição, filtro de estado, navegação anterior/próxima e o botão **Ir para
+o andamento**, que abre a página da linha corrente ou da primeira pendente. O mesmo
+limite de 200 itens e o cabeçalho congelado valem para Resultados. Detalhes de
+contrato, fingerprint, identificador da rodada e os 30 eventos mais recentes ficam
+recolhidos em **Detalhes técnicos e eventos recentes**.
+
+As colunas **Comparadas** e **Possíveis** aparecem em cada linha concluída nas duas
+listas. Para não alargar a tela, valores grandes são abreviados (`mil`, `mi`, `bi`,
+`tri`, `quadr.` e seguintes). O valor inteiro exato continua disponível ao passar o
+mouse e dentro de **Ver build campeã**. O servidor entrega esses contadores como texto
+à interface, evitando arredondamento quando `builds_possiveis` ultrapassa o limite de
+inteiros exatos do navegador.
+
+O contrato real está ligado ao lote selado registrado em
+`teste-legado-50/estado-lote.json`. O lote contém exatamente 50 cards escolhidos entre
+os 2.836 cards do arquivo anterior. Para cada card entram todas as funções e posições
+atuais que possuem par antigo por `card_id + funcao_codigo`; uma mesma carta, função e
+posição recebe ainda uma linha por nível do Ímpeto condicional. O navegador não pode
+mandar outro `lote_id`. Antes de qualquer leitura ou controle, a ponte confere ID,
+fingerprint, presença de cartas e linhas, modo
 `teste_nao_publicado`, `pode_publicar=false`, estado ASCII permitido e o objeto
 `acoes` devolvido pelo banco. Se algum selo não conferir, ela fecha a operação.
+O worker específico desta comparação continua conferindo exatamente 50 cartas; o
+painel visual usa as quantidades reais recebidas e permanece aproveitável para as
+próximas rodadas seladas.
+
+A V15 fecha automaticamente o lote quando a última linha deixa de estar pendente ou
+em processamento. Nesse estado, a leitura devolve `concluido`, a linha atual fica
+vazia e **Pausar** é desligado. A atualização automática da página é sempre agendada
+depois que a leitura completa termina; assim uma resposta que demore mais de três
+segundos não interrompe silenciosamente as próximas atualizações.
 
 Fila e Resultados mostram linhas, totais e eventos reais do contrato. **Iniciar** só
 habilita quando `acoes` autoriza iniciar ou retomar; texto, contagem ou estado visual
@@ -453,7 +519,7 @@ sem espaços (`42s`, `1m05s`; quando houver fração real, por exemplo `1.31s`, 
 mantida); não trunca nem altera o valor de origem. A coluna
 **Build campeã** é própria e visível: o botão **Ver build campeã** abre a combinação
 vencedora já persistida para a linha — barras, técnico, habilidades adicionais,
-pontuação e a contagem de candidatas comparadas. Ímpeto adicional só é mostrado se
+pontuação, candidatas comparadas e total possível da linha. Ímpeto adicional só é mostrado se
 estiver presente no resultado persistido; quando o lote não o registrou, a tela diz
 isso explicitamente e não inventa um valor.
 
@@ -478,21 +544,82 @@ A extensão V10 acrescenta somente `habilidades_adicionais` já persistidas à m
 projeção. Seus scripts são `MIGRACAO-FILA-TESTE-HABILIDADES-RESULTADO-V10.sql` e
 `ROLLBACK-FILA-TESTE-HABILIDADES-RESULTADO-V10.sql`.
 
-### Telemetria de builds comparadas (V11)
+### Telemetria de builds comparadas (V11, corrigida na V12)
 
-`builds_comparadas` é o número real de candidatas que chegaram à comparação de
-build naquela linha, depois das travas e reduções já aprovadas. É medido pelo
-executor da fila ao observar chamadas de comparação; não muda fórmula, pesos,
+`builds_comparadas` é o número real de candidatas finais que chegaram à comparação
+naquela linha, depois das travas e reduções já aprovadas. É medido pelo executor
+ao somar as avaliações internas da busca; uma rodada que avalia nove candidatas
+registra nove, e não uma. Essa contagem não muda fórmula, pesos,
 ordem, desempate ou a build vencedora. O campo é persistido junto ao resultado
 de teste e aparece em **Fila automatizada** e **Resultados**. Linhas concluídas
 antes da V11 mostram **Não registrada**: a interface não estima nem recalcula o
 número. Pendentes mostram **Aguardando processamento**.
+
+Na primeira instrumentação da V11, o contador observava apenas as rodadas externas
+da busca. A prova V12 mostrou que uma única rodada pode avaliar várias candidatas;
+por isso a coleta foi corrigida para somar o contador interno já produzido pelo
+motor, sem tocar na fórmula nem na ordem da busca.
 
 A V11 foi aplicada somente após a pausa segura do lote selado. O selo da fórmula
 permanece `7aaa3cccb536ae8fbe77a3fd91a447738132d6f1b89706bc375314e8028a80ad`;
 o contador foi colocado fora da fórmula exatamente para manter essa proteção.
 Migração e rollback: `MIGRACAO-FILA-TESTE-BUILDS-COMPARADAS-V11.sql` e
 `ROLLBACK-FILA-TESTE-BUILDS-COMPARADAS-V11.sql`.
+
+### IDs, níveis e universo possível da linha (V12)
+
+O V12 não cria outra tabela de resultados. A identidade da linha existente passa a
+ser `card_id + funcao_id + posicao_id + impeto_condicional_codigo +
+impeto_condicional_nivel`; em lote de teste, `lote_teste_id` também participa. Assim,
+níveis 1, 2 e 3 da mesma carta e função não colidem. Se o máximo físico for 5, são
+geradas cinco linhas. Carta sem Ímpeto condicional mantém código e nível nulos.
+
+O nível máximo vem de `impeto_condicao_parametro_faixa_jogo.efeito_maximo`; quando
+essa linha não existe para uma condição de avaliação ao vivo, usa-se o delta da
+receita física em `impeto_atributo_jogo`. A própria tabela recusa código que não
+pertença à carta, nível fora da faixa, nível ausente ou mais de um Ímpeto condicional.
+O motor recebe e devolve somente IDs. A interface converte esses IDs em nomes por uma
+porta de apresentação separada.
+
+`builds_comparadas` continua registrando quantas candidatas finais o executor
+avaliou até chegar à campeã. `builds_possiveis` registra outro número: o universo completo
+daquela linha antes das podas de velocidade. Ele é calculado como combinações de
+barras que cabem no orçamento × opções de Ímpeto adicional disponíveis × técnicos
+válidos × combinações de habilidades permitidas. O nível condicional já identifica a
+linha e não é multiplicado outra vez. O campo é numérico sem limite de inteiro curto,
+pois o universo pode ser muito grande. A tela mostra os dois valores separadamente.
+
+As regras que não tinham equivalente em `clube_novo` foram fotografadas nas tabelas
+`otimizador_regua_parametro`, `otimizador_barra_atributo`,
+`otimizador_custo_nivel`, `otimizador_multiplicador` e `otimizador_molde`. A cópia
+inicial confere as quantidades na mesma transação; depois disso, todo contrato V2 lê
+somente `clube_novo`. `clube.fila`, `clube.build` e as antigas tabelas de régua ficam
+somente como história/conferência e não são fonte nem destino operacional.
+
+O catálogo oficial de Ímpeto adicional fabricável ainda não existe em `clube_novo`.
+Por isso essa escolha continua vazia e fechada, sem reconstrução por nome nem retorno
+ao legado. Os Ímpetos já equipados na carta, fixos ou condicionais, estão ligados.
+
+Migração: `MIGRACAO-ENTRADAS/MIGRACAO-OTIMIZADOR-CLUBE-NOVO-IMPETOS-V12.sql`.
+Teste permanente: `TESTES/teste_impetos_linhas_v12.py`.
+
+A migração `otimizador_clube_novo_impetos_v12` foi aplicada e relida em 30/08/2026.
+As cinco tabelas oficiais fecharam, respectivamente, 8 parâmetros, 27 ligações de
+barra, 25 custos, 100 multiplicadores e 1.430 linhas de molde, sendo 494 da versão 5.
+As doze portas usadas pelo caminho V2 do Otimizador foram encontradas sem leitura de
+`clube.*`. A prova curta usou a carta `105854837821566`, função `6` e Ímpeto `339`:
+nível 1 e nível 3 produziram linhas distintas, cada uma com 41 builds possíveis e
+9 candidatas realmente avaliadas. A gravação conjunta dos valores `9` e `41` foi
+confirmada dentro de transação e revertida; nenhuma linha de prova permaneceu.
+
+A conferência posterior encontrou uma abertura: os campos ainda aceitavam vazio e a
+validação inicial não recusava com segurança uma chave ausente. A migração
+`MIGRACAO-ENTRADAS/MIGRACAO-OTIMIZADOR-CONTADORES-OBRIGATORIOS-V13.sql` fechou essa
+abertura. Agora `builds_comparadas` e `builds_possiveis` são obrigatórios em toda linha
+de `clube_novo.build_otimizador`; ambos devem ser inteiros não negativos e a quantidade
+avaliada não pode ultrapassar o universo possível. Não existe valor automático que
+mascare uma contagem ausente. A rotina oficial também recusa explicitamente qualquer
+resultado que não envie os dois números.
 
 **Abrir console do lote** abre visivelmente o worker do mesmo lote de teste e obedece
 aos mesmos selos. Não cria nova amostra, não agenda, não inicia lote produtivo, não
@@ -531,20 +658,35 @@ SHA-256 `8486821d2c61bf9aed093f493c545450a10e3620f2a7e59210e2ba56f5254a3e`.
 O relatório completo está em
 `4-DOCUMENTOS/OTIMIZADOR/VALIDACAO-ISOLADA-EXECUTAVEL-2026-08-28.md`.
 
-### Prova isolada da fila de 100 cartas
+### Histórico encerrado da fila de 100 cartas
 
-- lote `912c518e-091c-4583-ae91-97b3e717517e`;
-- 100 cartas únicas, 896 linhas canônicas e fingerprint
-  `026fbb294092b6f618b2122ea126b3afa2314da6363cf303674459ca1f85a0dc`;
-- uma linha autorizada concluída; 895 permanecem pendentes;
-- estado final `pausado`, sem linha corrente e sem publicação;
-- carta, lote, contrato, fórmula e versão do motor são conferidos antes da gravação;
-- sem Bonificador, a linha continua `teste_nao_publicado`.
-- gate de pausa atômica V7: uma linha só entra em `processando` quando o próprio
-  `UPDATE` confirma `lote_estado='rodando'`; teste com o lote pausado recusou a
-  linha 925 e manteve 0 processando, 1 concluída e 895 pendentes.
-- controles V8: **Pausar** preserva pendências para retomada; **Parar** exige
-  confirmação explícita da interface, espera a linha atômica e marca as demais
-  como `interrompido`, sem apagar nem publicar. A prova transacional produziu
-  895 interrompidas e 0 publicadas e foi revertida; o lote real permaneceu
-  pausado com 895 pendentes.
+O lote anterior `912c518e-091c-4583-ae91-97b3e717517e` teve 100 cartas e 896 linhas;
+866 chegaram a ser concluídas. Em 30/08/2026 ele foi encerrado como referência
+histórica: suas linhas e resultados não existem mais no banco oficial, e os arquivos
+locais `teste-100/estado-lote.json` e `teste-100/execucao.log` foram removidos. Nenhum
+dado desse lote participa da nova rodada.
+
+### Fila atual de comparação com o arquivo anterior
+
+A migração
+`MIGRACAO-ENTRADAS/MIGRACAO-FILA-COMPARACAO-LEGADO-50-V14.sql` criou a porta selada
+da rodada atual. Ela só aceita criar a fila quando `build_linha_card`,
+`build_otimizador` e `build_bonificador` estiverem zeradas. O arquivo
+`clube.build_arquivo_2608` é somente referência: escolhe os cards e confirma o par
+`card_id + funcao_codigo`; nenhuma linha é gravada, atualizada ou apagada nele.
+
+Fila criada em 30/08/2026:
+
+- lote `18690c93-4bb4-4b86-827a-f472fc92cc68`;
+- fingerprint `d4552dcc5e768e435c3225f1ac456d5b8a660a45627d3a325091f352154cf465`;
+- 50 cards distintos entre os 2.836 existentes no arquivo anterior;
+- 613 linhas atuais, todas com par antigo por card e função;
+- 8 cards com Ímpeto condicional, totalizando 210 linhas com nível;
+- rodada concluída com 613 de 613 linhas, 0 pendentes, 0 processando e 0 falhas;
+- 613 resultados do Otimizador preservados, sem publicação e sem execução do Bonificador;
+- estado `concluido`, modo `teste_nao_publicado`.
+
+O executor oficial dessa fila é `fila_comparacao_legado_50.py`. O atalho manual é
+`RODAR-COMPARACAO-LEGADO-50-CARDS.bat`, e o estado local fica em
+`teste-legado-50/estado-lote.json`. Fórmula, contrato, lote e versão do worker são
+conferidos novamente antes de qualquer linha começar.

@@ -23,6 +23,10 @@ checkpoints/
 7-VARREDURA-DO-JOGO/logs/
 7-VARREDURA-DO-JOGO/artefatos/desktop/
 
+# pacotes NDJSON integrais sao gerados localmente, superam o limite do GitHub
+# e permanecem preservados no computador e nos backups fisicos.
+7-VARREDURA-DO-JOGO/artefatos/preparacao-protecao-motores/**/seed-completude-motores.ndjson
+
 # artefatos compilados locais — o código-fonte é a referência.
 # O botão 4 apenas sincroniza arquivos; ele nunca compila o Extrator.
 7-VARREDURA-DO-JOGO/Extrator eFootball.exe

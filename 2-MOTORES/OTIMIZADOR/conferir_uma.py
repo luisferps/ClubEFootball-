@@ -11,6 +11,10 @@ try:
     FUNCAO_ID = int(sys.argv[2]) if len(sys.argv) > 2 else 2
 except (TypeError, ValueError):
     print('funcao_id precisa ser um numero canonico'); raise SystemExit(1)
+try:
+    IMPETO_NIVEL = int(sys.argv[3]) if len(sys.argv) > 3 else None
+except (TypeError, ValueError):
+    print('nivel do impeto precisa ser um numero'); raise SystemExit(1)
 
 import fonte_unica as FU
 import equacao as EQ
@@ -18,12 +22,7 @@ import motor as M
 import regua as RG
 
 if not CARD:
-    fila = FU.proxima_fila(40) or []
-    for x in fila:
-        if int(x.get('funcao_id')) == FUNCAO_ID:
-            CARD = str(x['card_id']); break
-    if not CARD:
-        print('nao achei ninguem com funcao_id', FUNCAO_ID); raise SystemExit(1)
+    print('informe card_id, funcao_id e, se houver, nivel do impeto'); raise SystemExit(1)
 
 c = FU.carta(CARD)
 if not c:
@@ -35,7 +34,10 @@ if not molde:
     print('a funcao_id', FUNCAO_ID, 'nao tem molde'); raise SystemExit(1)
 
 arows = [[r['attr'], r['peso'], r['alvo'], 0, 0, 0] for r in sorted(molde, key=lambda r: r['attr'])]
-c = dict(c); c['arows'] = arows
+condicionais = [x for x in c.get('impetos') or [] if x.get('codigo_impeto') is not None and x.get('condicional')]
+codigo_condicional = int(condicionais[0]['codigo_impeto']) if condicionais else None
+c = FU.aplica_impetos_da_linha(c,codigo_condicional,IMPETO_NIVEL)
+c['arows'] = arows
 c['raras'] = c.get('raras') or []
 if not (c.get('orc') or 0):
     c['falta'] = []
@@ -43,9 +45,8 @@ if not (c.get('orc') or 0):
 TECS = FU.carrega_tecnicos_do_banco()
 
 print('=' * 78)
-funcao_ap = (ins.get('funcoes') or {}).get(FUNCAO_ID) or {}
-print('  %s  ·  %s (funcao_id %s)'
-      % (c.get('nome'), funcao_ap.get('rotulo_apresentacao') or '', FUNCAO_ID))
+print('  card_id %s · funcao_id %s · impeto_id %s · nivel %s'
+      % (CARD,FUNCAO_ID,codigo_condicional,IMPETO_NIVEL))
 print('  card_id %s' % CARD)
 print('=' * 78)
 print('orcamento ....... %s   (level_cap %s%s)'
@@ -59,8 +60,7 @@ print('tecnicos na lista %d' % len(TECS))
 print()
 print('BASE — os 26 na ordem da casa')
 por_indice = {int(x['indice_otimizador']): x for x in (ins.get('atributo') or [])}
-NOMES = [(por_indice.get(i) or {}).get('nome_apresentacao') or
-         (por_indice.get(i) or {}).get('codigo') or str(i) for i in range(26)]
+NOMES = [(por_indice.get(i) or {}).get('codigo') or str(i) for i in range(26)]
 print('  %-3s %-24s %5s %6s %5s' % ('#', 'atributo', 'base', 'alvo', 'peso'))
 R = {r[0]: (r[2], r[1]) for r in arows if r[1]}
 for i in range(26):

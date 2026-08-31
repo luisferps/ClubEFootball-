@@ -12,7 +12,7 @@ RAIZ = Path(__file__).resolve().parents[3]
 MOTOR = RAIZ / "2-MOTORES" / "BONIFICADOR" / "motor_bonus.py"
 ANTIGO = RAIZ / "2-MOTORES" / "motor_bonus.py"
 CONFIG_COMPARTILHADO = RAIZ / "2-MOTORES" / "config.txt"
-SHA_ESPERADO = "a0909796e8932426a3b72d677ef77fcf50d820eaced95253449828f4d2bfe7cb"
+SHA_ESPERADO = "c521a32b8c15810993fac8e6d4231c1555f9349d8fdcc5a75db76e0e4a61fff4"
 
 
 def main():

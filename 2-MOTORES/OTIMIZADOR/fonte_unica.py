@@ -4,7 +4,7 @@ FONTE ÚNICA — contrato versionado do Otimizador.
 
 O QUE MUDOU
   Antes:  dados/base_unica.json  (um arquivo que alguém tinha que baixar)
-  Agora:  o Supabase, somente pelas portas ``public.otimizador_*_v1``.
+  Agora:  o Supabase, somente pelas portas operacionais ``public.otimizador_*_v2``.
 
 ⛔ A FÓRMULA NÃO MUDA. Este módulo troca somente endereços e identidades de
    entrada. Cálculo, pesos e ordem continuam fora daqui.
@@ -71,8 +71,8 @@ def existe():
     if not URL or not KEY or 'COLE_AQUI' in KEY:
         return False
     try:
-        pacote = _rpc('otimizador_regua_v1') or {}
-        return pacote.get('contrato') == 'otimizador_regua_v1'
+        pacote = _rpc('otimizador_regua_v2') or {}
+        return pacote.get('contrato') == 'otimizador_regua_v2'
     except SystemExit:
         return False
 
@@ -81,11 +81,10 @@ def existe():
 _CACHE = {}
 
 def _traduz(j):
-    """Contrato v1 -> estrutura interna, sempre por IDs/códigos físicos."""
+    """Contrato V2 -> estrutura interna; o motor recebe somente IDs e valores."""
     if not j:
         return None
     cid = str(j.get('card_id'))
-    ap = j.get('apresentacao') or {}
     esc = j.get('escalares') or {}
     gate = j.get('gate') or {}
     atributos = sorted(j.get('atributos') or [], key=lambda x: int(x['indice_otimizador']))
@@ -101,12 +100,10 @@ def _traduz(j):
 
     return {
         'id':      cid,
-        'nome':    ap.get('nome'),                 # somente apresentação
-        'nm':      [],                             # consumidor de Ímpetos desligado
+        'nm':      [],                             # preenchido pela identidade da linha
         'posicao_id': j.get('posicao_principal_id'),
         'pos':     j.get('posicao_principal_id'),
         'np':      j.get('posicao_principal_id'),
-        'posicao_nome': ap.get('posicao'),         # somente apresentação
         'orc':     esc.get('orcamento') or 0,
         'base':    [x.get('valor') for x in atributos],
         'ovr':     esc.get('overall'),
@@ -131,22 +128,59 @@ def _traduz(j):
         'cap_estimado': esc.get('cap_estimado'),
     }
 
+
+def vetor_impetos_da_linha(c, codigo_condicional=None, nivel_condicional=None):
+    """Materializa os efeitos equipados usando apenas código, nível e receita física."""
+    vetor = [0] * 26
+    condicionais = [x for x in (c.get('impetos') or [])
+                    if x.get('codigo_impeto') is not None and bool(x.get('condicional'))]
+    if len(condicionais) > 1:
+        raise ValueError('carta possui mais de um impeto condicional')
+    if condicionais:
+        esperado = int(condicionais[0]['codigo_impeto'])
+        if codigo_condicional is None or nivel_condicional is None:
+            raise ValueError('codigo e nivel do impeto condicional sao obrigatorios')
+        if int(codigo_condicional) != esperado:
+            raise ValueError('impeto condicional nao pertence a carta')
+        maximo = int(condicionais[0].get('nivel_maximo') or 0)
+        if not 1 <= int(nivel_condicional) <= maximo:
+            raise ValueError('nivel do impeto condicional fora da faixa fisica')
+    elif codigo_condicional is not None or nivel_condicional is not None:
+        raise ValueError('carta nao possui impeto condicional')
+
+    for impeto in (c.get('impetos') or []):
+        if impeto.get('codigo_impeto') is None:
+            continue
+        condicional = bool(impeto.get('condicional'))
+        for efeito in (impeto.get('efeitos') or []):
+            indice = int(efeito['indice_otimizador'])
+            delta = int(nivel_condicional) if condicional else int(efeito['delta'])
+            vetor[indice] += delta
+    return [[indice,delta] for indice,delta in enumerate(vetor) if delta]
+
+
+def aplica_impetos_da_linha(c, codigo_condicional=None, nivel_condicional=None):
+    out = dict(c)
+    out['nm'] = vetor_impetos_da_linha(out, codigo_condicional, nivel_condicional)
+    out['impeto_condicional_codigo'] = (None if codigo_condicional is None else int(codigo_condicional))
+    out['impeto_condicional_nivel'] = (None if nivel_condicional is None else int(nivel_condicional))
+    return out
+
 def carta(card_id):
     """Uma carta, do banco. Guarda em memoria."""
     cid = str(card_id).split('@')[0]
     if cid not in _CACHE:
-        _CACHE[cid] = _traduz(_rpc('otimizador_carta_v1', {'p_card_id': cid}))
+        _CACHE[cid] = _traduz(_rpc('otimizador_carta_v2', {'p_card_id': cid}))
     return _CACHE[cid]
 
 
 def carrega_base(ids=None):
     """{id_base: card} — o mesmo formato de antes.
 
-    Sem `ids`, traz a fila inteira. Com `ids`, so essas (bem mais rapido).
+    O fluxo oficial sempre entrega os IDs da fila selada.
     """
     if ids is None:
-        fila = _rpc('otimizador_proxima_fila_v1', {'p_limite': 1000000}) or []
-        ids = sorted({str(x.get('card_id')) for x in fila})
+        raise SystemExit('PAROU: a fila legada foi desativada; informe os IDs da fila clube_novo.')
 
     # 27/08 — EM LOTE. Antes era uma chamada HTTP por carta: 20.845 idas ao
     # banco, e isso DUAS vezes (um carregamento por processo). Levava horas so
@@ -156,9 +190,9 @@ def carrega_base(ids=None):
     LOTE = 500
     for i in range(0, len(ids), LOTE):
         pedaco = ids[i:i + LOTE]
-        linhas = _rpc('otimizador_cartas_v1', {'p_ids': pedaco})
+        linhas = _rpc('otimizador_cartas_v2', {'p_ids': pedaco})
         if linhas is None:
-            raise SystemExit('PAROU: otimizador_cartas_v1 nao devolveu o lote; sem fallback.')
+            raise SystemExit('PAROU: otimizador_cartas_v2 nao devolveu o lote; sem fallback.')
         for j in linhas:
             c = _traduz(j)
             if c:
@@ -176,10 +210,10 @@ def carrega_tudo():
     global _INSUMOS
     if _INSUMOS is not None:
         return _INSUMOS
-    rp = _rpc('otimizador_regua_v1') or {}
+    rp = _rpc('otimizador_regua_v2') or {}
     gate = rp.get('gate') or {}
     if not gate.get('pode_rodar'):
-        raise SystemExit('PAROU: gate de otimizador_regua_v1 recusou a regua; sem fallback.')
+        raise SystemExit('PAROU: gate de otimizador_regua_v2 recusou a regua; sem fallback.')
 
     molde = []
     for r in (rp.get('molde') or []):
@@ -188,8 +222,7 @@ def carrega_tudo():
                       'alvo': r['alvo'], 'peso': r['peso']})
 
     funcoes = {int(x['funcao_id']): {
-        'codigo_compatibilidade': x.get('codigo_compatibilidade'),
-        'rotulo_apresentacao': x.get('rotulo_apresentacao'), 'ordem': x.get('ordem')}
+        'ordem': x.get('ordem')}
         for x in (rp.get('funcoes') or [])}
 
     habilidades = {}
@@ -203,7 +236,7 @@ def carrega_tudo():
         habilidades[int(h['skill_id'])] = {
             'skill_id': int(h['skill_id']), 'bit_na_carta': int(h['bit_na_carta']),
             'fabricavel': bool(h.get('fabricavel')), 'vetada': bool(h.get('vetada')),
-            'efeito': efeitos, 'nome_apresentacao': h.get('nome_apresentacao')}
+            'efeito': efeitos}
 
     bloqueio = {}
     for b in (rp.get('bloqueios') or []):
@@ -220,12 +253,21 @@ def carrega_tudo():
         if any(float(x.get('delta') or 0) != 1.0 for x in boosts):
             raise SystemExit('PAROU: tecnico %s tem delta de boost diferente de +1.' % t.get('tecnico_id'))
         tid = int(t['tecnico_id'])
-        tecnicos[tid] = {'nome': t.get('nome_apresentacao'),
-                         'boosts_canonicos': [int(x['indice_otimizador']) for x in boosts],
+        tecnicos[tid] = {'boosts_canonicos': [int(x['indice_otimizador']) for x in boosts],
                          'proficiencias': {str(x['codigo_estilo']): float(x['valor'])
                                            for x in (t.get('proficiencias') or [])},
                          'proficiencia_maxima': t.get('proficiencia_maxima'),
                          'estilos_principais': t.get('estilos_principais') or []}
+
+    impetos_catalogo = {}
+    for impeto in (rp.get('impetos') or []):
+        codigo = int(impeto['codigo_impeto'])
+        impetos_catalogo[codigo] = {
+            'condicional': bool(impeto.get('condicional')),
+            'nivel_maximo': impeto.get('nivel_maximo'),
+            'efeitos': {int(x['indice_otimizador']): int(x['delta'])
+                        for x in (impeto.get('efeitos') or [])},
+        }
 
     _INSUMOS = {
         'contrato': rp.get('contrato'), 'gate': gate,
@@ -241,17 +283,17 @@ def carrega_tudo():
         'custo_nivel': rp.get('custo_nivel') or {},
         'multiplicador': rp.get('multiplicadores') or {},
         'fabricavel': [],
-        'impeto': {},
+        'impeto': impetos_catalogo,
         'versao_molde': rp.get('versao_molde'),
     }
     return _INSUMOS
 
 
 def carimbo():
-    """Assina a cabeça da fila pela porta v1, sem consultar RPC antiga."""
+    """Assina a régua oficial; nunca consulta a fila histórica."""
     try:
-        cabeca = _rpc('otimizador_proxima_fila_v1', {'p_limite': 1}) or []
-        bruto = json.dumps(cabeca, sort_keys=True, separators=(',', ':')).encode('utf-8')
+        pacote = _rpc('otimizador_regua_v2') or {}
+        bruto = json.dumps(pacote, sort_keys=True, separators=(',', ':')).encode('utf-8')
         return hashlib.sha256(bruto).hexdigest()
     except Exception:
         return None
@@ -259,54 +301,32 @@ def carimbo():
 
 # ------------------------------------------------------------------ a fila
 def proxima_fila(limite=200):
-    """O próximo lote, identificado por ``funcao_id`` canônico."""
-    return _rpc('otimizador_proxima_fila_v1', {'p_limite': limite}) or []
+    raise SystemExit('PAROU: use a fila selada de clube_novo; a fila historica esta proibida.')
 
 
 def gravar(linhas):
-    """A volta. Grava na clube.build E TIRA a linha da fila, no mesmo comando."""
-    if not linhas:
-        return 0
-    total = 0
-    funcoes = carrega_tudo().get('funcoes') or {}
-    for i in range(0, len(linhas), 200):
-        compat = []
-        for linha in linhas[i:i+200]:
-            x = dict(linha)
-            if 'funcao_id' not in x:
-                raise SystemExit('PAROU: resultado sem funcao_id canônica.')
-            fid = int(x.pop('funcao_id'))
-            f = funcoes.get(fid) or {}
-            codigo = f.get('codigo_compatibilidade')
-            if not codigo:
-                raise SystemExit('PAROU: funcao_id %s sem ponte de gravacao legada.' % fid)
-            x['funcao_codigo'] = codigo
-            compat.append(x)
-        total += int(_rpc('gravar_build', {'p_linhas': compat}) or 0)
-    return total
+    raise SystemExit('PAROU: gravacao historica desativada; use build_linha_card e build_otimizador.')
 
 
 def estado():
-    fila = proxima_fila(1)
-    return {'contrato': 'otimizador_proxima_fila_v1', 'ha_fila': bool(fila)}
+    return {'contrato': 'otimizador_regua_v2', 'ha_fila_historica': False}
 
 
 # ------------------------------------------------------- insumos que eram arquivo
 # Ate 27/08 o equacao.py abria tabm_medido.json e HAB_EFEITOS_FINAL.json, e o
-# motor.py abria CAT_dom.json. Esses tres arquivos nao existem mais: o dado mora
-# no banco (clube.multiplicador, clube.habilidade, clube.impeto_fabricavel) e
-# desce pelo mesmo regua_pacote() de sempre. A conta nao mudou - so a porta.
+# motor.py abria CAT_dom.json. As regras agora moram nas tabelas oficiais de
+# clube_novo e descem pelo contrato V2. A conta nao mudou - so a porta.
 
 def tabela_multiplicador():
     """{ponto: multiplicador} - o que era tabm_medido.json."""
     t = carrega_tudo().get('multiplicador') or {}
     if not t:
-        raise SystemExit('PAROU: clube.multiplicador veio vazio do banco.')
+        raise SystemExit('PAROU: otimizador_multiplicador veio vazio de clube_novo.')
     return t
 
 
 def catalogo_habilidades():
-    """{skill_id: metadados}; rótulo fica somente em ``nome_apresentacao``."""
+    """{skill_id: metadados}; nenhuma etiqueta entra no motor."""
     h = carrega_tudo().get('habilidades') or {}
     if not h:
         raise SystemExit('PAROU: habilidades canônicas vieram vazias do contrato v1.')
@@ -318,7 +338,7 @@ def habilidades_de_goleiro():
 
 
 def catalogo_fabricaveis():
-    """Ímpetos continuam deliberadamente desligados neste contrato."""
+    """Não existe catálogo oficial de ímpeto adicional fabricável em clube_novo."""
     carrega_tudo()
     return []
 
@@ -335,7 +355,7 @@ def carrega_tecnicos_do_banco(tatica=None):
     import equacao as _EQ
     cat = carrega_tudo().get('tecnicos_catalogo') or {}
     if not cat:
-        raise SystemExit('PAROU: clube.tecnico veio vazia do banco.')
+        raise SystemExit('PAROU: tecnico_jogo veio vazia de clube_novo.')
     out = []
     for tid, c in cat.items():
         b = [int(x) for x in (c.get('boosts_canonicos') or []) if 0 <= int(x) < 26]
@@ -345,7 +365,7 @@ def carrega_tecnicos_do_banco(tatica=None):
         if not sk or c.get('proficiencia_maxima') is None:
             continue
         v = float(c['proficiencia_maxima'])
-        out.append({'nome': c.get('nome'), 'id': int(tid), 'tat': v,
+        out.append({'nome': int(tid), 'id': int(tid), 'tat': v,
                     'm': _EQ.mult_de(v), 'boost': b,
                     'estilos_principais': c.get('estilos_principais') or []})
     return out
@@ -358,4 +378,4 @@ def peso_da_ordem():
     roda um DP inteiro por candidato e chega a levar 4.953 s. Essas vao para o
     fim. Nao muda resultado nenhum.
     """
-    return _rpc('otimizador_peso_ordem_v1') or {}
+    raise SystemExit('PAROU: ordenacao pela fila historica foi desativada.')

@@ -58,8 +58,8 @@ def confere_carta(c, n_atributos=26):
     falta = []
     gate = c.get('gate') or {}
     if not gate.get('pode_rodar', False):
-        motivos = gate.get('motivos') or ['gate do contrato v1 fechado']
-        falta.append('gate do contrato v1: %s' % ', '.join(str(x) for x in motivos))
+        motivos = gate.get('motivos') or ['gate do contrato V2 fechado']
+        falta.append('gate do contrato V2: %s' % ', '.join(str(x) for x in motivos))
     base = c.get('base')
     if not base:
         falta.append('os %d atributos' % n_atributos)

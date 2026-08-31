@@ -459,6 +459,9 @@ def _classified_relation(
     return {
         "classificacao": kind,
         "escopo": spec.name,
+        "destino_tabela": spec.table,
+        "colunas_fisicas": list(spec.columns),
+        "colunas_apresentacao": list(spec.presentation_only_columns),
         "chave_canonica": dict(zip(_identity_columns(spec), identity, strict=True)),
         "fonte_fisica": source_reference,
         "vinculo_banco": None if database is None else dict(zip(_identity_columns(spec), identity, strict=True)),

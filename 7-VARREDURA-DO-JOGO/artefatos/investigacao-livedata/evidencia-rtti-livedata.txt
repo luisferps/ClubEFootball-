@@ -1,0 +1,135 @@
+TYPE LiveDataManager@onlinemode@@ occurrences=1
+  name_file=0x82a2da0 name_rva=0x82a39a0 type_descriptor_rva=0x82a3990
+    COL file=0x7889d70 rva=0x788a970 class_descriptor_rva=0x788a998
+    VTABLE holder_file=0x6d4c170 vtable_rva=0x6d4cd78 section=.tls$ entries=7
+      [00] rva=0x45aa0f0 fn=0x45aa0f0-0x45aa1c6
+      [01] rva=0x45ab0a0 fn=0x45ab0a0-0x45ab2d4
+      [02] rva=0x41193d0
+      [03] rva=0x45ab040
+      [04] rva=0x1764ae0
+      [05] rva=0x45aaf90
+      [06] rva=0x45aadf0
+TYPE LiveDataDownloader@onlinemode@@ occurrences=1
+  name_file=0x82a6968 name_rva=0x82a7568 type_descriptor_rva=0x82a7558
+    COL file=0x7890028 rva=0x7890c28 class_descriptor_rva=0x7890c50
+    VTABLE holder_file=0x6dcfce8 vtable_rva=0x6dd08f0 section=.tls$ entries=7
+      [00] rva=0x4626c60 fn=0x4626c60-0x4626c9a
+      [01] rva=0x4627160 fn=0x4627160-0x46271d4
+      [02] rva=0x41193d0
+      [03] rva=0x45ab040
+      [04] rva=0x1764ae0
+      [05] rva=0x45aaf90
+      [06] rva=0x45aadf0
+TYPE LiveDataLoader@onlinemode@@ occurrences=1
+  name_file=0x82a6a98 name_rva=0x82a7698 type_descriptor_rva=0x82a7688
+    COL file=0x7890238 rva=0x7890e38 class_descriptor_rva=0x7890e60
+    VTABLE holder_file=0x6dd0410 vtable_rva=0x6dd1018 section=.tls$ entries=7
+      [00] rva=0x46272a0 fn=0x46272a0-0x46272e2
+      [01] rva=0x4627610 fn=0x4627610-0x4627738
+      [02] rva=0x41193d0
+      [03] rva=0x46275c0 fn=0x46275c0-0x4627608
+      [04] rva=0x1764ae0
+      [05] rva=0x45aaf90
+      [06] rva=0x45aadf0
+TYPE LiveDataBinder@onlinemode@@ occurrences=1
+  name_file=0x82afb68 name_rva=0x82b0768 type_descriptor_rva=0x82b0758
+    COL file=0x789f418 rva=0x78a0018 class_descriptor_rva=0x78a0040
+    VTABLE holder_file=0x6e5de90 vtable_rva=0x6e5ea98 section=.tls$ entries=7
+      [00] rva=0x46a8a90 fn=0x46a8a90-0x46a8be6
+      [01] rva=0x46a9220 fn=0x46a9220-0x46a92f5
+      [02] rva=0x41193d0
+      [03] rva=0x45ab040
+      [04] rva=0x1764ae0
+      [05] rva=0x45aaf90
+      [06] rva=0x45aadf0
+TYPE LiveDataVersionLoader@onlinemode@@ occurrences=1
+  name_file=0x82afd38 name_rva=0x82b0938 type_descriptor_rva=0x82b0928
+    COL file=0x789f7d0 rva=0x78a03d0 class_descriptor_rva=0x78a03f8
+    VTABLE holder_file=0x6e5eb40 vtable_rva=0x6e5f748 section=.tls$ entries=7
+      [00] rva=0x46a9570 fn=0x46a9570-0x46a95b5
+      [01] rva=0x46a9870 fn=0x46a9870-0x46a994a
+      [02] rva=0x41193d0
+      [03] rva=0x45ab040
+      [04] rva=0x1764ae0
+      [05] rva=0x45aaf90
+      [06] rva=0x45aadf0
+TYPE LiveDataHashChecker@onlinemode@@ occurrences=1
+  name_file=0x82af998 name_rva=0x82b0598 type_descriptor_rva=0x82b0588
+    COL file=0x789f118 rva=0x789fd18 class_descriptor_rva=0x789fd40
+    VTABLE holder_file=0x6e5cb58 vtable_rva=0x6e5d760 section=.tls$ entries=7
+      [00] rva=0x46a7aa0 fn=0x46a7aa0-0x46a7ad6
+      [01] rva=0x46a7ed0 fn=0x46a7ed0-0x46a7f6d
+      [02] rva=0x41193d0
+      [03] rva=0x45ab040
+      [04] rva=0x1764ae0
+      [05] rva=0x45aaf90
+      [06] rva=0x45aadf0
+TYPE LiveDataValidChecker@onlinemode@@ occurrences=1
+  name_file=0x82afa80 name_rva=0x82b0680 type_descriptor_rva=0x82b0670
+    COL file=0x789f2a0 rva=0x789fea0 class_descriptor_rva=0x789fec8
+    VTABLE holder_file=0x6e5d168 vtable_rva=0x6e5dd70 section=.tls$ entries=7
+      [00] rva=0x46a8030 fn=0x46a8030-0x46a8066
+      [01] rva=0x46a80d0 fn=0x46a80d0-0x46a828c
+      [02] rva=0x41193d0
+      [03] rva=0x45ab040
+      [04] rva=0x1764ae0
+      [05] rva=0x45aaf90
+      [06] rva=0x45aadf0
+TYPE LiveDataInfo@onlinemode@@ occurrences=1
+  name_file=0x82a5228 name_rva=0x82a5e28 type_descriptor_rva=0x82a5e18
+    COL file=0x788e068 rva=0x788ec68 class_descriptor_rva=0x788ec90
+    VTABLE holder_file=0x6dbe550 vtable_rva=0x6dbf158 section=.tls$ entries=7
+      [00] rva=0x46110b0 fn=0x46110b0-0x46111b7
+      [01] rva=0x4611600 fn=0x4611600-0x46118a4
+      [02] rva=0x41193d0
+      [03] rva=0x45ab040
+      [04] rva=0x1764ae0
+      [05] rva=0x45aaf90
+      [06] rva=0x45aadf0
+TYPE CommandObjectCmdGetLivedata@command@@ occurrences=1
+  name_file=0x82aae58 name_rva=0x82aba58 type_descriptor_rva=0x82aba48
+    COL file=0x7895d98 rva=0x7896998 class_descriptor_rva=0x78969c0
+    VTABLE holder_file=0x6df63f8 vtable_rva=0x6df7000 section=.tls$ entries=33
+      [00] rva=0x4585790
+      [01] rva=0xc83810
+      [02] rva=0x46b6d30
+      [03] rva=0x4654480 fn=0x4654480-0x46544be
+      [04] rva=0x49fc4a0 fn=0x49fc4a0-0x49fc4e7
+      [05] rva=0xc83910
+      [06] rva=0x42c7fd0
+      [07] rva=0x46545a0 fn=0x46545a0-0x46545b3
+      [08] rva=0xc83910
+      [09] rva=0x4654630 fn=0x4654630-0x465489c
+      [10] rva=0xc83910
+      [11] rva=0xc83810
+      [12] rva=0x46e3b60 fn=0x46e3b60-0x46e3bf0
+      [13] rva=0x46e3b60 fn=0x46e3b60-0x46e3bf0
+      [14] rva=0x46e35a0 fn=0x46e35a0-0x46e37f4
+      [15] rva=0x46e3910 fn=0x46e3910-0x46e3adc
+      [16] rva=0x46e3c10 fn=0x46e3c10-0x46e4610
+      [17] rva=0x46e3820 fn=0x46e3820-0x46e38b3
+      [18] rva=0x46e3480 fn=0x46e3480-0x46e3513
+      [19] rva=0x46e3430 fn=0x46e3430-0x46e347f
+      [20] rva=0xc853c0
+      [21] rva=0xc853c0
+      [22] rva=0xc853c0
+      [23] rva=0x46b8000 fn=0x46b8000-0x46b93bc
+      [24] rva=0x46e3320 fn=0x46e3320-0x46e3338
+      [25] rva=0x46e3300 fn=0x46e3300-0x46e3318
+      [26] rva=0x46e38c0 fn=0x46e38c0-0x46e390e
+      [27] rva=0x46e3800
+      [28] rva=0x4654520 fn=0x4654520-0x4654599
+      [29] rva=0x4585970 fn=0x4585970-0x45859a3
+      [30] rva=0x4585ad0 fn=0x4585ad0-0x4585b6c
+      [31] rva=0x4585a30 fn=0x4585a30-0x4585acc
+      [32] rva=0x46e3340 fn=0x46e3340-0x46e342d
+TYPE OnlineSystemHttpAes@onlinesystem@@ occurrences=1
+  name_file=0x82b8138 name_rva=0x82b8d38 type_descriptor_rva=0x82b8d28
+    COL file=0x78ac7d8 rva=0x78ad3d8 class_descriptor_rva=0x78ad400
+    VTABLE holder_file=0x6ec1590 vtable_rva=0x6ec2198 section=.tls$ entries=1
+      [00] rva=0x480d9c0 fn=0x480d9c0-0x480da02
+TYPE OnlineSystemHttpBlowfish@onlinesystem@@ occurrences=1
+  name_file=0x82b80f8 name_rva=0x82b8cf8 type_descriptor_rva=0x82b8ce8
+    COL file=0x78ac760 rva=0x78ad360 class_descriptor_rva=0x78ad388
+    VTABLE holder_file=0x6ec0ff0 vtable_rva=0x6ec1bf8 section=.tls$ entries=1
+      [00] rva=0x480d540 fn=0x480d540-0x480d582

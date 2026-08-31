@@ -1,0 +1,70 @@
+{
+  "data_da_leitura": "2026-08-31",
+  "criterio": "Inspecao visual dos PNGs decifrados e leitura dos blocos PNG. Nomes de pessoas somente quando escritos na propria imagem ou visualmente inequivocos; nenhum nome foi inferido para o retrato sem legenda.",
+  "conclusao_geral": "Os nove arquivos sao imagens promocionais. Oito sao banners de 1638 x 414 e um e retrato de 534 x 726. Os blocos PNG encontrados foram apenas IHDR, sBIT, PLTE, tRNS, IDAT e IEND: nao ha catalogo, tabela de cards, identificadores ou metadados estruturados anexados a esses PNGs.",
+  "itens": [
+    {
+      "sha256_png": "03e4168c8ea285217f8c2568b772e9b9e19db45b4abb5e7fb2904e742d80f09a",
+      "dimensoes": "1638 x 414",
+      "tipo": "fundo promocional",
+      "identificacao_visual": "Fundo abstrato com raios azul e roxo, sem texto e sem card visivel.",
+      "texto_legivel_principal": null
+    },
+    {
+      "sha256_png": "439fe8bae150cdd98226467885255d5f769e9d6dd1e0574cf2d1625bc05b9258",
+      "dimensoes": "1638 x 414",
+      "tipo": "banner promocional",
+      "identificacao_visual": "Arte do crossover de manga com varios personagens.",
+      "texto_legivel_principal": "That Time I Got Reincarnated in PES"
+    },
+    {
+      "sha256_png": "a026b4c528c8b4f75d4408750bdec9c1acf5bda3165931d427a9fc0bb0171f8a",
+      "dimensoes": "1638 x 414",
+      "tipo": "banner de recompensa/card",
+      "identificacao_visual": "Mostra, como pixels da arte, um card 98 CMF de Thiago Alcantara e seis itens de experiencia.",
+      "texto_legivel_principal": "Thiago Alcantara; Exp. 4,000 x6"
+    },
+    {
+      "sha256_png": "b3da26cc72199936a85ed39d390a3acbe96c1e2fcd76d8232129ab74f5e772be",
+      "dimensoes": "1638 x 414",
+      "tipo": "banner de campanha",
+      "identificacao_visual": "Resume presente de login, escolha de jogadores e o tecnico Frank Lampard. As miniaturas de cards fazem parte da imagem; nao sao registros extraiveis.",
+      "texto_legivel_principal": "Special Login Present / Campaign Hub; Sign your 5 favourite players!; Highlight: New Season x5; Frank Lampard 2025-2026; New Team Playstyle Overload"
+    },
+    {
+      "sha256_png": "b6182d6ddb30a7cb8794459796af229bc9ba863ced265815a1f52d8845970b66",
+      "dimensoes": "1638 x 414",
+      "tipo": "banner promocional",
+      "identificacao_visual": "Montagem de Lionel Messi com uniforme do Barcelona, sem texto identificador.",
+      "texto_legivel_principal": null
+    },
+    {
+      "sha256_png": "cbe51825a2ba9e0d578a170828d69112b86ff62b35d0955f5f83b657d7f5f9d0",
+      "dimensoes": "1638 x 414",
+      "tipo": "banner de recompensa/card",
+      "identificacao_visual": "Mostra, como pixels da arte, o card RWF 94 de Burchett, a habilidade Acceleration Burst e a faixa de classificacao da campanha do crossover.",
+      "texto_legivel_principal": "Player Skill Acceleration Burst; Burchett; Rank 1-50,000"
+    },
+    {
+      "sha256_png": "cc1d3922a21b717ac687f8afae3d3fe0a2d0dac6d4fbbbc32688f158b9f2b013",
+      "dimensoes": "1638 x 414",
+      "tipo": "banner de campanha",
+      "identificacao_visual": "Campanha de vinculacao do KONAMI ID com premio exibido de 3.000 moedas.",
+      "texto_legivel_principal": "KONAMI ID Link Campaign; 3,000"
+    },
+    {
+      "sha256_png": "cf3bbaab4c3d5114de0038f46b6b7c180881a4c44c062fd514d3fb5a9945e333",
+      "dimensoes": "534 x 726",
+      "tipo": "retrato promocional",
+      "identificacao_visual": "Jogador com uniforme vermelho sobre fundo de moedas eFootball. A propria imagem nao traz nome; por isso o jogador nao foi identificado por palpite.",
+      "texto_legivel_principal": null
+    },
+    {
+      "sha256_png": "d80c5011e135323d48b4a33380ee5911b569f2e4474cba5a2591bbbfc3ce470c",
+      "dimensoes": "1638 x 414",
+      "tipo": "banner promocional",
+      "identificacao_visual": "Montagem de Lamine Yamal com uniforme do Barcelona, sem texto identificador.",
+      "texto_legivel_principal": null
+    }
+  ]
+}

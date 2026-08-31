@@ -1,0 +1,1336 @@
+{
+  "schema": "clubef-playerbooster-legado-layout-search-v1",
+  "read_only": true,
+  "source": {
+    "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\eFootball\\cpk\\dt870_console_win.cpk",
+    "playerbooster_bytes": 6624,
+    "playerbooster_sha256": "e54720e512d2579b94136244a8a6a3f13c572eaada71b22f61919a87197c087b"
+  },
+  "mapped_pairs": 102,
+  "scans": {
+    "locator_8_bytes_one_based": [
+      {
+        "relative_bit": 28,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 28,
+        "width": 9,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 28,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 28,
+        "width": 11,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 28,
+        "width": 12,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 40,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 48,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 48,
+        "width": 9,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 48,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 48,
+        "width": 11,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 48,
+        "width": 12,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 48,
+        "width": 13,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 48,
+        "width": 14,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 48,
+        "width": 15,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 48,
+        "width": 16,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 50,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 50,
+        "width": 9,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 50,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 50,
+        "width": 11,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 50,
+        "width": 12,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 50,
+        "width": 13,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 50,
+        "width": 14,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 50,
+        "width": 15,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 50,
+        "width": 16,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 51,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      }
+    ],
+    "locator_8_bytes_zero_based": [
+      {
+        "relative_bit": 7,
+        "width": 9,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 7,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 7,
+        "width": 11,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 7,
+        "width": 12,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 7,
+        "width": 13,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 7,
+        "width": 14,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 7,
+        "width": 15,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 7,
+        "width": 16,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 9,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 9,
+        "width": 9,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 9,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 9,
+        "width": 11,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 9,
+        "width": 12,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 9,
+        "width": 13,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 9,
+        "width": 14,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 9,
+        "width": 15,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 9,
+        "width": 16,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 9,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 11,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 12,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 13,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 14,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 15,
+        "matches": 2,
+        "available": 102
+      }
+    ],
+    "locator_16_bytes_one_based": [
+      {
+        "relative_bit": 97,
+        "width": 10,
+        "matches": 3,
+        "available": 102
+      },
+      {
+        "relative_bit": 100,
+        "width": 10,
+        "matches": 3,
+        "available": 102
+      },
+      {
+        "relative_bit": 101,
+        "width": 10,
+        "matches": 3,
+        "available": 102
+      },
+      {
+        "relative_bit": 42,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 42,
+        "width": 9,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 44,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 68,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 68,
+        "width": 9,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 68,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 73,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 73,
+        "width": 9,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 73,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 73,
+        "width": 11,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 73,
+        "width": 12,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 73,
+        "width": 13,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 73,
+        "width": 14,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 73,
+        "width": 15,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 88,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 96,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 97,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 97,
+        "width": 9,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 97,
+        "width": 11,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 97,
+        "width": 12,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 98,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 99,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      }
+    ],
+    "antigo_prefixo24_stride40": [
+      {
+        "relative_bit": 12,
+        "width": 8,
+        "matches": 3,
+        "available": 102
+      },
+      {
+        "relative_bit": 39,
+        "width": 8,
+        "matches": 3,
+        "available": 102
+      },
+      {
+        "relative_bit": 39,
+        "width": 9,
+        "matches": 3,
+        "available": 102
+      },
+      {
+        "relative_bit": 39,
+        "width": 10,
+        "matches": 3,
+        "available": 102
+      },
+      {
+        "relative_bit": 39,
+        "width": 11,
+        "matches": 3,
+        "available": 102
+      },
+      {
+        "relative_bit": 93,
+        "width": 8,
+        "matches": 3,
+        "available": 102
+      },
+      {
+        "relative_bit": 93,
+        "width": 9,
+        "matches": 3,
+        "available": 102
+      },
+      {
+        "relative_bit": 93,
+        "width": 10,
+        "matches": 3,
+        "available": 102
+      },
+      {
+        "relative_bit": 1,
+        "width": 9,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 1,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 1,
+        "width": 11,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 3,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 9,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 11,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 12,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 13,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 14,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 15,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 12,
+        "width": 16,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 18,
+        "width": 8,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 18,
+        "width": 9,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 18,
+        "width": 10,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 18,
+        "width": 11,
+        "matches": 2,
+        "available": 102
+      },
+      {
+        "relative_bit": 18,
+        "width": 12,
+        "matches": 2,
+        "available": 102
+      }
+    ]
+  },
+  "samples": [
+    {
+      "code": 4,
+      "locator": 1,
+      "byte_offset": 0,
+      "bytes_8": "0000000000000104",
+      "bytes_16": "00000000000001040040000080000c01"
+    },
+    {
+      "code": 9,
+      "locator": 3,
+      "byte_offset": 16,
+      "bytes_8": "0000000000000208",
+      "bytes_16": "00000000000002080040000008020c00"
+    },
+    {
+      "code": 14,
+      "locator": 5,
+      "byte_offset": 32,
+      "bytes_8": "000000000000030c",
+      "bytes_16": "000000000000030c0040000090000402"
+    },
+    {
+      "code": 19,
+      "locator": 7,
+      "byte_offset": 48,
+      "bytes_8": "0000000000000410",
+      "bytes_16": "00000000000004100040000001820800"
+    },
+    {
+      "code": 24,
+      "locator": 9,
+      "byte_offset": 64,
+      "bytes_8": "0000000000000514",
+      "bytes_16": "00000000000005140040000004018200"
+    },
+    {
+      "code": 29,
+      "locator": 11,
+      "byte_offset": 80,
+      "bytes_8": "0000000000000618",
+      "bytes_16": "00000000000006180040000001008201"
+    },
+    {
+      "code": 34,
+      "locator": 13,
+      "byte_offset": 96,
+      "bytes_8": "000000000000071c",
+      "bytes_16": "000000000000071c0040000010202100"
+    },
+    {
+      "code": 39,
+      "locator": 15,
+      "byte_offset": 112,
+      "bytes_8": "0000000000000820",
+      "bytes_16": "00000000000008200040000000112100"
+    },
+    {
+      "code": 44,
+      "locator": 17,
+      "byte_offset": 128,
+      "bytes_8": "0000000000000924",
+      "bytes_16": "00000000000009240040000004310000"
+    },
+    {
+      "code": 49,
+      "locator": 19,
+      "byte_offset": 144,
+      "bytes_8": "0000000000000a28",
+      "bytes_16": "0000000000000a280040000094100000"
+    },
+    {
+      "code": 54,
+      "locator": 21,
+      "byte_offset": 160,
+      "bytes_8": "0000000000000b2c",
+      "bytes_16": "0000000000000b2c00400000200c1000"
+    },
+    {
+      "code": 59,
+      "locator": 23,
+      "byte_offset": 176,
+      "bytes_8": "0000000000000c04",
+      "bytes_16": "0000000000000c040080000080000c01"
+    },
+    {
+      "code": 64,
+      "locator": 25,
+      "byte_offset": 192,
+      "bytes_8": "0000000000000d08",
+      "bytes_16": "0000000000000d080080000008020c00"
+    },
+    {
+      "code": 69,
+      "locator": 27,
+      "byte_offset": 208,
+      "bytes_8": "0000000000000e0c",
+      "bytes_16": "0000000000000e0c0080000090000402"
+    },
+    {
+      "code": 74,
+      "locator": 29,
+      "byte_offset": 224,
+      "bytes_8": "0000000000000f10",
+      "bytes_16": "0000000000000f100080000001820800"
+    },
+    {
+      "code": 260,
+      "locator": 30,
+      "byte_offset": 232,
+      "bytes_8": "0080000001820800",
+      "bytes_16": "00800000018208000000000000001014"
+    },
+    {
+      "code": 79,
+      "locator": 31,
+      "byte_offset": 240,
+      "bytes_8": "0000000000001014",
+      "bytes_16": "00000000000010140080000004018200"
+    },
+    {
+      "code": 84,
+      "locator": 33,
+      "byte_offset": 256,
+      "bytes_8": "0000000000001118",
+      "bytes_16": "00000000000011180080000001008201"
+    },
+    {
+      "code": 89,
+      "locator": 35,
+      "byte_offset": 272,
+      "bytes_8": "000000000000121c",
+      "bytes_16": "000000000000121c0080000010202100"
+    },
+    {
+      "code": 94,
+      "locator": 37,
+      "byte_offset": 288,
+      "bytes_8": "0000000000001320",
+      "bytes_16": "00000000000013200080000000112100"
+    },
+    {
+      "code": 99,
+      "locator": 39,
+      "byte_offset": 304,
+      "bytes_8": "0000000000001424",
+      "bytes_16": "00000000000014240080000004310000"
+    },
+    {
+      "code": 104,
+      "locator": 41,
+      "byte_offset": 320,
+      "bytes_8": "0000000000001528",
+      "bytes_16": "00000000000015280080000094100000"
+    },
+    {
+      "code": 109,
+      "locator": 43,
+      "byte_offset": 336,
+      "bytes_8": "000000000000162c",
+      "bytes_16": "000000000000162c00800000200c1000"
+    },
+    {
+      "code": 114,
+      "locator": 45,
+      "byte_offset": 352,
+      "bytes_8": "0000000000001704",
+      "bytes_16": "000000000000170400c0000080000c01"
+    },
+    {
+      "code": 119,
+      "locator": 47,
+      "byte_offset": 368,
+      "bytes_8": "0000000000001808",
+      "bytes_16": "000000000000180800c0000008020c00"
+    },
+    {
+      "code": 124,
+      "locator": 49,
+      "byte_offset": 384,
+      "bytes_8": "000000000000190c",
+      "bytes_16": "000000000000190c00c0000090000402"
+    },
+    {
+      "code": 129,
+      "locator": 51,
+      "byte_offset": 400,
+      "bytes_8": "0000000000001a10",
+      "bytes_16": "0000000000001a1000c0000001820800"
+    },
+    {
+      "code": 262,
+      "locator": 52,
+      "byte_offset": 408,
+      "bytes_8": "00c0000001820800",
+      "bytes_16": "00c00000018208000000000000001b14"
+    },
+    {
+      "code": 134,
+      "locator": 53,
+      "byte_offset": 416,
+      "bytes_8": "0000000000001b14",
+      "bytes_16": "0000000000001b1400c0000004018200"
+    },
+    {
+      "code": 139,
+      "locator": 55,
+      "byte_offset": 432,
+      "bytes_8": "0000000000001c18",
+      "bytes_16": "0000000000001c1800c0000001008201"
+    },
+    {
+      "code": 144,
+      "locator": 57,
+      "byte_offset": 448,
+      "bytes_8": "0000000000001d1c",
+      "bytes_16": "0000000000001d1c00c0000010202100"
+    },
+    {
+      "code": 149,
+      "locator": 59,
+      "byte_offset": 464,
+      "bytes_8": "0000000000001e20",
+      "bytes_16": "0000000000001e2000c0000000112100"
+    },
+    {
+      "code": 154,
+      "locator": 61,
+      "byte_offset": 480,
+      "bytes_8": "0000000000001f24",
+      "bytes_16": "0000000000001f2400c0000004310000"
+    },
+    {
+      "code": 159,
+      "locator": 63,
+      "byte_offset": 496,
+      "bytes_8": "0000000000002028",
+      "bytes_16": "000000000000202800c0000094100000"
+    },
+    {
+      "code": 164,
+      "locator": 65,
+      "byte_offset": 512,
+      "bytes_8": "000000000000212c",
+      "bytes_16": "000000000000212c00c00000200c1000"
+    },
+    {
+      "code": 169,
+      "locator": 67,
+      "byte_offset": 528,
+      "bytes_8": "0000000000002204",
+      "bytes_16": "00000000000022040000010080000c01"
+    },
+    {
+      "code": 174,
+      "locator": 69,
+      "byte_offset": 544,
+      "bytes_8": "0000000000002308",
+      "bytes_16": "00000000000023080000010008020c00"
+    },
+    {
+      "code": 179,
+      "locator": 71,
+      "byte_offset": 560,
+      "bytes_8": "000000000000240c",
+      "bytes_16": "000000000000240c0000010090000402"
+    },
+    {
+      "code": 184,
+      "locator": 73,
+      "byte_offset": 576,
+      "bytes_8": "0000000000002510",
+      "bytes_16": "00000000000025100000010001820800"
+    },
+    {
+      "code": 189,
+      "locator": 75,
+      "byte_offset": 592,
+      "bytes_8": "0000000000002614",
+      "bytes_16": "00000000000026140000010004018200"
+    },
+    {
+      "code": 194,
+      "locator": 77,
+      "byte_offset": 608,
+      "bytes_8": "0000000000002718",
+      "bytes_16": "00000000000027180000010001008201"
+    },
+    {
+      "code": 199,
+      "locator": 79,
+      "byte_offset": 624,
+      "bytes_8": "000000000000281c",
+      "bytes_16": "000000000000281c0000010010202100"
+    },
+    {
+      "code": 204,
+      "locator": 81,
+      "byte_offset": 640,
+      "bytes_8": "0000000000002920",
+      "bytes_16": "00000000000029200000010000112100"
+    },
+    {
+      "code": 209,
+      "locator": 83,
+      "byte_offset": 656,
+      "bytes_8": "0000000000002a24",
+      "bytes_16": "0000000000002a240000010004310000"
+    },
+    {
+      "code": 214,
+      "locator": 85,
+      "byte_offset": 672,
+      "bytes_8": "0000000000002b28",
+      "bytes_16": "0000000000002b280000010094100000"
+    },
+    {
+      "code": 219,
+      "locator": 87,
+      "byte_offset": 688,
+      "bytes_8": "0000000000002c2c",
+      "bytes_16": "0000000000002c2c00000100200c1000"
+    },
+    {
+      "code": 224,
+      "locator": 89,
+      "byte_offset": 704,
+      "bytes_8": "0000000000002d04",
+      "bytes_16": "0000000000002d040040010080000c01"
+    },
+    {
+      "code": 229,
+      "locator": 91,
+      "byte_offset": 720,
+      "bytes_8": "0000000000002e08",
+      "bytes_16": "0000000000002e080040010008020c00"
+    },
+    {
+      "code": 234,
+      "locator": 93,
+      "byte_offset": 736,
+      "bytes_8": "0000000000002f0c",
+      "bytes_16": "0000000000002f0c0040010090000402"
+    },
+    {
+      "code": 239,
+      "locator": 95,
+      "byte_offset": 752,
+      "bytes_8": "0000000000003010",
+      "bytes_16": "00000000000030100040010001820800"
+    },
+    {
+      "code": 244,
+      "locator": 97,
+      "byte_offset": 768,
+      "bytes_8": "0000000000003114",
+      "bytes_16": "00000000000031140040010004018200"
+    },
+    {
+      "code": 249,
+      "locator": 99,
+      "byte_offset": 784,
+      "bytes_8": "0000000000003218",
+      "bytes_16": "00000000000032180040010001008201"
+    },
+    {
+      "code": 1023,
+      "locator": 100,
+      "byte_offset": 792,
+      "bytes_8": "0040010001008201",
+      "bytes_16": "0040010001008201000000000000331c"
+    },
+    {
+      "code": 254,
+      "locator": 101,
+      "byte_offset": 800,
+      "bytes_8": "000000000000331c",
+      "bytes_16": "000000000000331c0040010010202100"
+    },
+    {
+      "code": 259,
+      "locator": 103,
+      "byte_offset": 816,
+      "bytes_8": "0000000000003420",
+      "bytes_16": "00000000000034200040010000112100"
+    },
+    {
+      "code": 269,
+      "locator": 107,
+      "byte_offset": 848,
+      "bytes_8": "0000000000003628",
+      "bytes_16": "00000000000036280040010094100000"
+    },
+    {
+      "code": 274,
+      "locator": 109,
+      "byte_offset": 864,
+      "bytes_8": "000000000000372c",
+      "bytes_16": "000000000000372c00400100200c1000"
+    },
+    {
+      "code": 279,
+      "locator": 111,
+      "byte_offset": 880,
+      "bytes_8": "0000000000003800",
+      "bytes_16": "00000000000038000000890100210402"
+    },
+    {
+      "code": 284,
+      "locator": 113,
+      "byte_offset": 896,
+      "bytes_8": "0000000000003900",
+      "bytes_16": "00000000000039000000910101000e00"
+    },
+    {
+      "code": 289,
+      "locator": 115,
+      "byte_offset": 912,
+      "bytes_8": "0000000000003a00",
+      "bytes_16": "0000000000003a000000990184008200"
+    },
+    {
+      "code": 294,
+      "locator": 117,
+      "byte_offset": 928,
+      "bytes_8": "000000000a013b30",
+      "bytes_16": "000000000a013b30006a0001ffffff03"
+    },
+    {
+      "code": 299,
+      "locator": 119,
+      "byte_offset": 944,
+      "bytes_8": "000000000a013c30",
+      "bytes_16": "000000000a013c3000aa0001ffffff03"
+    },
+    {
+      "code": 516,
+      "locator": 120,
+      "byte_offset": 952,
+      "bytes_8": "00aa0001ffffff03",
+      "bytes_16": "00aa0001ffffff03000000000a013d30"
+    },
+    {
+      "code": 304,
+      "locator": 121,
+      "byte_offset": 960,
+      "bytes_8": "000000000a013d30",
+      "bytes_16": "000000000a013d3000ea0001ffffff03"
+    },
+    {
+      "code": 33,
+      "locator": 122,
+      "byte_offset": 968,
+      "bytes_8": "00ea0001ffffff03",
+      "bytes_16": "00ea0001ffffff03000000000a013e30"
+    },
+    {
+      "code": 309,
+      "locator": 123,
+      "byte_offset": 976,
+      "bytes_8": "000000000a013e30",
+      "bytes_16": "000000000a013e30002a0101ffffff03"
+    },
+    {
+      "code": 97,
+      "locator": 124,
+      "byte_offset": 984,
+      "bytes_8": "002a0101ffffff03",
+      "bytes_16": "002a0101ffffff03000000000a013f30"
+    },
+    {
+      "code": 314,
+      "locator": 125,
+      "byte_offset": 992,
+      "bytes_8": "000000000a013f30",
+      "bytes_16": "000000000a013f30006a0101ffffff03"
+    },
+    {
+      "code": 161,
+      "locator": 126,
+      "byte_offset": 1000,
+      "bytes_8": "006a0101ffffff03",
+      "bytes_16": "006a0101ffffff030000000000004034"
+    },
+    {
+      "code": 319,
+      "locator": 127,
+      "byte_offset": 1008,
+      "bytes_8": "0000000000004034",
+      "bytes_16": "00000000000040340040000002200401"
+    },
+    {
+      "code": 32,
+      "locator": 128,
+      "byte_offset": 1016,
+      "bytes_8": "0040000002200401",
+      "bytes_16": "00400000022004010000000000004138"
+    },
+    {
+      "code": 324,
+      "locator": 129,
+      "byte_offset": 1024,
+      "bytes_8": "0000000000004138",
+      "bytes_16": "00000000000041380040000000016100"
+    },
+    {
+      "code": 329,
+      "locator": 131,
+      "byte_offset": 1040,
+      "bytes_8": "000000000000423c",
+      "bytes_16": "000000000000423c00400000c0300000"
+    },
+    {
+      "code": 8,
+      "locator": 132,
+      "byte_offset": 1048,
+      "bytes_8": "00400000c0300000",
+      "bytes_16": "00400000c03000000000000000004340"
+    },
+    {
+      "code": 334,
+      "locator": 133,
+      "byte_offset": 1056,
+      "bytes_8": "0000000000004340",
+      "bytes_16": "000000000000434000400000004c1000"
+    },
+    {
+      "code": 339,
+      "locator": 135,
+      "byte_offset": 1072,
+      "bytes_8": "0000000000004444",
+      "bytes_16": "00000000000044440040000000930000"
+    },
+    {
+      "code": 344,
+      "locator": 137,
+      "byte_offset": 1088,
+      "bytes_8": "0000000000004548",
+      "bytes_16": "00000000000045480040000004000601"
+    },
+    {
+      "code": 96,
+      "locator": 138,
+      "byte_offset": 1096,
+      "bytes_8": "0040000004000601",
+      "bytes_16": "00400000040006010000000000004634"
+    },
+    {
+      "code": 349,
+      "locator": 139,
+      "byte_offset": 1104,
+      "bytes_8": "0000000000004634",
+      "bytes_16": "00000000000046340080000002200401"
+    },
+    {
+      "code": 65,
+      "locator": 140,
+      "byte_offset": 1112,
+      "bytes_8": "0080000002200401",
+      "bytes_16": "00800000022004010000000000004738"
+    },
+    {
+      "code": 354,
+      "locator": 141,
+      "byte_offset": 1120,
+      "bytes_8": "0000000000004738",
+      "bytes_16": "00000000000047380080000000016100"
+    },
+    {
+      "code": 1,
+      "locator": 142,
+      "byte_offset": 1128,
+      "bytes_8": "0080000000016100",
+      "bytes_16": "0080000000016100000000000000483c"
+    },
+    {
+      "code": 359,
+      "locator": 143,
+      "byte_offset": 1136,
+      "bytes_8": "000000000000483c",
+      "bytes_16": "000000000000483c00800000c0300000"
+    },
+    {
+      "code": 130,
+      "locator": 144,
+      "byte_offset": 1144,
+      "bytes_8": "00800000c0300000",
+      "bytes_16": "00800000c03000000000000000004940"
+    },
+    {
+      "code": 364,
+      "locator": 145,
+      "byte_offset": 1152,
+      "bytes_8": "0000000000004940",
+      "bytes_16": "000000000000494000800000004c1000"
+    },
+    {
+      "code": 369,
+      "locator": 147,
+      "byte_offset": 1168,
+      "bytes_8": "0000000000004a44",
+      "bytes_16": "0000000000004a440080000000930000"
+    },
+    {
+      "code": 374,
+      "locator": 149,
+      "byte_offset": 1184,
+      "bytes_8": "0000000000004b48",
+      "bytes_16": "0000000000004b480080000004000601"
+    },
+    {
+      "code": 12,
+      "locator": 150,
+      "byte_offset": 1192,
+      "bytes_8": "0080000004000601",
+      "bytes_16": "00800000040006010000000000004c34"
+    },
+    {
+      "code": 379,
+      "locator": 151,
+      "byte_offset": 1200,
+      "bytes_8": "0000000000004c34",
+      "bytes_16": "0000000000004c3400c0000002200401"
+    },
+    {
+      "code": 544,
+      "locator": 152,
+      "byte_offset": 1208,
+      "bytes_8": "00c0000002200401",
+      "bytes_16": "00c00000022004010000000000004d38"
+    },
+    {
+      "code": 384,
+      "locator": 153,
+      "byte_offset": 1216,
+      "bytes_8": "0000000000004d38",
+      "bytes_16": "0000000000004d3800c0000000016100"
+    },
+    {
+      "code": 268,
+      "locator": 154,
+      "byte_offset": 1224,
+      "bytes_8": "00c0000000016100",
+      "bytes_16": "00c00000000161000000000000004e3c"
+    },
+    {
+      "code": 389,
+      "locator": 155,
+      "byte_offset": 1232,
+      "bytes_8": "0000000000004e3c",
+      "bytes_16": "0000000000004e3c00c00000c0300000"
+    },
+    {
+      "code": 386,
+      "locator": 156,
+      "byte_offset": 1240,
+      "bytes_8": "00c00000c0300000",
+      "bytes_16": "00c00000c03000000000000000004f40"
+    },
+    {
+      "code": 394,
+      "locator": 157,
+      "byte_offset": 1248,
+      "bytes_8": "0000000000004f40",
+      "bytes_16": "0000000000004f4000c00000004c1000"
+    },
+    {
+      "code": 16,
+      "locator": 158,
+      "byte_offset": 1256,
+      "bytes_8": "00c00000004c1000",
+      "bytes_16": "00c00000004c10000000000000005044"
+    },
+    {
+      "code": 399,
+      "locator": 159,
+      "byte_offset": 1264,
+      "bytes_8": "0000000000005044",
+      "bytes_16": "000000000000504400c0000000930000"
+    },
+    {
+      "code": 0,
+      "locator": 160,
+      "byte_offset": 1272,
+      "bytes_8": "00c0000000930000",
+      "bytes_16": "00c00000009300000000000000005148"
+    },
+    {
+      "code": 404,
+      "locator": 161,
+      "byte_offset": 1280,
+      "bytes_8": "0000000000005148",
+      "bytes_16": "000000000000514800c0000004000601"
+    },
+    {
+      "code": 264,
+      "locator": 162,
+      "byte_offset": 1288,
+      "bytes_8": "00c0000004000601",
+      "bytes_16": "00c00000040006010000000000005234"
+    },
+    {
+      "code": 409,
+      "locator": 163,
+      "byte_offset": 1296,
+      "bytes_8": "0000000000005234",
+      "bytes_16": "00000000000052340000010002200401"
+    },
+    {
+      "code": 10,
+      "locator": 164,
+      "byte_offset": 1304,
+      "bytes_8": "0000010002200401",
+      "bytes_16": "00000100022004010000000000005338"
+    }
+  ]
+}

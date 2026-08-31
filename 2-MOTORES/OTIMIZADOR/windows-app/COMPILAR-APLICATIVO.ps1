@@ -8,6 +8,16 @@ $compiler32 = 'C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe'
 $compiler = if (Test-Path -LiteralPath $compiler64) { $compiler64 } elseif (Test-Path -LiteralPath $compiler32) { $compiler32 } else { $null }
 if (-not $compiler) { throw 'Compilador .NET do Windows não encontrado.' }
 if (-not (Test-Path -LiteralPath $icon)) { throw 'Ícone do aplicativo não encontrado.' }
+$precisaCompilar = -not (Test-Path -LiteralPath $output)
+if (-not $precisaCompilar) {
+    $exeData = (Get-Item -LiteralPath $output).LastWriteTimeUtc
+    $precisaCompilar = (Get-Item -LiteralPath $source).LastWriteTimeUtc -gt $exeData -or
+                       (Get-Item -LiteralPath $icon).LastWriteTimeUtc -gt $exeData
+}
+if (-not $precisaCompilar) {
+    Get-Item -LiteralPath $output | Select-Object FullName,Length,LastWriteTime
+    return
+}
 & $compiler /nologo /target:winexe /optimize+ /platform:anycpu /reference:System.dll /reference:System.Windows.Forms.dll "/win32icon:$icon" "/out:$output" $source
 if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $output)) { throw 'Falha ao compilar o aplicativo Windows.' }
 Get-Item -LiteralPath $output | Select-Object FullName,Length,LastWriteTime

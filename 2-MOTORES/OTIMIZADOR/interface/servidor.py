@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Interface local do Otimizador: leitura/simulação em 127.0.0.1 somente."""
+"""Painel local do Otimizador, restrito a 127.0.0.1 e contratos selados."""
 
 from __future__ import annotations
 
@@ -21,11 +21,13 @@ PASTA = Path(__file__).resolve().parent
 MOTOR_DIR = PASTA.parent
 CONFIG = MOTOR_DIR.parent / "config.txt"
 CARD_ID_VALIDO = re.compile(r"^[A-Za-z0-9@_-]{1,64}$")
-LOTE_TESTE_SELECIONADO = "912c518e-091c-4583-ae91-97b3e717517e"
+APLICATIVO_ID = "otimizador_clubefootball"
+INTERFACE_VERSAO = "20260831-v20"
 RPC_PERMITIDAS = {
-    "otimizador_regua_v1", "otimizador_carta_v1",
-    "otimizador_status_teste_v1", "otimizador_fila_teste_v1",
-    "otimizador_eventos_teste_v1", "otimizador_controlar_lote_teste_v2",
+    "otimizador_regua_v2", "otimizador_carta_v2",
+    "otimizador_catalogos_apresentacao_v1", "otimizador_carta_apresentacao_v1",
+    "otimizador_status_teste_v2", "otimizador_fila_teste_v2",
+    "otimizador_eventos_teste_v2", "otimizador_controlar_lote_teste_v2",
 }
 
 
@@ -51,7 +53,7 @@ def ler_config() -> tuple[str, str]:
 
 
 class GatewayOtimizador:
-    """A única saída do processo local: contratos v1 permitidos e selados."""
+    """A única saída do processo local: contratos permitidos e selados."""
 
     def __init__(self):
         self.url, self.chave = ler_config()
@@ -77,7 +79,7 @@ class GatewayOtimizador:
 
 
 class ServicoOtimizador:
-    """Usa exatamente o cálculo aprovado, recebendo IDs do contrato v1."""
+    """Usa o cálculo aprovado; motor por IDs e apresentação em porta separada."""
 
     def __init__(self, gateway=None):
         if str(MOTOR_DIR) not in sys.path:
@@ -85,7 +87,7 @@ class ServicoOtimizador:
         import fonte_unica as fonte
         import equacao as equacao
         import motor as motor
-        import teste_fila_100 as fila_teste
+        import fila_comparacao_legado_50 as fila_teste
         self.gateway = gateway or GatewayOtimizador()
         self.fonte, self.equacao, self.motor = fonte, equacao, motor
         self.fila_teste = fila_teste
@@ -98,30 +100,42 @@ class ServicoOtimizador:
         self._posicoes_por_id = {}
         self._tecnicos_por_id = {}
         self._habilidades_por_id = {}
+        self._impetos_por_id = {}
+        self._catalogos_apresentacao = None
 
     def regua(self):
-        pacote = self.gateway.rpc("otimizador_regua_v1") or {}
-        if pacote.get("contrato") != "otimizador_regua_v1":
+        pacote = self.gateway.rpc("otimizador_regua_v2") or {}
+        if pacote.get("contrato") != "otimizador_regua_v2":
             raise ErroDaInterface("versão inesperada do contrato da régua", 503)
         return pacote
 
-    @staticmethod
-    def funcoes(regua):
+    def catalogos_apresentacao(self):
+        if self._catalogos_apresentacao is None:
+            pacote = self.gateway.rpc("otimizador_catalogos_apresentacao_v1") or {}
+            if pacote.get("contrato") != "otimizador_catalogos_apresentacao_v1":
+                raise ErroDaInterface("catálogo de apresentação indisponível", 503)
+            self._catalogos_apresentacao = pacote
+        return self._catalogos_apresentacao
+
+    def funcoes(self, regua):
+        nomes = {int(x["funcao_id"]): x.get("rotulo")
+                 for x in self.catalogos_apresentacao().get("funcoes") or []}
         return sorted([
             {"funcao_id": int(x["funcao_id"]),
-             "nome": x.get("rotulo_apresentacao") or "Sem rótulo"}
+             "nome": nomes.get(int(x["funcao_id"])) or "Sem rótulo"}
             for x in regua.get("funcoes") or []
         ], key=lambda x: (x["nome"], x["funcao_id"]))
 
-    @staticmethod
-    def tecnicos(regua):
+    def tecnicos(self, regua):
+        nomes = {int(x["tecnico_id"]): x.get("rotulo")
+                 for x in self.catalogos_apresentacao().get("tecnicos") or []}
         itens = []
         for x in regua.get("tecnicos") or []:
             if x.get("tecnico_id") is None or not (x.get("boosts") or []):
                 continue
             itens.append({
                 "tecnico_id": int(x["tecnico_id"]),
-                "nome": x.get("nome_apresentacao") or "Sem nome",
+                "nome": nomes.get(int(x["tecnico_id"])) or "Sem nome",
                 "proficiencia": x.get("proficiencia_maxima"),
                 "boosts": [{"indice_otimizador": int(b["indice_otimizador"]),
                             "delta": b.get("delta")} for b in x.get("boosts") or []],
@@ -139,18 +153,40 @@ class ServicoOtimizador:
     def _tecnico_motor(tecnicos, tecnico_id):
         return next((x for x in tecnicos if int(x.get("id")) == tecnico_id), None)
 
-    @staticmethod
-    def _carta_apresentacao(bruto):
-        ap, esc = bruto.get("apresentacao") or {}, bruto.get("escalares") or {}
+    def _carta_apresentacao(self, bruto, apresentacao):
+        esc = bruto.get("escalares") or {}
+        posicoes = {int(x["posicao_id"]): x.get("rotulo")
+                    for x in self.catalogos_apresentacao().get("posicoes") or []}
+        posicao_id = bruto.get("posicao_principal_id")
         return {
-            "card_id": bruto.get("card_id"), "nome": ap.get("nome"),
-            "posicao": ap.get("posicao"), "overall": esc.get("overall"),
+            "card_id": bruto.get("card_id"), "nome": apresentacao.get("nome"),
+            "posicao": posicoes.get(int(posicao_id)) if posicao_id is not None else None,
+            "overall": esc.get("overall"),
             "orcamento": esc.get("orcamento"), "atributos": bruto.get("atributos") or [],
             "habilidades": bruto.get("habilidades") or [], "dimensoes": bruto.get("dimensoes") or {},
             "cardinalidades": bruto.get("cardinalidades") or {},
         }
 
-    def simular(self, card_id, funcao_id, tecnico_id):
+    @staticmethod
+    def _identidade_impeto(bruto, nivel_impeto):
+        condicionais = [x for x in bruto.get("impetos") or []
+                        if x.get("codigo_impeto") is not None and x.get("condicional")]
+        if len(condicionais) > 1:
+            raise ErroDaInterface("a carta possui mais de um ímpeto condicional", 409)
+        if not condicionais:
+            if nivel_impeto is not None:
+                raise ErroDaInterface("esta carta não possui ímpeto condicional")
+            return None, None
+        codigo = int(condicionais[0]["codigo_impeto"])
+        maximo = int(condicionais[0].get("nivel_maximo") or 0)
+        if nivel_impeto is None:
+            raise ErroDaInterface(f"informe o nível do ímpeto {codigo} (1 a {maximo})")
+        nivel = int(nivel_impeto)
+        if not 1 <= nivel <= maximo:
+            raise ErroDaInterface(f"nível do ímpeto fora da faixa 1 a {maximo}")
+        return codigo, nivel
+
+    def simular(self, card_id, funcao_id, tecnico_id, nivel_impeto=None):
         if not CARD_ID_VALIDO.fullmatch(card_id):
             raise ErroDaInterface("card_id inválido")
         regua = self.regua()
@@ -161,8 +197,11 @@ class ServicoOtimizador:
         if tecnico_id not in catalogo_ui:
             raise ErroDaInterface("técnico canônico não disponível")
 
-        bruto = self.gateway.rpc("otimizador_carta_v1", {"p_card_id": card_id}) or {}
-        carta = self.fonte._traduz(bruto)
+        bruto = self.gateway.rpc("otimizador_carta_v2", {"p_card_id": card_id}) or {}
+        apresentacao = self.gateway.rpc("otimizador_carta_apresentacao_v1", {"p_card_id": card_id}) or {}
+        codigo_impeto, nivel_impeto = self._identidade_impeto(bruto, nivel_impeto)
+        carta = self.fonte.aplica_impetos_da_linha(
+            self.fonte._traduz(bruto),codigo_impeto,nivel_impeto)
         molde = self._molde(regua, funcao_id)
         tec = self._tecnico_motor(self.fonte.carrega_tecnicos_do_banco(), tecnico_id)
         gate_regua, gate_carta = regua.get("gate") or {}, bruto.get("gate") or {}
@@ -179,15 +218,16 @@ class ServicoOtimizador:
             {"nome": "carta e relações", "ok": bool(gate_carta.get("pode_rodar")), "detalhe": gate_carta.get("motivos") or []},
             {"nome": "molde por funcao_id", "ok": bool(molde), "detalhe": {"funcao_id": funcao_id, "linhas": len(molde)}},
             {"nome": "técnico por tecnico_id", "ok": tec is not None, "detalhe": {"tecnico_id": tecnico_id}},
-            {"nome": "Ímpetos condicionais", "ok": True, "detalhe": "desligados deliberadamente"},
+            {"nome": "Ímpeto condicional por ID", "ok": True,
+             "detalhe": {"codigo_impeto": codigo_impeto, "nivel": nivel_impeto}},
         ]
         comum = {
             "modo": "simulação local segura — sem lote e sem escrita",
-            "carta": self._carta_apresentacao(bruto), "funcao": funcoes[funcao_id],
+            "carta": self._carta_apresentacao(bruto, apresentacao), "funcao": funcoes[funcao_id],
             "tecnico": catalogo_ui[tecnico_id], "gates": gates,
             "regua": {"contrato": regua.get("contrato"), "versao_molde": regua.get("versao_molde"),
                       "cardinalidades": bruto.get("cardinalidades") or {}},
-            "proveniencia": "navegador -> servidor local -> RPCs otimizador_*_v1 -> cálculo Python aprovado",
+            "proveniencia": "navegador -> apresentação separada -> IDs do contrato V2 -> cálculo aprovado",
         }
         if falhas:
             return {**comum, "ok": False, "resultado": None, "falhas": list(dict.fromkeys(falhas))}
@@ -211,18 +251,21 @@ class ServicoOtimizador:
                 "boost_add_vetor": resultado.get("boost_add") or [0] * 26,
                 "habilidades": resultado.get("habilidades") or [],
                 "impetos_fabricados": resultado.get("fab") or [], "sobra": resultado.get("sobra"),
+                "impeto_condicional_codigo": codigo_impeto,
+                "impeto_condicional_nivel": nivel_impeto,
                 "gasto": gasto, "builds_comparadas": resultado.get("builds_comparadas"),
             },
         }
 
-    def validar(self, card_id, funcao_id, tecnico_id):
-        simulacao = self.simular(card_id, funcao_id, tecnico_id)
+    def validar(self, card_id, funcao_id, tecnico_id, nivel_impeto=None):
+        simulacao = self.simular(card_id, funcao_id, tecnico_id, nivel_impeto)
         if not simulacao.get("ok"):
             return {"ok": False, "simulacao": simulacao, "paridade": None}
-        bruto = self.gateway.rpc("otimizador_carta_v1", {"p_card_id": card_id}) or {}
-        entrada = self.fonte._traduz(bruto)
-        tec = self._tecnico_motor(self.fonte.carrega_tecnicos_do_banco(), tecnico_id)
+        bruto = self.gateway.rpc("otimizador_carta_v2", {"p_card_id": card_id}) or {}
         r = simulacao["resultado"]
+        entrada = self.fonte.aplica_impetos_da_linha(
+            self.fonte._traduz(bruto),r.get("impeto_condicional_codigo"),r.get("impeto_condicional_nivel"))
+        tec = self._tecnico_motor(self.fonte.carrega_tecnicos_do_banco(), tecnico_id)
         esperado = self.equacao.cadeia(
             entrada["base"], r["barras"], tec["m"],
             r["impeto_add_vetor"], r["boost_add_vetor"],
@@ -242,28 +285,44 @@ class ServicoOtimizador:
 
     def _estado_local_do_lote(self):
         estado = self.fila_teste.le_estado() or {}
-        if estado.get("lote_id") != LOTE_TESTE_SELECIONADO:
-            raise ErroDaInterface("lote de teste selado local não corresponde ao lote selecionado", 503)
+        if not estado.get("lote_id"):
+            raise ErroDaInterface("lote de teste selado local não foi preparado", 503)
         if not estado.get("fingerprint"):
             raise ErroDaInterface("fingerprint local do lote de teste ausente", 503)
         return estado
 
     def _status_fila(self):
         local = self._estado_local_do_lote()
-        status = self.gateway.rpc("otimizador_status_teste_v1", {"p_lote_id": LOTE_TESTE_SELECIONADO}) or {}
+        lote_id = local["lote_id"]
+        status = self.gateway.rpc("otimizador_status_teste_v2", {"p_lote_id": lote_id}) or {}
         estados = {"parado", "rodando", "pausando", "pausado", "encerrando", "encerrado", "concluido", "falhou"}
-        if status.get("contrato") != "otimizador_teste_100_v8":
+        if status.get("contrato") != "otimizador_teste_lote_v14":
             raise ErroDaInterface("versão inesperada do contrato da fila", 503)
-        if status.get("lote_id") != LOTE_TESTE_SELECIONADO or status.get("fingerprint") != local["fingerprint"]:
+        if status.get("lote_id") != lote_id or status.get("fingerprint") != local["fingerprint"]:
             raise ErroDaInterface("selo do lote devolvido pelo contrato não confere", 503)
         if status.get("modo") != "teste_nao_publicado" or status.get("pode_publicar") is not False:
             raise ErroDaInterface("contrato recusado: lote não está estritamente em modo de teste", 503)
-        if int(status.get("cards") or 0) != 100 or int(status.get("linhas") or 0) < 1:
-            raise ErroDaInterface("contrato recusado: amostra selada não preserva 100 cartas", 503)
+        if int(status.get("cards") or 0) < 1 or int(status.get("linhas") or 0) < 1:
+            raise ErroDaInterface("contrato recusado: rodada ativa não possui cartas e linhas", 503)
         if status.get("estado_lote") not in estados or status.get("estado") not in estados:
             raise ErroDaInterface("contrato recusado: estado de lote inválido", 503)
         if not isinstance(status.get("acoes"), dict) or not isinstance(status.get("confirmacao"), dict):
             raise ErroDaInterface("contrato recusado: selos de ação ausentes", 503)
+        # Defesa de apresentação para contratos antigos que deixaram o lote como
+        # "rodando" depois que a última linha já havia terminado. A migração V15
+        # persiste a mesma transição; esta normalização impede que uma janela já
+        # aberta continue oferecendo Pausar ou mantendo uma linha antiga na tela.
+        sem_trabalho = (int(status.get("pendentes") or 0) == 0
+                        and int(status.get("processando") or 0) == 0)
+        if sem_trabalho and status.get("estado_lote") in {"rodando", "pausando", "pausado"}:
+            status = dict(status)
+            status["estado"] = "concluido"
+            status["estado_lote"] = "concluido"
+            status["corrente"] = []
+            acoes = dict(status["acoes"])
+            for acao in ("iniciar", "pausar", "parar", "retomar"):
+                acoes[acao] = False
+            status["acoes"] = acoes
         return status
 
     @staticmethod
@@ -279,6 +338,7 @@ class ServicoOtimizador:
     def _linhas_com_rotulos(self, itens):
         if not self._funcoes_por_id:
             regua = self.regua()
+            catalogos = self.catalogos_apresentacao()
             self._funcoes_por_id = {
                 int(funcao["funcao_id"]): funcao["nome"]
                 for funcao in self.funcoes(regua)
@@ -287,28 +347,16 @@ class ServicoOtimizador:
                 int(tecnico["tecnico_id"]): tecnico["nome"]
                 for tecnico in self.tecnicos(regua)
             }
-            self._habilidades_por_id = {
-                int(habilidade["skill_id"]): habilidade["nome_apresentacao"]
-                for habilidade in regua.get("habilidades") or []
-                if habilidade.get("skill_id") is not None and habilidade.get("nome_apresentacao")
-            }
+            self._posicoes_por_id = {int(x["posicao_id"]): x.get("rotulo")
+                                     for x in catalogos.get("posicoes") or []}
+            self._habilidades_por_id = {int(x["skill_id"]): x.get("rotulo")
+                                        for x in catalogos.get("habilidades") or []}
+            self._impetos_por_id = {int(x["codigo_impeto"]): x.get("rotulo")
+                                    for x in catalogos.get("impetos") or []}
         faltantes = sorted({str(x.get("card_id")) for x in itens if x.get("card_id") is not None} - set(self._nomes_cartas))
         for card_id in faltantes:
-            bruto = self.gateway.rpc("otimizador_carta_v1", {"p_card_id": card_id}) or {}
-            self._nomes_cartas[card_id] = ((bruto.get("apresentacao") or {}).get("nome") or None)
-            for posicao in bruto.get("posicoes") or []:
-                posicao_id = posicao.get("posicao_id")
-                nome = posicao.get("nome_apresentacao")
-                if posicao_id is not None and nome:
-                    self._posicoes_por_id[int(posicao_id)] = nome
-        # A fila já junta posição ao catálogo canônico. Isso inclui o goleiro
-        # (ID físico 0), ausente da relação de aptidões que abastece o pacote
-        # de posições da carta. O ID segue sendo a chave; o texto é apenas UI.
-        for linha in itens:
-            posicao_id = linha.get("posicao_id")
-            nome = linha.get("posicao_nome")
-            if posicao_id is not None and nome:
-                self._posicoes_por_id[int(posicao_id)] = nome
+            bruto = self.gateway.rpc("otimizador_carta_apresentacao_v1", {"p_card_id": card_id}) or {}
+            self._nomes_cartas[card_id] = bruto.get("nome") or None
         saida = []
         for linha in itens:
             item = dict(linha)
@@ -324,6 +372,14 @@ class ServicoOtimizador:
                 int(posicao_id) if posicao_id is not None else None,
                 f"ID {posicao_id} · catálogo ausente",
             )
+            codigo_impeto = item.get("impeto_condicional_codigo")
+            nivel_impeto = item.get("impeto_condicional_nivel")
+            if codigo_impeto is not None:
+                nome_impeto = self._impetos_por_id.get(
+                    int(codigo_impeto), f"ID {codigo_impeto} · catálogo ausente")
+                item["impeto_condicional_rotulo"] = f"{nome_impeto} · nível {nivel_impeto}"
+            else:
+                item["impeto_condicional_rotulo"] = "Sem ímpeto condicional"
             tecnico_id = item.get("tecnico_id")
             if tecnico_id is not None:
                 item["tecnico_rotulo"] = self._tecnicos_por_id.get(
@@ -339,6 +395,12 @@ class ServicoOtimizador:
                 item["pontuacao_final"] = item["b1"]
             if item.get("duracao_segundos") is None and item.get("segundos") is not None:
                 item["duracao_segundos"] = item["segundos"]
+            # Estes contadores podem ultrapassar o limite de inteiros exatos do
+            # JavaScript. A tela recebe texto para abreviar sem arredondar o valor
+            # completo que fica disponível no detalhe/tooltip.
+            for campo_contador in ("builds_comparadas", "builds_possiveis"):
+                if item.get(campo_contador) is not None:
+                    item[campo_contador] = str(item[campo_contador])
             if not item.get("resultado_resumo") and item.get("estado") == "concluido":
                 partes = []
                 if item.get("pontuacao_final") is not None:
@@ -354,7 +416,8 @@ class ServicoOtimizador:
 
     def painel_fila(self):
         status = self._status_fila()
-        itens = self._linhas_com_rotulos(self.gateway.rpc("otimizador_fila_teste_v1", {"p_lote_id": LOTE_TESTE_SELECIONADO}) or [])
+        lote_id = status["lote_id"]
+        itens = self._linhas_com_rotulos(self.gateway.rpc("otimizador_fila_teste_v2", {"p_lote_id": lote_id}) or [])
         corrente = status.get("corrente") or []
         if corrente:
             por_linha = {str(item.get("linha_id")): item for item in itens}
@@ -365,22 +428,24 @@ class ServicoOtimizador:
         return {
             **status, "ok": True, "disponivel": True, "execucao": {"estado": status["estado_lote"]},
             "totais": self._totais_fila(status), "linha_atual": linha_atual,
-            "itens": itens, "origem": "contratos v1 da fila selada, via servidor local",
+            "itens": itens, "origem": "contratos V2 da fila selada, via servidor local",
             "publicacao": "TESTE / NÃO PUBLICADO",
         }
 
     def eventos_fila(self):
         status = self._status_fila()
-        eventos = self.gateway.rpc("otimizador_eventos_teste_v1", {"p_lote_id": LOTE_TESTE_SELECIONADO}) or []
-        return {"ok": True, "disponivel": True, "lote_id": LOTE_TESTE_SELECIONADO,
+        lote_id = status["lote_id"]
+        eventos = self.gateway.rpc("otimizador_eventos_teste_v2", {"p_lote_id": lote_id}) or []
+        return {"ok": True, "disponivel": True, "lote_id": lote_id,
                 "estado": status["estado_lote"], "itens": eventos,
                 "origem": "eventos reais do contrato de teste"}
 
     def resultados_fila(self):
         status = self._status_fila()
-        itens = self._linhas_com_rotulos(self.gateway.rpc("otimizador_fila_teste_v1", {"p_lote_id": LOTE_TESTE_SELECIONADO}) or [])
+        lote_id = status["lote_id"]
+        itens = self._linhas_com_rotulos(self.gateway.rpc("otimizador_fila_teste_v2", {"p_lote_id": lote_id}) or [])
         finais = [x for x in itens if x.get("estado") in {"concluido", "bloqueado", "interrompido", "falhou"}]
-        return {"ok": True, "disponivel": True, "lote_id": LOTE_TESTE_SELECIONADO,
+        return {"ok": True, "disponivel": True, "lote_id": lote_id,
                 "estado": status["estado_lote"], "mensagem": "Resultados reais do lote de teste selado.",
                 "itens": finais, "publicacao": "TESTE / NÃO PUBLICADO"}
 
@@ -412,7 +477,8 @@ class ServicoOtimizador:
     def iniciar_fila(self):
         status = self._status_fila()
         acao = self._acao_de_inicio(status)
-        self.gateway.rpc("otimizador_controlar_lote_teste_v2", {"p_lote_id": LOTE_TESTE_SELECIONADO, "p_acao": acao, "p_confirmado": False})
+        lote_id = self._estado_local_do_lote()["lote_id"]
+        self.gateway.rpc("otimizador_controlar_lote_teste_v2", {"p_lote_id": lote_id, "p_acao": acao, "p_confirmado": False})
         self._iniciar_worker_selado()
         return self.painel_fila()
 
@@ -420,7 +486,8 @@ class ServicoOtimizador:
         status = self._status_fila()
         if status["acoes"].get("pausar") is not True:
             raise ErroDaInterface("o selo do contrato não autoriza pausar este lote", 409)
-        self.gateway.rpc("otimizador_controlar_lote_teste_v2", {"p_lote_id": LOTE_TESTE_SELECIONADO, "p_acao": "pausar", "p_confirmado": False})
+        lote_id = self._estado_local_do_lote()["lote_id"]
+        self.gateway.rpc("otimizador_controlar_lote_teste_v2", {"p_lote_id": lote_id, "p_acao": "pausar", "p_confirmado": False})
         return self.painel_fila()
 
     def parar_fila(self, confirmado):
@@ -429,7 +496,8 @@ class ServicoOtimizador:
             raise ErroDaInterface("o selo do contrato não autoriza encerrar este lote", 409)
         if status["confirmacao"].get("parar_exige_confirmacao") is not True or confirmado is not True:
             raise ErroDaInterface("encerramento exige confirmação explícita nesta interface", 409)
-        self.gateway.rpc("otimizador_controlar_lote_teste_v2", {"p_lote_id": LOTE_TESTE_SELECIONADO, "p_acao": "parar", "p_confirmado": True})
+        lote_id = self._estado_local_do_lote()["lote_id"]
+        self.gateway.rpc("otimizador_controlar_lote_teste_v2", {"p_lote_id": lote_id, "p_acao": "parar", "p_confirmado": True})
         return self.painel_fila()
 
     def abrir_console_fila(self):
@@ -440,9 +508,10 @@ class ServicoOtimizador:
             if self._worker_ativo() or (self._console and self._console.poll() is None):
                 raise ErroDaInterface("já existe um worker de teste ativo para este lote", 409)
             acao = self._acao_de_inicio(status)
-            self.gateway.rpc("otimizador_controlar_lote_teste_v2", {"p_lote_id": LOTE_TESTE_SELECIONADO, "p_acao": acao, "p_confirmado": False})
+            lote_id = self._estado_local_do_lote()["lote_id"]
+            self.gateway.rpc("otimizador_controlar_lote_teste_v2", {"p_lote_id": lote_id, "p_acao": acao, "p_confirmado": False})
             self._console = subprocess.Popen(
-                ["cmd.exe", "/k", f'"{sys.executable}" "{MOTOR_DIR / "teste_fila_100.py"}" executar-selado'],
+                ["cmd.exe", "/k", f'"{sys.executable}" "{MOTOR_DIR / "fila_comparacao_legado_50.py"}" executar-selado'],
                 cwd=str(MOTOR_DIR),
             )
         return self.painel_fila()
@@ -450,10 +519,12 @@ class ServicoOtimizador:
     def saude(self):
         regua = self.regua()
         return {
-            "ok": True, "contrato": regua.get("contrato"),
+            "ok": True, "aplicativo": APLICATIVO_ID,
+            "versao_interface": INTERFACE_VERSAO,
+            "contrato": regua.get("contrato"),
             "pode_rodar": bool((regua.get("gate") or {}).get("pode_rodar")),
-            "modo": "somente leitura",
-            "bloqueios": ["lote", "escrita", "Ímpetos condicionais", "acesso direto ao schema"],
+            "modo": "painel_da_rodada_ativa",
+            "acesso": "somente contratos selados",
         }
 
 
@@ -527,7 +598,11 @@ def criar_servidor(servico=None, porta=8767):
                     card = (params.get("card_id") or [""])[0]
                     funcao = int((params.get("funcao_id") or [""])[0])
                     tecnico = int((params.get("tecnico_id") or [""])[0])
-                    dados = servico.validar(card, funcao, tecnico) if caminho.path.endswith("validar") else servico.simular(card, funcao, tecnico)
+                    nivel_texto = (params.get("impeto_nivel") or [""])[0]
+                    nivel_impeto = int(nivel_texto) if nivel_texto else None
+                    dados = (servico.validar(card, funcao, tecnico, nivel_impeto)
+                             if caminho.path.endswith("validar")
+                             else servico.simular(card, funcao, tecnico, nivel_impeto))
                     return self.responder_json(200, dados)
                 return self.responder_json(404, {"ok": False, "erro": "rota local não encontrada"})
             except (TypeError, ValueError):

@@ -17,7 +17,7 @@ O QUE NUNCA SAI:  alvo · peso · degraus · formula da punicao · molde · o po
 
 Banco fora do ar = "nao sei agora". NUNCA uma conta local de emergencia.
 """
-import os, time, threading, json
+import os, time, threading, json, copy
 from flask import Flask, request, jsonify
 
 import banco
@@ -67,6 +67,47 @@ def _passou_no_limite(ip):
 
 def erro(msg, codigo=400):
     return jsonify({'ok': False, 'erro': msg}), codigo
+
+
+def _impetos_da_linha(carta, pedido, regua_atual):
+    if pedido.get('impeto_nome') is not None or pedido.get('impeto_escolhido') is not None:
+        raise ValueError('impeto deve ser informado por codigo e nivel, nunca por nome')
+    equipados = carta.get('impetos_equipados') or []
+    condicionais = [x for x in equipados if x.get('condicional')]
+    if len(condicionais) > 1:
+        raise ValueError('a carta possui mais de um impeto condicional')
+    codigos = [int(x['codigo_impeto']) for x in equipados]
+    if any(codigo not in regua_atual.imp_meta for codigo in codigos):
+        raise ValueError('receita de impeto equipada ausente')
+    codigo_pedido = pedido.get('impeto_condicional_codigo')
+    nivel_pedido = pedido.get('impeto_condicional_nivel')
+    if not condicionais:
+        if codigo_pedido is not None or nivel_pedido is not None:
+            raise ValueError('a carta nao possui impeto condicional')
+        return codigos,None,None
+    codigo = int(condicionais[0]['codigo_impeto'])
+    maximo = int(condicionais[0].get('nivel_maximo') or 0)
+    if codigo_pedido is None or nivel_pedido is None:
+        raise ValueError('codigo e nivel do impeto condicional sao obrigatorios')
+    if int(codigo_pedido) != codigo:
+        raise ValueError('impeto condicional nao pertence a carta')
+    nivel = int(nivel_pedido)
+    if not 1 <= nivel <= maximo:
+        raise ValueError('nivel do impeto condicional fora da faixa fisica')
+    return codigos,codigo,nivel
+
+
+def _regua_da_linha(regua_atual, codigo_condicional, nivel_condicional):
+    """Adapta o catálogo antes da fórmula; a rotina matemática fica intocada."""
+    if codigo_condicional is None:
+        return regua_atual
+    meta = regua_atual.imp_meta[int(codigo_condicional)]
+    adaptada = copy.copy(regua_atual)
+    adaptada.imp = dict(regua_atual.imp)
+    adaptada.imp[int(codigo_condicional)] = {
+        int(indice): int(nivel_condicional) for indice in meta.get('efeitos') or {}
+    }
+    return adaptada
 
 
 @app.get('/saude')
@@ -148,9 +189,11 @@ def avaliar():
         return erro('a carta tem %d vagas de habilidade' % vagas_hab)
     habs = sorted(fixas | set(escolhidas))
 
-    if p.get('impeto_escolhido') is not None or p.get('impeto_nome') is not None:
-        return erro('consumidor de ímpetos continua desligado', 409)
-    impetos = []
+    try:
+        impetos,impeto_condicional_codigo,impeto_condicional_nivel = _impetos_da_linha(c,p,r)
+    except (TypeError,ValueError) as e:
+        return erro(str(e),409)
+    r_linha = _regua_da_linha(r,impeto_condicional_codigo,impeto_condicional_nivel)
 
     tid  = p.get('tecnico_id')
     prof = None
@@ -162,12 +205,14 @@ def avaliar():
         if prof is None:
             return erro('falta a proficiencia do tecnico')
 
-    estado = {'barras': barras, 'impetos': impetos, 'habilidades': habs,
+    estado = {'barras': barras, 'impetos': impetos,
+              'impeto_condicional_codigo': impeto_condicional_codigo,
+              'impeto_condicional_nivel': impeto_condicional_nivel,'habilidades': habs,
               'tecnico_id': tid, 'proficiencia': prof}
     carta = {'atributos': c.get('atributos'), 'orcamento': c.get('orcamento')}
 
     try:
-        r2 = AV.avalia(estado, carta, funcao_id, r)
+        r2 = AV.avalia(estado, carta, funcao_id, r_linha)
     except (AV.InsumoFaltando, ReguaIncompleta) as e:
         return erro('nao da para calcular: %s' % e, 409)
 
@@ -177,7 +222,9 @@ def avaliar():
         'valores': r2['valores'],
         'ganho_por_etapa': r2['ganho_por_etapa'],
         'versao_molde': r2['versao_molde'],
-        'usou': {'skill_ids': habs, 'impetos': len(impetos),
+        'usou': {'skill_ids': habs, 'impeto_ids': impetos,
+                 'impeto_condicional_codigo': impeto_condicional_codigo,
+                 'impeto_condicional_nivel': impeto_condicional_nivel,
                  'barras_gastas': sum(r.custo[n] for n in barras.values() if n),
                  'orcamento': carta['orcamento']},
     })
@@ -238,9 +285,11 @@ def otimizar():
         return erro('a carta tem %d vagas de habilidade' % (5 if possivel else 0))
     habs = sorted(fixas | set(escolhidas))
 
-    if p.get('impeto_escolhido') is not None or p.get('impeto_nome') is not None:
-        return erro('consumidor de ímpetos continua desligado', 409)
-    impetos = []
+    try:
+        impetos,impeto_condicional_codigo,impeto_condicional_nivel = _impetos_da_linha(c,p,r)
+    except (TypeError,ValueError) as e:
+        return erro(str(e),409)
+    r_linha = _regua_da_linha(r,impeto_condicional_codigo,impeto_condicional_nivel)
 
     tid, prof = p.get('tecnico_id'), None
     m = 1.0
@@ -264,8 +313,8 @@ def otimizar():
         return erro('a carta nao tem os 26 atributos', 409)
 
     impeto_add = [0] * len(base)
-    for i in impetos:
-        for k, d in (r.imp.get(i) or {}).items():
+    for codigo in impetos:
+        for k,d in (r_linha.imp.get(codigo) or {}).items():
             impeto_add[int(k)] += int(d)
     boost_add = [0] * len(base)
     for i in boosts:
@@ -279,16 +328,18 @@ def otimizar():
     mol = r.molde[funcao_id]
     arows = [(i, mol[i][0], mol[i][1]) for i in sorted(mol)]
 
-    o = Otimizador(r, base, c.get('orcamento'), arows,
+    o = Otimizador(r_linha, base, c.get('orcamento'), arows,
                    impeto_add, boost_add, buff, m)
     lvl, _ = o.melhor()
     lvl = o.sobra_para_o_maior_peso(lvl)
 
     estado = {'barras': {k: v for k, v in lvl.items() if v}, 'impetos': impetos,
+              'impeto_condicional_codigo': impeto_condicional_codigo,
+              'impeto_condicional_nivel': impeto_condicional_nivel,
               'habilidades': habs, 'tecnico_id': tid, 'proficiencia': prof, 'buff': buff}
     carta = {'atributos': base, 'orcamento': c.get('orcamento')}
     try:
-        r2 = AV.avalia(estado, carta, funcao_id, r)
+        r2 = AV.avalia(estado, carta, funcao_id, r_linha)
     except (AV.InsumoFaltando, ReguaIncompleta) as e:
         return erro('nao da para calcular: %s' % e, 409)
 
@@ -300,6 +351,10 @@ def otimizar():
         'gasto': o.gasto(lvl),
         'orcamento': c.get('orcamento'),
         'versao_molde': r2['versao_molde'],
+        'usou': {'skill_ids': habs,'impeto_ids': impetos,
+                 'impeto_condicional_codigo': impeto_condicional_codigo,
+                 'impeto_condicional_nivel': impeto_condicional_nivel,
+                 'tecnico_id': tid},
     })
 
 

@@ -42,6 +42,33 @@ function writeJson(name, value) {
   fs.writeFileSync(target, JSON.stringify(value));
   return target;
 }
+function findPreviousLaunchRadar(sourceRole) {
+  const currentRun = path.resolve(path.dirname(outputPath));
+  const runsRoot = path.dirname(currentRun);
+  if (!fs.existsSync(runsRoot)) return { artifact: null, path: null, skipped: [] };
+  const candidates = [];
+  const skipped = [];
+  for (const entry of fs.readdirSync(runsRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const runDirectory = path.resolve(runsRoot, entry.name);
+    if (runDirectory === currentRun) continue;
+    const candidatePath = path.join(runDirectory, 'radar-lancamentos.json');
+    if (!fs.existsSync(candidatePath)) continue;
+    try {
+      const artifact = JSON.parse(fs.readFileSync(candidatePath, 'utf8'));
+      globalThis.CLUBEF_BOX_RADAR.validateRadarStructure(artifact);
+      if (artifact.provenance.source.role !== sourceRole) {
+        skipped.push({ path: candidatePath, reason: 'papel de fonte diferente' });
+        continue;
+      }
+      candidates.push({ artifact, path: candidatePath, timestamp: Date.parse(artifact.generated_at) || fs.statSync(candidatePath).mtimeMs });
+    } catch (error) {
+      skipped.push({ path: candidatePath, reason: String(error && error.message ? error.message : error) });
+    }
+  }
+  candidates.sort((left, right) => right.timestamp - left.timestamp);
+  return candidates.length ? { ...candidates[0], skipped } : { artifact: null, path: null, skipped };
+}
 function familyPlan(plan, key) {
   const item = (plan.familias || []).find((family) => family.chave_familia === key);
   if (!item) throw new Error(`família ausente do pedido tipado: ${key}`);
@@ -122,6 +149,7 @@ async function main() {
   load('app/extrator-core.js');
   const corePath = path.resolve(root, 'app', 'extrator-core.js');
   emit('runtime', { core_path: corePath, core_sha256: crypto.createHash('sha256').update(fs.readFileSync(corePath)).digest('hex') });
+  load('app/radar-lancamentos.js');
   load('app/contrato-v46-runtime.js');
   load('app/metadata-v46-runtime.js');
 
@@ -225,6 +253,29 @@ async function main() {
     markContractFamily('cartas', 'ready', result.artifacts.cards_csv);
     markContractFamily('relacoes', 'ready', result.artifacts.cards_csv);
   }
+
+  if (cards) await family('Radar de lançamentos', 34, async () => {
+    const sourceRole = cardRoles[0];
+    const previous = findPreviousLaunchRadar(sourceRole);
+    const radar = await core.extractLaunchRadarFromCpk(updated, plan, {
+      source_descriptor: { ...sources[sourceRole], role: sourceRole },
+      cards,
+      previous_artifact: previous.artifact,
+      previous_artifact_path: previous.path
+    }, (message) => emit('log', { message }));
+    result.artifacts.launch_radar = writeJson('radar-lancamentos.json', radar);
+    result.radar_lancamentos = {
+      boxes: radar.counts.boxes,
+      cards_mapped: radar.counts.cards_mapped,
+      by_state: radar.counts.by_state,
+      boxes_absent_since_previous: radar.counts.boxes_ausentes_desde_anterior,
+      comparison_status: radar.comparison.status,
+      database_write: false,
+      publication_decision_evaluated: false,
+      previous_candidates_skipped: previous.skipped || []
+    };
+    return radar;
+  }, result);
 
   // O worker nunca abre uma fonte que o contrato ativo não solicitou. Famílias
   // que exigem uma fonte ausente do pedido ficam explicitamente pendentes, sem

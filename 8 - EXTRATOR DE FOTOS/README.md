@@ -1,64 +1,102 @@
-# Extrator de fotos de cards eFootballHub → Cloudinary
+# Extrator de Fotos ClubEfootball
 
-O extrator usa exclusivamente `card_id` numérico como identidade. Ele nunca associa uma imagem pelo nome do jogador.
+Ferramenta local e independente que descobre no Supabase os cards sem link, verifica primeiro as fotos que já existem no Cloudinary, busca no EFHub somente o que realmente falta, produz um manifesto durável e aplica as URLs em `clube_novo.carta_jogo.foto_url_cloudinary` depois do clique explícito em **INICIAR**.
 
-Contrato:
+## Contrato fechado
 
+- identidade: somente `card_id` numérico;
+- universo operacional: consulta somente leitura a `clube_novo.carta_jogo`, filtrada por `foto_url_cloudinary IS NULL`;
 - fonte: `https://efimg.com/efootballhub22/images/player_cards/{card_id}_l.png`;
-- Public ID no Cloudinary: `{card_id}`;
-- pasta dinâmica: `clubefutebol/cards/efootballhub`;
-- URL pública recuperável: `https://res.cloudinary.com/demsusjwf/image/upload/{card_id}.png`;
-- vínculo canônico: `clube_novo.carta_jogo.foto_url_cloudinary`, na própria linha do `card_id`;
-- tags: `efootballhub` e `card_id_{card_id}`;
-- contexto: `card_id`, `source` e `source_url`;
-- upload preset: `clubefutebol_cards_no_overwrite`;
-- sobrescrita: proibida. O inventário HEAD ocorre antes do download e uploads unsigned também recusam colisões.
+- candidato Cloudinary: `https://res.cloudinary.com/demsusjwf/image/upload/{card_id}.png`;
+- Public ID: `{card_id}`;
+- pasta do asset: `clubefutebol/cards/efootballhub`;
+- ordem de rede: todos os HEADs Cloudinary do lote terminam antes da primeira busca no EFHub;
+- upload: autenticado, `overwrite=false`, somente depois de HEAD 404 e antes de readback HTTP 200;
+- banco: somente `clube_novo.carta_jogo.foto_url_cloudinary`, na linha do mesmo `card_id`, somente quando o valor atual é NULL;
+- conflitos: preservados, nunca sobrescritos;
+- confirmação: nenhum processamento ou APPLY começa sem o clique do operador em **INICIAR**;
+- lotes internos: até 100 cartas; cada lote precisa ser aplicado e relido antes de o seguinte começar.
 
-## Uso seguro
+## Operação sem ChatGPT
 
-Use o Node empacotado no Codex ou Node 20+.
+Dê dois cliques em `INICIAR-EXTRATOR-DE-FOTOS.cmd`. O iniciador prepara Node/dependências verificadas e abre a interface em uma porta temporária de `127.0.0.1`. As chaves são coladas nos campos password da própria tela.
 
-Para uso sem programação, baixe o ZIP do GitHub, extraia a pasta e dê dois cliques em `INICIAR-EXTRATOR-DE-FOTOS.cmd`. O iniciador prepara um Node.js portátil verificado e pede somente a API Environment variable do Cloudinary e a `service_role` do Supabase, ambas em campos ocultos. O passo a passo completo está em `MANUAL-DO-EXTRATOR-DE-FOTOS.md`.
+Nenhuma credencial é embutida no HTML/JavaScript nem gravada em URL, cookie, `localStorage`, manifesto ou log. O JavaScript envia os valores somente ao servidor loopback autenticado da mesma sessão; o servidor cria um cofre local criptografado pelo Windows DPAPI para o usuário atual, repassa os valores ao processo filho em memória e limpa os campos assim que aceita a execução. `output/` não entra no Git e o cofre não pode ser reutilizado em outra conta ou computador.
 
-Inventário sem gravar:
+Na interface:
+
+1. cole Cloudinary API Key, Cloudinary API Secret e `SUPABASE_DB_URL`;
+2. clique em **INICIAR**;
+3. o aplicativo confirma a coluna e cria sozinho um snapshot ordenado dos `card_id` com URL NULL;
+4. ele processa lotes internos de até 100, verificando todo o Cloudinary antes de chamar o EFHub;
+5. cada lote gera manifesto, é validado, aplicado somente sobre valores ainda NULL e relido de forma independente;
+6. se um lote falhar, o fluxo para e preserva manifesto, eventos e resumo para diagnóstico.
+
+A interface principal não pede arquivo de IDs. A descoberta persiste `output/discoveries/<run_id>/card-ids-sem-link.txt`, `events.jsonl` e `summary.json`; seu checkpoint é retomável pelo SHA-256 em `output/state/`. A CLI continua aceitando arquivo somente para diagnóstico isolado.
+
+## Manifesto intermediário
+
+Cada preparação persiste `output/runs/<run_id>/manifest.json`. Cada item contém:
+
+- `card_id` e `candidate_url` determinística;
+- proveniência física (`source_url`, Public ID, pasta e chave de identidade);
+- pré-check/readback Cloudinary;
+- `outcome` (`cloudinary_existing`, `cloudinary_uploaded`, `cloudinary_missing_dry_run` ou `failed`);
+- `failure_or_skip_state` explícito;
+- prova de que não houve tentativa de overwrite;
+- recibo técnico do upload/arquivo quando aplicável.
+
+O documento inteiro recebe SHA-256 canônico. O APPLY recalcula esse hash, rejeita duplicatas/caminhos divergentes, relê cada candidato no Cloudinary e ignora itens não elegíveis.
+
+## Aplicação do manifesto e acesso Supabase
+
+O fluxo da interface exige `SUPABASE_DB_URL` no servidor local. Ele usa uma transação para cada manifesto de até 100 itens, updates parametrizados com `foto_url_cloudinary IS NULL`, rollback em erro e uma nova conexão para readback independente depois do commit.
+
+Na CLI, uma Secret Key (ou `service_role` legado) ainda pode usar a Data API no processo servidor. Esse método exige que `clube_novo` esteja exposto e que a role de servidor tenha `USAGE`, `SELECT` e `UPDATE`; ele não é oferecido nos três campos da interface operacional.
+
+Não conceda acesso a `anon` ou `authenticated`. Não grave nem distribua a chave: cole-a somente nesta interface local, no computador do operador.
+
+O estado externo conhecido em 30/08/2026 continua bloqueado: `clube_novo` retorna PGRST106 porque não está exposto na Data API, e o `service_role` disponível não tem o acesso necessário a `carta_jogo`. Isso não invalida os manifestos; apenas impede o APPLY por Data API até correção administrativa. A conexão Postgres direta requer a URL/senha obtida no botão **Connect** do projeto.
+
+Orientação oficial consultada:
+
+- https://supabase.com/docs/guides/getting-started/api-keys
+- https://supabase.com/docs/guides/database/connecting-to-postgres
+- https://supabase.com/docs/guides/api/using-custom-schemas
+- https://supabase.com/docs/guides/api/securing-your-api
+
+## CLI para diagnóstico
+
+Descobrir automaticamente o universo sem link, sem modificar o banco:
 
 ```powershell
-node card-image-extractor.mjs --input "C:\Users\Luis Fernando\Downloads\cards_efhub_COMPLETO.csv" --limit 10
+node card-image-extractor.mjs --discover-missing --database-method auto
 ```
 
-Uma amostra explícita com upload:
+Dry-run sem upload e sem banco:
 
 ```powershell
-node card-image-extractor.mjs --card-id 17592722922839 --limit 1 --apply
+node card-image-extractor.mjs --input "C:\caminho\cards.csv" --limit 3
 ```
 
-O preset atual do projeto é assinado. Para automação de backend, defina `CLOUDINARY_API_KEY` e `CLOUDINARY_API_SECRET` no ambiente; os valores nunca são gravados nos logs. O extrator usa autenticação HTTP Basic e envia `overwrite=false`. Não existe rota de upload unsigned nesta ferramenta.
+Preparar/uploadar sem tocar no banco:
 
-Toda execução com `--apply` também exige `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` no ambiente local. Antes de publicar, o extrator confirma que o `card_id` existe em `clube_novo.carta_jogo`. Após o readback do Cloudinary, grava a URL na coluna `foto_url_cloudinary` e confere a mesma linha. Nenhuma credencial aparece no ledger.
+```powershell
+node card-image-extractor.mjs --input "C:\caminho\cards.csv" --offset 0 --limit 100 --concurrency 4 --delay-ms 500 --upload
+```
 
-`--limit` é obrigatório e aceita no máximo 100 cards por execução. Sem `--apply`, nenhuma imagem é baixada nem enviada. Cada execução grava `output/runs/<data>/events.jsonl`, `summary.json` e, somente para novos uploads, a imagem recebida.
+APPLY separado:
 
-Entradas aceitas: CSV com coluna `card_id` ou `id`, JSON, JSONL e TXT com um ID por linha. Duplicatas são removidas pela string exata de `card_id` antes de qualquer chamada.
+```powershell
+node card-image-extractor.mjs --apply-manifest "C:\caminho\manifest.json" --database-method auto
+```
 
-## Verificação
+O argumento antigo `--apply` é recusado para impedir o acoplamento entre upload e banco.
+
+## Testes
 
 ```powershell
 npm test
 ```
 
-O ledger registra o status anterior no Cloudinary, resposta de upload, readback público e readback do banco. SHA-256, MIME e dimensões são somente auditoria técnica: não bloqueiam a publicação. A identidade é decidida exclusivamente pela igualdade do `card_id`. Um evento `uploaded` só é produzido quando o pré-check foi 404, o readback do Cloudinary foi 200 e `clube_novo.carta_jogo.foto_url_cloudinary` retornou a URL esperada.
-
-## Inventário sem rede
-
-O inventário cruza um universo de `card_id` com um ou mais ledgers já lidos do Cloudinary, sem consultar imagem por imagem:
-
-```powershell
-node inventory-card-images.mjs `
-  --universe "C:\caminho\cards.csv" `
-  --registered-manifest "C:\caminho\ledger-1.jsonl" `
-  --registered-manifest "C:\caminho\ledger-2.jsonl" `
-  --output ".\output\inventory"
-```
-
-São produzidas listas separadas de registrados, ausentes e IDs registrados fora do universo escolhido, além de um resumo com hashes SHA-256 e conferência da partição.
-
+Os testes usam apenas mocks e diretórios temporários. Não publicam imagem e não alteram banco real.

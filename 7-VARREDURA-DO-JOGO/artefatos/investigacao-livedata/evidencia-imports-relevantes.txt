@@ -1,0 +1,43 @@
+ADVAPI32.dll
+  CryptGenRandom
+  CryptDestroyHash
+  CryptHashData
+  CryptCreateHash
+  CryptGetHashParam
+  CryptReleaseContext
+  CryptAcquireContextA
+CRYPT32.dll
+  CryptBinaryToStringA
+  CryptStringToBinaryA
+WINHTTP.dll
+  WinHttpGetDefaultProxyConfiguration
+  WinHttpQueryOption
+  WinHttpCrackUrl
+  WinHttpGetProxyForUrl
+  WinHttpSetTimeouts
+  WinHttpSetOption
+  WinHttpOpen
+  WinHttpCloseHandle
+  WinHttpQueryHeaders
+  WinHttpReceiveResponse
+  WinHttpSendRequest
+  WinHttpAddRequestHeaders
+  WinHttpOpenRequest
+  WinHttpQueryDataAvailable
+  WinHttpCheckPlatform
+  WinHttpGetIEProxyConfigForCurrentUser
+  WinHttpReadData
+  WinHttpConnect
+  WinHttpSetStatusCallback
+bcrypt.dll
+  BCryptGenRandom
+advapi32.dll
+  CryptGetProvParam
+wininet.dll
+  HttpOpenRequestA
+  HttpQueryInfoA
+  HttpSendRequestA
+  InternetCloseHandle
+  InternetConnectA
+  InternetOpenA
+  InternetReadFile

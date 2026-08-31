@@ -1,6 +1,6 @@
 # Manual do Bonificador — ClubEfootball
 
-**Versão 1.1 · 28/08/2026**
+**Versão 1.2 · 31/08/2026**
 
 > Este é o manual oficial de funcionamento do Bonificador. O checklist e a pasta
 > `4-DOCUMENTOS/BONIFICADOR` guardam a prova técnica, SQL de recuperação e auditorias;
@@ -50,9 +50,9 @@ nunca inventa zero para uma ausência.
 
 ### Origem canônica e contratos
 
-O executável não abre tabelas diretamente. Ele chama somente três contratos
-versionados: `bonificador_regua_v1`, `bonificador_carta_v1` e
-`bonificador_pares_v1`. Esses contratos leem relações privadas de `clube_novo` e usam
+O motor de lote não abre tabelas diretamente. Ele lê `bonificador_regua_v1`,
+`bonificador_carta_v1` e `public.bonificador_contexto_escrita_v2`, e grava somente
+por `public.gravar_build_bonificador_v1`. Esses contratos usam
 IDs físicos/canônicos para carta, posição, playstyle, corpo e função. A referência
 legada sobrevive apenas como fotografia de auditoria e recuperação, fora de gates e da
 decisão do motor.
@@ -74,9 +74,10 @@ ensaiados em transação antes do readback. As rotinas e os artefatos estão em
 ## 1. Finalidade e nome
 
 O **Bonificador** calcula quatro parcelas separadas para cada par `card_id × função`:
-corpo, pé ruim, estilo de jogo e estilos de IA. O resultado é gravado nas colunas
-`b_corpo`, `b_pe_ruim`, `b_estilo`, `b_ia` e `b_total` da build já produzida pelo
-Otimizador.
+corpo, pé ruim, estilo de jogo e estilos de IA. O runtime V9 preserva exatamente essas
+parcelas, mas prepara a saída para `clube_novo.build_bonificador`. O estilo agregado é
+acompanhado das duas contribuições dos slots físicos que já formavam o mesmo total;
+isso não muda a fórmula.
 
 `motor_bonus.py` e `motor dos bônus` são nomes técnicos históricos. O nome de produto
 e de documentação é **Bonificador**.
@@ -94,9 +95,9 @@ Bonificador.
 | lançador de compatibilidade | `2-MOTORES/BONIFICADOR/RODAR-INTERFACE-BONIFICADOR.bat` |
 | receita | `public.bonificador_regua_v1()` |
 | carta | `public.bonificador_carta_v1(card_id)` |
-| pares a processar | `public.bonificador_pares_v1(limit, offset)` → projeção privada `clube_novo.bonificador_par` |
-| gravação | `public.gravar_bonus(jsonb)` |
-| consumidor publicado | `public.casa_tela`, sem alteração nesta migração |
+| contexto de escrita | `public.bonificador_contexto_escrita_v2(limit, offset)` → linhas pendentes e selos calculados pelo banco |
+| gravação preparada | `public.gravar_build_bonificador_v1(p_resultado jsonb)` |
+| destino | `clube_novo.build_bonificador` ligado à linha exata em `build_linha_card` |
 
 `RODAR-O-MOTOR.bat` e `RODAR-TUDO.bat` executam somente o Otimizador
 (`roda_lote_v6.py`). Eles não executam o Bonificador.
@@ -123,7 +124,7 @@ gravada nem impressa. O lote produtivo não foi executado nesta migração.
 | estilos de IA | JSON `clube.carta_jogo.estilos_ia` | quantidade de bits de IA ligados na carta | `clube_novo.carta_estilo_ia_jogo` + `estilo_ia` | (`card_id`,`bit_estilo_ia`); catálogo pelo bit físico e `pode_rodar` |
 | pares card × função | `clube.build` | universo já calculado pelo Otimizador | `clube_novo.bonificador_par` | projeção privada com FKs (`card_id`,`funcao_id`); está vazia, pois não houve lote autorizado |
 | parâmetros não físicos | `clube.bonus_parametro` | tetos e pesos da regra ClubEfootball | `clube_novo.bonificador_parametro` | 14 valores preservados, sem semântica por texto legado |
-| saída | `clube.build.b_*` via `gravar_bonus` | fotografia calculada do Bonificador | inalterada nesta etapa | nenhuma execução produtiva autorizada |
+| saída | `clube.build.b_*` via writer legado | fotografia histórica | `clube_novo.build_bonificador` via `gravar_build_bonificador_v1` | writer novo preparado; nenhuma execução produtiva autorizada |
 
 As dimensões de nacionalidade, clube, liga e tipo, as habilidades, as posições
 secundárias, os técnicos e os ímpetos foram inventariados e deliberadamente não entram
@@ -137,14 +138,24 @@ qualificadas e `EXECUTE` apenas para `service_role`:
 
 - `bonificador_regua_v1()` — receita allowlisted, chaves estáveis e gates;
 - `bonificador_carta_v1(card_id)` — somente os campos usados pelo Bonificador, com
-  proveniência, cardinalidades e `pode_rodar`;
-- `bonificador_pares_v1(limit, offset)` — pares já produzidos pelo Otimizador.
+  proveniência, cardinalidades, completude vigente, versões, fingerprints e
+  `pode_rodar`;
+- `public.bonificador_contexto_escrita_v2(limit, offset)` — identidade exata da
+  linha pendente, card, função, posição e fingerprints calculados pelo banco.
 
 `PUBLIC`, `anon` e `authenticated` não recebem execução. Nenhuma tabela de
 `clube_novo` é exposta e nenhuma policy/RLS existente é alterada.
 
-`gravar_bonus(jsonb)` permanece a porta de saída porque a tarefa migra leituras de
-dados do jogo. Seu contrato e a tabela de destino não foram alterados.
+O runtime produtivo não chama mais `public.gravar_bonus` e não escreve em
+`clube.build`. Para cada resultado apto ele chama exclusivamente
+`public.gravar_build_bonificador_v1`, que relê a completude, confere identidade,
+selos, parcelas, total e ligação, tudo na mesma transação. O retorno só é aceito se
+trouxer `readback=ok`, a mesma linha, os mesmos selos e um fingerprint SHA-256.
+`bonus_fisico_detalhe` leva a contribuição efetiva de cada medida e sua soma decimal
+precisa ser exatamente igual a `bonus_fisico_total`. A última medida recebe somente o
+residual de arredondamento. `bonus_posicao` é zero porque posição condiciona a regra
+atual, mas não soma uma quinta parcela; as contribuições dos slots 1 e 2 somam
+exatamente o mesmo bônus de estilo agregado da V8.
 
 ## 5. Gates e ausência de fallback
 
@@ -156,10 +167,12 @@ Uma carta só pode ser gravada quando todos estes gates passam:
 4. corpo, pé, posição, playstyles e IA resolvem em catálogos com `pode_rodar=true`;
 5. os dois valores de pé ruim resolvem na régua física nova;
 6. a regra do playstyle possui ponte estável;
-7. todas as quatro parcelas são numéricas.
+7. todas as quatro parcelas são numéricas;
+8. a carta está apta na completude vigente e os fingerprints coincidem;
+9. o par traz o ID da linha, função e posição exigidos pelo writer novo.
 
 Falha de RPC, relação incompleta, catálogo bloqueado ou regra sem ponte deixa a carta
-em `NAO-SEI.txt` e exclui todos os seus pares do lote enviado a `gravar_bonus`. O código
+em `NAO-SEI.txt` e exclui todos os seus pares da chamada ao writer novo. O código
 não volta a `carta_do_motor`, não usa o JSON antigo e não transforma ausência em zero.
 
 ## 6. Divergências conhecidas da fotografia antiga
@@ -260,15 +273,29 @@ principal, o Otimizador ou o Extrator.
 
 ## 11. Estado operacional final
 
-As únicas portas de leitura do executável são `bonificador_regua_v1`,
-`bonificador_carta_v1` e `bonificador_pares_v1`. A auditoria de suas definições
+As portas de leitura do lote V9 são `bonificador_regua_v1`,
+`bonificador_carta_v1` e `public.bonificador_contexto_escrita_v2`. A auditoria de suas definições
 confirmou zero referência a `clube.*`; elas leem exclusivamente relações privadas de
 `clube_novo`, indexadas por IDs e com gates fail-closed. O legado subsiste apenas como
 snapshot/contraprova de migração, fora do caminho decisório.
 
-`funcao_id` é a chave interna de todos os pares, moldes e regras de estilo. O
-`funcao_codigo` retornado junto do par existe somente para o payload de saída legado
-`gravar_bonus`; não participa de consulta, gate ou cálculo e o lote continua desligado.
+`funcao_id` é a chave interna de todos os pares, moldes e regras de estilo. O writer
+novo recebe também `build_linha_card_id` e `posicao_id`; `funcao_codigo` permanece
+apenas informativo e não decide a gravação.
+
+### Compatibilidade necessária antes de ligar o lote
+
+O runtime V9 está preparado, mas permanece fail-closed enquanto os contratos vivos não
+entregarem toda a identidade. `bonificador_contexto_escrita_v2` precisa devolver
+`build_linha_card_id`, card, função, posição, versões e fingerprints calculados pelo
+próprio banco. `bonificador_carta_v1` precisa confirmar os mesmos `carta_versao` e
+`carta_fingerprint`, além de `completude_motor.apto_motor=true`. Campo ausente ou
+retorno divergente encerra o lote antes da escrita. O writer e o RPC de contexto ainda
+precisam ser instalados e relidos no banco por uma ação separada; este ajuste de runtime
+não os instalou e não executou lote real. As duas portas ficam em `public` com acesso
+controlado; o schema privado `clube_novo` não precisa e não deve ser exposto no Data API.
+Quando o contexto retorna zero linhas pendentes, a rodada termina normalmente com
+sucesso e informa que nenhuma gravação era necessária.
 
 Os dados materializados preservam 14 parâmetros, 228 moldes (19 × 12), 13 slots e 90
 regras de playstyle (31 IDs). A paridade contra o snapshot confirmou igualdade de

@@ -8,6 +8,7 @@
 (function installV46ContractRuntime(global) {
   const core = global.CLUBEF_CORE;
   const reader = global.CLUBEF_CONTRACT_READER;
+  const launchRadar = global.CLUBEF_BOX_RADAR || null;
   if (!core || !reader) throw new Error('runtime V4.6 requer leitura-contrato.js e extrator-core.js');
 
   let activePlan = null;
@@ -361,7 +362,12 @@
       decodeLeagueByTeam(bytes, plan, cpk)
     ]);
     const positions = new Map(requireCatalog(plan, 'posicao_jogo').map((row) => [Number(row.id), row.codigo_en]));
-    const playstyles = new Map(requireCatalog(plan, 'playstyle').map((row) => [Number(row.bit ?? row.id_jogo), row]));
+    const playstyleRows = requireCatalog(plan, 'playstyle');
+    // O primeiro slot é gravado como bit (índice * 4); o segundo é gravado
+    // diretamente como índice. Comparar os dois contra a mesma chave fazia
+    // índices defensivos válidos, como 9 e 17, parecerem sem tradução.
+    const playstylesByBit = new Map(playstyleRows.map((row) => [Number(row.bit ?? row.id_jogo), row]));
+    const playstylesByIndex = new Map(playstyleRows.map((row) => [Number(row.indice), row]));
     const clubs = new Map(requireCatalog(plan, 'clube_jogo').map((row) => [Number(row.codigo_jogo), row]));
     const leagues = new Map(requireCatalog(plan, 'liga_jogo').map((row) => [Number(row.codigo_jogo), row]));
     const nationalities = new Map(requireCatalog(plan, 'nacionalidade_jogo').map((row) => [Number(row.codigo_jogo), row]));
@@ -387,8 +393,8 @@
       const injury = declaredPrecedence(plan, injuryKeys, v, 'carta.resistencia_lesao');
       return {
         card_id:id, height:Number(v['carta.altura']), weight:Number(v['carta.peso']), age:Number(v['carta.idade']), position,
-        primary_style_id:primaryId, primary_style_unknown:primaryId !== 0 && !playstyles.has(primaryId),
-        defensive_style_id:secondaryId, defensive_style_confirmed:secondaryId === 0 || playstyles.has(secondaryId),
+        primary_style_id:primaryId, primary_style_unknown:primaryId !== 0 && !playstylesByBit.has(primaryId),
+        defensive_style_id:secondaryId, defensive_style_confirmed:secondaryId === 0 || playstylesByIndex.has(secondaryId),
         weak_foot_usage:declaredRange(field(plan, 'carta.pe.ruim_uso'), v['carta.pe.ruim_uso'], 'carta.pe.ruim_uso'),
         weak_foot_accuracy:declaredRange(field(plan, 'carta.pe.ruim_precisao'), v['carta.pe.ruim_precisao'], 'carta.pe.ruim_precisao'),
         foot:declaredEnum(plan, 'carta.pe', v['carta.pe']),
@@ -411,6 +417,8 @@
       core.extractCardRelationsByContract(bytes, plan), core.extractCardBodiesByContract(bytes, plan)
     ]);
     for (const card of cards) {
+      // Box é uma observação separada do radar de lançamentos. Ela não entra
+      // na identidade canônica nem no destino de aplicação da carta.
       card.box = null;
       const slot = slots.slots.get(card.card_id);
       if (!slot) throw new Error(`contrato não retornou slots para ${card.card_id}`);
@@ -443,6 +451,71 @@
     }
     log(`V4.6 · cartas e vínculos lidos pelas referências canônicas do contrato ${plan.versao_contrato}`);
     return cards;
+  }
+
+  function boxContractVerification(plan, sourceDescriptor = {}) {
+    const index = reader.requirePlan(plan);
+    const roles = familyRoles(plan, 'cartas');
+    if (roles.length !== 1) throw new Error('radar de boxes exige uma única fonte contratada para Cartas');
+    const sourceRole = roles[0];
+    if (sourceDescriptor.role && sourceDescriptor.role !== sourceRole) {
+      throw new Error(`radar de boxes recebeu ${sourceDescriptor.role}; o contrato de Cartas exige ${sourceRole}`);
+    }
+    const cardId = field(plan, 'carta.id');
+    const containerFile = fileById(plan, cardId.arquivo_id);
+    if (containerFile.papel_fonte !== sourceRole) throw new Error('carta.id e a fonte de Cartas divergem no contrato ativo');
+    const declared = (plan.arquivos || []).filter((item) => item && item.arquivo === (core.BOX_RADAR_MEMBER || 'PlayerVariationDetail.bin'));
+    if (declared.length > 1) throw new Error('contrato ativo declara PlayerVariationDetail.bin mais de uma vez');
+    if (declared.length === 1) {
+      const member = declared[0];
+      if (member.papel_fonte !== sourceRole) throw new Error('PlayerVariationDetail.bin foi declarado em outra fonte');
+      if (Number(member.tamanho_registro) !== 168) throw new Error('PlayerVariationDetail.bin declarado com tamanho de registro diferente de 168');
+    }
+    return {
+      contract: Object.fromEntries(reader.SEAL_KEYS.map((key) => [key, plan[key] ?? null])),
+      family: 'cartas',
+      source_role: sourceRole,
+      container_contract_verified: index.files.has(cardId.arquivo_id),
+      container_file: containerFile.cpk || null,
+      canonical_anchor_file: containerFile.arquivo,
+      canonical_anchor_field: 'carta.id',
+      member_file: core.BOX_RADAR_MEMBER || 'PlayerVariationDetail.bin',
+      member_declared_in_active_contract: declared.length === 1,
+      member_contract_status: declared.length === 1 ? 'declarado_e_validado' : 'observacional_ate_migracao_do_contrato',
+      identity_or_apply_destination_declared: false,
+      database_write: false
+    };
+  }
+
+  async function extractLaunchRadarFromCpkV46(bytes, plan, input = {}, log = () => {}) {
+    rememberPlan(plan);
+    if (!launchRadar) throw new Error('módulo radar-lancamentos.js não foi carregado');
+    const sourceDescriptor = input.source_descriptor || {};
+    const verification = boxContractVerification(plan, sourceDescriptor);
+    const containerValidation = await core.validateSourceByContract(bytes, plan, verification.source_role);
+    verification.container_validation = {
+      cpk_sha256: containerValidation.cpk_sha256,
+      declared_files_checked: Array.isArray(containerValidation.files) ? containerValidation.files.length : 0,
+      database_write: false
+    };
+    const observation = await launchRadar.observeCpk(bytes, {
+      source: {
+        role: verification.source_role,
+        cpk_file: verification.container_file,
+        location: sourceDescriptor.location || null,
+        bytes: sourceDescriptor.bytes ?? null,
+        modified_at: sourceDescriptor.modified_at || null,
+        cpk_sha256: containerValidation.cpk_sha256
+      },
+      contract_verification: verification
+    });
+    const artifact = await launchRadar.buildRadar(observation, input.previous_artifact || null, {
+      cards: input.cards,
+      previous_artifact: input.previous_artifact_path || null,
+      generated_at: input.generated_at
+    });
+    log(`Radar de boxes: ${artifact.counts.boxes} box(es), ${artifact.counts.cards_mapped} card(s), comparação ${artifact.comparison.status}.`);
+    return artifact;
   }
 
   async function validateSourceByContractV46(bytes, plan, role) {
@@ -713,6 +786,8 @@
     ...core,
     validateSourceByContract:validateSourceByContractV46,
     extractCardsFromCpk:extractCardsFromCpkV46,
+    extractLaunchRadarFromCpk:extractLaunchRadarFromCpkV46,
+    inspectLaunchRadarContract:boxContractVerification,
     extractCardDimensionsByFamily:extractCardDimensionsByFamilyV46,
     decodeBasicCardsByContract:decodeBasicCards
   });

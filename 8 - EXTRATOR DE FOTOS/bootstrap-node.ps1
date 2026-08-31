@@ -2,12 +2,14 @@ function Obter-Node {
   param([Parameter(Mandatory = $true)][string]$PastaFerramenta)
 
   $nodeCodex = 'C:\Users\Luis Fernando\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe'
-  if (Test-Path -LiteralPath $nodeCodex) { return $nodeCodex }
+  $npmCodex = Join-Path (Split-Path -Parent $nodeCodex) 'npm.cmd'
+  if ((Test-Path -LiteralPath $nodeCodex) -and (Test-Path -LiteralPath $npmCodex)) { return $nodeCodex }
 
   $nodeSistema = Get-Command node -ErrorAction SilentlyContinue
   if ($nodeSistema) {
     $versao = & $nodeSistema.Source --version 2>$null
-    if ($versao -match '^v(\d+)' -and [int]$Matches[1] -ge 20) { return $nodeSistema.Source }
+    $npmSistema = Join-Path (Split-Path -Parent $nodeSistema.Source) 'npm.cmd'
+    if ($versao -match '^v(\d+)' -and [int]$Matches[1] -ge 20 -and (Test-Path -LiteralPath $npmSistema)) { return $nodeSistema.Source }
   }
 
   $versaoNode = '24.20.0'
@@ -47,4 +49,3 @@ function Obter-Node {
   }
   return $nodePortatil
 }
-

@@ -1,0 +1,10 @@
+{
+  "executavel": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\eFootball\\eFootball\\Binaries\\Win64\\eFootball.exe",
+  "sha256_executavel": "a6911e9613750df33d10598d6493db629b03195c3ec1d011704cd1e853d8c6e4",
+  "rva_objeto_estatico": "0x6E6FA70",
+  "rva_funcao_derivacao": "0x46E1C00",
+  "rva_inicializador": "0x46E28B7",
+  "rva_consumidor_OnlineSystemHttpAes": "0x480DA10",
+  "chave_aes_256_hex": "43740981523cdc171e71de2ccab1a5a9b86f4b833196c55facd4bd25846c33f5",
+  "executavel_permaneceu_inalterado": true
+}

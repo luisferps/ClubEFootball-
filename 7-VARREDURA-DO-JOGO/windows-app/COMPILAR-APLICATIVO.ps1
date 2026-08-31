@@ -19,7 +19,7 @@ if (Test-Path -LiteralPath $staging) {
     Remove-Item -LiteralPath $staging -Force -ErrorAction SilentlyContinue
 }
 
-& $compiler /nologo /target:winexe /optimize+ /platform:anycpu /reference:System.dll /reference:System.Drawing.dll /reference:System.Windows.Forms.dll /reference:System.Web.Extensions.dll "/win32icon:$icon" "/out:$staging" $source
+& $compiler /nologo /target:winexe /optimize+ /platform:anycpu /reference:System.dll /reference:System.Security.dll /reference:System.Drawing.dll /reference:System.Windows.Forms.dll /reference:System.Web.Extensions.dll "/win32icon:$icon" "/out:$staging" $source
 if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $staging)) {
     throw 'Falha ao compilar o aplicativo Windows.'
 }

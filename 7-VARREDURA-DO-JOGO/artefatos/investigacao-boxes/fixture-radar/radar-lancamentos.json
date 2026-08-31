@@ -1,0 +1,185 @@
+{
+  "contract": "clubef-radar-lancamentos-fisicos-v1",
+  "generated_at": "2026-08-31T12:00:00.000Z",
+  "database_write": false,
+  "read_only": true,
+  "evidence_mode": "fixture_salvo",
+  "radar_fingerprint": "882225a520d838c86eeb9df7cb89abce9d8ec0dcfb2c3c35945993e9c7f6d5bc",
+  "parser": {
+    "version": "player-variation-detail-168-v1",
+    "record_size": 168,
+    "name_offset": 12,
+    "encoding": "utf-8-nul"
+  },
+  "meaning": "Radar local de boxes pré-carregadas fisicamente; não confirma que a box já apareceu na tela do jogo.",
+  "publication_decision": {
+    "evaluated": false,
+    "blocked": false,
+    "reason": "O radar informa a box física, mas não autoriza nem impede publicar ou selecionar o card no site."
+  },
+  "motor_decision": {
+    "evaluated": false,
+    "reason": "Completude e elegibilidade para Motor/Otimizador/Bonificador são avaliadas por outra etapa."
+  },
+  "apply_scope": {
+    "radar_fields_included": false,
+    "destination": null,
+    "reason": "Box é observação local fora da identidade canônica e fora do pacote de aplicação enquanto não houver contrato/migração próprios."
+  },
+  "integration_contract": {
+    "version": "clubef-box-observation-envelope-v1",
+    "status": "prepared_not_enabled",
+    "database_migration_required": true,
+    "write_enabled": false,
+    "current_destination": null,
+    "box_identity_fields": [
+      "fingerprint_identidade"
+    ],
+    "card_box_relation_identity_fields": [
+      "card_id",
+      "fingerprint_identidade"
+    ],
+    "payload_fields": [
+      "nome_box",
+      "nome_normalizado",
+      "fingerprint_identidade",
+      "fingerprint_box",
+      "card_id",
+      "record_index",
+      "byte_offset"
+    ],
+    "required_provenance": [
+      "source.role",
+      "source.cpk_sha256",
+      "member.raw_sha256",
+      "parser.version"
+    ],
+    "note": "O envelope está estável para uma migração futura, mas nenhuma tabela, RPC, trigger ou escrita foi ativada por este radar."
+  },
+  "comparison": {
+    "status": "comparado",
+    "reason": "Mesmo papel de fonte, membro físico e versão de parser.",
+    "previous_artifact": "fixture://anterior/radar-lancamentos.json",
+    "previous_generated_at": "2026-08-30T12:00:00.000Z",
+    "previous_radar_fingerprint": "298decf882ff9d2f0a7d158a0a640a706630cf8aed41c73817fcab86d3951cd8",
+    "boxes_ausentes_desde_anterior": [
+      {
+        "nome_box": "Box Fixture Ausente",
+        "fingerprint_identidade": "2e05c371907302de18c821100806acf2803fd240fb070a1fbca694362f4499c5",
+        "fingerprint_box_anterior": "4724439ed945785638b48a49d9f45a792d7aea12b1635e16f36b70de0b6cd58e",
+        "quantidade_cartas_anterior": 1,
+        "meaning": "A box existia na rodada anterior e não está no arquivo físico atual; o radar não executa exclusão automática.",
+        "database_write": false
+      }
+    ]
+  },
+  "counts": {
+    "boxes": 2,
+    "cards_mapped": 5,
+    "boxes_ausentes_desde_anterior": 1,
+    "by_state": {
+      "nova": 1,
+      "ja_conhecida": 1,
+      "sem_historico": 0
+    }
+  },
+  "provenance": {
+    "source": {
+      "role": "dt870_updated",
+      "cpk_file": "dt870_console_win.cpk",
+      "location": "fixture://atual/dt870_console_win.cpk",
+      "bytes": 123456,
+      "modified_at": "2026-08-31T12:00:00.000Z",
+      "cpk_sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "member": {
+      "file": "PlayerVariationDetail.bin",
+      "packed_bytes": null,
+      "packed_sha256": null,
+      "raw_bytes": 840,
+      "raw_sha256": "4ebb997c043580df2553697c6fa42979416caaf3b9f285cda75ce1639605fdb4",
+      "records_total": 5,
+      "relations_valid": 5
+    },
+    "contract_verification": {
+      "evidence_mode": "fixture_salvo",
+      "container_contract_verified": true,
+      "member_declared_in_active_contract": false,
+      "member_contract_status": "observacional_ate_migracao_do_contrato",
+      "identity_or_apply_destination_declared": false,
+      "database_write": false
+    },
+    "card_join_checked": true,
+    "card_join_source": "cartas-fisicas-canonicas.json / Player.bin da mesma rodada"
+  },
+  "boxes": [
+    {
+      "nome_box": "Box Fixture Conhecida",
+      "nomes_fisicos_observados": [
+        "Box Fixture Conhecida"
+      ],
+      "nome_normalizado": "box fixture conhecida",
+      "fingerprint_identidade": "0ca99700dde4b79c277632155d69897c89ba91729708806240cd90ecc7e98180",
+      "fingerprint_box": "ebc10172a05b34db6cb331bbd555b65d1a24ecb2271a3e4550e8ff91553d53a5",
+      "quantidade_cartas": 4,
+      "cartas": [
+        {
+          "card_id": "100000000000001",
+          "nome_card": "Card Fixture A",
+          "record_index": 0,
+          "byte_offset": 0
+        },
+        {
+          "card_id": "100000000000002",
+          "nome_card": "Card Fixture B",
+          "record_index": 1,
+          "byte_offset": 168
+        },
+        {
+          "card_id": "100000000000003",
+          "nome_card": "Card Fixture C",
+          "record_index": 2,
+          "byte_offset": 336
+        },
+        {
+          "card_id": "100000000000004",
+          "nome_card": "Card Fixture D",
+          "record_index": 3,
+          "byte_offset": 504
+        }
+      ],
+      "estado": "ja_conhecida",
+      "explicacao_estado": "Este nome de box já existia na última rodada comparável.",
+      "conteudo_alterado": true,
+      "cards_adicionados_desde_anterior": [
+        "100000000000004"
+      ],
+      "cards_ausentes_desde_anterior": [],
+      "database_write": false
+    },
+    {
+      "nome_box": "Box Fixture Nova",
+      "nomes_fisicos_observados": [
+        "Box Fixture Nova"
+      ],
+      "nome_normalizado": "box fixture nova",
+      "fingerprint_identidade": "7ee65160a3b3f1196a2b73c16568237d1f79cf228ae5835d128b35278e16fb90",
+      "fingerprint_box": "5c89573178e9da000752b14781120400eff7d273a57991f2e7da0284322955bd",
+      "quantidade_cartas": 1,
+      "cartas": [
+        {
+          "card_id": "100000000000005",
+          "nome_card": "Card Fixture E",
+          "record_index": 4,
+          "byte_offset": 672
+        }
+      ],
+      "estado": "nova",
+      "explicacao_estado": "Este nome de box não existia na última rodada comparável.",
+      "conteudo_alterado": null,
+      "cards_adicionados_desde_anterior": [],
+      "cards_ausentes_desde_anterior": [],
+      "database_write": false
+    }
+  ]
+}

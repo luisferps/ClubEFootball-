@@ -13,7 +13,7 @@ import tecnicos as legacy
 CONTRACT = "clubef-tecnicos-carga-v4-sobreposicao"
 
 
-def _classify(scope: str, source: set[tuple[Any, ...]], database: set[tuple[Any, ...]], key_size: int) -> dict[str, list[dict[str, Any]]]:
+def _classify(scope: str, target_table: str, columns: tuple[str, ...], source: set[tuple[Any, ...]], database: set[tuple[Any, ...]], key_size: int) -> dict[str, list[dict[str, Any]]]:
     """Compara por identidade estável; valores restantes são conteúdo."""
     result: dict[str, list[dict[str, Any]]] = {kind: [] for kind in ("new", "removed", "altered", "repeated", "invalid")}
     def index(rows: set[tuple[Any, ...]], origin: str) -> dict[tuple[Any, ...], tuple[Any, ...]]:
@@ -21,14 +21,29 @@ def _classify(scope: str, source: set[tuple[Any, ...]], database: set[tuple[Any,
         for row in rows:
             key = row[:key_size]
             if key in indexed and indexed[key] != row:
-                result["repeated"].append({"classificacao": "repetido", "escopo": scope, "chave_canonica": list(key), "origem": origin})
+                result["repeated"].append({"classificacao": "repetido", "escopo": scope, "destino_tabela": target_table, "chave_canonica": dict(zip(columns[:key_size], key, strict=True)), "origem": origin})
             else:
                 indexed[key] = row
         return indexed
     left, right = index(source, "fisica"), index(database, "banco")
     for key in sorted(set(left) | set(right), key=str):
         physical, stored = left.get(key), right.get(key)
-        base = {"escopo": scope, "chave_canonica": list(key), "fonte_fisica": None if physical is None else {"arquivo": physical[-3] if len(physical) >= 3 else None, "registro": physical[-2] if len(physical) >= 2 else None}, "vinculo_banco": None if stored is None else list(key), "valor_fisico": physical, "valor_banco": stored}
+        physical_row = dict(zip(columns, physical, strict=True)) if physical is not None else None
+        provenance = None if physical_row is None else {
+            field: physical_row.get(field)
+            for field in ("arquivo", "registro", "record_index", "hash_coach_bin", "hash_campos_apresentacao", "hash_country_bin")
+            if physical_row.get(field) is not None
+        }
+        base = {
+            "escopo": scope,
+            "destino_tabela": target_table,
+            "colunas_fisicas": list(columns),
+            "chave_canonica": dict(zip(columns[:key_size], key, strict=True)),
+            "fonte_fisica": provenance,
+            "vinculo_banco": None if stored is None else dict(zip(columns[:key_size], key, strict=True)),
+            "valor_fisico": physical,
+            "valor_banco": stored,
+        }
         if stored is None: result["new"].append({"classificacao": "novo", **base})
         elif physical is None: result["removed"].append({"classificacao": "removido", **base})
         elif physical != stored: result["altered"].append({"classificacao": "alterado", **base})
@@ -259,11 +274,11 @@ def validate_tecnicos_v4610(snapshot: dict[str, Any], connection: Any, reading_c
 
     checks = {"foreign_key_orphans": orphans}
     classifications = {
-        "technicians": _classify("tecnicos", source_technicians, database_technicians, 1),
-        "nationalities": _classify("nacionalidades", source_nationalities, database_nationalities, 1),
-        "affinities": _classify("afinidades", source_affinities, database_affinities, 1),
-        "proficiencies_and_overload": _classify("proficiencias_tecnico", source_styles, database_styles, 2),
-        "boosts": _classify("boosts_tecnico", source_boosts, database_boosts, 2),
+        "technicians": _classify("tecnicos", "tecnico_jogo", ("id", "nome_en", "nome_jp", "nome_cn", "idade", "codigo_nacionalidade", "codigo_afinidade", "registro_campos_apresentacao", "hash_campos_apresentacao"), source_technicians, database_technicians, 1),
+        "nationalities": _classify("nacionalidades", "nacionalidade_jogo", ("codigo_jogo", "nome_pt_br", "sigla", "registro", "tamanho_registro", "bit_codigo", "largura_codigo", "offset_nome_pt_br", "largura_nome_pt_br", "offset_sigla", "largura_sigla", "hash_country_bin"), source_nationalities, database_nationalities, 1),
+        "affinities": _classify("afinidades", "afinidade_tecnico_jogo", ("codigo_jogo", "nome_pt", "nome_tela", "ausencia_legitima", "rotulo_confirmado", "bit", "largura", "hash_coach_bin", "pode_rodar", "falta_o_que"), source_affinities, database_affinities, 1),
+        "proficiencies_and_overload": _classify("proficiencias_tecnico", "tecnico_estilo_jogo", ("tecnico_id", "codigo_estilo", "proficiencia", "arquivo", "registro", "bit", "largura", "hash_coach_bin", "confirmado"), source_styles, database_styles, 2),
+        "boosts": _classify("boosts_tecnico", "tecnico_atributo_jogo", ("tecnico_id", "ordem", "codigo_atributo", "delta", "arquivo", "registro", "bit", "largura", "hash_coach_bin", "confirmado"), source_boosts, database_boosts, 2),
     }
     classification = {kind: [] for kind in ("new", "removed", "altered", "repeated", "invalid")}
     for items in classifications.values():

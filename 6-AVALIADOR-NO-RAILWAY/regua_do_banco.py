@@ -35,7 +35,8 @@ class Regua:
         self.molde       = dados['molde']        # {funcao_id: {idx: (alvo, peso)}}
         self.hab         = dados['habilidade']   # {skill_id: {'fabricavel':..,'efeito':..}}
         self.tec         = dados['tecnico']      # {id: {'boosts':[idx], 'proficiencia': n}}
-        self.imp         = dados['impeto']       # vazio enquanto o consumidor estiver desligado
+        self.imp         = dados['impeto']       # {codigo: {indice: delta}}
+        self.imp_meta    = dados.get('impeto_meta') or {}
         self.funcoes     = dados.get('funcoes') or {}
         self.skill_names = dados.get('skill_names') or {}
         self.gate        = dados.get('gate') or {}
@@ -79,4 +80,3 @@ class Regua:
             raise ReguaIncompleta('molde da funcao %r incompleto: faltam os atributos %s'
                                   % (funcao_id, faltam))
         return True
-

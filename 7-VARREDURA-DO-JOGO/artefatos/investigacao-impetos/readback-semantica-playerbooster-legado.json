@@ -1,0 +1,3677 @@
+{
+  "read_only": true,
+  "rows": [
+    {
+      "codigo_jogo": 0,
+      "registro_dt870_steam": 160,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 1,
+      "registro_dt870_steam": 142,
+      "registro_dt870_atualizacao": 0,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": null,
+      "effects": [
+        {
+          "bit": 276,
+          "delta": 1,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 244,
+          "delta": 1,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 175,
+          "delta": 1,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 249,
+          "delta": 1,
+          "codigo_atributo": "PB:384:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 4,
+      "registro_dt870_steam": 1,
+      "registro_dt870_atualizacao": 3,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": null,
+      "effects": [
+        {
+          "bit": 122,
+          "delta": 1,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 229,
+          "delta": 1,
+          "codigo_atributo": "PB:448:6"
+        },
+        {
+          "bit": 185,
+          "delta": 1,
+          "codigo_atributo": "PB:428:6"
+        },
+        {
+          "bit": 249,
+          "delta": 1,
+          "codigo_atributo": "PB:384:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 8,
+      "registro_dt870_steam": 132,
+      "registro_dt870_atualizacao": 7,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Duelo (Divididas)",
+      "effects": [
+        {
+          "bit": 261,
+          "delta": 1,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 180,
+          "delta": 1,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 202,
+          "delta": 1,
+          "codigo_atributo": "PB:480:6"
+        },
+        {
+          "bit": 234,
+          "delta": 1,
+          "codigo_atributo": "PB:454:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 9,
+      "registro_dt870_steam": 3,
+      "registro_dt870_atualizacao": 8,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Agilidade",
+      "effects": [
+        {
+          "bit": 149,
+          "delta": 1,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 217,
+          "delta": 1,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 180,
+          "delta": 1,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 202,
+          "delta": 1,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 10,
+      "registro_dt870_steam": 164,
+      "registro_dt870_atualizacao": 9,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": null,
+      "effects": [
+        {
+          "bit": 175,
+          "delta": 1,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 149,
+          "delta": 1,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 160,
+          "delta": 1,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 202,
+          "delta": 1,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 12,
+      "registro_dt870_steam": 150,
+      "registro_dt870_atualizacao": 11,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Chute",
+      "effects": [
+        {
+          "bit": 276,
+          "delta": 2,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 244,
+          "delta": 2,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 249,
+          "delta": 2,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 175,
+          "delta": 2,
+          "codigo_atributo": "PB:518:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 14,
+      "registro_dt870_steam": 5,
+      "registro_dt870_atualizacao": 13,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Disputa Aérea",
+      "effects": [
+        {
+          "bit": 244,
+          "delta": 2,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 281,
+          "delta": 2,
+          "codigo_atributo": "PB:402:6"
+        },
+        {
+          "bit": 160,
+          "delta": 2,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 175,
+          "delta": 2,
+          "codigo_atributo": "PB:518:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 16,
+      "registro_dt870_steam": 158,
+      "registro_dt870_atualizacao": 15,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Condução Técnica",
+      "effects": [
+        {
+          "bit": 149,
+          "delta": 2,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 239,
+          "delta": 2,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 180,
+          "delta": 2,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 271,
+          "delta": 2,
+          "codigo_atributo": "PB:550:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 19,
+      "registro_dt870_steam": 7,
+      "registro_dt870_atualizacao": 18,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Duelo (Divididas)",
+      "effects": [
+        {
+          "bit": 261,
+          "delta": 2,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 180,
+          "delta": 2,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 202,
+          "delta": 2,
+          "codigo_atributo": "PB:480:6"
+        },
+        {
+          "bit": 234,
+          "delta": 2,
+          "codigo_atributo": "PB:454:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 24,
+      "registro_dt870_steam": 9,
+      "registro_dt870_atualizacao": 23,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Cobrança de Falta",
+      "effects": [
+        {
+          "bit": 244,
+          "delta": 3,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 249,
+          "delta": 3,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 154,
+          "delta": 3,
+          "codigo_atributo": "PB:368:6"
+        },
+        {
+          "bit": 185,
+          "delta": 3,
+          "codigo_atributo": "PB:428:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 29,
+      "registro_dt870_steam": 11,
+      "registro_dt870_atualizacao": 28,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Defesa",
+      "effects": [
+        {
+          "bit": 261,
+          "delta": 3,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 160,
+          "delta": 3,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 234,
+          "delta": 3,
+          "codigo_atributo": "PB:454:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 32,
+      "registro_dt870_steam": 128,
+      "registro_dt870_atualizacao": 31,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Vigor Físico",
+      "effects": [
+        {
+          "bit": 149,
+          "delta": 3,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 160,
+          "delta": 3,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 202,
+          "delta": 3,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 33,
+      "registro_dt870_steam": 122,
+      "registro_dt870_atualizacao": 32,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Goalkeeping",
+      "effects": [
+        {
+          "bit": 165,
+          "delta": 3,
+          "codigo_atributo": "PB:416:6"
+        },
+        {
+          "bit": 197,
+          "delta": 3,
+          "codigo_atributo": "PB:466:6"
+        },
+        {
+          "bit": 192,
+          "delta": 3,
+          "codigo_atributo": "PB:472:6"
+        },
+        {
+          "bit": 256,
+          "delta": 3,
+          "codigo_atributo": "PB:460:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 34,
+      "registro_dt870_steam": 13,
+      "registro_dt870_atualizacao": 33,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Chute",
+      "effects": [
+        {
+          "bit": 276,
+          "delta": 4,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 244,
+          "delta": 4,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 249,
+          "delta": 4,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 175,
+          "delta": 4,
+          "codigo_atributo": "PB:518:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 39,
+      "registro_dt870_steam": 15,
+      "registro_dt870_atualizacao": 38,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Técnica",
+      "effects": [
+        {
+          "bit": 276,
+          "delta": 4,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 239,
+          "delta": 4,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 122,
+          "delta": 4,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 271,
+          "delta": 4,
+          "codigo_atributo": "PB:550:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 44,
+      "registro_dt870_steam": 17,
+      "registro_dt870_atualizacao": 43,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Goalkeeping",
+      "effects": [
+        {
+          "bit": 165,
+          "delta": 4,
+          "codigo_atributo": "PB:416:6"
+        },
+        {
+          "bit": 197,
+          "delta": 4,
+          "codigo_atributo": "PB:466:6"
+        },
+        {
+          "bit": 192,
+          "delta": 4,
+          "codigo_atributo": "PB:472:6"
+        },
+        {
+          "bit": 256,
+          "delta": 4,
+          "codigo_atributo": "PB:460:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 49,
+      "registro_dt870_steam": 19,
+      "registro_dt870_atualizacao": 48,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Condução Técnica",
+      "effects": [
+        {
+          "bit": 149,
+          "delta": 5,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 239,
+          "delta": 5,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 180,
+          "delta": 5,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 271,
+          "delta": 5,
+          "codigo_atributo": "PB:550:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 54,
+      "registro_dt870_steam": 21,
+      "registro_dt870_atualizacao": 53,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": null,
+      "effects": [
+        {
+          "bit": 175,
+          "delta": 5,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 149,
+          "delta": 5,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 160,
+          "delta": 5,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 202,
+          "delta": 5,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 59,
+      "registro_dt870_steam": 23,
+      "registro_dt870_atualizacao": 58,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": null,
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 1,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 261,
+          "delta": 1,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 192,
+          "delta": 1,
+          "codigo_atributo": "PB:472:6"
+        },
+        {
+          "bit": 239,
+          "delta": 1,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 276,
+          "delta": 1,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 271,
+          "delta": 1,
+          "codigo_atributo": "PB:550:6"
+        },
+        {
+          "bit": 244,
+          "delta": 1,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 122,
+          "delta": 1,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 229,
+          "delta": 1,
+          "codigo_atributo": "PB:448:6"
+        },
+        {
+          "bit": 281,
+          "delta": 1,
+          "codigo_atributo": "PB:402:6"
+        },
+        {
+          "bit": 234,
+          "delta": 1,
+          "codigo_atributo": "PB:454:6"
+        },
+        {
+          "bit": 170,
+          "delta": 1,
+          "codigo_atributo": "PB:512:6"
+        },
+        {
+          "bit": 266,
+          "delta": 1,
+          "codigo_atributo": "PB:544:6"
+        },
+        {
+          "bit": 154,
+          "delta": 1,
+          "codigo_atributo": "PB:368:6"
+        },
+        {
+          "bit": 185,
+          "delta": 1,
+          "codigo_atributo": "PB:428:6"
+        },
+        {
+          "bit": 165,
+          "delta": 1,
+          "codigo_atributo": "PB:416:6"
+        },
+        {
+          "bit": 197,
+          "delta": 1,
+          "codigo_atributo": "PB:466:6"
+        },
+        {
+          "bit": 256,
+          "delta": 1,
+          "codigo_atributo": "PB:460:6"
+        },
+        {
+          "bit": 224,
+          "delta": 1,
+          "codigo_atributo": "PB:422:6"
+        },
+        {
+          "bit": 180,
+          "delta": 1,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 175,
+          "delta": 1,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 149,
+          "delta": 1,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 249,
+          "delta": 1,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 217,
+          "delta": 1,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 160,
+          "delta": 1,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 202,
+          "delta": 1,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_liga_categoria",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 64,
+      "registro_dt870_steam": 25,
+      "registro_dt870_atualizacao": 63,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Instinto Artilheiro",
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 1,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 276,
+          "delta": 1,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 217,
+          "delta": 1,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 244,
+          "delta": 1,
+          "codigo_atributo": "PB:530:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 65,
+      "registro_dt870_steam": 140,
+      "registro_dt870_atualizacao": 64,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": null,
+      "effects": [
+        {
+          "bit": 261,
+          "delta": 1,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 234,
+          "delta": 1,
+          "codigo_atributo": "PB:454:6"
+        },
+        {
+          "bit": 266,
+          "delta": 1,
+          "codigo_atributo": "PB:544:6"
+        },
+        {
+          "bit": 180,
+          "delta": 1,
+          "codigo_atributo": "PB:434:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 69,
+      "registro_dt870_steam": 27,
+      "registro_dt870_atualizacao": 68,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Fantasia",
+      "effects": [
+        {
+          "bit": 276,
+          "delta": 1,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 149,
+          "delta": 1,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 239,
+          "delta": 1,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 244,
+          "delta": 1,
+          "codigo_atributo": "PB:530:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 74,
+      "registro_dt870_steam": 29,
+      "registro_dt870_atualizacao": 73,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Cruzamento",
+      "effects": [
+        {
+          "bit": 229,
+          "delta": 2,
+          "codigo_atributo": "PB:448:6"
+        },
+        {
+          "bit": 180,
+          "delta": 2,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 202,
+          "delta": 2,
+          "codigo_atributo": "PB:480:6"
+        },
+        {
+          "bit": 185,
+          "delta": 2,
+          "codigo_atributo": "PB:428:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 79,
+      "registro_dt870_steam": 31,
+      "registro_dt870_atualizacao": 78,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Defesaça",
+      "effects": [
+        {
+          "bit": 197,
+          "delta": 3,
+          "codigo_atributo": "PB:466:6"
+        },
+        {
+          "bit": 224,
+          "delta": 3,
+          "codigo_atributo": "PB:422:6"
+        },
+        {
+          "bit": 192,
+          "delta": 3,
+          "codigo_atributo": "PB:472:6"
+        },
+        {
+          "bit": 256,
+          "delta": 3,
+          "codigo_atributo": "PB:460:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 84,
+      "registro_dt870_steam": 33,
+      "registro_dt870_atualizacao": 83,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Motor do Time",
+      "effects": [
+        {
+          "bit": 170,
+          "delta": 4,
+          "codigo_atributo": "PB:512:6"
+        },
+        {
+          "bit": 217,
+          "delta": 4,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 175,
+          "delta": 4,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 202,
+          "delta": 4,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 89,
+      "registro_dt870_steam": 35,
+      "registro_dt870_atualizacao": 88,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": null,
+      "effects": [
+        {
+          "bit": 261,
+          "delta": 5,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 234,
+          "delta": 5,
+          "codigo_atributo": "PB:454:6"
+        },
+        {
+          "bit": 266,
+          "delta": 5,
+          "codigo_atributo": "PB:544:6"
+        },
+        {
+          "bit": 180,
+          "delta": 5,
+          "codigo_atributo": "PB:434:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 94,
+      "registro_dt870_steam": 37,
+      "registro_dt870_atualizacao": 93,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": null,
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 1,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 261,
+          "delta": 1,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 192,
+          "delta": 1,
+          "codigo_atributo": "PB:472:6"
+        },
+        {
+          "bit": 239,
+          "delta": 1,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 276,
+          "delta": 1,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 271,
+          "delta": 1,
+          "codigo_atributo": "PB:550:6"
+        },
+        {
+          "bit": 244,
+          "delta": 1,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 122,
+          "delta": 1,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 229,
+          "delta": 1,
+          "codigo_atributo": "PB:448:6"
+        },
+        {
+          "bit": 281,
+          "delta": 1,
+          "codigo_atributo": "PB:402:6"
+        },
+        {
+          "bit": 234,
+          "delta": 1,
+          "codigo_atributo": "PB:454:6"
+        },
+        {
+          "bit": 170,
+          "delta": 1,
+          "codigo_atributo": "PB:512:6"
+        },
+        {
+          "bit": 266,
+          "delta": 1,
+          "codigo_atributo": "PB:544:6"
+        },
+        {
+          "bit": 154,
+          "delta": 1,
+          "codigo_atributo": "PB:368:6"
+        },
+        {
+          "bit": 185,
+          "delta": 1,
+          "codigo_atributo": "PB:428:6"
+        },
+        {
+          "bit": 165,
+          "delta": 1,
+          "codigo_atributo": "PB:416:6"
+        },
+        {
+          "bit": 197,
+          "delta": 1,
+          "codigo_atributo": "PB:466:6"
+        },
+        {
+          "bit": 256,
+          "delta": 1,
+          "codigo_atributo": "PB:460:6"
+        },
+        {
+          "bit": 224,
+          "delta": 1,
+          "codigo_atributo": "PB:422:6"
+        },
+        {
+          "bit": 180,
+          "delta": 1,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 175,
+          "delta": 1,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 149,
+          "delta": 1,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 249,
+          "delta": 1,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 217,
+          "delta": 1,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 160,
+          "delta": 1,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 202,
+          "delta": 1,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_liga_categoria",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 96,
+      "registro_dt870_steam": 138,
+      "registro_dt870_atualizacao": 95,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Pacote total",
+      "effects": [
+        {
+          "bit": 170,
+          "delta": 3,
+          "codigo_atributo": "PB:512:6"
+        },
+        {
+          "bit": 144,
+          "delta": 3,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 149,
+          "delta": 3,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 165,
+          "delta": 3,
+          "codigo_atributo": "PB:416:6"
+        },
+        {
+          "bit": 197,
+          "delta": 3,
+          "codigo_atributo": "PB:466:6"
+        },
+        {
+          "bit": 224,
+          "delta": 3,
+          "codigo_atributo": "PB:422:6"
+        },
+        {
+          "bit": 261,
+          "delta": 3,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 266,
+          "delta": 3,
+          "codigo_atributo": "PB:544:6"
+        },
+        {
+          "bit": 239,
+          "delta": 3,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 244,
+          "delta": 3,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 192,
+          "delta": 3,
+          "codigo_atributo": "PB:472:6"
+        },
+        {
+          "bit": 281,
+          "delta": 3,
+          "codigo_atributo": "PB:402:6"
+        },
+        {
+          "bit": 160,
+          "delta": 3,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 249,
+          "delta": 3,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 229,
+          "delta": 3,
+          "codigo_atributo": "PB:448:6"
+        },
+        {
+          "bit": 122,
+          "delta": 3,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 154,
+          "delta": 3,
+          "codigo_atributo": "PB:368:6"
+        },
+        {
+          "bit": 256,
+          "delta": 3,
+          "codigo_atributo": "PB:460:6"
+        },
+        {
+          "bit": 180,
+          "delta": 3,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 202,
+          "delta": 3,
+          "codigo_atributo": "PB:480:6"
+        },
+        {
+          "bit": 185,
+          "delta": 3,
+          "codigo_atributo": "PB:428:6"
+        },
+        {
+          "bit": 234,
+          "delta": 3,
+          "codigo_atributo": "PB:454:6"
+        },
+        {
+          "bit": 271,
+          "delta": 3,
+          "codigo_atributo": "PB:550:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_liga_categoria",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 97,
+      "registro_dt870_steam": 124,
+      "registro_dt870_atualizacao": 96,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": null,
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 4,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 261,
+          "delta": 4,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 192,
+          "delta": 4,
+          "codigo_atributo": "PB:472:6"
+        },
+        {
+          "bit": 239,
+          "delta": 4,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 276,
+          "delta": 4,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 271,
+          "delta": 4,
+          "codigo_atributo": "PB:550:6"
+        },
+        {
+          "bit": 244,
+          "delta": 4,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 122,
+          "delta": 4,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 229,
+          "delta": 4,
+          "codigo_atributo": "PB:448:6"
+        },
+        {
+          "bit": 281,
+          "delta": 4,
+          "codigo_atributo": "PB:402:6"
+        },
+        {
+          "bit": 234,
+          "delta": 4,
+          "codigo_atributo": "PB:454:6"
+        },
+        {
+          "bit": 170,
+          "delta": 4,
+          "codigo_atributo": "PB:512:6"
+        },
+        {
+          "bit": 266,
+          "delta": 4,
+          "codigo_atributo": "PB:544:6"
+        },
+        {
+          "bit": 154,
+          "delta": 4,
+          "codigo_atributo": "PB:368:6"
+        },
+        {
+          "bit": 185,
+          "delta": 4,
+          "codigo_atributo": "PB:428:6"
+        },
+        {
+          "bit": 165,
+          "delta": 4,
+          "codigo_atributo": "PB:416:6"
+        },
+        {
+          "bit": 197,
+          "delta": 4,
+          "codigo_atributo": "PB:466:6"
+        },
+        {
+          "bit": 256,
+          "delta": 4,
+          "codigo_atributo": "PB:460:6"
+        },
+        {
+          "bit": 224,
+          "delta": 4,
+          "codigo_atributo": "PB:422:6"
+        },
+        {
+          "bit": 180,
+          "delta": 4,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 175,
+          "delta": 4,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 149,
+          "delta": 4,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 249,
+          "delta": 4,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 217,
+          "delta": 4,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 160,
+          "delta": 4,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 202,
+          "delta": 4,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_liga_categoria",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 99,
+      "registro_dt870_steam": 39,
+      "registro_dt870_atualizacao": 98,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": null,
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 1,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 261,
+          "delta": 1,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 192,
+          "delta": 1,
+          "codigo_atributo": "PB:472:6"
+        },
+        {
+          "bit": 239,
+          "delta": 1,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 276,
+          "delta": 1,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 271,
+          "delta": 1,
+          "codigo_atributo": "PB:550:6"
+        },
+        {
+          "bit": 244,
+          "delta": 1,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 122,
+          "delta": 1,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 229,
+          "delta": 1,
+          "codigo_atributo": "PB:448:6"
+        },
+        {
+          "bit": 281,
+          "delta": 1,
+          "codigo_atributo": "PB:402:6"
+        },
+        {
+          "bit": 234,
+          "delta": 1,
+          "codigo_atributo": "PB:454:6"
+        },
+        {
+          "bit": 170,
+          "delta": 1,
+          "codigo_atributo": "PB:512:6"
+        },
+        {
+          "bit": 266,
+          "delta": 1,
+          "codigo_atributo": "PB:544:6"
+        },
+        {
+          "bit": 154,
+          "delta": 1,
+          "codigo_atributo": "PB:368:6"
+        },
+        {
+          "bit": 185,
+          "delta": 1,
+          "codigo_atributo": "PB:428:6"
+        },
+        {
+          "bit": 165,
+          "delta": 1,
+          "codigo_atributo": "PB:416:6"
+        },
+        {
+          "bit": 197,
+          "delta": 1,
+          "codigo_atributo": "PB:466:6"
+        },
+        {
+          "bit": 256,
+          "delta": 1,
+          "codigo_atributo": "PB:460:6"
+        },
+        {
+          "bit": 224,
+          "delta": 1,
+          "codigo_atributo": "PB:422:6"
+        },
+        {
+          "bit": 180,
+          "delta": 1,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 175,
+          "delta": 1,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 149,
+          "delta": 1,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 249,
+          "delta": 1,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 217,
+          "delta": 1,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 160,
+          "delta": 1,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 202,
+          "delta": 1,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_liga_categoria",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 104,
+      "registro_dt870_steam": 41,
+      "registro_dt870_atualizacao": 103,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 1,
+      "condicional": true,
+      "rotulo": "Chute",
+      "effects": [
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 244,
+          "delta": 3,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 249,
+          "delta": 3,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "avaliacao_ao_vivo",
+          "tipo_raw": 1
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 109,
+      "registro_dt870_steam": 43,
+      "registro_dt870_atualizacao": 108,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 1,
+      "condicional": true,
+      "rotulo": "Técnica",
+      "effects": [
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 239,
+          "delta": 3,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 122,
+          "delta": 3,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 271,
+          "delta": 3,
+          "codigo_atributo": "PB:550:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "avaliacao_ao_vivo",
+          "tipo_raw": 1
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 114,
+      "registro_dt870_steam": 45,
+      "registro_dt870_atualizacao": 113,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 1,
+      "condicional": true,
+      "rotulo": "Goalkeeping",
+      "effects": [
+        {
+          "bit": 165,
+          "delta": 3,
+          "codigo_atributo": "PB:416:6"
+        },
+        {
+          "bit": 197,
+          "delta": 3,
+          "codigo_atributo": "PB:466:6"
+        },
+        {
+          "bit": 192,
+          "delta": 3,
+          "codigo_atributo": "PB:472:6"
+        },
+        {
+          "bit": 256,
+          "delta": 3,
+          "codigo_atributo": "PB:460:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "avaliacao_ao_vivo",
+          "tipo_raw": 1
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 119,
+      "registro_dt870_steam": 47,
+      "registro_dt870_atualizacao": 118,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 1,
+      "condicional": true,
+      "rotulo": "Cruzamento",
+      "effects": [
+        {
+          "bit": 229,
+          "delta": 3,
+          "codigo_atributo": "PB:448:6"
+        },
+        {
+          "bit": 180,
+          "delta": 3,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 202,
+          "delta": 3,
+          "codigo_atributo": "PB:480:6"
+        },
+        {
+          "bit": 185,
+          "delta": 3,
+          "codigo_atributo": "PB:428:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "avaliacao_ao_vivo",
+          "tipo_raw": 1
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 124,
+      "registro_dt870_steam": 49,
+      "registro_dt870_atualizacao": 123,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Passe",
+      "effects": [
+        {
+          "bit": 249,
+          "delta": 3,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 229,
+          "delta": 3,
+          "codigo_atributo": "PB:448:6"
+        },
+        {
+          "bit": 122,
+          "delta": 3,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 185,
+          "delta": 3,
+          "codigo_atributo": "PB:428:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_classe_impeto",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 129,
+      "registro_dt870_steam": 51,
+      "registro_dt870_atualizacao": 128,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Instinto Artilheiro",
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 3,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 244,
+          "delta": 3,
+          "codigo_atributo": "PB:530:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_classe_impeto",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 130,
+      "registro_dt870_steam": 144,
+      "registro_dt870_atualizacao": 129,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Motor do Time",
+      "effects": [
+        {
+          "bit": 170,
+          "delta": 3,
+          "codigo_atributo": "PB:512:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 202,
+          "delta": 3,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_classe_impeto",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 134,
+      "registro_dt870_steam": 53,
+      "registro_dt870_atualizacao": 133,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 3,
+      "condicional": false,
+      "rotulo": "The Undisputed",
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 3,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 239,
+          "delta": 3,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 3
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 139,
+      "registro_dt870_steam": 55,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 144,
+      "registro_dt870_steam": 57,
+      "registro_dt870_atualizacao": 138,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 3,
+      "condicional": false,
+      "rotulo": "Natural-Born",
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 4,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 276,
+          "delta": 4,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 239,
+          "delta": 4,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 244,
+          "delta": 4,
+          "codigo_atributo": "PB:530:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 3
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 149,
+      "registro_dt870_steam": 59,
+      "registro_dt870_atualizacao": 143,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Física",
+      "effects": [
+        {
+          "bit": 276,
+          "delta": 2,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 149,
+          "delta": 2,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 175,
+          "delta": 2,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 271,
+          "delta": 2,
+          "codigo_atributo": "PB:550:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 154,
+      "registro_dt870_steam": 61,
+      "registro_dt870_atualizacao": 148,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Força",
+      "effects": [
+        {
+          "bit": 160,
+          "delta": 2,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 249,
+          "delta": 2,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 175,
+          "delta": 2,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 180,
+          "delta": 2,
+          "codigo_atributo": "PB:434:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 159,
+      "registro_dt870_steam": 63,
+      "registro_dt870_atualizacao": 153,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 1,
+      "condicional": true,
+      "rotulo": "Reconstrução",
+      "effects": [
+        {
+          "bit": 170,
+          "delta": 3,
+          "codigo_atributo": "PB:512:6"
+        },
+        {
+          "bit": 261,
+          "delta": 3,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 266,
+          "delta": 3,
+          "codigo_atributo": "PB:544:6"
+        },
+        {
+          "bit": 122,
+          "delta": 3,
+          "codigo_atributo": "PB:524:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "avaliacao_ao_vivo",
+          "tipo_raw": 1
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 161,
+      "registro_dt870_steam": 126,
+      "registro_dt870_atualizacao": 155,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 1,
+      "condicional": true,
+      "rotulo": "Criador de Jogadas",
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 3,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 249,
+          "delta": 3,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 122,
+          "delta": 3,
+          "codigo_atributo": "PB:524:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "avaliacao_ao_vivo",
+          "tipo_raw": 1
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 164,
+      "registro_dt870_steam": 65,
+      "registro_dt870_atualizacao": 158,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 1,
+      "condicional": true,
+      "rotulo": "Contra-ataque",
+      "effects": [
+        {
+          "bit": 266,
+          "delta": 3,
+          "codigo_atributo": "PB:544:6"
+        },
+        {
+          "bit": 122,
+          "delta": 3,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 234,
+          "delta": 3,
+          "codigo_atributo": "PB:454:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "avaliacao_ao_vivo",
+          "tipo_raw": 1
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 169,
+      "registro_dt870_steam": 67,
+      "registro_dt870_atualizacao": 163,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 1,
+      "condicional": true,
+      "rotulo": "Defesa (Roubo)",
+      "effects": [
+        {
+          "bit": 170,
+          "delta": 3,
+          "codigo_atributo": "PB:512:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 234,
+          "delta": 3,
+          "codigo_atributo": "PB:454:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "avaliacao_ao_vivo",
+          "tipo_raw": 1
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 174,
+      "registro_dt870_steam": 69,
+      "registro_dt870_atualizacao": 168,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": null,
+      "effects": [
+        {
+          "bit": 244,
+          "delta": 1,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 122,
+          "delta": 1,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 229,
+          "delta": 1,
+          "codigo_atributo": "PB:448:6"
+        },
+        {
+          "bit": 249,
+          "delta": 1,
+          "codigo_atributo": "PB:384:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 179,
+      "registro_dt870_steam": 71,
+      "registro_dt870_atualizacao": 173,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": null,
+      "effects": [
+        {
+          "bit": 261,
+          "delta": 1,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 281,
+          "delta": 1,
+          "codigo_atributo": "PB:402:6"
+        },
+        {
+          "bit": 175,
+          "delta": 1,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 160,
+          "delta": 1,
+          "codigo_atributo": "PB:408:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 184,
+      "registro_dt870_steam": 73,
+      "registro_dt870_atualizacao": 178,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Regista",
+      "effects": [
+        {
+          "bit": 261,
+          "delta": 3,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 122,
+          "delta": 3,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 234,
+          "delta": 3,
+          "codigo_atributo": "PB:454:6"
+        },
+        {
+          "bit": 271,
+          "delta": 3,
+          "codigo_atributo": "PB:550:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 189,
+      "registro_dt870_steam": 75,
+      "registro_dt870_atualizacao": 183,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Equilibrista",
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 3,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 261,
+          "delta": 3,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 202,
+          "delta": 3,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 194,
+      "registro_dt870_steam": 77,
+      "registro_dt870_atualizacao": 188,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Sem Bola",
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 3,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 180,
+          "delta": 3,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 202,
+          "delta": 3,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 199,
+      "registro_dt870_steam": 79,
+      "registro_dt870_atualizacao": 192,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 0,
+      "condicional": false,
+      "rotulo": "Precisão",
+      "effects": [
+        {
+          "bit": 244,
+          "delta": 4,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 249,
+          "delta": 4,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 229,
+          "delta": 4,
+          "codigo_atributo": "PB:448:6"
+        },
+        {
+          "bit": 122,
+          "delta": 4,
+          "codigo_atributo": "PB:524:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "sempre_ativo",
+          "tipo_raw": 0
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 204,
+      "registro_dt870_steam": 81,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 209,
+      "registro_dt870_steam": 83,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 214,
+      "registro_dt870_steam": 85,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 219,
+      "registro_dt870_steam": 87,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 224,
+      "registro_dt870_steam": 89,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 229,
+      "registro_dt870_steam": 91,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 234,
+      "registro_dt870_steam": 93,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 239,
+      "registro_dt870_steam": 95,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 244,
+      "registro_dt870_steam": 97,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 249,
+      "registro_dt870_steam": 99,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 254,
+      "registro_dt870_steam": 101,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 259,
+      "registro_dt870_steam": 103,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 260,
+      "registro_dt870_steam": 30,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 262,
+      "registro_dt870_steam": 52,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 264,
+      "registro_dt870_steam": 162,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 268,
+      "registro_dt870_steam": 154,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 269,
+      "registro_dt870_steam": 107,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 274,
+      "registro_dt870_steam": 109,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 279,
+      "registro_dt870_steam": 111,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 284,
+      "registro_dt870_steam": 113,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 289,
+      "registro_dt870_steam": 115,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 294,
+      "registro_dt870_steam": 117,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 299,
+      "registro_dt870_steam": 119,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 304,
+      "registro_dt870_steam": 121,
+      "registro_dt870_atualizacao": 209,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Bloqueio Aéreo",
+      "effects": [
+        {
+          "bit": 261,
+          "delta": 3,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 281,
+          "delta": 3,
+          "codigo_atributo": "PB:402:6"
+        },
+        {
+          "bit": 160,
+          "delta": 3,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 309,
+      "registro_dt870_steam": 123,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 314,
+      "registro_dt870_steam": 125,
+      "registro_dt870_atualizacao": 217,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Física",
+      "effects": [
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 149,
+          "delta": 3,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 271,
+          "delta": 3,
+          "codigo_atributo": "PB:550:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 319,
+      "registro_dt870_steam": 127,
+      "registro_dt870_atualizacao": 221,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Defesa",
+      "effects": [
+        {
+          "bit": 261,
+          "delta": 3,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 160,
+          "delta": 3,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 234,
+          "delta": 3,
+          "codigo_atributo": "PB:454:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 324,
+      "registro_dt870_steam": 129,
+      "registro_dt870_atualizacao": 226,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Duelo (Divididas)",
+      "effects": [
+        {
+          "bit": 261,
+          "delta": 3,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 180,
+          "delta": 3,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 202,
+          "delta": 3,
+          "codigo_atributo": "PB:480:6"
+        },
+        {
+          "bit": 234,
+          "delta": 3,
+          "codigo_atributo": "PB:454:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 329,
+      "registro_dt870_steam": 131,
+      "registro_dt870_atualizacao": 231,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Disputa Aérea",
+      "effects": [
+        {
+          "bit": 244,
+          "delta": 3,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 281,
+          "delta": 3,
+          "codigo_atributo": "PB:402:6"
+        },
+        {
+          "bit": 160,
+          "delta": 3,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 334,
+      "registro_dt870_steam": 133,
+      "registro_dt870_atualizacao": 235,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Chute",
+      "effects": [
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 244,
+          "delta": 3,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 249,
+          "delta": 3,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 339,
+      "registro_dt870_steam": 135,
+      "registro_dt870_atualizacao": 240,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Chute",
+      "effects": [
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 244,
+          "delta": 3,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 249,
+          "delta": 3,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 344,
+      "registro_dt870_steam": 137,
+      "registro_dt870_atualizacao": 245,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Arrancada",
+      "effects": [
+        {
+          "bit": 239,
+          "delta": 3,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 249,
+          "delta": 3,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 180,
+          "delta": 3,
+          "codigo_atributo": "PB:434:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 349,
+      "registro_dt870_steam": 139,
+      "registro_dt870_atualizacao": 250,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Sem Bola",
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 3,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 180,
+          "delta": 3,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 202,
+          "delta": 3,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 354,
+      "registro_dt870_steam": 141,
+      "registro_dt870_atualizacao": 255,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Motor do Time",
+      "effects": [
+        {
+          "bit": 170,
+          "delta": 3,
+          "codigo_atributo": "PB:512:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 202,
+          "delta": 3,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 359,
+      "registro_dt870_steam": 143,
+      "registro_dt870_atualizacao": 260,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Goalkeeping",
+      "effects": [
+        {
+          "bit": 165,
+          "delta": 3,
+          "codigo_atributo": "PB:416:6"
+        },
+        {
+          "bit": 197,
+          "delta": 3,
+          "codigo_atributo": "PB:466:6"
+        },
+        {
+          "bit": 192,
+          "delta": 3,
+          "codigo_atributo": "PB:472:6"
+        },
+        {
+          "bit": 256,
+          "delta": 3,
+          "codigo_atributo": "PB:460:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 364,
+      "registro_dt870_steam": 145,
+      "registro_dt870_atualizacao": 265,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Criador de Jogadas",
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 3,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 249,
+          "delta": 3,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 122,
+          "delta": 3,
+          "codigo_atributo": "PB:524:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 369,
+      "registro_dt870_steam": 147,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 374,
+      "registro_dt870_steam": 149,
+      "registro_dt870_atualizacao": 274,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Contra-ataque",
+      "effects": [
+        {
+          "bit": 266,
+          "delta": 3,
+          "codigo_atributo": "PB:544:6"
+        },
+        {
+          "bit": 122,
+          "delta": 3,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 234,
+          "delta": 3,
+          "codigo_atributo": "PB:454:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 379,
+      "registro_dt870_steam": 151,
+      "registro_dt870_atualizacao": 279,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Sem Bola",
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 3,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 180,
+          "delta": 3,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 202,
+          "delta": 3,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 384,
+      "registro_dt870_steam": 153,
+      "registro_dt870_atualizacao": 284,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Precisão",
+      "effects": [
+        {
+          "bit": 244,
+          "delta": 3,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 249,
+          "delta": 3,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 229,
+          "delta": 3,
+          "codigo_atributo": "PB:448:6"
+        },
+        {
+          "bit": 122,
+          "delta": 3,
+          "codigo_atributo": "PB:524:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 386,
+      "registro_dt870_steam": 156,
+      "registro_dt870_atualizacao": 286,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Instinto Artilheiro",
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 3,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 244,
+          "delta": 3,
+          "codigo_atributo": "PB:530:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 389,
+      "registro_dt870_steam": 155,
+      "registro_dt870_atualizacao": 289,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Condução Técnica",
+      "effects": [
+        {
+          "bit": 149,
+          "delta": 3,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 239,
+          "delta": 3,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 180,
+          "delta": 3,
+          "codigo_atributo": "PB:434:6"
+        },
+        {
+          "bit": 271,
+          "delta": 3,
+          "codigo_atributo": "PB:550:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 394,
+      "registro_dt870_steam": 157,
+      "registro_dt870_atualizacao": 294,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Técnica",
+      "effects": [
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 239,
+          "delta": 3,
+          "codigo_atributo": "PB:492:6"
+        },
+        {
+          "bit": 122,
+          "delta": 3,
+          "codigo_atributo": "PB:524:6"
+        },
+        {
+          "bit": 271,
+          "delta": 3,
+          "codigo_atributo": "PB:550:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 399,
+      "registro_dt870_steam": 159,
+      "registro_dt870_atualizacao": 299,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Vigor Físico",
+      "effects": [
+        {
+          "bit": 149,
+          "delta": 3,
+          "codigo_atributo": "PB:504:6"
+        },
+        {
+          "bit": 160,
+          "delta": 3,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        },
+        {
+          "bit": 202,
+          "delta": 3,
+          "codigo_atributo": "PB:480:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 404,
+      "registro_dt870_steam": 161,
+      "registro_dt870_atualizacao": 304,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Defesa",
+      "effects": [
+        {
+          "bit": 261,
+          "delta": 3,
+          "codigo_atributo": "PB:390:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 160,
+          "delta": 3,
+          "codigo_atributo": "PB:408:6"
+        },
+        {
+          "bit": 234,
+          "delta": 3,
+          "codigo_atributo": "PB:454:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 409,
+      "registro_dt870_steam": 163,
+      "registro_dt870_atualizacao": 309,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Chute",
+      "effects": [
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 244,
+          "delta": 3,
+          "codigo_atributo": "PB:530:6"
+        },
+        {
+          "bit": 249,
+          "delta": 3,
+          "codigo_atributo": "PB:384:6"
+        },
+        {
+          "bit": 175,
+          "delta": 3,
+          "codigo_atributo": "PB:518:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 516,
+      "registro_dt870_steam": 120,
+      "registro_dt870_atualizacao": 407,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": true,
+      "tipo_condicao_raw": 2,
+      "condicional": true,
+      "rotulo": "Instinto Artilheiro",
+      "effects": [
+        {
+          "bit": 144,
+          "delta": 3,
+          "codigo_atributo": "PB:498:6"
+        },
+        {
+          "bit": 276,
+          "delta": 3,
+          "codigo_atributo": "PB:396:6"
+        },
+        {
+          "bit": 217,
+          "delta": 3,
+          "codigo_atributo": "PB:486:6"
+        },
+        {
+          "bit": 244,
+          "delta": 3,
+          "codigo_atributo": "PB:530:6"
+        }
+      ],
+      "conditions": [
+        {
+          "criterio": "quantidade_jogadores_nacionalidade_regiao",
+          "tipo_raw": 2
+        }
+      ]
+    },
+    {
+      "codigo_jogo": 544,
+      "registro_dt870_steam": 152,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    },
+    {
+      "codigo_jogo": 1023,
+      "registro_dt870_steam": 100,
+      "registro_dt870_atualizacao": null,
+      "presente_dt870_steam": true,
+      "presente_dt870_atualizacao": false,
+      "tipo_condicao_raw": null,
+      "condicional": null,
+      "rotulo": null,
+      "effects": [],
+      "conditions": []
+    }
+  ]
+}

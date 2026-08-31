@@ -315,3 +315,96 @@ de domínio declaradas pelo contrato. Nenhuma escrita aponta para mapa,
 localizador, procedência, legado ou fonte física. As chaves/FKs do envelope e
 o readback da transação são obrigatórios; `PRODUCTIVE_WRITES_LOCKED=true`
 mantém todos os destinos de domínio fechados nesta fase.
+
+## Fechamento do fluxo autônomo do operador — 30/08/2026
+
+- A janela V5 mantém a varredura como ação explícita e somente leitura. Cada
+  clique em **INICIAR VARREDURA** cria uma pasta durável com resultado, HTML,
+  manifesto, pacote selado e `plano-aplicacao.json`; abrir a janela não inicia
+  leitura nem escrita.
+- O relatório distingue `novo`, `alterado`, `removido`, falha técnica,
+  `known_pending` e `historical_unresolved`. `known_pending` é uma pendência
+  conhecida, monitorada e ainda não resolvida: continua visível em toda
+  auditoria, sem ser contada como erro ou divergência canônica. Registro
+  histórico sem decodificador comprovado é aviso de modelo e não é contado nem
+  materializado como divergência canônica.
+- A primeira tela do HTML é obrigatoriamente voltada ao operador, não ao
+  programador: apresenta o resultado geral, o que foi conferido, se houve
+  mudança atual e **O que você deve fazer agora**. Todo aviso visível precisa
+  responder em português comum **o que significa**, **se afeta os dados de
+  hoje**, **se impede enviar alterações ao banco** e **o que o operador deve
+  fazer**. Código, hash, arquivo, índice, classificação interna e assinaturas
+  digitais permanecem disponíveis somente em expansíveis **Detalhes técnicos**
+  ou **Informações para suporte e auditoria (opcional)**.
+- O materializador de aplicação percorre somente escritores e destinos do
+  pedido ativo. Um envelope exige tabela, identidade, colunas, tipos e
+  procedência física unívocos. A janela **ESCOLHER O QUE ENVIAR** começa sem
+  nenhum item marcado e lista somente mudanças novas ou alteradas que podem ser
+  materializadas. Pendência conhecida, registro histórico, remoção,
+  duplicidade, item inválido ou mudança sem destino representável permanece no
+  relatório e fora da seleção; não bloqueia outros itens válidos marcados.
+  Falha estrutural fora dessas observações continua bloqueando o pacote, e
+  nenhuma exclusão é inferida por ausência.
+- O antigo bloqueio permanente foi substituído por autorização efêmera: a
+  varredura e o aceite removem `CLUBEF_ENABLE_REAL_WRITE`; somente o processo
+  criado após confirmação no botão separado **APLICAR PACOTE** recebe o valor
+  `1`. O pacote selecionado continua exigindo hash, selo vigente, fontes
+  presentes, correspondência exata dos itens marcados e aceite persistido do
+  mesmo pacote.
+- A aplicação executa somente `UPSERT` declarado, numa única transação. Há
+  `SELECT` de todas as colunas gravadas antes do `COMMIT`, com rollback em
+  qualquer divergência, e uma segunda leitura por nova conexão depois do
+  commit. Saída, erro de conexão e recusa são persistidos em `logs`; a janela
+  possui **ABRIR LOG**.
+- Validação desta entrega: smoke sintético offline do materializador/validador
+  e da seleção parcial (dois itens disponíveis, somente um marcado e somente um
+  mantido no pacote); smoke offline de UPSERT + readback positivo e divergente; renderização de um
+  `resultado.json` salvo com `database_write=false`, incluindo
+  `known_pending` visível, zero erro técnico e zero divergência canônica; o
+  manifesto confere o tamanho final do HTML sem regravá-lo depois do selo.
+  Compilação do EXE `5.1.0.0`, SHA-256
+  `AD654BAE9372CE6B0655C50A0D9001CE9AAA720049ABBB1193A5D3B08957E714`.
+  Por instrução, não houve nova leitura viva dos arquivos do jogo nem aplicação
+  no banco durante este fechamento.
+
+## Radar de lançamentos e prontidão dos motores V5.2 — 31/08/2026
+
+- O Extrator ganhou um radar diário, somente leitura, que liga `card_id` ao
+  nome físico da box em `PlayerVariationDetail.bin`. A primeira leitura vira
+  referência; as seguintes separam box nova, já conhecida e conteúdo alterado.
+  Esse radar não decide publicação nem grava box no banco sozinho.
+- Publicação e uso nos motores permanecem decisões independentes. Um card pode
+  ser enviado ao banco e mostrado no site mesmo quando está bloqueado para
+  Otimizador/Bonificador. A revisão **REVISAR USO NOS MOTORES** começa sem
+  marcações e aceita apenas bloqueio manual explícito
+  `incompleto_confirmado`, com motivo.
+- Ausência fisicamente conferida é resposta completa. Na fotografia salva de
+  43.072 cards, 9.551 listas de habilidade, 18.218 listas de Estilo de IA e
+  40.748 conjuntos de Ímpeto vazios ficaram como `conferido_sem_valor`, não
+  como falta. Os 354 clubes ausentes do catálogo atual por perda de licença
+  ficaram como vínculo histórico preservado, sem bloqueio de publicação ou
+  motores.
+- O segundo estilo de jogo é armazenado como índice físico. A leitura anterior
+  da V5.2 em desenvolvimento procurava esse índice como código final e criou
+  um falso aviso de 2.714 destinos defensivos sem tradução. O runtime passou a
+  resolver o segundo slot por `playstyle.indice`; 43.072/43.072 cards ficaram
+  resolvidos, com zero pendência desse tipo. Exemplos: 9 = O destruidor, 17 =
+  Goleiro defensivo e 30 = Mestre da linha alta.
+- A migração `APLICAR-COMPLETUDE-MOTORES-CARTA-V1.sql` foi preparada com seed
+  versionado, atualização por fingerprint, decisão manual separada, gates na
+  fila e na conclusão, rollback e readback independente. Ela também preserva
+  e fecha sem redirecionamento o escritor legado `public.gravar_bonus(jsonb)`,
+  que continuaria gravando em `clube.build` se fosse iniciado manualmente.
+- A migração não foi aplicada ao banco nesta entrega. O lote legado do
+  Bonificador continua fora do fluxo clicável e não pode ser declarado
+  integrado até existir um escritor transacional para
+  `clube_novo.build_bonificador` e a instalação completa passar pelo readback.
+- Validação offline: testes de prontidão, fluxo autônomo, radar e SQL passaram;
+  os três SQL passaram no parser PostgreSQL; `git diff --check` não encontrou
+  erro. O recálculo do resultado salvo preservou o SHA-256 de `resultado.json`
+  `F05B4286C9863E540F173E192EE3D0E1EA0B09396A11224189BA5D2FD120A468`,
+  com `database_write=false`, zero card aguardando insumo/decisão e zero
+  marcação manual. Não houve nova extração viva nem aplicação no banco.
+- Aplicativo instalado: `Extrator eFootball.exe` versão `5.2.0.0`, 144.384
+  bytes, SHA-256
+  `CA23CB46D3AE0430E3745096191B69915E8C7BEC0A4815CE260D797D56B10C8F`.

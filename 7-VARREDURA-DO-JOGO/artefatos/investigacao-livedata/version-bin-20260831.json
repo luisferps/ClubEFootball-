@@ -1,0 +1,134 @@
+{
+  "version": 2026082701,
+  "targetAppVersion": "6.0.0",
+  "dt870Hash": "44df868c2613d532292d87072c0863a907d6a5f0cc40f914d355e56d74edfcc5",
+  "dt870FileSize": 9415400,
+  "dt880": [
+    {
+      "name": "pc9242",
+      "hash": "eb6d8e3f57234da6232dd889d7ee6da8f7ab0b11f72600bcddaf4967140ef395",
+      "hashFileSize": 365,
+      "ucas": "39224e6ca2e7cc42bccb4081c15de607498e1a58ae9e745cb32bb27c6d13a02b",
+      "ucasFileSize": 19938080,
+      "utoc": "a09f33c37b7f923fa96adf064c5140b077ada3ada233ad38481ed9515a2a652b",
+      "utocFileSize": 28413
+    },
+    {
+      "name": "pc9243",
+      "hash": "fc039d919eb43b52c2bdffcab2c826ffa3834c0f7b1cc074613611b4ff67105f",
+      "hashFileSize": 365,
+      "ucas": "be39fee47a065c638a1b31d7bf8c5df0617014b70c6eccd42b2043d891c7e193",
+      "ucasFileSize": 904608,
+      "utoc": "e6672dc0d29354d8da3ca0f2eea7860a5e764a3ec318e23ccd5fd9a0bdd90dce",
+      "utocFileSize": 6050
+    },
+    {
+      "name": "pc9244",
+      "hash": "f855b8b5e43f88ce8f9b3c16a37c6ef082e1900313e3176662c4f196ffe2aeea",
+      "hashFileSize": 365,
+      "ucas": "028196da704b7eda47e8ce09ce4d89357927dfaf4a8ed6d9cd04960779103333",
+      "ucasFileSize": 449968,
+      "utoc": "2e956f26e7a88130fd037db33b005b69e46fc42c91687902ddd64071f86fb765",
+      "utocFileSize": 2823
+    },
+    {
+      "name": "pc9245",
+      "hash": "401c0de728f6df8a5f1a950c79472c8e27e74b03073f39a14ab8068438edc5a5",
+      "hashFileSize": 365,
+      "ucas": "cabd48e7be439e6c6ca9b6674fe586e7be4652e2b5b6db90e1e57131062a5355",
+      "ucasFileSize": 3801232,
+      "utoc": "a097ec6dafc4c6f5a8f511a8321f79551db3282cabed0b7983717b86370066a3",
+      "utocFileSize": 11495
+    },
+    {
+      "name": "pc9246",
+      "hash": "f59fe2a23666c68c4e526705bb0a62caa1786e2e38ca84d90cb5d9d75bda8605",
+      "hashFileSize": 365,
+      "ucas": "a4d5296c3cb95b88bd6543c67670ef5f288c7ec1c6d22661c55d69b43ea98f79",
+      "ucasFileSize": 335136,
+      "utoc": "7fe521fe9fce1fc8eee48b945302517caee1277abd9a550378529f59279b8647",
+      "utocFileSize": 1815
+    },
+    {
+      "name": "pc9247",
+      "hash": "dd65894df9a5ed7f917376f39197960965cf7bd9031c83e4f6e9f14fe1a02b6b",
+      "hashFileSize": 1577714,
+      "ucas": "971560401379c7b2523f9b620354697fd924d4376c42b95118f0a4307c17a2ae",
+      "ucasFileSize": 1376080,
+      "utoc": "0192a6c132847866abae3fe1e49ddda814258ac370b59f207026db3a0e1f9158",
+      "utocFileSize": 9150
+    },
+    {
+      "name": "pc9248",
+      "hash": "fd3876071a391ec438a9493bfd3fecc3fec375e1129f8caa85c8afb96f37755c",
+      "hashFileSize": 365,
+      "ucas": "9de76434d5a6cac411dd2b76553d96f0c984492f7d04a99aa760fd18f8c23b85",
+      "ucasFileSize": 32187392,
+      "utoc": "b34c681e737ac43244cd9384c792bb49fab6ec9788e9188e7756087f125539be",
+      "utocFileSize": 54873
+    },
+    {
+      "name": "pc9249",
+      "hash": "3524f495c06f4e241c9629b9f31b8046dc5b2190db4ff06aeb3cd4943d1fa897",
+      "hashFileSize": 365,
+      "ucas": "2b7286c317b663939affec637ab6c5cb82194ceded19a3e56b436de3b34f71f5",
+      "ucasFileSize": 5999616,
+      "utoc": "bce6bc3f05aac3219aecd2311adfa92426273ac70705803b14bef55cd2e8a9ee",
+      "utocFileSize": 16374
+    },
+    {
+      "name": "pc9250",
+      "hash": "3d7e7695e85e4842b4517bccf9c31cbdec4d346c76cbfd4d2bcef3a700882285",
+      "hashFileSize": 365,
+      "ucas": "19e2ecefe795b3901281d5c2d8c2f05f1e843ee90e24901bc7137e804ec7222d",
+      "ucasFileSize": 4662528,
+      "utoc": "27edfead6c5e3e368b94a75a918da761aced78f4ab01e50eed777a483d14f5d3",
+      "utocFileSize": 20176
+    },
+    {
+      "name": "pc9251",
+      "hash": "c8b14bfee03e95d63635de745d35458aac30b9e67799658506bb9dda9ffcb3c7",
+      "hashFileSize": 365,
+      "ucas": "4861a43923fcee07fe1e0b7666ed364de24aa1703eb2de80da53d33086bf2731",
+      "ucasFileSize": 1054176,
+      "utoc": "193e045f6f0de76a940b50ce3c4f6c3f65e8804bb533f45fbbf6714c444dacdd",
+      "utocFileSize": 5695
+    },
+    {
+      "name": "pc9252",
+      "hash": "cb9d1207a02ea342d2d13f332fcbe9a60b99c59432e58ab9e3c2d33052295019",
+      "hashFileSize": 16589970,
+      "ucas": "63f9b9486f84f512e7fbffd15cb28ba6fe1b9fa2360d8df00bc5e1d2fb2c1073",
+      "ucasFileSize": 71164112,
+      "utoc": "312e9a82132a229433191d9eb9ecb66d66722c84ceff5584d287f4c4494efa84",
+      "utocFileSize": 135436
+    },
+    {
+      "name": "pc9253",
+      "hash": "de7140f7e0cba0a8a03f92f8f6881be0a6dfe09584653f6afe77e4334d2b6c3b",
+      "hashFileSize": 365,
+      "ucas": "5a68a6c2b3ac7332fa88944fd4ed9cd79017bf494d80220499f3d49d7eaba819",
+      "ucasFileSize": 736,
+      "utoc": "3526d9cf3611961945baf3ba80e9a6d0d4932cba2e6820791fef3620cc67f7ae",
+      "utocFileSize": 486
+    },
+    {
+      "name": "pc9254",
+      "hash": "dc9ade25f2b207b39f462a5e9ad26465b92622c6362a9a2c36bac6ce3822aab5",
+      "hashFileSize": 365,
+      "ucas": "e0493ee1ff046b9c8c40f9629e97b61a2f5b8b1f34c1cc480699717fa379d368",
+      "ucasFileSize": 44038832,
+      "utoc": "e9f4e9a5040e4b5bb32d60bab26c6768fcba548e2c49c6314b516469e54b1bda",
+      "utocFileSize": 71681
+    },
+    {
+      "name": "pc9255",
+      "hash": "ce5e974168c1ca143b0650f2fc2e87e5c7036906ecccb13b7c656d826a34aa40",
+      "hashFileSize": 365,
+      "ucas": "6b4056c72c7b21b00864a9635b8087bbdd4b9b34df1fb35ee65fae16c5d430f3",
+      "ucasFileSize": 7034768,
+      "utoc": "a519a50952bd115ffe48cb5b66f6c5499e00d816c1b4f75b7f3859f0c9f711b9",
+      "utocFileSize": 19893
+    }
+  ]
+}

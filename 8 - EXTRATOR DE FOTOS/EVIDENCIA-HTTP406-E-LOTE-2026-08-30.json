@@ -1,0 +1,49 @@
+{
+  "formato": "clubefutebol-extrator-fotos-evidencia-v1",
+  "data_utc": "2026-08-30T09:24:06Z",
+  "pasta_fisica": "C:\\Users\\Luis Fernando\\Downloads\\ClubEFootball--main\\ClubEFootball--main\\8 - EXTRATOR DE FOTOS",
+  "http_406": {
+    "request_observado_em_utc": "2026-08-30T09:08:54.347Z",
+    "metodo": "GET",
+    "endpoint": "/rest/v1/carta_jogo",
+    "select": "card_id,foto_url_cloudinary",
+    "card_id_amostra": "17592722922839",
+    "status": 406,
+    "codigo": "PGRST106",
+    "causa_confirmada": "o schema clube_novo nao esta exposto na Data API; somente public e graphql_public estao expostos",
+    "consulta_singular": false,
+    "accept": "application/json",
+    "accept_profile": "clube_novo"
+  },
+  "banco_readback_somente_leitura": {
+    "tabela": "clube_novo.carta_jogo",
+    "linhas": 43072,
+    "card_ids_distintos": 43072,
+    "linhas_com_foto_url_cloudinary": 6,
+    "service_role_tem_usage_schema": true,
+    "service_role_tem_select_tabela": false,
+    "service_role_tem_update_tabela": false,
+    "alteracoes_aplicadas": false
+  },
+  "lote_preparado": {
+    "amostra": 1,
+    "lote_maximo": 100,
+    "concorrencia_padrao_interface": 4,
+    "intervalo_minimo_inicio_card_ms": 500,
+    "retries": 3,
+    "universo": "proximos card_id de clube_novo.carta_jogo com foto_url_cloudinary is null, ordenados por card_id",
+    "preleitura_banco": "uma consulta para ate 100 linhas",
+    "deduplicacao_cloudinary": "HEAD 200 pula upload; upload envia overwrite=false",
+    "atualizacao_banco": "por card_id e somente quando foto_url_cloudinary is null, com readback",
+    "confirmacao_lote": "obrigatoria depois de amostra aprovada na mesma sessao local"
+  },
+  "validacao_local": {
+    "comando": "node --test",
+    "testes": 13,
+    "aprovados": 13,
+    "falhas": 0,
+    "tipo": "credenciais ficticias, rede simulada e dry-run",
+    "upload_real_executado": false,
+    "banco_modificado": false
+  }
+}

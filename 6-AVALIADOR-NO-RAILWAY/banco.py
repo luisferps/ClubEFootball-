@@ -2,7 +2,7 @@
 """
 BANCO — a unica porta do servico para o Supabase.
 
-Le a regua por UMA chamada: public.otimizador_regua_v1(), que so o service_role pode
+Le a regua por UMA chamada: public.otimizador_regua_v2(), que so o service_role pode
 executar. Nenhuma tabela de segredo fica exposta: quem nao tem a chave secreta
 (que mora so nas variaveis do Railway) nao le nada.
 
@@ -34,12 +34,12 @@ def _post(caminho, corpo=None, timeout=30):
 
 
 def pacote_da_regua():
-    return _post('/rest/v1/rpc/otimizador_regua_v1')
+    return _post('/rest/v1/rpc/otimizador_regua_v2')
 
 
 def carta_para_simular(card_id):
     """O que a ficha precisa da carta — e SO isso. Sem alvo, sem peso, sem molde."""
-    j = _post('/rest/v1/rpc/otimizador_carta_v1', {'p_card_id': str(card_id)})
+    j = _post('/rest/v1/rpc/otimizador_carta_v2', {'p_card_id': str(card_id)})
     if not j:
         return None
     atributos = sorted(j.get('atributos') or [], key=lambda x: int(x['indice_otimizador']))
@@ -52,6 +52,7 @@ def carta_para_simular(card_id):
         'orcamento': (j.get('escalares') or {}).get('orcamento'),
         'habilidades_fixas': [int(x['skill_id']) for x in habilidades],
         'vagas_livres': sum(1 for x in impetos if x.get('vaga')),
+        'impetos_equipados': [x for x in impetos if x.get('codigo_impeto') is not None],
         'gate': gate,
         'pronto_motor_otimizacao': bool(gate.get('pode_rodar')),
     }
@@ -74,11 +75,10 @@ def pool_da_funcao(card_id, funcao_id):
     ZERO fora. O motor nunca escolheu errado; a validacao e que conferia contra
     a lista errada.
 
-    O que volta daqui e o pool que a rodada REALMENTE usou (gravado em
-    clube.build.falta_pool), nao uma formula deduzida. Se a build daquela funcao
-    ainda nao existir, volta None e quem chamou cai na lista da carta.
+    O que volta daqui e o pool oficial reconstruido por IDs a partir de
+    habilidade_jogo, carta_habilidade_jogo e bloqueios por funcao em clube_novo.
     """
-    r = _post('/rest/v1/rpc/otimizador_pool_habilidades_v1',
+    r = _post('/rest/v1/rpc/otimizador_pool_habilidades_v2',
               {'p_card_id': str(card_id), 'p_funcao_id': int(funcao_id)})
     if not r or not (r.get('gate') or {}).get('pode_rodar'):
         return None

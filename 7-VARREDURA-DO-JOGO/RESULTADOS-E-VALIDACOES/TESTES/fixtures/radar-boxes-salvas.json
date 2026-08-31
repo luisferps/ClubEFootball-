@@ -1,0 +1,20 @@
+{
+  "fixture": true,
+  "description": "Duas fotografias locais sintéticas para validar comparação sem abrir arquivos atuais do jogo.",
+  "source_role": "dt870_updated",
+  "previous_generated_at": "2026-08-30T12:00:00.000Z",
+  "current_generated_at": "2026-08-31T12:00:00.000Z",
+  "previous": [
+    { "card_id": "100000000000001", "card_name": "Card Fixture A", "box": "Box Fixture Conhecida" },
+    { "card_id": "100000000000002", "card_name": "Card Fixture B", "box": "Box Fixture Conhecida" },
+    { "card_id": "100000000000003", "card_name": "Card Fixture C", "box": "Box Fixture Conhecida" },
+    { "card_id": "100000000000006", "card_name": "Card Fixture F", "box": "Box Fixture Ausente" }
+  ],
+  "current": [
+    { "card_id": "100000000000001", "card_name": "Card Fixture A", "box": "Box Fixture Conhecida" },
+    { "card_id": "100000000000002", "card_name": "Card Fixture B", "box": "Box Fixture Conhecida" },
+    { "card_id": "100000000000003", "card_name": "Card Fixture C", "box": "Box Fixture Conhecida" },
+    { "card_id": "100000000000004", "card_name": "Card Fixture D", "box": "Box Fixture Conhecida" },
+    { "card_id": "100000000000005", "card_name": "Card Fixture E", "box": "Box Fixture Nova" }
+  ]
+}

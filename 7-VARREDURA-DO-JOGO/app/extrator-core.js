@@ -23,6 +23,7 @@
   const CONTRACT_VERSION = 'clubef-extrator-v4';
   const CARD_RELATIONS_CONTRACT_VERSION = 'clubef-card-relations-physical-v1';
   const CARD_DIMENSIONS_CONTRACT_VERSION = 'clubef-card-dimensions-physical-v2';
+  const BOX_RADAR_MEMBER = 'PlayerVariationDetail.bin';
   const CARD_DIMENSION_TYPES = Object.freeze([
     { tipo_carta_id: 'player_type_0_subtype_0', codigo_tipo_fisico: 0, marcador_subtipo: 0, usa_player_delete_list: false, chave_texto: 'Any1W:980', nome_exibicao: 'Normal', status_associacao: 'rotulo_dicionario_ancora_tela_sem_ponte_fisica', tipo_provisorio: false },
     { tipo_carta_id: 'player_delete_list', codigo_tipo_fisico: 0, marcador_subtipo: 0, usa_player_delete_list: true, chave_texto: 'Any2W:923', nome_exibicao: 'Jogador indisponível', status_associacao: 'classificacao_operacional_usuario_sem_ponte_fisica', tipo_provisorio: false },
@@ -214,6 +215,27 @@
       buffer[offset + 3] = (value >>> 24) & 0xff;
     }
     return inflate(buffer);
+  }
+
+  /**
+   * Abre somente o membro físico que relaciona card_id ao nome da box.
+   * A interpretação dos registros e a comparação entre rodadas ficam no
+   * módulo radar-lancamentos.js. Este método não altera a linha canônica da
+   * carta nem cria um destino de aplicação para o campo observacional.
+   */
+  async function extractPlayerVariationDetailMember(bytes) {
+    const cpk = extractCpk(bytes);
+    const packed = cpk[BOX_RADAR_MEMBER];
+    if (!packed) throw new Error(`${BOX_RADAR_MEMBER} não encontrado no CPK atual.`);
+    const raw = await unpackWesys(packed);
+    return {
+      member_file: BOX_RADAR_MEMBER,
+      packed_bytes: packed.length,
+      packed_sha256: await sha256(packed),
+      raw_bytes: raw.length,
+      raw_sha256: await sha256(raw),
+      raw
+    };
   }
 
   async function validateSourceByContract(bytes, readingContract, role) {
@@ -1809,6 +1831,7 @@
     CONTRACT_VERSION,
     CARD_RELATIONS_CONTRACT_VERSION,
     CARD_DIMENSIONS_CONTRACT_VERSION,
+    BOX_RADAR_MEMBER,
     CARD_COLUMNS,
     STRUCTURED_COLUMNS,
     stableJson,
@@ -1827,6 +1850,7 @@
     validateCards,
     compareCardRows,
     extractCardsFromCpk,
+    extractPlayerVariationDetailMember,
     extractCardAttributesByContract,
     extractCardRelationsByContract,
     extractCardBodiesByContract,

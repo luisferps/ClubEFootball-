@@ -26,12 +26,12 @@ def _provenance(row:dict[str,Any]|None)->dict[str,Any]|None:
     if row is None: return None
     return {field:row.get(field) for field in ("arquivo","arquivo_vinculos_jogo","hash_player_bin_vinculos","hash_country_bin","cpk_origem","fonte_autoritativa","registro","record_index") if row.get(field) is not None}
 
-def _classified(kind:str,scope:str,key_name:str,row_id:str,source:dict[str,Any]|None,database:dict[str,Any]|None,differences:dict[str,Any]|None=None)->dict[str,Any]:
-    item={"classificacao":kind,"escopo":scope,"chave_canonica":{key_name:row_id},"fonte_fisica":_provenance(source),"vinculo_banco":None if database is None else {key_name:row_id},"valor_fisico":source,"valor_banco":database}
+def _classified(kind:str,scope:str,target_table:str,key_name:str,row_id:str,source:dict[str,Any]|None,database:dict[str,Any]|None,differences:dict[str,Any]|None=None)->dict[str,Any]:
+    item={"classificacao":kind,"escopo":scope,"destino_tabela":target_table,"chave_canonica":{key_name:row_id},"fonte_fisica":_provenance(source),"vinculo_banco":None if database is None else {key_name:row_id},"valor_fisico":source,"valor_banco":database}
     if differences: item["campos_alterados"]=differences
     return item
 
-def _compare(source_rows:list[dict[str,Any]],database_rows:list[dict[str,Any]],key:str,fields:list[str],scope:str)->dict[str,Any]:
+def _compare(source_rows:list[dict[str,Any]],database_rows:list[dict[str,Any]],key:str,fields:list[str],scope:str,target_table:str)->dict[str,Any]:
     source=_index(source_rows,key); database=_index(database_rows,key)
     missing_db=sorted(set(source)-set(database)); missing_source=sorted(set(database)-set(source)); changed=[]
     for row_id in sorted(set(source)&set(database)):
@@ -39,9 +39,9 @@ def _compare(source_rows:list[dict[str,Any]],database_rows:list[dict[str,Any]],k
         if differences: changed.append({"id":row_id,"fields":differences})
     ns=[{key:i,**{f:source[i].get(f) for f in fields}} for i in sorted(source)]; nd=[{key:i,**{f:database[i].get(f) for f in fields}} for i in sorted(database)]
     classification={
-        "new":[_classified("novo",scope,key,str(row_id),source[row_id],None) for row_id in missing_db],
-        "removed":[_classified("removido",scope,key,str(row_id),None,database[row_id]) for row_id in missing_source],
-        "altered":[_classified("alterado",scope,key,str(item["id"]),source[item["id"]],database[item["id"]],item["fields"]) for item in changed],
+        "new":[_classified("novo",scope,target_table,key,str(row_id),source[row_id],None) for row_id in missing_db],
+        "removed":[_classified("removido",scope,target_table,key,str(row_id),None,database[row_id]) for row_id in missing_source],
+        "altered":[_classified("alterado",scope,target_table,key,str(item["id"]),source[item["id"]],database[item["id"]],item["fields"]) for item in changed],
         "repeated":[],"invalid":[],
     }
     return {"source":len(source),"database":len(database),"missing_in_database":len(missing_db),"missing_in_source":len(missing_source),"changed":len(changed),"difference_samples":{"missing_in_database":missing_db[:20],"missing_in_source":missing_source[:20],"changed":changed[:20]},"classification":classification,"source_sha256":_canonical_hash(ns),"database_sha256":_canonical_hash(nd),"exact_match":not missing_db and not missing_source and not changed}
@@ -112,7 +112,7 @@ def validate_card_dimensions(snapshot:dict[str,Any],connection:Any,schema:str,sq
     card_refs={str(r["card_id"]):r for r in database_cards}; nat_refs={str(r["codigo_jogo"]):r for r in database_nationalities}; club_refs={str(r["codigo_jogo"]):r for r in database_clubs}; league_refs={str(r["codigo_jogo"]):r for r in database_leagues}; type_refs={str(r["tipo_carta_id"]):r for r in database_types}
     card_fields=["registro_vinculos_jogo","codigo_nacionalidade_player_raw","codigo_nacionalidade","codigo_clube","codigo_liga","codigo_tipo_carta_fisico","marcador_subtipo_tipo_carta","jogador_indisponivel","tipo_carta_id","chave_tipo_carta","pode_rodar_vinculos","falta_o_que_vinculos","fonte_vinculos_jogo","cpk_vinculos_jogo","arquivo_vinculos_jogo","hash_player_bin_vinculos","contrato_vinculos_jogo"]
     nationality_fields=[f for f in database_nationalities[0] if f!="codigo_jogo"]; club_fields=[f for f in database_clubs[0] if f!="codigo_jogo"]; league_fields=[f for f in database_leagues[0] if f!="codigo_jogo"]; type_fields=[f for f in database_types[0] if f!="tipo_carta_id"]
-    comparisons={"cards":_compare(_source_cards(snapshot,card_refs),database_cards,"card_id",card_fields,"cartas"),"nationalities":_compare(_source_nationalities(snapshot,nat_refs),database_nationalities,"codigo_jogo",nationality_fields,"nacionalidades"),"clubs":_compare(_source_clubs(snapshot,club_refs),database_clubs,"codigo_jogo",club_fields,"clubes"),"leagues":_compare(_source_leagues(snapshot,league_refs),database_leagues,"codigo_jogo",league_fields,"ligas"),"types":_compare(_source_types(snapshot,type_refs),database_types,"tipo_carta_id",type_fields,"tipos")}
+    comparisons={"cards":_compare(_source_cards(snapshot,card_refs),database_cards,"card_id",card_fields,"cartas",tables["cards"]),"nationalities":_compare(_source_nationalities(snapshot,nat_refs),database_nationalities,"codigo_jogo",nationality_fields,"nacionalidades",tables["nationalities"]),"clubs":_compare(_source_clubs(snapshot,club_refs),database_clubs,"codigo_jogo",club_fields,"clubes",tables["clubs"]),"leagues":_compare(_source_leagues(snapshot,league_refs),database_leagues,"codigo_jogo",league_fields,"ligas",tables["leagues"]),"types":_compare(_source_types(snapshot,type_refs),database_types,"tipo_carta_id",type_fields,"tipos",tables["types"])}
     classification={kind:[] for kind in ("new","removed","altered","repeated","invalid")}
     for comparison in comparisons.values():
         for kind,items in comparison["classification"].items(): classification[kind].extend(items)

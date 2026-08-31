@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-BONIFICADOR — v8 (28/08/2026)
+BONIFICADOR — v9 (31/08/2026)
 
 O QUE MUDOU NESTA VERSAO
   1. OS DADOS DO JOGO VEM DO MODELO NOVO. Corpo, pe ruim, posicao,
      playstyles e estilos de IA saem exclusivamente de contratos v1 sobre
      clube_novo. Nao existe fallback para carta_do_motor nem para JSON antigo.
-  2. GRAVA NO BANCO. O resultado vai para as colunas b_* da clube.build, que e
-     de onde a tela le (public.casa_tela). Acabou o bonus.jsonl e a tabela
-     public.bonus.
+  2. GRAVA SOMENTE NO MODELO NOVO. Cada resultado apto passa pelo writer
+     transacional public.gravar_build_bonificador_v1. Nao existe chamada
+     produtiva para public.gravar_bonus nem gravacao em clube.build.
   3. O BONUS DE ESTILO E POR FUNCAO, NAO POR POSICAO.  <-- a correcao de fundo
      Antes: o estilo ligava na POSICAO, entao Defensor criativo montado como
      Zagueiro de combate ganhava o mesmo 1,0 que um destruidor legitimo.
@@ -21,8 +21,8 @@ O QUE MUDOU NESTA VERSAO
 AS PORTAS DO BANCO
     public.bonificador_regua_v1() a receita allowlisted e seus gates
     public.bonificador_carta_v1() somente as entradas usadas pelo Bonificador
-    public.bonificador_pares_v1() os pares card x funcao ja rodados
-    public.gravar_bonus(json)     a volta
+    public.bonificador_contexto_escrita_v2() linhas e selos vigentes
+    public.gravar_build_bonificador_v1(jsonb) a volta transacional
 
 A CHAVE sai do config.txt na hora de rodar. Nunca e gravada nem impressa aqui.
 """
@@ -51,9 +51,10 @@ if _MEU_LUGAR in _sys.path:
     _sys.path.remove(_MEU_LUGAR)
 _sys.path.insert(0, _MEU_LUGAR)
 
-import os, sys, json, time, urllib.request, urllib.error
+import os, sys, json, time, urllib.request, urllib.error, decimal
 
-MOTOR_BONUS = 'v8-2808-clube-novo-contrato-v1'
+MOTOR_BONUS = 'v9-3108-clube-novo-writer-v1'
+WRITER_BONUS = 'gravar_build_bonificador_v1'
 LOTE = 200
 NAOSEI = 'NAO-SEI.txt'
 
@@ -141,6 +142,31 @@ def bonus_do_corpo(molde_corpo, corpo, funcao, corpo_max):
     return bonus, round(soma, 4), round(pct, 4), detalhe
 
 
+def bonus_do_corpo_writer(molde_corpo, corpo, funcao, corpo_max):
+    """Mantém o total histórico e converte suas notas em contribuições reais."""
+    resultado = bonus_do_corpo(molde_corpo, corpo, funcao, corpo_max)
+    if resultado is None:
+        return None
+    bonus, soma, pct, notas = resultado
+    molde = _por_id(molde_corpo or {}, funcao) or {}
+    medidas = [(medida, float((molde.get(medida) or {}).get('peso') or 0), nota)
+               for medida, nota in notas.items()]
+    peso_total = sum(peso for _, peso, _ in medidas)
+    if not medidas or peso_total <= 0:
+        return None
+    detalhe = {}
+    acumulado = 0.0
+    for indice, (medida, peso, nota) in enumerate(medidas):
+        if indice == len(medidas) - 1:
+            contribuicao = round(bonus - acumulado, 8)
+        else:
+            contribuicao = round(
+                (2 * nota - 1) * peso / peso_total * float(corpo_max), 8)
+            acumulado = round(acumulado + contribuicao, 8)
+        detalhe[medida] = contribuicao
+    return bonus, soma, pct, detalhe
+
+
 def bonus_do_pe_ruim(par, uso, prec):
     """par = os parametros. uso e precisao vao de 0 a 3."""
     teto = float(par.get('pe_ruim_teto') or 1.0)
@@ -200,6 +226,31 @@ def bonus_do_estilo(rb, est1, est2, funcao, posicao_id):
     return round(min(b, teto), 4)
 
 
+def bonus_do_estilo_componentes(rb, est1, est2, funcao, posicao_id):
+    """Expõe por slot físico as mesmas parcelas já somadas pela fórmula v8."""
+    casa = rb.get('casa') or {}
+    liga = rb.get('liga') or {}
+    par = rb.get('parametro') or {}
+    pri = float(par.get('estilo_ativo') or 1.0)
+    sec = float(par.get('estilo_ativo_secundario') or 0.5)
+    teto = pri + sec
+    slot_manda = _por_id(rb.get('posicao_slot') or {}, posicao_id) or 'ofensivo'
+    if slot_manda == 'ofensivo':
+        dono, outro, slot_dono, slot_outro = est1, est2, 1, 2
+    else:
+        dono, outro, slot_dono, slot_outro = est2, est1, 2, 1
+    if not dono:
+        dono, outro = outro, None
+        slot_dono, slot_outro = slot_outro, slot_dono
+    por_slot = {1: 0.0, 2: 0.0}
+    if dono and _por_id(_por_id(casa, dono) or {}, posicao_id) == funcao:
+        por_slot[slot_dono] += pri
+    if outro and posicao_id in (_por_id(liga, outro) or []):
+        por_slot[slot_outro] += sec
+    total = round(min(por_slot[1] + por_slot[2], teto), 4)
+    return total, round(por_slot[1], 4), round(por_slot[2], 4)
+
+
 def bonus_do_estilo_ia(par, lista):
     if not lista:
         return 0.0
@@ -208,9 +259,111 @@ def bonus_do_estilo_ia(par, lista):
     return round(pt * min(len(lista), teto) / teto, 4)
 
 
+def preparar_payload_writer(linha):
+    """Monta o envelope exato do writer ou bloqueia antes de qualquer RPC."""
+    if linha.get('faltou'):
+        return None
+    textos = ('card_id', 'carta_versao', 'carta_fingerprint',
+              'contrato_versao', 'contrato_fingerprint',
+              'formula_fingerprint', 'motor_bonus')
+    ids = ('build_linha_card_id', 'funcao_id', 'posicao_id')
+    for chave in textos:
+        if not isinstance(linha.get(chave), str) or not linha[chave].strip():
+            raise RuntimeError('resultado sem selo obrigatorio: %s' % chave)
+    for chave in ids:
+        if not isinstance(linha.get(chave), int) or isinstance(linha.get(chave), bool):
+            raise RuntimeError('resultado sem identidade numerica: %s' % chave)
+    parcelas = {
+        'bonus_pe': linha.get('b_pe_ruim'),
+        'bonus_fisico_total': linha.get('b_corpo'),
+        # A formula v8 nao possui uma parcela posicional separada.
+        'bonus_posicao': 0.0,
+        'bonus_playstyle_1': linha.get('b_estilo_slot1'),
+        'bonus_playstyle_2': linha.get('b_estilo_slot2'),
+        'bonus_ia': linha.get('b_ia'),
+    }
+    if any(not isinstance(v, (int, float)) or isinstance(v, bool)
+           for v in parcelas.values()):
+        raise RuntimeError('resultado apto possui parcela nao numerica')
+    detalhe_fisico = linha.get('detalhe')
+    if not isinstance(detalhe_fisico, dict) or not detalhe_fisico:
+        raise RuntimeError('resultado apto nao detalha as contribuicoes fisicas')
+    try:
+        soma_detalhe = sum(
+            (decimal.Decimal(str(v)) for v in detalhe_fisico.values()
+             if not isinstance(v, bool)), decimal.Decimal('0'))
+    except (decimal.InvalidOperation, ValueError, TypeError):
+        raise RuntimeError('detalhe fisico possui contribuicao nao numerica')
+    if len(detalhe_fisico) != sum(
+            1 for v in detalhe_fisico.values()
+            if isinstance(v, (int, float)) and not isinstance(v, bool)):
+        raise RuntimeError('detalhe fisico possui contribuicao nao numerica')
+    if soma_detalhe != decimal.Decimal(str(parcelas['bonus_fisico_total'])):
+        raise RuntimeError('detalhe fisico diverge do bonus_fisico_total')
+    total = round(sum(parcelas.values()), 4)
+    if total != linha.get('b_total'):
+        raise RuntimeError('resultado bloqueado: total diverge das parcelas do writer')
+    if round(parcelas['bonus_playstyle_1'] + parcelas['bonus_playstyle_2'], 4) != linha.get('b_estilo'):
+        raise RuntimeError('resultado bloqueado: decomposicao dos playstyles diverge da formula v8')
+    return {
+        'build_linha_card_id': linha['build_linha_card_id'],
+        'card_id': linha['card_id'],
+        'funcao_id': linha['funcao_id'],
+        'posicao_id': linha['posicao_id'],
+        'carta_versao': linha['carta_versao'],
+        'carta_fingerprint': linha['carta_fingerprint'],
+        'contrato_versao': linha['contrato_versao'],
+        'contrato_fingerprint': linha['contrato_fingerprint'],
+        'formula_fingerprint': linha['formula_fingerprint'],
+        'motor_versao': linha['motor_bonus'],
+        'bonus_pe': parcelas['bonus_pe'],
+        'bonus_fisico_total': parcelas['bonus_fisico_total'],
+        'bonus_fisico_detalhe': detalhe_fisico,
+        'bonus_posicao': parcelas['bonus_posicao'],
+        'bonus_playstyle_1': parcelas['bonus_playstyle_1'],
+        'bonus_playstyle_2': parcelas['bonus_playstyle_2'],
+        'bonus_ia': parcelas['bonus_ia'],
+        'bonus_outros': {},
+        'bonus_total': total,
+    }
+
+
+def validar_retorno_writer(resposta, payload):
+    if not isinstance(resposta, dict):
+        raise RuntimeError('writer novo nao devolveu o readback JSON esperado')
+    if resposta.get('readback') != 'ok':
+        raise RuntimeError('writer novo nao confirmou o readback transacional')
+    if resposta.get('build_linha_card_id') != payload['build_linha_card_id']:
+        raise RuntimeError('writer novo devolveu outra identidade de linha')
+    if resposta.get('carta_versao') != payload['carta_versao'] or resposta.get('carta_fingerprint') != payload['carta_fingerprint']:
+        raise RuntimeError('writer novo devolveu selos de carta divergentes')
+    if not isinstance(resposta.get('build_bonificador_id'), int):
+        raise RuntimeError('writer novo nao devolveu build_bonificador_id valido')
+    fingerprint = resposta.get('resultado_fingerprint')
+    if not isinstance(fingerprint, str) or len(fingerprint) != 64 or any(c not in '0123456789abcdef' for c in fingerprint.lower()):
+        raise RuntimeError('writer novo nao devolveu resultado_fingerprint SHA-256 valido')
+    gravado = resposta.get('gravado') is True
+    idempotente = resposta.get('idempotente') is True
+    if gravado == idempotente:
+        raise RuntimeError('writer novo devolveu estado gravado/idempotente incoerente')
+    return resposta
+
+
+def gravar_resultados_canonicos(linhas, rpc_call):
+    """Usa exclusivamente o writer público controlado, uma transação por resultado."""
+    respostas = []
+    for linha in linhas:
+        payload = preparar_payload_writer(linha)
+        if payload is None:
+            continue
+        resposta = rpc_call(WRITER_BONUS, {'p_resultado': payload})
+        respostas.append(validar_retorno_writer(resposta, payload))
+    return respostas
+
+
 # ================================================================== RODA
 print('=' * 70)
-print('  BONIFICADOR v8  —  corpo · pe ruim · estilo (por funcao) · IA')
+print('  BONIFICADOR v9  —  corpo · pe ruim · estilo (por funcao) · IA')
 print('=' * 70)
 
 print('')
@@ -249,13 +402,43 @@ print('   estilo_ativo %.2f · secundario %.2f · teto %.2f'
          float(par.get('estilo_ativo') or 1) + float(par.get('estilo_ativo_secundario') or 0.5)))
 
 print('')
-print('[2/4] baixando os pares card x funcao ja rodados')
+print('[2/4] baixando as linhas pendentes e os selos vigentes')
 pares, passo, de = [], 1000, 0
 while True:
-    lote = rpc('bonificador_pares_v1', {'p_limit': passo, 'p_offset': de})
+    try:
+        lote = rpc('bonificador_contexto_escrita_v2',
+                   {'p_limit': passo, 'p_offset': de})
+    except urllib.error.HTTPError as e:
+        detalhe = e.read().decode('utf-8')[:300]
+        print('')
+        print('  PAREI: porta publica do contexto novo indisponivel: %s' % detalhe)
+        print('  Nao existe fallback para public.bonificador_pares_v1 nem clube.build.')
+        pausa(); sys.exit(1)
     if not lote:
         break
-    pares.extend((x['card_id'], x['funcao_id'], x['funcao_codigo']) for x in lote)
+    for x in lote:
+        exigidos = ('build_linha_card_id', 'card_id', 'funcao_id',
+                    'funcao_codigo', 'posicao_id', 'carta_versao',
+                    'carta_fingerprint', 'contrato_versao',
+                    'contrato_fingerprint', 'formula_fingerprint')
+        ausentes = [k for k in exigidos if x.get(k) is None]
+        if ausentes:
+            print('')
+            print('  PAREI: contexto do writer nao devolve identidade/selos: %s.'
+                  % ', '.join(ausentes))
+            pausa(); sys.exit(1)
+        pares.append({
+            'build_linha_card_id': int(x['build_linha_card_id']),
+            'card_id': str(x['card_id']),
+            'funcao_id': int(x['funcao_id']),
+            'funcao_codigo': str(x['funcao_codigo']),
+            'posicao_id': int(x['posicao_id']),
+            'carta_versao': str(x['carta_versao']),
+            'carta_fingerprint': str(x['carta_fingerprint']),
+            'contrato_versao': str(x['contrato_versao']),
+            'contrato_fingerprint': str(x['contrato_fingerprint']),
+            'formula_fingerprint': str(x['formula_fingerprint']),
+        })
     de += passo
     print('   %d pares...' % len(pares), end='\r')
     if len(lote) < passo:
@@ -264,10 +447,11 @@ print('   pares card x funcao ................ %d      ' % len(pares))
 
 if not pares:
     print('')
-    print('  Nao ha build nenhuma na clube.build. Rode o motor otimizador antes.')
-    pausa(); sys.exit(1)
+    print('  CONCLUIDO: nao ha linha pendente em clube_novo.build_linha_card.')
+    print('  Nenhuma gravacao era necessaria nesta rodada.')
+    pausa(); sys.exit(0)
 
-cards = sorted({c for c, _ in pares})
+cards = sorted({x['card_id'] for x in pares})
 print('   cards distintos .................... %d' % len(cards))
 
 print('')
@@ -288,13 +472,35 @@ for i, cid in enumerate(cards):
             'falta_o_que': ['falha no contrato v1: %s' % str(e)[:160]]}
 print('   %d/%d cards            ' % (len(cards), len(cards)))
 
-for cid, fun_id, fun_codigo in pares:
+for contexto in pares:
+    linha_id = contexto['build_linha_card_id']
+    cid = contexto['card_id']
+    fun_id = contexto['funcao_id']
+    fun_codigo = contexto['funcao_codigo']
+    linha_posicao_id = contexto['posicao_id']
     c = CARTA.get(cid) or {}
     falhas_contrato = list(c.get('falta_o_que') or [])
-    contrato_ok = bool(c.get('pode_rodar'))
+    completude = c.get('completude_motor') or {}
+    if str(c.get('card_id') or '') != str(cid):
+        falhas_contrato.append('contrato devolveu outro card_id')
+    if completude.get('apto_motor') is not True:
+        falhas_contrato.append('completude vigente nao esta apta para motor')
+    for selo in ('carta_versao', 'carta_fingerprint'):
+        if not isinstance(c.get(selo), str) or not c.get(selo).strip():
+            falhas_contrato.append('contrato sem %s' % selo)
+    if c.get('carta_fingerprint') != completude.get('fingerprint'):
+        falhas_contrato.append('fingerprint da carta diverge da completude vigente')
+    if c.get('carta_versao') != contexto.get('carta_versao') or c.get('carta_fingerprint') != contexto.get('carta_fingerprint'):
+        falhas_contrato.append('selos da carta divergiram do contexto de escrita')
+    contrato_carta = c.get('contrato_versao') or c.get('contrato')
+    if contrato_carta != contexto.get('contrato_versao'):
+        falhas_contrato.append('versao do contrato divergiu do contexto de escrita')
+    falhas_contrato = list(dict.fromkeys(falhas_contrato))
+    contrato_ok = bool(c.get('pode_rodar')) and not falhas_contrato
 
     if contrato_ok:
-        r = bonus_do_corpo(MOLDE_CORPO, c.get('corpo'), fun_id, CORPO_MAX)
+        r = bonus_do_corpo_writer(
+            MOLDE_CORPO, c.get('corpo'), fun_id, CORPO_MAX)
         if r is None:
             sem_corpo += 1
             b_corpo, c_soma, c_pct, detalhe = None, None, None, None
@@ -309,6 +515,11 @@ for cid, fun_id, fun_codigo in pares:
         b_est = bonus_do_estilo(
             rb, c.get('slot1_id_jogo'), c.get('slot2_id_jogo'),
             fun_id, c.get('posicao_id'))
+        b_est_detalhado, b_est_slot1, b_est_slot2 = bonus_do_estilo_componentes(
+            rb, c.get('slot1_id_jogo'), c.get('slot2_id_jogo'),
+            fun_id, c.get('posicao_id'))
+        if b_est != b_est_detalhado:
+            falhas_contrato.append('decomposicao dos playstyles diverge da formula v8')
         if b_est is None:
             sem_estilo += 1
 
@@ -319,7 +530,7 @@ for cid, fun_id, fun_codigo in pares:
         else:
             b_ia = bonus_do_estilo_ia(par, ia)
     else:
-        b_corpo = b_pe = b_est = b_ia = None
+        b_corpo = b_pe = b_est = b_est_slot1 = b_est_slot2 = b_ia = None
         c_soma = c_pct = detalhe = None
         sem_corpo += 1
         sem_pe += 1
@@ -337,14 +548,22 @@ for cid, fun_id, fun_codigo in pares:
                else None)
 
     saida.append({
-        'card_id': cid, 'funcao_codigo': fun_codigo,
+        'build_linha_card_id': linha_id,
+        'card_id': cid, 'funcao_id': fun_id, 'funcao_codigo': fun_codigo,
+        'posicao_id': linha_posicao_id,
         'b_corpo': b_corpo, 'b_pe_ruim': b_pe, 'b_estilo': b_est, 'b_ia': b_ia,
+        'b_estilo_slot1': b_est_slot1, 'b_estilo_slot2': b_est_slot2,
         'b_total': b_total,
         # ⛔ 15/08 ORDEM DO LUIS: "se ele nao sabe, ele vai querer colocar zero,
         #    e um numero inventado". O que faltou fica ESCRITO, com nome.
         'faltou': faltou,
         'corpo_soma': c_soma, 'corpo_pct': c_pct,
-        'detalhe': detalhe, 'motor_bonus': MOTOR_BONUS})
+        'detalhe': detalhe, 'motor_bonus': MOTOR_BONUS,
+        'carta_versao': contexto.get('carta_versao'),
+        'carta_fingerprint': contexto.get('carta_fingerprint'),
+        'contrato_versao': contexto.get('contrato_versao'),
+        'contrato_fingerprint': contexto.get('contrato_fingerprint'),
+        'formula_fingerprint': contexto.get('formula_fingerprint')})
 
 print('   %d pares calculados' % len(saida))
 com_est = sum(1 for x in saida if x['b_estilo'])
@@ -394,24 +613,26 @@ gravaveis = [x for x in saida if not x['faltou'] and isinstance(x['b_total'], (i
 bloqueados = len(saida) - len(gravaveis)
 print('   pares aptos ........................ %d' % len(gravaveis))
 print('   pares bloqueados (sem fallback) .... %d' % bloqueados)
-for i in range(0, len(gravaveis), LOTE):
-    lote = [{'card_id': x['card_id'], 'funcao_codigo': x['funcao_codigo'],
-             'b_corpo': x['b_corpo'], 'b_pe_ruim': x['b_pe_ruim'],
-             'b_estilo': x['b_estilo'], 'b_ia': x['b_ia'], 'b_total': x['b_total']}
-            for x in gravaveis[i:i + LOTE]]
-    try:
-        n = rpc('gravar_bonus', {'p_linhas': lote})
-        enviados += int(n or 0)
-        print('   %d/%d gravados...' % (enviados, len(gravaveis)), end='\r')
-    except urllib.error.HTTPError as e:
-        print('')
-        print('   ERRO no lote %d: %s' % (i // LOTE, e.read().decode('utf-8')[:300]))
-        pausa(); sys.exit(1)
+try:
+    respostas = gravar_resultados_canonicos(gravaveis, rpc)
+    enviados = len(respostas)
+except urllib.error.HTTPError as e:
+    print('')
+    print('   ERRO no writer clube_novo: %s' % e.read().decode('utf-8')[:300])
+    pausa(); sys.exit(1)
+except Exception as e:
+    print('')
+    print('   PAREI: retorno do writer novo recusado: %s' % str(e)[:300])
+    pausa(); sys.exit(1)
+if enviados != len(gravaveis):
+    print('')
+    print('   PAREI: nem todo resultado apto recebeu readback do writer novo.')
+    pausa(); sys.exit(1)
 
-print('   %d linhas gravadas na clube.build          ' % enviados)
+print('   %d resultados confirmados em clube_novo.build_bonificador' % enviados)
 print('')
 print('=' * 70)
-print('  PRONTO. A tela le da public.casa_tela, que le da clube.build.')
-print('  Confira: select * from clube.auditoria_completa() where status = \'FALHA\';')
+print('  PRONTO. O writer novo confirmou identidade, selos e readback transacional.')
+print('  Nenhuma chamada produtiva foi feita para o writer legado.')
 print('=' * 70)
 pausa()

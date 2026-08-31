@@ -149,7 +149,7 @@ def validar_contrato_canonico_do_tecnico():
     regua_servidor.Regua = ReguaPacoteFake
     monta_regua = carregar("monta_regua_formula_aprovada", SERVIDOR / "monta_regua.py")
     pac = {
-        "contrato": "otimizador_regua_v1",
+        "contrato": "otimizador_regua_v2",
         "gate": {"pode_rodar": True},
         "parametros": {"x": 1},
         "atributos": [{"indice_otimizador": i, "codigo": str(i)} for i in range(26)],
@@ -160,6 +160,8 @@ def validar_contrato_canonico_do_tecnico():
         "molde": [{"funcao_id": 1, "indice_otimizador": 0, "alvo": 90, "peso": 1}],
         "habilidades": [{"skill_id": 1, "fabricavel": True, "vetada": False,
                            "nome_apresentacao": "teste", "efeitos": []}],
+        "impetos": [{"codigo_impeto": 130, "condicional": True,
+                      "nivel_maximo": 3, "efeitos": []}],
         "versao_molde": 1,
         "tecnicos": [{
                 "tecnico_id": 17601312850052,

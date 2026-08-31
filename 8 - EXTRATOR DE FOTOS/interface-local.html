@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="local-session-token" content="__LOCAL_SESSION_TOKEN__">
+  <title>Extrator de Fotos</title>
+  <link rel="stylesheet" href="/interface-local.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="app-card" aria-labelledby="app-title">
+      <p class="eyebrow">ClubEFootball</p>
+      <h1 id="app-title">Extrator de Fotos</h1>
+      <p class="instruction">Cole as três credenciais uma vez e clique em INICIAR.</p>
+
+      <form id="start-form" autocomplete="off">
+        <label for="cloudinary-api-key">Cloudinary API Key</label>
+        <input id="cloudinary-api-key" name="cloudinary-api-key" type="password" autocomplete="new-password" autocapitalize="off" spellcheck="false" required>
+
+        <label for="cloudinary-api-secret">Cloudinary API Secret</label>
+        <input id="cloudinary-api-secret" name="cloudinary-api-secret" type="password" autocomplete="new-password" autocapitalize="off" spellcheck="false" required>
+
+        <label for="supabase-db-url">Supabase Database URL</label>
+        <input id="supabase-db-url" name="supabase-db-url" type="password" autocomplete="new-password" autocapitalize="off" spellcheck="false" placeholder="postgresql://..." required>
+
+        <button id="start-button" type="submit" disabled>INICIAR</button>
+      </form>
+
+      <div class="run-feedback" aria-live="polite" aria-atomic="true">
+        <progress id="run-progress" value="0" max="1" hidden></progress>
+        <p id="status-text">Aguardando as credenciais.</p>
+      </div>
+    </section>
+  </main>
+  <script src="/interface-local.js" defer></script>
+</body>
+</html>
