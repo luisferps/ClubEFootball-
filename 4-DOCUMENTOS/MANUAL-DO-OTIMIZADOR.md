@@ -1,6 +1,6 @@
 # Manual do Otimizador — ClubEfootball
 
-**Versão 1.9 · 31/08/2026**
+**Versão 2.0 · 31/08/2026**
 
 ## 1. Finalidade e nome
 
@@ -410,7 +410,8 @@ pesos, moldes, seleção de build e ordem de cálculo não são tocados pela V5.
 
 ### Como operar quando a V5 estiver aplicada
 
-1. Abrir `2-MOTORES/OTIMIZADOR/RODAR-OTIMIZADOR.bat` ou o executável.
+1. Dar dois cliques em `Otimizador ClubEfootball.exe`. Esse é o único ícone de
+   uso diário; não use `.bat`, não abra `runtime/` e não digite endereço no navegador.
 2. Conferir o selo **Motor pronto** e o pré-voo mostrado pela interface.
 3. Clicar **Preparar fila integral**. A tela passa a mostrar candidatas preparadas
    e linhas já geradas; isso ainda não roda o Otimizador.
@@ -428,7 +429,7 @@ pesos, moldes, seleção de build e ordem de cálculo não são tocados pela V5.
 A V5 está aplicada e o pré-voo foi relido no banco: 19.363 candidatas básicas,
 1.169 exclusões condicionais, fórmula aprovada e publicação desligada. Um ensaio
 transacional preparou uma candidata e 18 linhas e foi revertido; portanto nenhuma
-fila integral foi criada nem calculada como efeito da validação. A interface V24 e
+fila integral foi criada nem calculada como efeito da validação. A interface V25 e
 o executável foram testados contra as RPCs V5 em loopback. A ação restante é apenas
 operacional: clicar **Preparar fila integral**, conferir o lote selado e, em decisão
 separada, clicar **Iniciar**.
@@ -454,6 +455,29 @@ O snapshot de recuperação pré-V5 e o rollback continuam indicados no item 6 a
 O rollback falha fechado se uma fila integral já existir, para não apagar a evidência
 de execução. A validação de liberação executou 48 testes e não alterou fórmula,
 pesos, moldes ou regras de negócio.
+
+### Abrir com um clique em qualquer computador — V25
+
+Para o uso diário existe **um único ícone**: `Otimizador ClubEfootball.exe`, na raiz
+da pasta `OTIMIZADOR`. Ao clicar nele, o aplicativo inicia sozinho o componente
+interno `runtime/OtimizadorServico.exe`, espera a resposta local e abre a tela. O
+computador de uso **não precisa ter Python instalado** e não exige abrir `.bat`,
+PowerShell ou URL manualmente. A porta `8769` é interna; o usuário não precisa
+conhecê-la nem operar nela.
+
+Para levar a outro computador, copie a pasta `OTIMIZADOR` inteira, inclusive as
+subpastas `interface/` e `runtime/`. A conexão é a única preparação feita uma vez:
+o `config.txt` deve estar em `2-MOTORES/` ou dentro de `OTIMIZADOR/`, com URL e chave
+válidas. Ele fica apenas no processo local e nunca é enviado ao navegador. Depois
+disso, todo uso normal volta a ser um clique no mesmo ícone.
+
+Se o pacote ou a configuração estiverem ausentes, o aplicativo mostra o motivo e
+grava `ERRO-ABERTURA-OTIMIZADOR.txt` na pasta do Otimizador; não falha silenciosamente.
+Os parágrafos de lançadores V1.x mais abaixo pertencem ao histórico e não substituem
+esta abertura V25.
+
+`RODAR-OTIMIZADOR.bat` também só abre esse mesmo ícone para compatibilidade; ele não
+compila, não pede Python e não deve ser usado para instalar nada no computador de uso.
 
 ## 12. Histórico
 

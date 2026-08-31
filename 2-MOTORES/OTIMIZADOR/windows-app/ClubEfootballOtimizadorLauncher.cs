@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -11,48 +12,46 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Painel local de execução e acompanhamento do Otimizador")]
 [assembly: AssemblyProduct("Otimizador ClubEfootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("1.3.0.0")]
-[assembly: AssemblyFileVersion("1.3.0.0")]
+[assembly: AssemblyVersion("1.4.0.0")]
+[assembly: AssemblyFileVersion("1.4.0.0")]
 
 namespace ClubEfootballOtimizador
 {
     internal static class Program
     {
-        private const string AppUrl = "http://127.0.0.1:8767/?v=20260831-v24";
-        private const string StatusUrl = "http://127.0.0.1:8767/api/saude";
+        private const int AppPort = 8769;
+        private const string AppUrl = "http://127.0.0.1:8769/?v=20260831-v25";
+        private const string StatusUrl = "http://127.0.0.1:8769/api/saude";
         private const string ExpectedApp = "\"aplicativo\": \"otimizador_clubefootball\"";
-        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v24\"";
+        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v25\"";
+        private static readonly object DiagnosticLock = new object();
+        private static readonly StringBuilder StartupDiagnostic = new StringBuilder();
 
         [STAThread]
         private static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            string root = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
             try
             {
-                string root = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
                 string health = ReadHealth();
                 if (!ExpectedServer(health))
                 {
                     if (health != null)
-                        throw new InvalidOperationException("Já existe outra versão usando a porta do Otimizador. Feche a janela antiga e abra novamente.");
+                        throw new InvalidOperationException("A porta interna do Otimizador está ocupada por outro aplicativo. Feche somente a outra janela do Otimizador e clique novamente neste ícone.");
+                    ValidatePackage(root);
                     StartHiddenServer(root);
                     WaitForServer();
                 }
                 if (Environment.GetEnvironmentVariable("CLUBEF_OTIMIZADOR_NO_BROWSER") == "1") return;
-                string edge = FindEdge();
-                if (edge == null) throw new InvalidOperationException("Microsoft Edge não foi encontrado neste Windows.");
-                ProcessStartInfo browser = new ProcessStartInfo();
-                browser.FileName = edge;
-                browser.Arguments = "--app=\"" + AppUrl + "\" --start-maximized --no-first-run --disable-features=msEdgeSidebarV2";
-                browser.WorkingDirectory = root;
-                browser.UseShellExecute = false;
-                browser.CreateNoWindow = true;
-                Process.Start(browser);
+                OpenBrowser(root);
             }
             catch (Exception error)
             {
-                MessageBox.Show("Não foi possível abrir o Otimizador ClubEfootball.\n\n" + error.Message,
+                string message = "Não foi possível abrir o Otimizador ClubEfootball.\n\n" + error.Message;
+                try { File.WriteAllText(Path.Combine(root, "ERRO-ABERTURA-OTIMIZADOR.txt"), message + Environment.NewLine); } catch { }
+                MessageBox.Show(message + "\n\nO detalhe também foi salvo em ERRO-ABERTURA-OTIMIZADOR.txt.",
                     "Otimizador ClubEfootball", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -84,53 +83,94 @@ namespace ClubEfootballOtimizador
 
         private static void WaitForServer()
         {
-            for (int attempt = 0; attempt < 80; attempt++)
+            for (int attempt = 0; attempt < 150; attempt++)
             {
                 if (ServerReady()) return;
                 Thread.Sleep(200);
             }
-            throw new InvalidOperationException("O servidor local do Otimizador não respondeu.");
+            string diagnostic;
+            lock (DiagnosticLock) diagnostic = StartupDiagnostic.ToString().Trim();
+            throw new InvalidOperationException("O componente interno do Otimizador não respondeu." +
+                (String.IsNullOrEmpty(diagnostic) ? "" : "\n\nDetalhe técnico: " + diagnostic));
         }
 
         private static void StartHiddenServer(string root)
         {
-            string pythonw = FindPythonW();
-            if (pythonw == null) throw new InvalidOperationException("O componente interno Python não foi encontrado.");
-            string script = Path.Combine(root, "interface", "servidor.py");
-            if (!File.Exists(script)) throw new InvalidOperationException("interface\\servidor.py não foi encontrado.");
+            string service = Path.Combine(root, "runtime", "OtimizadorServico.exe");
+            if (!File.Exists(service)) throw new InvalidOperationException("O componente interno portátil não foi encontrado. Reinstale a pasta completa do Otimizador.");
             ProcessStartInfo server = new ProcessStartInfo();
-            server.FileName = pythonw;
-            server.Arguments = "\"" + script + "\"";
+            server.FileName = service;
             server.WorkingDirectory = root;
             server.UseShellExecute = false;
             server.CreateNoWindow = true;
             server.WindowStyle = ProcessWindowStyle.Hidden;
-            server.EnvironmentVariables["CLUBEF_OTIMIZADOR_PORT"] = "8767";
+            server.RedirectStandardOutput = true;
+            server.RedirectStandardError = true;
+            server.EnvironmentVariables["CLUBEF_OTIMIZADOR_ROOT"] = root;
+            server.EnvironmentVariables["CLUBEF_OTIMIZADOR_PORT"] = AppPort.ToString();
             server.EnvironmentVariables["PYTHONUTF8"] = "1";
-            Process.Start(server);
+            lock (DiagnosticLock) StartupDiagnostic.Clear();
+            Process process = new Process();
+            process.StartInfo = server;
+            process.OutputDataReceived += RecordServiceDiagnostic;
+            process.ErrorDataReceived += RecordServiceDiagnostic;
+            if (!process.Start()) throw new InvalidOperationException("Não foi possível iniciar o componente interno portátil.");
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
         }
 
-        private static string FindPythonW()
+        private static void RecordServiceDiagnostic(object sender, DataReceivedEventArgs eventArgs)
         {
-            string user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            List<string> candidates = new List<string>();
-            candidates.Add(Path.Combine(user, ".cache", "codex-runtimes", "codex-primary-runtime", "dependencies", "python", "pythonw.exe"));
-            string local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string programs = Path.Combine(local, "Programs", "Python");
-            candidates.Add(Path.Combine(local, "Microsoft", "WindowsApps", "pythonw.exe"));
-            if (Directory.Exists(programs))
+            if (String.IsNullOrWhiteSpace(eventArgs.Data)) return;
+            lock (DiagnosticLock)
             {
-                string[] folders = Directory.GetDirectories(programs, "Python*");
-                Array.Sort(folders); Array.Reverse(folders);
-                foreach (string folder in folders) candidates.Add(Path.Combine(folder, "pythonw.exe"));
+                if (StartupDiagnostic.Length < 1400) StartupDiagnostic.AppendLine(eventArgs.Data);
             }
-            string path = Environment.GetEnvironmentVariable("PATH") ?? "";
-            foreach (string folder in path.Split(Path.PathSeparator))
-            {
-                if (!String.IsNullOrWhiteSpace(folder)) candidates.Add(Path.Combine(folder.Trim(), "pythonw.exe"));
-            }
+        }
+
+        private static string FindConfiguration(string root)
+        {
+            string parent = Directory.GetParent(root).FullName;
+            string[] candidates = new string[] { Path.Combine(parent, "config.txt"), Path.Combine(root, "config.txt") };
             foreach (string candidate in candidates) if (File.Exists(candidate)) return candidate;
             return null;
+        }
+
+        private static void ValidatePackage(string root)
+        {
+            string[] required = new string[] {
+                Path.Combine(root, "runtime", "OtimizadorServico.exe"),
+                Path.Combine(root, "interface", "servidor.py"),
+                Path.Combine(root, "interface", "index.html"),
+                Path.Combine(root, "interface", "app.js"),
+                Path.Combine(root, "interface", "style.css")
+            };
+            foreach (string file in required)
+                if (!File.Exists(file)) throw new InvalidOperationException("O pacote está incompleto. Copie a pasta OTIMIZADOR inteira, inclusive runtime e interface.");
+            string config = FindConfiguration(root);
+            if (String.IsNullOrEmpty(config)) throw new InvalidOperationException("A conexão local ainda não foi configurada nesta cópia. Instale config.txt uma única vez na pasta 2-MOTORES ou OTIMIZADOR.");
+            string text = File.ReadAllText(config);
+            if (text.IndexOf("SUPABASE_URL=", StringComparison.OrdinalIgnoreCase) < 0 ||
+                text.IndexOf("SUPABASE_KEY=", StringComparison.OrdinalIgnoreCase) < 0 ||
+                text.IndexOf("COLE_AQUI", StringComparison.OrdinalIgnoreCase) >= 0)
+                throw new InvalidOperationException("A configuração local do Otimizador está incompleta. Atualize config.txt uma única vez.");
+        }
+
+        private static void OpenBrowser(string root)
+        {
+            string edge = FindEdge();
+            if (edge != null)
+            {
+                ProcessStartInfo browser = new ProcessStartInfo();
+                browser.FileName = edge;
+                browser.Arguments = "--app=\"" + AppUrl + "\" --start-maximized --no-first-run --disable-features=msEdgeSidebarV2";
+                browser.WorkingDirectory = root;
+                browser.UseShellExecute = false;
+                browser.CreateNoWindow = true;
+                Process.Start(browser);
+                return;
+            }
+            Process.Start(new ProcessStartInfo { FileName = AppUrl, UseShellExecute = true });
         }
 
         private static string FindEdge()

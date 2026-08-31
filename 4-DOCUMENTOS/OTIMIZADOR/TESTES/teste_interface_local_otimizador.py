@@ -251,16 +251,25 @@ class InterfaceOtimizadorTest(unittest.TestCase):
                 chamada()
             self.assertEqual(erro.exception.status, 409)
 
-    def test_executavel_reconhece_a_interface_v24(self):
+    def test_executavel_portatil_reconhece_a_interface_v25(self):
         raiz_motor = SERVIDOR.parent.parent
         launcher = (raiz_motor / "windows-app" / "ClubEfootballOtimizadorLauncher.cs").read_text(encoding="utf-8")
         compilador = (raiz_motor / "windows-app" / "COMPILAR-APLICATIVO.ps1").read_text(encoding="utf-8")
+        compilador_servico = (raiz_motor / "windows-app" / "COMPILAR-SERVICO-PORTATIL.ps1").read_text(encoding="utf-8")
+        bootstrap = (raiz_motor / "servico_portatil.py").read_text(encoding="utf-8")
         atalho = (raiz_motor / "RODAR-OTIMIZADOR.bat").read_text(encoding="utf-8")
         self.assertIn('ExpectedApp = "\\\"aplicativo\\\": \\"otimizador_clubefootball\\\""', launcher)
-        self.assertIn('ExpectedVersion = "\\\"versao_interface\\\": \\"20260831-v24\\\""', launcher)
-        self.assertIn("outra versão usando a porta do Otimizador", launcher)
+        self.assertIn('ExpectedVersion = "\\\"versao_interface\\\": \\"20260831-v25\\\""', launcher)
+        self.assertIn("OtimizadorServico.exe", launcher)
+        self.assertIn("CLUBEF_OTIMIZADOR_ROOT", launcher)
+        self.assertNotIn("FindPythonW", launcher)
+        self.assertIn("8769", launcher)
         self.assertIn("precisaCompilar", compilador)
-        self.assertIn("COMPILAR-APLICATIVO.ps1", atalho)
+        self.assertIn("COMPILAR-SERVICO-PORTATIL.ps1", compilador)
+        self.assertIn("PyInstaller", compilador_servico)
+        self.assertIn("CLUBEF_OTIMIZADOR_ROOT", bootstrap)
+        self.assertIn("Otimizador ClubEfootball.exe", atalho)
+        self.assertNotIn("COMPILAR-APLICATIVO.ps1", atalho)
 
 
 if __name__ == "__main__":

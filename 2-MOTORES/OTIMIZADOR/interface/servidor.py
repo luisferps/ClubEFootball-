@@ -16,12 +16,19 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-PASTA = Path(__file__).resolve().parent
-MOTOR_DIR = PASTA.parent
-CONFIG = MOTOR_DIR.parent / "config.txt"
+# O executável portátil informa a raiz externa para continuar usando a mesma
+# configuração e os mesmos módulos do Otimizador, mesmo sem Python instalado.
+RAIZ_OPERACIONAL = os.environ.get("CLUBEF_OTIMIZADOR_ROOT", "").strip()
+if RAIZ_OPERACIONAL:
+    MOTOR_DIR = Path(RAIZ_OPERACIONAL).expanduser().resolve()
+    PASTA = MOTOR_DIR / "interface"
+else:
+    PASTA = Path(__file__).resolve().parent
+    MOTOR_DIR = PASTA.parent
+CONFIG_CANDIDATAS = (MOTOR_DIR.parent / "config.txt", MOTOR_DIR / "config.txt")
 CARD_ID_VALIDO = re.compile(r"^[A-Za-z0-9@_-]{1,64}$")
 APLICATIVO_ID = "otimizador_clubefootball"
-INTERFACE_VERSAO = "20260831-v24"
+INTERFACE_VERSAO = "20260831-v25"
 FILA_V5_AGUARDANDO_APLICACAO = (
     "A fila integral V5 está preparada localmente, mas a migração ainda não foi "
     "aplicada em clube_novo. Nenhuma carta será criada ou processada até essa "
@@ -49,9 +56,10 @@ class ErroDaInterface(Exception):
 
 def ler_config() -> tuple[str, str]:
     valores = {}
-    if not CONFIG.is_file():
-        raise ErroDaInterface("configuração compartilhada não encontrada", 503)
-    for linha in CONFIG.read_text(encoding="utf-8").splitlines():
+    config = next((candidata for candidata in CONFIG_CANDIDATAS if candidata.is_file()), None)
+    if config is None:
+        raise ErroDaInterface("configuração local não encontrada (config.txt)", 503)
+    for linha in config.read_text(encoding="utf-8").splitlines():
         linha = linha.strip()
         if linha and not linha.startswith("#") and "=" in linha:
             chave, valor = linha.split("=", 1)
