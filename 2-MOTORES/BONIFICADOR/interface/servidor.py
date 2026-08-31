@@ -471,6 +471,8 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
                     return self.responder_arquivo("app.js", "text/javascript; charset=utf-8")
                 if caminho.path == "/style.css":
                     return self.responder_arquivo("style.css", "text/css; charset=utf-8")
+                if caminho.path == "/api/ping":
+                    return self.responder_json(200, {"ok": True, "aplicativo": "bonificador_clubefootball", "versao_interface": "20260831-v2-native"})
                 if caminho.path == "/api/saude":
                     regua = servico.regua()
                     return self.responder_json(200, {"ok": True, "aplicativo": "bonificador_clubefootball", "versao_interface": "20260831-v2-native", "contrato": regua.get("contrato"), "pode_rodar": regua.get("pode_rodar"), "falta_o_que": regua.get("falta_o_que") or []})

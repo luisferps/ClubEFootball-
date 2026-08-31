@@ -14,18 +14,18 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Painel local de execução e acompanhamento do Otimizador")]
 [assembly: AssemblyProduct("Otimizador ClubEfootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("1.5.0.0")]
-[assembly: AssemblyFileVersion("1.5.0.0")]
+[assembly: AssemblyVersion("1.6.0.0")]
+[assembly: AssemblyFileVersion("1.6.0.0")]
 
 namespace ClubEfootballOtimizador
 {
     internal static class Program
     {
         private const int AppPort = 8769;
-        private const string AppUrl = "http://127.0.0.1:8769/?v=20260831-v30";
+        private const string AppUrl = "http://127.0.0.1:8769/?v=20260831-v31";
         private const string StatusUrl = "http://127.0.0.1:8769/api/saude";
         private const string ExpectedApp = "\"aplicativo\": \"otimizador_clubefootball\"";
-        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v30\"";
+        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v31\"";
         private static readonly object DiagnosticLock = new object();
         private static readonly StringBuilder StartupDiagnostic = new StringBuilder();
         private static Mutex LauncherMutex;

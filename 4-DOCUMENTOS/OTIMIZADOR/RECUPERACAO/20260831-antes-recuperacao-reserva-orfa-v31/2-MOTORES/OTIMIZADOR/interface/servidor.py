@@ -29,7 +29,7 @@ else:
 CONFIG_CANDIDATAS = (MOTOR_DIR.parent / "config.txt", MOTOR_DIR / "config.txt")
 CARD_ID_VALIDO = re.compile(r"^[A-Za-z0-9@_-]{1,64}$")
 APLICATIVO_ID = "otimizador_clubefootball"
-INTERFACE_VERSAO = "20260831-v31"
+INTERFACE_VERSAO = "20260831-v30"
 FILA_V5_AGUARDANDO_APLICACAO = (
     "A fila integral V5 está preparada localmente, mas a migração ainda não foi "
     "aplicada em clube_novo. Nenhuma carta será criada ou processada até essa "
@@ -40,7 +40,6 @@ RPC_PERMITIDAS = {
     "otimizador_catalogos_apresentacao_v1", "otimizador_carta_apresentacao_v1",
     "otimizador_producao_status_v3", "otimizador_producao_contexto_lote_v3",
     "otimizador_producao_controlar_lote_v3",
-    "otimizador_producao_recuperar_reserva_orfa_v9",
     "otimizador_producao_reservar_linha_v3", "otimizador_producao_concluir_linha_v3",
     "otimizador_producao_bloquear_linha_v3", "otimizador_producao_falhar_lote_v3",
     "otimizador_producao_status_v5", "otimizador_producao_prevoo_integral_v5",
@@ -481,15 +480,9 @@ class ServicoOtimizador:
         return saida
 
     def painel_fila(self, offset=0, limite=100, somente_finais=False):
-        status = dict(self._status_fila())
+        status = self._status_fila()
         if not status.get("disponivel"):
             return status
-        acoes = dict(status.get("acoes") or {})
-        confirmacao = dict(status.get("confirmacao") or {})
-        acoes["recuperar"] = self._recuperacao_reserva_orfa_disponivel(status)
-        confirmacao["recuperar_exige_confirmacao"] = True
-        status["acoes"] = acoes
-        status["confirmacao"] = confirmacao
         lote_id = status.get("lote_id")
         itens = []
         pagina = {"total": 0, "offset": int(offset), "limite": int(limite),
@@ -559,22 +552,6 @@ class ServicoOtimizador:
         if acoes.get("retomar") is True:
             return "retomar"
         raise ErroDaInterface("o selo do contrato não autoriza iniciar nem retomar este lote", 409)
-
-    def _recuperacao_reserva_orfa_disponivel(self, status):
-        """Só expõe recuperação manual se este serviço local não está trabalhando.
-
-        O banco repete todos os selos e bloqueios pela RPC V9. Esta sondagem não
-        muda a fila; ela só evita oferecer recuperação enquanto este mesmo
-        computador ainda possui worker ou preparador ativo.
-        """
-        if self._worker_ativo() or self._preparador_ativo():
-            return False
-        if (status.get("estado_lote") or status.get("estado")) not in {"pausando", "encerrando"}:
-            return False
-        correntes = status.get("corrente") or []
-        return (len(correntes) == 1
-                and correntes[0].get("estado") == "processando"
-                and correntes[0].get("linha_id") is not None)
 
     @staticmethod
     def _estado_local(etapa, lote_id=None, item=None, detalhe=None):
@@ -767,27 +744,6 @@ class ServicoOtimizador:
         })
         return self.painel_fila()
 
-    def recuperar_reserva_orfa(self, confirmado):
-        """Devolve uma única reserva abandonada ao lote pausado, pela RPC V9."""
-        if confirmado is not True:
-            raise ErroDaInterface("Recuperar exige confirmação explícita", 409)
-        status = self._status_fila()
-        if not status.get("disponivel") or not self._recuperacao_reserva_orfa_disponivel(status):
-            raise ErroDaInterface("não existe reserva órfã local elegível para recuperação", 409)
-        corrente = (status.get("corrente") or [None])[0]
-        if not corrente:
-            raise ErroDaInterface("a linha órfã não foi localizada no contrato", 409)
-        resposta = self.gateway.rpc("otimizador_producao_recuperar_reserva_orfa_v9", {
-            "p_lote_id": status.get("lote_id"),
-            "p_linha_id": int(corrente["linha_id"]),
-            "p_confirmado": True,
-        }) or {}
-        if resposta.get("contrato") != "otimizador_fila_producao_v5":
-            raise ErroDaInterface("o contrato não confirmou a recuperação da reserva", 503)
-        if (resposta.get("estado_lote") or resposta.get("estado")) != "pausado":
-            raise ErroDaInterface("a reserva foi tratada, mas o lote não ficou pausado", 503)
-        return self.painel_fila()
-
     def parar_fila(self, confirmado):
         if confirmado is not True:
             raise ErroDaInterface("Parar exige confirmação explícita", 409)
@@ -892,8 +848,6 @@ def criar_servidor(servico=None, porta=8767):
                     return self.responder_json(200, servico.iniciar_fila())
                 if caminho.path == "/api/fila/pausar":
                     return self.responder_json(200, servico.pausar_fila())
-                if caminho.path == "/api/fila/recuperar":
-                    return self.responder_json(200, servico.recuperar_reserva_orfa(corpo.get("confirmado") is True))
                 if caminho.path == "/api/fila/parar":
                     return self.responder_json(200, servico.parar_fila(corpo.get("confirmado") is True))
                 if caminho.path == "/api/fila/console":

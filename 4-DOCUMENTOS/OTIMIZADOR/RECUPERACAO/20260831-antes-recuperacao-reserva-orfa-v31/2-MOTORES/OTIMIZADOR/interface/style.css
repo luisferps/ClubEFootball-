@@ -82,7 +82,6 @@ input, select, button { min-height: 42px; border-radius: 8px; border: 1px solid 
 button { background: var(--verde); border-color: #3ac383; font-weight: 750; cursor: pointer; }
 button:hover:not(:disabled) { filter: brightness(1.12); }
 button.secundario { background: #18496e; border-color: #4c85ad; }
-button.recuperar { background: #715019; border-color: #b48632; color: #fff5d6; }
 button.discreto { background: #152f46; border-color: #355a77; color: #d6e5f0; }
 button.perigo { background: #782f38; border-color: #b94c57; }
 button:disabled { opacity: .42; cursor: not-allowed; filter: grayscale(.25); }

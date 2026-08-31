@@ -78,7 +78,6 @@ class ServicoFalso:
     def criar_fila(self): self._bloqueia()
     def iniciar_fila(self): self._bloqueia()
     def pausar_fila(self): self._bloqueia()
-    def recuperar_reserva_orfa(self, confirmado): self._bloqueia()
     def parar_fila(self, confirmado): self._bloqueia()
     def abrir_console_fila(self): self._bloqueia()
 
@@ -169,7 +168,7 @@ class InterfaceOtimizadorTest(unittest.TestCase):
             self.assertFalse(resposta["disponivel"])
             self.assertEqual(resposta["estado"], "aguardando_aplicacao_fila_v5")
             self.assertIn("V5", resposta["mensagem"])
-        for rota in ("/api/fila/criar", "/api/fila/iniciar", "/api/fila/pausar", "/api/fila/recuperar", "/api/fila/retomar", "/api/fila/console"):
+        for rota in ("/api/fila/criar", "/api/fila/iniciar", "/api/fila/pausar", "/api/fila/retomar", "/api/fila/console"):
             status, corpo = self.requisicao("POST", rota)
             self.assertEqual(status, 409)
             self.assertFalse(json.loads(corpo)["ok"])
@@ -183,7 +182,6 @@ class InterfaceOtimizadorTest(unittest.TestCase):
             "otimizador_catalogos_apresentacao_v1", "otimizador_carta_apresentacao_v1",
             "otimizador_producao_status_v3", "otimizador_producao_contexto_lote_v3",
             "otimizador_producao_controlar_lote_v3",
-            "otimizador_producao_recuperar_reserva_orfa_v9",
             "otimizador_producao_reservar_linha_v3", "otimizador_producao_concluir_linha_v3",
             "otimizador_producao_bloquear_linha_v3", "otimizador_producao_falhar_lote_v3",
             "otimizador_producao_status_v5", "otimizador_producao_prevoo_integral_v5",
@@ -259,45 +257,9 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         self.assertIn("workerLocalAusente", js)
         self.assertIn("Reserva sem worker local", js)
         self.assertIn("pintarContadorLinhaAtual(workerLocalAusente?null:atual)", js)
-        self.assertIn("consulta_indisponivel", js)
-        self.assertIn("tentando novamente em 5 s.", js)
-        self.assertIn("recuperar-fila", js)
-        self.assertIn("confirmarRecuperar", js)
-        self.assertIn("/api/fila/recuperar", SERVIDOR.read_text(encoding="utf-8"))
         self.assertIn("estado-local", interface)
         css = (SERVIDOR.parent / "style.css").read_text(encoding="utf-8")
         self.assertIn("position: sticky", css)
-
-    def test_recuperacao_orfa_exige_confirmacao_e_condicoes_locais(self):
-        class Gateway:
-            def __init__(self):
-                self.chamadas = []
-
-            def rpc(self, nome, corpo=None):
-                self.chamadas.append((nome, corpo))
-                return {"contrato": "otimizador_fila_producao_v5", "estado_lote": "pausado"}
-
-        status = {
-            "disponivel": True, "lote_id": "lote-recuperavel", "estado_lote": "encerrando",
-            "corrente": [{"linha_id": 3389, "estado": "processando"}],
-        }
-        servico = object.__new__(mod.ServicoOtimizador)
-        servico._worker_thread = None
-        servico._preparo_thread = None
-        servico.gateway = Gateway()
-        servico._status_fila = lambda: status
-        servico.painel_fila = lambda: {"estado_lote": "pausado"}
-        self.assertTrue(servico._recuperacao_reserva_orfa_disponivel(status))
-        with self.assertRaises(mod.ErroDaInterface):
-            servico.recuperar_reserva_orfa(False)
-        retorno = servico.recuperar_reserva_orfa(True)
-        self.assertEqual(retorno["estado_lote"], "pausado")
-        self.assertEqual(servico.gateway.chamadas, [(
-            "otimizador_producao_recuperar_reserva_orfa_v9",
-            {"p_lote_id": "lote-recuperavel", "p_linha_id": 3389, "p_confirmado": True},
-        )])
-        status["estado_lote"] = "rodando"
-        self.assertFalse(servico._recuperacao_reserva_orfa_disponivel(status))
 
     def test_servico_real_recusa_controles_sem_consultar_gateway(self):
         servico = object.__new__(mod.ServicoOtimizador)
@@ -357,7 +319,7 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         self.assertIn("linha 3389", saude["worker_resumo"])
         self.assertIsInstance(saude["worker_decorrido_segundos"], int)
 
-    def test_executavel_portatil_mantem_o_estado_local_da_interface_v31(self):
+    def test_executavel_portatil_mantem_o_estado_local_da_interface_v30(self):
         raiz_motor = SERVIDOR.parent.parent
         launcher = (raiz_motor / "windows-app" / "ClubEfootballOtimizadorLauncher.cs").read_text(encoding="utf-8")
         compilador = (raiz_motor / "windows-app" / "COMPILAR-APLICATIVO.ps1").read_text(encoding="utf-8")
@@ -365,7 +327,7 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         bootstrap = (raiz_motor / "servico_portatil.py").read_text(encoding="utf-8")
         atalho = (raiz_motor / "RODAR-OTIMIZADOR.bat").read_text(encoding="utf-8")
         self.assertIn('ExpectedApp = "\\\"aplicativo\\\": \\"otimizador_clubefootball\\\""', launcher)
-        self.assertIn('ExpectedVersion = "\\\"versao_interface\\\": \\"20260831-v31\\\""', launcher)
+        self.assertIn('ExpectedVersion = "\\\"versao_interface\\\": \\"20260831-v30\\\""', launcher)
         self.assertIn("OtimizadorServico.exe", launcher)
         self.assertIn("CLUBEF_OTIMIZADOR_ROOT", launcher)
         self.assertNotIn("FindPythonW", launcher)

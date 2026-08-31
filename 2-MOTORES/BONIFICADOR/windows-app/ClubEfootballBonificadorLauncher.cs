@@ -14,8 +14,8 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Fila, conferência e auditoria local do Bonificador")]
 [assembly: AssemblyProduct("Bonificador ClubEfootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: AssemblyVersion("2.0.1.0")]
+[assembly: AssemblyFileVersion("2.0.1.0")]
 
 namespace ClubEfootballBonificador
 {
@@ -45,8 +45,8 @@ namespace ClubEfootballBonificador
         }
         internal static string Get(string path) { using (WebClient c = new WebClient()) { c.Proxy = null; return c.DownloadString(BaseUrl + path); } }
         internal static string Post(string path) { using (WebClient c = new WebClient()) { c.Proxy = null; c.Headers[HttpRequestHeader.ContentType] = "application/json"; return c.UploadString(BaseUrl + path, "POST", "{}"); } }
-        private static bool ServerReady() { try { string b = Get("/api/saude"); return b.Contains(ExpectedApp) && b.Contains(ExpectedVersion); } catch { return false; } }
-        private static void WaitForServer() { for (int i = 0; i < 100; i++) { if (ServerReady()) return; Thread.Sleep(200); } throw new InvalidOperationException("O componente local do Bonificador não respondeu. Confira ERRO-ABERTURA-BONIFICADOR.txt e a configuração desta cópia."); }
+        private static bool ServerReady() { try { string b = Get("/api/ping"); return b.Contains(ExpectedApp) && b.Contains(ExpectedVersion); } catch { return false; } }
+        private static void WaitForServer() { for (int i = 0; i < 100; i++) { if (ServerReady()) return; Thread.Sleep(200); } throw new InvalidOperationException("O componente local do Bonificador não iniciou. Confira COMPONENTE-LOCAL-BONIFICADOR.log e a pasta runtime desta cópia."); }
         private static void ValidatePackage(string root)
         {
             foreach (string file in new[] { Path.Combine(root, "interface", "servidor.py"), Path.Combine(root, "motor_bonus.py") }) if (!File.Exists(file)) throw new InvalidOperationException("O pacote do Bonificador está incompleto: " + file);

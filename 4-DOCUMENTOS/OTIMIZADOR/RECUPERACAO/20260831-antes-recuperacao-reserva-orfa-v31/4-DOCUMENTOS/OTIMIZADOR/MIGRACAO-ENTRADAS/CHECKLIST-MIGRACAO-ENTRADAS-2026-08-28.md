@@ -297,27 +297,6 @@ Data: 28/08/2026. Estado inicial: **não ativado em produção**.
 - [x] fórmula, pesos, moldes, fila, schema, publicação, estados de pausa/parada e
   Ímpetos condicionais não foram alterados.
 
-## Recuperação de reserva órfã — V31 (31/08/2026)
-
-- [x] snapshot recuperável pré-V31 criado em
-  `RECUPERACAO/20260831-antes-recuperacao-reserva-orfa-v31/`, com manifesto SHA-256;
-- [x] contrato privado V9 desenhado para aceitar somente lote integral com fórmula
-  aprovada, `pode_publicar=false`, estado `pausando`/`encerrando`, exatamente uma
-  linha processando e confirmação explícita;
-- [x] a recuperação devolve somente a linha reservada a `pendente`, preserva
-  tentativas e conclusões, limpa apenas o token/worker da reserva e deixa o lote
-  `pausado`; não recalcula, não publica e não altera fórmula, pesos ou entradas;
-- [x] a UI expõe **Recuperar fila** somente quando o serviço local não possui
-  worker/preparador e o contrato mostra a reserva órfã; depois da confirmação,
-  **Retomar** continua sendo uma ação separada;
-- [x] migração V9 aplicada; readback confirmou definição e execução exclusiva por
-  `service_role`. A linha 3389 voltou a `pendente` com a tentativa preservada;
-  235 conclusões permanecem, há 0 linhas `processando`, 184.467 pendentes,
-  publicação desligada e o lote está `pausado` para uma retomada explícita.
-- [x] recuperação visual de consulta transitória: após um erro de leitura, a tela
-  tenta recarregar em cinco segundos sem enviar ação de fila; snapshot em
-  `RECUPERACAO/20260831-antes-retry-consulta-fila-v31/`.
-
 ## Rollback
 
 1. Repor somente os hunks de consumidor pelo patch/snapshot da etapa.

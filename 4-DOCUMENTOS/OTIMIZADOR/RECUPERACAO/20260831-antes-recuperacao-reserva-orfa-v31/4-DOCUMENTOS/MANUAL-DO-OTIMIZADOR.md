@@ -309,37 +309,6 @@ O snapshot imediatamente anterior a esse ajuste é
 O ajuste V30 só acrescenta observabilidade e o controlador persistente: não muda
 fórmula, pesos, moldes, fila, resultado, banco ou publicação.
 
-### Recuperação de reserva órfã — V31
-
-Se uma pausa ou um encerramento já foi pedido, mas o computador perdeu o worker
-antes de ele terminar a linha atômica, o painel não finge que a fila está
-rodando. Nessa condição excepcional aparece **Recuperar fila**. A ação exige uma
-confirmação e só é oferecida se este serviço local não tiver worker nem
-preparador, o lote estiver em `pausando` ou `encerrando` e houver exatamente uma
-linha em `processando`.
-
-O contrato privado
-`otimizador_producao_recuperar_reserva_orfa_v9(lote_id, linha_id, confirmado)`
-repete os gates no banco: lote integral, fórmula aprovada, `pode_publicar=false`,
-estado compatível e reserva vigente. Ele devolve apenas a linha órfã para
-`pendente`, limpa o token/worker daquela reserva, preserva tentativas e todas as
-linhas concluídas e registra o evento de recuperação. O lote termina em
-**Pausado**; ele não recalcula nada nem retoma sozinho. Depois, o operador usa o
-botão normal **Retomar**.
-
-O snapshot anterior está em
-`4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260831-antes-recuperacao-reserva-orfa-v31/`.
-A migração e seu rollback de contrato estão em
-`4-DOCUMENTOS/OTIMIZADOR/FILA-PRODUCAO-V3/MIGRACAO-RECUPERACAO-RESERVA-ORFA-V9.sql`
-e `ROLLBACK-RECUPERACAO-RESERVA-ORFA-V9.sql`. O rollback não apaga evidência nem
-desfaz uma recuperação já registrada.
-
-Se uma consulta de leitura ao contrato falhar momentaneamente, o painel mantém o
-erro visível e tenta carregar de novo após cinco segundos. Essa tentativa é só de
-leitura: não inicia, não retoma, não pausa e não recupera nenhuma linha. O snapshot
-imediatamente anterior desse ajuste visual é
-`4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260831-antes-retry-consulta-fila-v31/`.
-
 Os testes permanentes ficam em `4-DOCUMENTOS/OTIMIZADOR/TESTES`:
 
 - `teste_formula_aprovada.py` executa fórmula, Otimizador local,
