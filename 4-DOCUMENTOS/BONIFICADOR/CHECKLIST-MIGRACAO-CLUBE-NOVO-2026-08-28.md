@@ -4,6 +4,14 @@
 **Escopo:** somente leituras de dados do jogo do Bonificador  
 **Estado inicial:** auditoria e plano criados antes de qualquer troca de runtime ou banco
 
+## Fila V3 aplicada — 31/08/2026
+
+- [x] Snapshot recuperável e ensaio integral com rollback: 613 linhas, 50 cartas, 345 pares distintos.
+- [x] `clube_novo.bonificador_par` preenchida só por IDs canônicos (`card_id`, `funcao_id`).
+- [x] `public.bonificador_contexto_fila_v3` privado, apenas `service_role`.
+- [x] Motor e aplicativo local apontam para régua V2, carta V2 e fila V3.
+- [x] `public.gravar_build_bonificador_v3` restringe-se ao lote de teste; nenhuma linha foi calculada, publicada ou gravada nesta aplicação.
+
 ## Regra de execução
 
 - [x] trabalhar somente na cópia `C:\Users\Luis Fernando\Downloads\Clubefootball V4`;
@@ -372,3 +380,20 @@ consumidor de saída seguem desligados.
   de processo falso; POST fora das duas ações de controle continua 405;
 - [x] snapshot antes da integração em
   `RECUPERACAO/2026-08-31-ANTES-INTEGRACAO-PIPELINE-APP`.
+
+## Janela nativa e fila visível — 31/08/2026
+
+- [x] substituída a abertura no navegador por EXE WinForms V2.0.0, no padrão do
+  Extrator; a aba inicial adota a organização de fila do Otimizador;
+- [x] a fila é leitura do contrato canônico privado
+  `bonificador_contexto_escrita_v2`, mediada pelo serviço loopback, sem tabela direta,
+  `clube.build`, fallback ou gate legado;
+- [x] expostos estado, progresso, linha atual, pendentes, calculadas, confirmadas,
+  eventos e selos por linha; simulação e auditoria continuam separadas;
+- [x] mensagens de saída não são mais reduzidas a “código 1”: o detalhe seguro do
+  contrato é mantido no estado da janela;
+- [x] snapshot recuperável em
+  `RECUPERACAO/2026-08-31-ANTES-INTERFACE-NATIVA-FILA`;
+- [!] leitura viva bloqueada com evidência: `bonificador_regua_v1` apta, porém
+  `bonificador_contexto_escrita_v2` ausente da cache do PostgREST (`PGRST202`). Banco
+  não foi modificado nesta revisão; o pipeline permanece fail-closed e sem lote.

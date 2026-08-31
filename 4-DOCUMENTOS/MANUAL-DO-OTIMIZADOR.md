@@ -366,7 +366,11 @@ não uma falha de execução do caminho V2 atual.
 - [x] testes antigos da hipótese revogada substituídos por regressões de 104;
 - [x] banco, esquema, Extrator e consumidores permaneceram desligados e sem alteração.
 
-## 11. Fila integral V5: preparar antes de calcular
+## 11. Fila integral V5: histórico do preparo sequencial
+
+> Este trecho preserva o desenho que criou snapshots em fatias antes do cálculo.
+> A operação vigente é a **Esteira V6**, documentada mais abaixo: ela usa a mesma
+> fotografia V5, mas começa a calcular as linhas já seladas em paralelo.
 
 A fila integral não reutiliza o lote-piloto concluído. O piloto
 `100635db-56d9-4297-b22c-6cde52bf81c8` continua como evidência: 3 cartas, 45
@@ -456,7 +460,7 @@ O rollback falha fechado se uma fila integral já existir, para não apagar a ev
 de execução. A validação de liberação executou 48 testes e não alterou fórmula,
 pesos, moldes ou regras de negócio.
 
-### Abrir com um clique em qualquer computador — V25
+### Abrir com um clique em qualquer computador — V26
 
 Para o uso diário existe **um único ícone**: `Otimizador ClubEfootball.exe`, na raiz
 da pasta `OTIMIZADOR`. Ao clicar nele, o aplicativo inicia sozinho o componente
@@ -474,10 +478,114 @@ disso, todo uso normal volta a ser um clique no mesmo ícone.
 Se o pacote ou a configuração estiverem ausentes, o aplicativo mostra o motivo e
 grava `ERRO-ABERTURA-OTIMIZADOR.txt` na pasta do Otimizador; não falha silenciosamente.
 Os parágrafos de lançadores V1.x mais abaixo pertencem ao histórico e não substituem
-esta abertura V25.
+esta abertura V26.
 
 `RODAR-OTIMIZADOR.bat` também só abre esse mesmo ícone para compatibilidade; ele não
 compila, não pede Python e não deve ser usado para instalar nada no computador de uso.
+
+### Esteira V6 — preparar e calcular ao mesmo tempo
+
+**Regra vigente.** A V5 permanece a fonte de fotografia e criação de linhas; a V6
+apenas organiza a execução. Ao clicar uma vez em **Iniciar fila integral**, o
+aplicativo liga a esteira para o mesmo `lote_id`: o preparador cria snapshots e
+linhas em fatias de até 20 cartas e o Otimizador começa a calcular imediatamente
+as linhas que já foram seladas. Não espera as 19.363 candidatas terminarem para
+produzir a primeira build.
+
+```text
+fotografia/snapshot V5 (até 20 cartas) ──> linhas seladas ──> worker V6
+             continua em paralelo                         calcula uma por vez
+```
+
+A V6 conserva o fingerprint inicial do lote durante toda a execução, para não
+invalidar uma linha já reservada. Quando o preparo termina, a impressão digital
+completa das linhas é gravada separadamente em `preparo_fingerprint_final`. A
+fórmula aprovada, pesos, moldes, ordem de cálculo, entradas canônicas, Ímpetos
+condicionais e `pode_publicar=false` não mudam. O Bonificador continua fora deste
+fluxo.
+
+**Uso diário:** dê dois cliques em `Otimizador ClubEfootball.exe` e clique uma vez
+em **Iniciar fila integral**. A tela atualiza sozinha: `Candidatas preparadas` é a
+fotografia em andamento; `Concluídas` é o cálculo real já feito. Se a aplicação for
+fechada ou o computador reiniciar, abra o mesmo ícone e clique **Retomar**: a
+esteira reaproveita o mesmo lote, os snapshots já gravados e somente as linhas
+pendentes. Não recria o lote nem duplica resultado.
+
+**Pausar** espera a operação atômica atual e mantém candidatas/linhas pendentes.
+**Parar** exige confirmação e encerra a rodada sem publicação; não apaga as linhas
+concluídas. O rollback V6 em
+`4-DOCUMENTOS/OTIMIZADOR/FILA-PRODUCAO-V3/ROLLBACK-ESTEIRA-PREPARO-EXECUCAO-V6.sql`
+recusa executar enquanto houver esteira ativa, precisamente para não interromper
+uma execução ou apagar sua evidência. O snapshot anterior está em
+`4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260831-antes-esteira-preparo-execucao-v6/`.
+
+### Evidência de ativação e correção V7/V8 — 31/08/2026
+
+O lote integral `ddbcbc86-1ae7-4b95-b9f0-22601f41b61d` foi preservado durante a
+transição: não foi recriado. A V6 adicionou quatro RPCs privadas e o campo
+`preparo_fingerprint_final`, com `anon` e `authenticated` sem execução e apenas
+`service_role` autorizado. O primeiro teste real revelou uma única falha de
+infraestrutura: a conclusão tentou preencher o ID de `build_otimizador`, que é
+gerado pelo banco. A V7 removeu essa escrita manual; a V8 trocou o evento de
+recuperação por `preparo_pausado`, que é o evento canônico permitido. Nenhuma
+fórmula, peso, molde, entrada, carta, técnico, Ímpeto condicional ou regra de
+negócio foi alterada.
+
+O readback posterior confirmou a primeira execução válida: a preparação foi de
+15.850 para 15.930 candidatas enquanto quatro builds foram concluídas; depois
+seguiu para 16.230 candidatas e 19 builds concluídas, sem falha, com
+`pode_publicar=false`. Cada build trouxe o mesmo fingerprint de fórmula aprovado,
+o fingerprint de contrato e a impressão digital de resultado. Esta é a prova de
+que produtor e consumidor operaram no mesmo lote em paralelo.
+
+### Recuperação do painel local V27 — 31/08/2026
+
+Fechar a janela visual não encerra automaticamente o serviço local: isso preserva
+uma linha atômica em andamento, mas a mesma janela deve poder ser recuperada pelo
+ícone. Foi encontrado e corrigido o defeito que impedia essa recuperação: o RPC
+`otimizador_producao_status_v5` tem `p_lote_id uuid DEFAULT NULL`, porém a ponte
+enviava um corpo vazio. O PostgREST não escolhe a sobrecarga somente pelo default;
+por isso a tela recebia HTTP 500 em vez do estado da fila. A ponte V27 envia
+explicitamente `{"p_lote_id": null}`. O contrato continua escolhendo o lote ativo;
+a interface não consulta tabela, não guarda ID por texto e não expõe credencial.
+
+A rota de saúde do ícone também deixou de chamar a régua completa. Ela agora é uma
+sonda local de loopback, rápida e sem leitura de fórmula, fila ou banco; os gates
+continuam sendo conferidos somente nas rotas próprias do painel. Assim, com o
+serviço V27 já em execução, dar dois cliques novamente em
+`Otimizador ClubEfootball.exe` só reabre o painel — não cria outro worker nem
+retoma a fila sozinho.
+
+Na correção, o lote `ddbcbc86-1ae7-4b95-b9f0-22601f41b61d` foi pausado pelo
+controle atômico antes de reiniciar o serviço: 18.770/19.363 candidatas já
+preparadas, 178.759 linhas, 109 builds concluídas, zero linha em processamento,
+`falha=null` e `pode_publicar=false`. O readback V27 em `127.0.0.1:8769` devolveu
+saúde imediata, o mesmo lote em `pausado` e as ações reais. Nenhuma fórmula, peso,
+molde, entrada, estado de resultado ou publicação foi alterado. O snapshot anterior
+está em
+`4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260831-antes-correcao-retorno-painel-v27/`.
+
+**Como pausar daqui em diante:** abra o mesmo ícone, clique **Pausar** e espere o
+estado **Pausado** com `0 em processamento`; só então feche a janela, copie arquivos
+ou troque de computador. Nunca use o Gerenciador de Tarefas como substituto de
+Pausar.
+
+### Troca segura entre computadores
+
+Nunca faça `git push`, `git pull`, cópia de pasta ou atualização do executável
+enquanto o lote estiver **Rodando**. Primeiro use **Pausar** e espere a tela mostrar
+**Pausado**, com zero linhas em processamento. Os resultados já concluídos e as
+linhas pendentes permanecem no banco; não é necessário recriar a fila.
+
+Depois da pausa, publique apenas as alterações do Otimizador já revisadas e baixe
+a mesma revisão no outro computador. Confirme que a pasta inteira
+`2-MOTORES/OTIMIZADOR` chegou, inclusive `Otimizador ClubEfootball.exe`,
+`runtime/OtimizadorServico.exe` e `interface/`; mantenha o `config.txt` local com
+as credenciais daquele computador. Por fim, dê dois cliques em
+`Otimizador ClubEfootball.exe` e clique **Retomar** uma vez. A retomada usa o
+mesmo `lote_id`, continua somente as linhas pendentes e não duplica builds. A fila
+não continua executando durante a troca de computador; ela retoma com segurança
+depois desse único comando.
 
 ## 12. Histórico
 

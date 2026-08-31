@@ -64,11 +64,11 @@ def executar(sequencia_contexto: list[list[dict]], apta: bool):
         nome = req.full_url.rsplit("/", 1)[-1]
         corpo = json.loads(req.data.decode("utf-8"))
         chamadas.append(nome)
-        if nome == "bonificador_regua_v1": return Resposta(regua())
-        if nome == "bonificador_contexto_escrita_v2":
+        if nome == "bonificador_regua_v2": return Resposta(regua())
+        if nome == "bonificador_contexto_fila_v3":
             return Resposta(sequencia_contexto.pop(0) if sequencia_contexto else [])
-        if nome == "bonificador_carta_v1": return Resposta(carta(apta))
-        if nome == "gravar_build_bonificador_v1":
+        if nome == "bonificador_carta_v2": return Resposta(carta(apta))
+        if nome == "gravar_build_bonificador_v3":
             payload = corpo["p_resultado"]
             escritas.append(payload)
             return Resposta({"gravado": True, "idempotente": False,
@@ -100,12 +100,12 @@ def executar(sequencia_contexto: list[list[dict]], apta: bool):
 
 def main():
     chamadas, esperas, escritas = executar([[], [contexto()], []], apta=True)
-    assert chamadas.count("bonificador_contexto_escrita_v2") == 3, chamadas
-    assert chamadas.count("bonificador_regua_v1") == 3, chamadas
+    assert chamadas.count("bonificador_contexto_fila_v3") == 3, chamadas
+    assert chamadas.count("bonificador_regua_v2") == 3, chamadas
     assert len(escritas) == 1 and escritas[0]["build_linha_card_id"] == 99
 
     chamadas, esperas, escritas = executar([[contexto()], []], apta=False)
-    assert chamadas.count("bonificador_contexto_escrita_v2") == 2, chamadas
+    assert chamadas.count("bonificador_contexto_fila_v3") == 2, chamadas
     assert escritas == [], "linha incompleta chamou o writer"
     assert "parar.wait(espera)" in MOTOR.read_text(encoding="utf-8")
     print("PIPELINE_INCREMENTAL_OK vazio_espera_reconsulta=sim apto_grava=1 incompleto_grava=0")

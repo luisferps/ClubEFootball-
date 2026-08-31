@@ -41,3 +41,18 @@ contratos, banco, Otimizador ou Extrator.
 
 O snapshot específico antes desta integração está em
 `RECUPERACAO/2026-08-31-ANTES-INTEGRACAO-PIPELINE-APP`.
+
+## Revisão V2: janela nativa e fila
+
+O EXE V2.0.0 substitui a abertura no Edge por uma janela WinForms, como o Extrator.
+A primeira aba replica a organização útil do Otimizador: controles de iniciar/parar,
+estado, progresso, linha atual, totais, tabela e eventos. A fila não é local: o
+servidor loopback lê somente `bonificador_contexto_escrita_v2`; a janela nunca recebe
+credencial, URL de banco, schema ou acesso direto a tabelas. As abas de simulação e
+auditoria permanecem separadas.
+
+A leitura real de 31/08/2026 confirmou `bonificador_regua_v1` apta e revelou que
+`bonificador_contexto_escrita_v2` ainda está ausente da cache do PostgREST (`PGRST202`).
+A janela conserva esse detalhe seguro e o motor permanece fail-closed, sem fallback,
+escrita ou lote. O rollback dos arquivos desta revisão é
+`RECUPERACAO/2026-08-31-ANTES-INTERFACE-NATIVA-FILA`.

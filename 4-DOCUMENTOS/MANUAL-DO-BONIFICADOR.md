@@ -1,6 +1,21 @@
 # Manual do Bonificador — ClubEfootball
 
-**Versão 1.2 · 31/08/2026**
+**Versão 1.3 · 31/08/2026**
+
+## Fila canônica V3
+
+O Bonificador usa `public.bonificador_contexto_fila_v3`, contrato privado que
+expõe 613 linhas de teste canônicas: 50 cartas e 19 funções. A projeção própria
+`clube_novo.bonificador_par` contém os 345 pares carta×função distintos; as
+linhas repetidas permanecem identificadas por `build_linha_card.id`.
+
+Motor e aplicativo local leem `bonificador_regua_v2`, `bonificador_carta_v2`
+e a fila V3. O escritor `gravar_build_bonificador_v3` é transacional, aceita
+somente esse lote de teste e confere identidade, gates, versões, fingerprints
+e a soma das parcelas. Ele não publica nem aceita lote produtivo.
+
+Recuperação: `BONIFICADOR/SQL/ROLLBACK-FILA-BONIFICADOR-V3.sql`, antes de
+haver resultado. Snapshot: `BONIFICADOR/RECUPERACAO/2026-08-31-ANTES-FILA-BONIFICADOR-V3`.
 
 > Este é o manual oficial de funcionamento do Bonificador. O checklist e a pasta
 > `4-DOCUMENTOS/BONIFICADOR` guardam a prova técnica, SQL de recuperação e auditorias;
@@ -322,21 +337,25 @@ parâmetros, moldes, ordem corporal, casa, liga e slots; a única extensão comp
 `playstyle.id_jogo=291` para GO. O rollback foi ensaiado dentro de transação e revertido.
 Nenhum lote produtivo foi executado e a projeção de pares permanece vazia.
 
-## 12. Aplicativo local do Bonificador
+## 12. Aplicativo local e fila do Bonificador
 
-Abra `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe` pelo ícone próprio. O
-aplicativo segue o padrão técnico do Extrator: um lançador Windows inicia um executor
-local oculto em `127.0.0.1:8766`, confirma a saúde e abre uma janela de aplicativo.
-Não é uma página publicada e não abre tabelas do banco no navegador.
+Abra `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe` pelo ícone próprio. É uma
+janela nativa do Windows, no padrão do Extrator: não abre Edge nem uma página web. O
+EXE inicia somente o serviço local oculto em `127.0.0.1:8766`; a janela conversa com
+ele e ele, por sua vez, chama os contratos seguros. A chave fica fora da janela.
 
-Informe o `card_id` e selecione a função do molde. A tela explica corpo, pé ruim,
-posição principal, playstyles, IA, régua, molde, regras, parcelas, gates, versão do
-contrato, proveniência e fingerprint. Iker Casillas (`88045755827028`) é uma amostra:
-GO, `291` Goleiro adiantado no slot 1 e `336` Goleiro ofensivo no slot 2; na função
-Goleiro ofensivo (#5), a simulação retorna `1,5000` para playstyle e `1,6875` no total.
+A primeira aba é **Fila do Bonificador**, no padrão da fila do Otimizador. Ela mostra
+estado, progresso da rodada, linha atual, pendências, calculadas, confirmadas, eventos
+e uma tabela de pares. Cada linha vem exclusivamente de
+`bonificador_contexto_escrita_v2`: linha canônica, `card_id`, função/ID, posição/ID e
+selos da carta. Não consulta `clube.build`, não monta uma fila local e não usa nomes
+legados como gate. A aba **Testar uma carta** continua somente leitura e mostra corpo,
+pé ruim, posição, dois playstyles, IA, molde, régua, parcelas e gates. A aba
+**Auditoria e paridade** expõe contrato, proveniência e fingerprints.
 
-O navegador usa `GET` para consultas e apenas duas ações locais de controle: iniciar e
-parar o processo já conhecido do Bonificador. Ele nunca recebe a chave, não acessa
-tabelas nem chama RPCs diretamente. O servidor local é quem inicia o motor, que mantém
-o writer canônico e seus gates; a tela apenas mostra o estado. Detalhes, testes e
-recuperação estão em `4-DOCUMENTOS/BONIFICADOR/INTERFACE-LOCAL.md`.
+Em 31/08/2026, a régua viva foi relida como apta, mas a projeção de fila ainda não está
+instalada no banco: a chamada canônica devolveu `PGRST202` para
+`bonificador_contexto_escrita_v2`. Por isso a janela apresenta a causa e o motor para
+fail-closed; não há fallback para a função antiga nem para `clube.build`. Esta revisão
+não aplicou banco nem executou lote. Detalhes, testes e recuperação estão em
+`4-DOCUMENTOS/BONIFICADOR/INTERFACE-LOCAL.md`.

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bonificador ClubEfootball</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header><div><h1>Bonificador</h1><p>Consulta, simulação e pipeline local por linhas confirmadas</p></div><span id="estado" class="selo">Verificando contrato…</span></header>
+  <main>
+    <section class="painel pipeline"><h2>Pipeline do Bonificador</h2><p id="pipeline-estado" class="ajuda" aria-live="polite">Consultando estado local…</p><div class="acoes"><button id="iniciar-pipeline" type="button">Iniciar Bonificador</button><button id="parar-pipeline" class="secundario" type="button" disabled>Parar normalmente</button></div><p class="ajuda">Processa somente linhas que o Otimizador já confirmou. Quando não houver linha apta, permanece aguardando; a tela continua utilizável.</p></section>
+    <section class="painel consulta"><h2>Consultar carta</h2><label>Identificador da carta<input id="card-id" autocomplete="off" placeholder="Ex.: card_id da carta"></label><label>Função do molde<select id="funcao"><option>Carregando funções…</option></select></label><button id="simular" type="button">Simular bônus</button><p class="ajuda">A aplicação só consulta os contratos canônicos. Não grava cartas, regras ou lotes.</p></section>
+    <section class="painel resultado" id="resumo" aria-live="polite"><h2>Resultado</h2><p>Informe uma carta e escolha a função do molde para ver a explicação da simulação.</p></section>
+    <section class="grade" id="detalhes" hidden>
+      <article class="painel"><h2>Insumos da carta</h2><dl id="carta"></dl></article>
+      <article class="painel"><h2>Régua, molde e regras</h2><dl id="regra"></dl></article>
+      <article class="painel"><h2>Gates</h2><ul id="gates" class="lista"></ul></article>
+      <article class="painel"><h2>Auditoria e contrato</h2><dl id="auditoria"></dl></article>
+    </section>
+  </main>
+  <template id="linha"><div><dt></dt><dd></dd></div></template>
+  <script src="/app.js"></script>
+</body>
+</html>

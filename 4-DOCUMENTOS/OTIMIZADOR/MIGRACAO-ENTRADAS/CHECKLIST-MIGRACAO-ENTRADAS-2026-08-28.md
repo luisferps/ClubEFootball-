@@ -441,3 +441,60 @@ Data: 28/08/2026. Estado inicial: **não ativado em produção**.
   Eventos reais; o executável abre contra essa versão sem iniciar lote;
 - [ ] criar/preparar/iniciar a fila integral somente mediante o clique/decisão
   operacional seguinte do usuário; nenhum dos três passos é implícito.
+
+## Esteira preparo + execução V6 — plano registrado antes da aplicação
+
+- [x] autorização explícita para que a fila integral atual prepare e calcule em
+  paralelo, sempre sem publicação;
+- [x] snapshot recuperável pré-V6 criado em
+  `RECUPERACAO/20260831-antes-esteira-preparo-execucao-v6/`;
+- [x] isolamento de escopo: V6 não altera fórmula, pesos, moldes, ordem de cálculo,
+  entradas, dados físicos, Ímpetos condicionais ou Bonificador;
+- [x] contrato proposto: V6 preserva o fingerprint-semente do lote durante o
+  cálculo e armazena o fingerprint final da preparação em campo separado;
+- [x] regra de concorrência: o preparador pode criar apenas snapshots/linhas ainda
+  não existentes; o worker reserva apenas linhas já seladas, uma por vez;
+- [x] regra de recuperação: Retomar religa o mesmo lote e nunca recria/duplica
+  linhas ou resultados;
+- [x] rollback fail-closed preparado: recusa remover V6 enquanto houver lote
+  integral `rodando` com preparo pendente;
+- [x] prova automatizada local: 53 testes do Otimizador aprovados antes da alteração
+  de banco; `py_compile` aprovou os três módulos Python alterados;
+- [x] V6 aplicada no banco; readback confirmou coluna `preparo_fingerprint_final`,
+  quatro RPCs privadas, grants exclusivos de `service_role` e selo de fórmula
+  preservado no lote integral existente;
+- [x] executável/serviço V26 recompilado e reiniciado controladamente em loopback;
+  `/api/saude` confirmou a versão e o modo `esteira_integral_v6_sem_publicacao`;
+- [x] incidente real identificado sem inferência: a primeira conclusão tentou
+  preencher `build_otimizador.id`, coluna `ALWAYS IDENTITY`; o Postgres recusou a
+  escrita antes de persistir build;
+- [x] correções V7/V8 aplicadas: o banco gera o ID, a única reserva pendente foi
+  devolvida ao mesmo lote e o evento de recuperação usa o catálogo canônico;
+- [x] readback após retomada comprovou paralelismo no mesmo `lote_id`: 15.850 para
+  15.930 candidatas enquanto 4 builds concluíram; amostra posterior 16.230/19.363
+  candidatas e 19 builds concluídas, `falha=null`, `pode_publicar=false`;
+- [x] 54 testes locais aprovados antes das correções e readback de builds confirmou
+  fórmula, contrato e resultado selados; não houve alteração matemática;
+- [ ] manter a esteira ativa até a conclusão operacional ou pausa explícita do
+  usuário; não fazer sincronização Git entre computadores enquanto estiver rodando.
+
+## Recuperação do painel V27 — aplicada e validada em 31/08/2026
+
+- [x] pausa explícita do lote integral confirmada por contrato: `pausado`, 18.770
+  candidatas preparadas de 19.363, 178.759 linhas, 109 concluídas, zero
+  `processando`, `falha=null` e `pode_publicar=false`; nenhuma pendência/build foi
+  apagada ou recriada;
+- [x] causa do painel indisponível comprovada: `otimizador_producao_status_v5`
+  recebe `p_lote_id uuid DEFAULT NULL`, mas o corpo vazio do PostgREST não resolve
+  a função; a ponte agora envia explicitamente `p_lote_id: null`, sem consulta
+  direta a tabela, fallback legado ou ID textual local;
+- [x] saúde do lançador passou a ser uma sonda loopback sem chamar a régua/fila;
+  clicar novamente no ícone V27 reencontra somente o serviço compatível e abre o
+  painel, sem iniciar nem retomar worker;
+- [x] snapshot pré-correção criado em
+  `RECUPERACAO/20260831-antes-correcao-retorno-painel-v27/`; serviço e executável
+  V27 recompilados; 10 testes de interface e `py_compile` verdes;
+- [x] readback real após reinício controlado em `127.0.0.1:8769`: saúde V27,
+  status do mesmo lote `pausado`, 0 processando e publicação desligada;
+- [x] fórmula, pesos, moldes, ordem de busca, entradas canônicas, Ímpetos
+  condicionais, Bonificador e publicação não foram alterados.

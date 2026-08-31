@@ -16,6 +16,7 @@ from typing import Callable
 
 CONTRATO = "otimizador_fila_producao_v5"
 TAMANHO_FATIA_PADRAO = 10
+TAMANHO_FATIA_ESTEIRA = 20
 
 
 class FalhaPreparoIntegral(RuntimeError):
@@ -30,14 +31,22 @@ class PreparadorFilaIntegralV5:
         gateway,
         lote_id: str,
         ao_encerrar: Callable | None = None,
-        tamanho_fatia: int = TAMANHO_FATIA_PADRAO,
+        tamanho_fatia: int | None = None,
         esperar: float = 0.05,
+        esteira: bool = False,
     ):
         self.gateway = gateway
         self.lote_id = str(lote_id)
         self.ao_encerrar = ao_encerrar
+        self.esteira = bool(esteira)
+        if tamanho_fatia is None:
+            tamanho_fatia = TAMANHO_FATIA_ESTEIRA if self.esteira else TAMANHO_FATIA_PADRAO
         self.tamanho_fatia = max(1, min(20, int(tamanho_fatia)))
         self.esperar = max(0.01, float(esperar))
+        self.rpc_preparo = (
+            "otimizador_producao_preparar_fatia_v6"
+            if self.esteira else "otimizador_producao_preparar_fatia_v5"
+        )
 
     def _rpc(self, nome: str, corpo: dict | None = None) -> dict:
         return self.gateway.rpc(nome, corpo or {}) or {}
@@ -53,26 +62,40 @@ class PreparadorFilaIntegralV5:
     def executar(self) -> dict:
         """Prepara até finalizar, pausar, falhar ou perder a conexão local."""
         final: dict = {}
+        tentativas_transitorias = 0
         try:
             while True:
-                status = self._status()
-                estado = status.get("estado_lote") or status.get("estado")
-                if estado != "preparando":
-                    final = status
-                    break
-                resposta = self._rpc("otimizador_producao_preparar_fatia_v5", {
-                    "p_lote_id": self.lote_id,
-                    "p_limite": self.tamanho_fatia,
-                })
-                if resposta.get("contrato") != CONTRATO:
-                    raise FalhaPreparoIntegral("fatia V5 retornou contrato inesperado")
-                final = resposta
-                estado = resposta.get("estado_lote") or resposta.get("estado")
-                if estado != "preparando":
-                    break
-                # Cede o processo local para a atualização visual, sem inventar
-                # progresso nem reexecutar nenhuma fatia.
-                time.sleep(self.esperar)
+                try:
+                    status = self._status()
+                    estado = status.get("estado_lote") or status.get("estado")
+                    estados_ativos = {"rodando"} if self.esteira else {"preparando"}
+                    pendentes = int((status.get("preparo") or {}).get("pendentes") or 0)
+                    if estado not in estados_ativos or (self.esteira and pendentes == 0):
+                        final = status
+                        break
+                    resposta = self._rpc(self.rpc_preparo, {
+                        "p_lote_id": self.lote_id,
+                        "p_limite": self.tamanho_fatia,
+                    })
+                    if resposta.get("contrato") != CONTRATO:
+                        raise FalhaPreparoIntegral("fatia de preparação retornou contrato inesperado")
+                    final = resposta
+                    estado = resposta.get("estado_lote") or resposta.get("estado")
+                    pendentes = int((resposta.get("preparo") or {}).get("pendentes") or 0)
+                    if estado not in estados_ativos or (self.esteira and pendentes == 0):
+                        break
+                    tentativas_transitorias = 0
+                    # Cede o processo local para a atualização visual, sem inventar
+                    # progresso nem reexecutar nenhuma fatia.
+                    time.sleep(self.esperar)
+                except FalhaPreparoIntegral:
+                    raise
+                except Exception:
+                    # Queda transitória da rede/processo não abandona um lote em
+                    # "preparando". A mesma fatia é retomada pelo contrato e os
+                    # snapshots continuam idempotentes por card_id.
+                    tentativas_transitorias += 1
+                    time.sleep(min(10.0, 0.25 * (2 ** min(tentativas_transitorias, 5))))
             return final
         finally:
             if self.ao_encerrar:

@@ -20,9 +20,9 @@ ESPEC.loader.exec_module(MODULO)
 
 class GatewayFalso:
     def rpc(self, nome, corpo=None):
-        if nome == "bonificador_regua_v1":
+        if nome == "bonificador_regua_v2":
             return {
-                "contrato": "bonificador-regua-v1", "pode_rodar": True, "falta_o_que": [],
+                "contrato": "bonificador-regua-v2", "pode_rodar": True, "falta_o_que": [],
                 "funcao_molde": {"goleiro_ofensivo": {"id": 19, "rotulo": "Goleiro ofensivo", "pode_rodar": True}},
                 "parametro": {
                     "bonus_corpo_max": 1.5, "pe_ruim_teto": 1, "pe_ruim_frequencia_0": 0,
@@ -36,7 +36,7 @@ class GatewayFalso:
                 "posicao_slot": {"0": "ofensivo"}, "casa": {"291": {"0": 19}}, "liga": {"336": [0]},
                 "cardinalidades": {"molde": 1}, "proveniencia": {"modelo": "clube_novo"},
             }
-        if nome == "bonificador_carta_v1" and corpo == {"p_card_id": "casillas-teste"}:
+        if nome == "bonificador_carta_v2" and corpo == {"p_card_id": "casillas-teste"}:
             return {
                 "card_id": "casillas-teste", "nome": "Iker Casillas", "pode_rodar": True, "falta_o_que": [],
                 "corpo": [185], "pe_ruim_uso": 2, "pe_ruim_precisao": 2,
@@ -47,6 +47,15 @@ class GatewayFalso:
                 "posicao_relacao_cardinalidade": 1, "playstyle_relacao_cardinalidade": 2,
                 "estilos_ia_cardinalidade": 2,
             }
+        if nome == "bonificador_contexto_fila_v3":
+            assert corpo == {"p_limit": 5000, "p_offset": 0}
+            return [{
+                "build_linha_card_id": 77, "card_id": "casillas-teste", "funcao_id": 19,
+                "funcao_codigo": "goleiro_ofensivo", "posicao_id": 0,
+                "carta_versao": "v-teste", "carta_fingerprint": "a" * 64,
+                "contrato_versao": "bonificador-regua-v2", "contrato_fingerprint": "b" * 64,
+                "formula_fingerprint": "c" * 64,
+            }]
         raise AssertionError(f"RPC inesperada: {nome} {corpo}")
 
 
@@ -106,6 +115,10 @@ def main():
     try:
         status, saude = obter(base + "/api/saude")
         assert status == 200 and saude["ok"]
+        assert saude["aplicativo"] == "bonificador_clubefootball"
+        status, fila = obter(base + "/api/fila/status")
+        assert status == 200 and fila["fila"]["total"] == 1
+        assert fila["fila"]["itens"][0]["funcao_nome"] == "Goleiro ofensivo"
         status, simulado = obter(base + "/api/simular?card_id=casillas-teste&funcao_id=19")
         assert status == 200 and simulado["bonus"]["estilo"] == 1.5
         status, iniciado = obter(base + "/api/pipeline/iniciar", b"{}")
@@ -124,9 +137,10 @@ def main():
     finally:
         httpd.shutdown(); httpd.server_close(); thread.join(timeout=2)
 
-    estaticos = (RAIZ / "2-MOTORES" / "BONIFICADOR" / "interface" / "app.js").read_text(encoding="utf-8")
-    assert "SUPABASE_KEY" not in estaticos and "clube_novo" not in estaticos
-    print("INTERFACE_LOCAL_OK simulacao=casillas pipeline_inicio_parada_assincronos=sim post=405 frontend_sem_credencial=sim")
+    servidor = SERVIDOR.read_text(encoding="utf-8")
+    assert "bonificador_contexto_fila_v3" in servidor
+    assert '"clube_novo"' not in servidor
+    print("INTERFACE_LOCAL_OK simulacao=casillas fila_canonica=1 pipeline_inicio_parada_assincronos=sim post=405")
 
 
 if __name__ == "__main__":

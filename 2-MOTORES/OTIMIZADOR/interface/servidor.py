@@ -28,7 +28,7 @@ else:
 CONFIG_CANDIDATAS = (MOTOR_DIR.parent / "config.txt", MOTOR_DIR / "config.txt")
 CARD_ID_VALIDO = re.compile(r"^[A-Za-z0-9@_-]{1,64}$")
 APLICATIVO_ID = "otimizador_clubefootball"
-INTERFACE_VERSAO = "20260831-v25"
+INTERFACE_VERSAO = "20260831-v27"
 FILA_V5_AGUARDANDO_APLICACAO = (
     "A fila integral V5 está preparada localmente, mas a migração ainda não foi "
     "aplicada em clube_novo. Nenhuma carta será criada ou processada até essa "
@@ -45,6 +45,8 @@ RPC_PERMITIDAS = {
     "otimizador_producao_criar_lote_integral_v5", "otimizador_producao_preparar_fatia_v5",
     "otimizador_producao_controlar_preparo_v5", "otimizador_producao_fila_paginada_v5",
     "otimizador_producao_eventos_paginados_v5", "otimizador_cartas_apresentacao_v2",
+    "otimizador_producao_iniciar_esteira_v6", "otimizador_producao_preparar_fatia_v6",
+    "otimizador_producao_reservar_linha_v6", "otimizador_producao_concluir_linha_v6",
 }
 
 
@@ -323,7 +325,14 @@ class ServicoOtimizador:
         if not hasattr(self, "gateway"):
             return self._fila_v5_aguardando_aplicacao()
         try:
-            bruto = self.gateway.rpc("otimizador_producao_status_v5", {}, ausente_ok=True)
+            # O RPC V5 declara ``p_lote_id uuid DEFAULT NULL``. PostgREST não
+            # aplica esse default se o corpo vier vazio: ele procura uma
+            # sobrecarga sem argumentos e devolve 500. Enviar NULL preserva a
+            # seleção canônica do lote ativo no próprio contrato, sem a UI
+            # consultar tabelas nem guardar/adivinhar IDs locais.
+            bruto = self.gateway.rpc(
+                "otimizador_producao_status_v5", {"p_lote_id": None}, ausente_ok=True
+            )
         except TypeError:
             return self._fila_v5_aguardando_aplicacao()
         if bruto is None:
@@ -554,39 +563,58 @@ class ServicoOtimizador:
                 self._preparo_thread = None
                 self._preparo_lote_id = None
 
-    def _iniciar_worker_producao(self, lote_id):
+    def _iniciar_worker_producao(self, lote_id, esteira=False):
         with self._worker_lock:
             if self._preparador_ativo():
-                raise ErroDaInterface("a preparação integral ainda está ativa", 409)
+                if self._preparo_lote_id != str(lote_id) or not esteira:
+                    raise ErroDaInterface("a preparação integral ativa pertence a outro modo/lote", 409)
             if self._worker_ativo():
                 if self._worker_lote_id != str(lote_id):
                     raise ErroDaInterface("já existe worker local para outro lote V3", 409)
                 return
             from fila_producao_v3 import WorkerFilaProducaoV3
-            worker = WorkerFilaProducaoV3(self.gateway, str(lote_id), self._worker_encerrado)
+            worker = WorkerFilaProducaoV3(
+                self.gateway, str(lote_id), self._worker_encerrado, esteira=esteira,
+            )
             thread = threading.Thread(target=worker.executar, name="otimizador-fila-v3", daemon=True)
             self._worker_lote_id = str(lote_id)
             self._worker_thread = thread
             thread.start()
 
-    def _iniciar_preparador_integral(self, lote_id):
+    def _iniciar_preparador_integral(self, lote_id, esteira=False):
         with self._worker_lock:
             if self._worker_ativo():
-                raise ErroDaInterface("o worker já está calculando uma fila", 409)
+                if self._worker_lote_id != str(lote_id) or not esteira:
+                    raise ErroDaInterface("o worker ativo pertence a outro modo/lote", 409)
             if self._preparador_ativo():
                 if self._preparo_lote_id != str(lote_id):
                     raise ErroDaInterface("já existe preparação local para outro lote", 409)
                 return
             from preparo_fila_integral_v5 import PreparadorFilaIntegralV5
             preparador = PreparadorFilaIntegralV5(
-                self.gateway, str(lote_id), self._preparador_encerrado,
+                self.gateway, str(lote_id), self._preparador_encerrado, esteira=esteira,
             )
             thread = threading.Thread(
-                target=preparador.executar, name="otimizador-preparo-v5", daemon=True,
+                target=preparador.executar,
+                name="otimizador-esteira-preparo-v6" if esteira else "otimizador-preparo-v5",
+                daemon=True,
             )
             self._preparo_lote_id = str(lote_id)
             self._preparo_thread = thread
             thread.start()
+
+    def _iniciar_esteira_integral(self, lote_id):
+        """Liga produtor e consumidor do mesmo lote integral, por IDs selados."""
+        resposta = self.gateway.rpc("otimizador_producao_iniciar_esteira_v6", {
+            "p_lote_id": lote_id,
+        }) or {}
+        if resposta.get("contrato") != "otimizador_fila_producao_v5":
+            raise ErroDaInterface("o contrato não confirmou o início da esteira V6", 503)
+        if resposta.get("pode_publicar") is not False:
+            raise ErroDaInterface("a esteira tentou habilitar publicação", 409)
+        self._iniciar_preparador_integral(lote_id, esteira=True)
+        self._iniciar_worker_producao(lote_id, esteira=True)
+        return resposta
 
     @staticmethod
     def _formula_e_versao_local():
@@ -613,7 +641,7 @@ class ServicoOtimizador:
         }) or {}
         if criada.get("contrato") != "otimizador_fila_producao_v5" or not criada.get("lote_id"):
             raise ErroDaInterface("o contrato não confirmou a criação da fila integral", 503)
-        self._iniciar_preparador_integral(criada["lote_id"])
+        self._iniciar_esteira_integral(criada["lote_id"])
         return self.painel_fila()
 
     def iniciar_fila(self):
@@ -624,16 +652,12 @@ class ServicoOtimizador:
             status = self.criar_fila()
             return status
         estado = status.get("estado_lote") or status.get("estado")
-        if estado == "preparando":
-            self._iniciar_preparador_integral(status.get("lote_id"))
+        if estado in {"preparando", "preparo_pausado"}:
+            self._iniciar_esteira_integral(status.get("lote_id"))
             return self.painel_fila()
-        if estado == "preparo_pausado":
-            if status.get("acoes", {}).get("retomar") is not True:
-                raise ErroDaInterface("o contrato não autoriza retomar a preparação", 409)
-            self.gateway.rpc("otimizador_producao_controlar_preparo_v5", {
-                "p_lote_id": status.get("lote_id"), "p_acao": "retomar",
-            })
-            self._iniciar_preparador_integral(status.get("lote_id"))
+        if estado == "rodando" and status.get("tipo_lote") == "integral":
+            self._iniciar_preparador_integral(status.get("lote_id"), esteira=True)
+            self._iniciar_worker_producao(status.get("lote_id"), esteira=True)
             return self.painel_fila()
         acao = self._acao_de_inicio(status)
         lote_id = status.get("lote_id")
@@ -642,7 +666,12 @@ class ServicoOtimizador:
         }) or {}
         if resposta.get("contrato") != "otimizador_fila_producao_v3":
             raise ErroDaInterface("o contrato não confirmou o início da fila V3", 503)
-        self._iniciar_worker_producao(lote_id)
+        preparo_pendente = int((status.get("preparo") or {}).get("pendentes") or 0)
+        if status.get("tipo_lote") == "integral" and preparo_pendente > 0:
+            self._iniciar_preparador_integral(lote_id, esteira=True)
+            self._iniciar_worker_producao(lote_id, esteira=True)
+        else:
+            self._iniciar_worker_producao(lote_id)
         return self.painel_fila()
 
     def pausar_fila(self):
@@ -676,13 +705,16 @@ class ServicoOtimizador:
         raise ErroDaInterface("a fila integral é operada pelo painel; não existe lançador .bat produtivo", 409)
 
     def saude(self):
-        regua = self.regua()
+        # Esta rota é usada pelo ícone para reencontrar um serviço que já está
+        # executando. Ela precisa responder mesmo quando uma consulta extensa
+        # de régua/fila estiver em curso; os gates completos continuam nas
+        # rotas próprias do painel.
         return {
             "ok": True, "aplicativo": APLICATIVO_ID,
             "versao_interface": INTERFACE_VERSAO,
-            "contrato": regua.get("contrato"),
-            "pode_rodar": bool((regua.get("gate") or {}).get("pode_rodar")),
-            "modo": "consulta_local_v3; fila_integral_v5_preparada_sem_execucao_automatica",
+            "contrato": "controle_local_loopback_v1",
+            "pode_rodar": None,
+            "modo": "consulta_local_v3; esteira_integral_v6_sem_publicacao",
             "acesso": "somente contratos selados",
         }
 

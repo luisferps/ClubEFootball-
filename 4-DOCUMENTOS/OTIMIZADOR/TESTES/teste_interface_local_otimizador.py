@@ -106,6 +106,17 @@ class GatewayRotulosCanonicos:
         raise AssertionError(nome)
 
 
+class GatewayStatusV5ComDefault:
+    def __init__(self):
+        self.chamadas = []
+
+    def rpc(self, nome, corpo=None, ausente_ok=False):
+        self.chamadas.append((nome, corpo, ausente_ok))
+        if nome != "otimizador_producao_status_v5":
+            raise AssertionError(nome)
+        return {"contrato": "otimizador_fila_producao_v5", "lote_id": "lote-ativo"}
+
+
 class InterfaceOtimizadorTest(unittest.TestCase):
     def setUp(self):
         self.httpd = mod.criar_servidor(ServicoFalso(), 0)
@@ -177,6 +188,8 @@ class InterfaceOtimizadorTest(unittest.TestCase):
             "otimizador_producao_criar_lote_integral_v5", "otimizador_producao_preparar_fatia_v5",
             "otimizador_producao_controlar_preparo_v5", "otimizador_producao_fila_paginada_v5",
             "otimizador_producao_eventos_paginados_v5", "otimizador_cartas_apresentacao_v2",
+            "otimizador_producao_iniciar_esteira_v6", "otimizador_producao_preparar_fatia_v6",
+            "otimizador_producao_reservar_linha_v6", "otimizador_producao_concluir_linha_v6",
         })
         texto = SERVIDOR.read_text(encoding="utf-8")
         self.assertNotIn("otimizador_status_teste_v2", texto)
@@ -223,7 +236,7 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         self.assertEqual(linhas[2]["posicao_rotulo"], "ID 98 · catálogo ausente")
         js = (SERVIDOR.parent / "app.js").read_text(encoding="utf-8")
         self.assertIn("aguardando_aplicacao_fila_v5", js)
-        self.assertIn("Preparar fila integral", js)
+        self.assertIn("Iniciar fila integral", js)
         self.assertIn("otimizador_producao_fila_paginada_v5", SERVIDOR.read_text(encoding="utf-8"))
         self.assertIn("a.criar===true", js)
         self.assertIn("a.iniciar===true", js)
@@ -232,7 +245,7 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         interface = (SERVIDOR.parent / "index.html").read_text(encoding="utf-8")
         self.assertIn("Build campeã", interface)
         self.assertIn("<th>Tempo</th>", interface)
-        self.assertIn("PRODUÇÃO V5 · SEM PUBLICAÇÃO", interface)
+        self.assertIn("ESTEIRA V6 · SEM PUBLICAÇÃO", interface)
         self.assertNotIn('id="abrir-console"', interface)
         self.assertIn("pontuacao_final", js)
         self.assertIn("duracao_segundos", js)
@@ -251,7 +264,24 @@ class InterfaceOtimizadorTest(unittest.TestCase):
                 chamada()
             self.assertEqual(erro.exception.status, 409)
 
-    def test_executavel_portatil_reconhece_a_interface_v25(self):
+    def test_status_v5_envia_null_para_o_default_do_contrato(self):
+        servico = object.__new__(mod.ServicoOtimizador)
+        gateway = GatewayStatusV5ComDefault()
+        servico.gateway = gateway
+        status = servico._status_fila()
+        self.assertTrue(status["disponivel"])
+        self.assertEqual(gateway.chamadas, [
+            ("otimizador_producao_status_v5", {"p_lote_id": None}, True),
+        ])
+
+    def test_saude_local_nao_dependa_de_regua_ou_fila(self):
+        servico = object.__new__(mod.ServicoOtimizador)
+        saude = servico.saude()
+        self.assertTrue(saude["ok"])
+        self.assertEqual(saude["contrato"], "controle_local_loopback_v1")
+        self.assertIsNone(saude["pode_rodar"])
+
+    def test_executavel_portatil_reconhece_a_interface_v26(self):
         raiz_motor = SERVIDOR.parent.parent
         launcher = (raiz_motor / "windows-app" / "ClubEfootballOtimizadorLauncher.cs").read_text(encoding="utf-8")
         compilador = (raiz_motor / "windows-app" / "COMPILAR-APLICATIVO.ps1").read_text(encoding="utf-8")
@@ -259,7 +289,7 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         bootstrap = (raiz_motor / "servico_portatil.py").read_text(encoding="utf-8")
         atalho = (raiz_motor / "RODAR-OTIMIZADOR.bat").read_text(encoding="utf-8")
         self.assertIn('ExpectedApp = "\\\"aplicativo\\\": \\"otimizador_clubefootball\\\""', launcher)
-        self.assertIn('ExpectedVersion = "\\\"versao_interface\\\": \\"20260831-v25\\\""', launcher)
+        self.assertIn('ExpectedVersion = "\\\"versao_interface\\\": \\"20260831-v27\\\""', launcher)
         self.assertIn("OtimizadorServico.exe", launcher)
         self.assertIn("CLUBEF_OTIMIZADOR_ROOT", launcher)
         self.assertNotIn("FindPythonW", launcher)

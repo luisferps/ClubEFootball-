@@ -1,0 +1,1 @@
+Snapshot recuperável anterior à troca da interface web por janela nativa com fila do Bonificador. Para recuperar, copie somente os arquivos homônimos de arquivos para a raiz operacional. Nenhum banco foi alterado.

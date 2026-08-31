@@ -20,10 +20,10 @@ namespace ClubEfootballOtimizador
     internal static class Program
     {
         private const int AppPort = 8769;
-        private const string AppUrl = "http://127.0.0.1:8769/?v=20260831-v25";
+        private const string AppUrl = "http://127.0.0.1:8769/?v=20260831-v27";
         private const string StatusUrl = "http://127.0.0.1:8769/api/saude";
         private const string ExpectedApp = "\"aplicativo\": \"otimizador_clubefootball\"";
-        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v25\"";
+        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v27\"";
         private static readonly object DiagnosticLock = new object();
         private static readonly StringBuilder StartupDiagnostic = new StringBuilder();
 
