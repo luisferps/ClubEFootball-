@@ -251,11 +251,7 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         self.assertIn("duracao_segundos", js)
         self.assertIn("Em processamento há", js)
         self.assertIn("Painel conectado", js)
-        self.assertIn("atualizarSaudeLocal", js)
-        self.assertIn("worker_resumo", js)
-        self.assertIn("fechar esta janela só esconde o painel", js)
-        self.assertIn("workerLocalAusente", js)
-        self.assertIn("estado-local", interface)
+        self.assertIn("painelConectado=s.ok===true", js)
         css = (SERVIDOR.parent / "style.css").read_text(encoding="utf-8")
         self.assertIn("position: sticky", css)
 
@@ -286,38 +282,8 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         self.assertTrue(saude["ok"])
         self.assertEqual(saude["contrato"], "controle_local_loopback_v1")
         self.assertIsNone(saude["pode_rodar"])
-        self.assertFalse(saude["worker_ativo"])
-        self.assertFalse(saude["preparador_ativo"])
-        self.assertIn("servidor local ativo", saude["worker_resumo"].lower())
 
-    def test_saude_local_reflete_a_linha_ativa_do_worker_sem_banco(self):
-        class ThreadAtiva:
-            @staticmethod
-            def is_alive():
-                return True
-
-        class WorkerFalso:
-            lote_id = "lote-local"
-
-        servico = object.__new__(mod.ServicoOtimizador)
-        servico._worker_lock = threading.RLock()
-        servico._worker_lote_id = "lote-local"
-        servico._worker_thread = ThreadAtiva()
-        servico._preparo_thread = None
-        servico._worker_estado = mod.ServicoOtimizador._estado_local("iniciando", "lote-local")
-        servico._preparo_estado = mod.ServicoOtimizador._estado_local("aguardando")
-        servico._progresso_worker(WorkerFalso(), "calculando", {
-            "linha_id": 3389, "card_id": "52781926899717", "funcao_id": 1, "posicao_id": 12,
-        })
-        saude = servico.saude()
-        self.assertTrue(saude["worker_ativo"])
-        self.assertEqual(saude["worker"]["linha_id"], 3389)
-        self.assertEqual(saude["worker"]["card_id"], "52781926899717")
-        self.assertEqual(saude["worker"]["etapa"], "calculando")
-        self.assertIn("linha 3389", saude["worker_resumo"])
-        self.assertIsInstance(saude["worker_decorrido_segundos"], int)
-
-    def test_executavel_portatil_mantem_o_estado_local_da_interface_v30(self):
+    def test_executavel_portatil_reconhece_a_interface_v28(self):
         raiz_motor = SERVIDOR.parent.parent
         launcher = (raiz_motor / "windows-app" / "ClubEfootballOtimizadorLauncher.cs").read_text(encoding="utf-8")
         compilador = (raiz_motor / "windows-app" / "COMPILAR-APLICATIVO.ps1").read_text(encoding="utf-8")
@@ -325,17 +291,12 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         bootstrap = (raiz_motor / "servico_portatil.py").read_text(encoding="utf-8")
         atalho = (raiz_motor / "RODAR-OTIMIZADOR.bat").read_text(encoding="utf-8")
         self.assertIn('ExpectedApp = "\\\"aplicativo\\\": \\"otimizador_clubefootball\\\""', launcher)
-        self.assertIn('ExpectedVersion = "\\\"versao_interface\\\": \\"20260831-v30\\\""', launcher)
+        self.assertIn('ExpectedVersion = "\\\"versao_interface\\\": \\"20260831-v28\\\""', launcher)
         self.assertIn("OtimizadorServico.exe", launcher)
         self.assertIn("CLUBEF_OTIMIZADOR_ROOT", launcher)
         self.assertNotIn("FindPythonW", launcher)
         self.assertIn("8769", launcher)
-        self.assertIn("NotifyIcon", launcher)
-        self.assertIn("TrayController", launcher)
-        self.assertIn("LauncherMutex", launcher)
-        self.assertIn("Fechar a janela não interrompe a fila", launcher)
         self.assertIn("precisaCompilar", compilador)
-        self.assertIn("System.Drawing.dll", compilador)
         self.assertIn("COMPILAR-SERVICO-PORTATIL.ps1", compilador)
         self.assertIn("PyInstaller", compilador_servico)
         self.assertIn("CLUBEF_OTIMIZADOR_ROOT", bootstrap)

@@ -43,25 +43,14 @@ class WorkerFilaProducaoV3:
     """Uma reserva por vez; o banco decide exclusividade e estados."""
 
     def __init__(self, gateway, lote_id: str, ao_encerrar=None, esperar: float = 0.25,
-                 esteira: bool = False, ao_progresso=None):
+                 esteira: bool = False):
         self.gateway = gateway
         self.lote_id = str(lote_id)
         self.worker_id = str(uuid.uuid4())
         self.ao_encerrar = ao_encerrar
         self.esperar = max(0.05, float(esperar))
         self.esteira = bool(esteira)
-        self.ao_progresso = ao_progresso
         self._runner = None
-
-    def _progresso(self, etapa: str, item: dict | None = None, detalhe=None) -> None:
-        """Espelha marcos já existentes para o painel local; nunca muda o cálculo."""
-        if not self.ao_progresso:
-            return
-        try:
-            self.ao_progresso(self, etapa, item, detalhe)
-        except Exception:
-            # Observabilidade não pode derrubar nem alterar uma linha da fila.
-            pass
 
     def _rpc(self, nome: str, corpo: dict | None = None):
         return self.gateway.rpc(nome, corpo or {}) or {}
@@ -171,11 +160,8 @@ class WorkerFilaProducaoV3:
         """Roda até concluir/pausar/encerrar, sempre uma linha reservada por vez."""
         final: dict = {}
         try:
-            self._progresso("conferindo_selo")
             contexto = self._contexto()
-            self._progresso("preparando_executor")
             self._preparar_executor(contexto)
-            self._progresso("aguardando_linha")
             while True:
                 item = self._reservar()
                 if item.get("reservada") is not True:
@@ -183,33 +169,23 @@ class WorkerFilaProducaoV3:
                     if estado == "rodando":
                         # Outro worker pode estar terminando uma linha. Não calcula
                         # nem duplica; aguarda nova decisão atômica do banco.
-                        self._progresso("aguardando_linha")
                         time.sleep(self.esperar)
                         continue
                     final = self._fechar_pausa_ou_encerramento()
-                    self._progresso("encerrando", detalhe=final.get("estado_lote") or final.get("estado"))
                     break
-                self._progresso("linha_reservada", item)
                 try:
-                    self._progresso("calculando", item)
                     resultado = self._calcular(item)
                 except Exception as erro:
-                    motivo = _texto_erro(erro)
-                    self._progresso("bloqueando_linha", item, motivo)
-                    self._bloquear(item, motivo)
+                    self._bloquear(item, _texto_erro(erro))
                 else:
-                    self._progresso("gravando_resultado", item)
                     self._concluir(item, resultado)
-                    self._progresso("linha_concluida", item)
                 final = self._fechar_pausa_ou_encerramento()
                 estado = final.get("estado_lote") or final.get("estado")
                 if estado in {"pausado", "encerrado", "concluido", "falhou"}:
-                    self._progresso("encerrando", detalhe=estado)
                     break
             return final
         except Exception as erro:
             motivo = _texto_erro(erro)
-            self._progresso("falha_worker", detalhe=motivo)
             try:
                 final = self._rpc("otimizador_producao_falhar_lote_v3", {
                     "p_lote_id": self.lote_id, "p_motivo": motivo,

@@ -9,7 +9,6 @@ import os
 import re
 import sys
 import threading
-import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -29,7 +28,7 @@ else:
 CONFIG_CANDIDATAS = (MOTOR_DIR.parent / "config.txt", MOTOR_DIR / "config.txt")
 CARD_ID_VALIDO = re.compile(r"^[A-Za-z0-9@_-]{1,64}$")
 APLICATIVO_ID = "otimizador_clubefootball"
-INTERFACE_VERSAO = "20260831-v30"
+INTERFACE_VERSAO = "20260831-v27"
 FILA_V5_AGUARDANDO_APLICACAO = (
     "A fila integral V5 está preparada localmente, mas a migração ainda não foi "
     "aplicada em clube_novo. Nenhuma carta será criada ou processada até essa "
@@ -140,13 +139,6 @@ class ServicoOtimizador:
         self._worker_lote_id = None
         self._preparo_thread = None
         self._preparo_lote_id = None
-        # Este estado pertence apenas ao processo local. Ele não substitui os
-        # estados selados da fila no banco; existe para que a tela e o ícone
-        # do Windows digam com honestidade se este computador ainda calcula
-        # uma linha depois que a janela do navegador foi fechada.
-        self._servidor_iniciado_em = time.time()
-        self._worker_estado = self._estado_local("aguardando")
-        self._preparo_estado = self._estado_local("aguardando")
 
     def regua(self):
         pacote = self.gateway.rpc("otimizador_regua_v2") or {}
@@ -553,61 +545,15 @@ class ServicoOtimizador:
             return "retomar"
         raise ErroDaInterface("o selo do contrato não autoriza iniciar nem retomar este lote", 409)
 
-    @staticmethod
-    def _estado_local(etapa, lote_id=None, item=None, detalhe=None):
-        item = item or {}
-        agora = time.time()
-        estado = {
-            "etapa": str(etapa or "aguardando"),
-            "lote_id": str(lote_id) if lote_id else None,
-            "linha_id": item.get("linha_id"),
-            "card_id": str(item["card_id"]) if item.get("card_id") is not None else None,
-            "funcao_id": item.get("funcao_id"),
-            "posicao_id": item.get("posicao_id"),
-            "atualizado_em_epoch": agora,
-            "inicio_linha_epoch": None,
-            "detalhe": str(detalhe)[:1000] if detalhe else None,
-        }
-        return estado
-
-    @staticmethod
-    def _copia_estado_local(estado):
-        return dict(estado or {})
-
-    def _progresso_worker(self, worker, etapa, item=None, detalhe=None):
-        """Recebe marcos reais do worker, sem consultar nem mudar a fila."""
-        trava = getattr(self, "_worker_lock", None)
-        if trava is None:
-            return
-        with trava:
-            if getattr(self, "_worker_lote_id", None) != worker.lote_id:
-                return
-            anterior = self._copia_estado_local(getattr(self, "_worker_estado", {}))
-            atual = self._estado_local(etapa, worker.lote_id, item, detalhe)
-            if item is None:
-                atual.update({
-                    "linha_id": anterior.get("linha_id"),
-                    "card_id": anterior.get("card_id"),
-                    "funcao_id": anterior.get("funcao_id"),
-                    "posicao_id": anterior.get("posicao_id"),
-                    "inicio_linha_epoch": anterior.get("inicio_linha_epoch"),
-                })
-            elif etapa in {"linha_reservada", "calculando"}:
-                atual["inicio_linha_epoch"] = time.time()
-            self._worker_estado = atual
-
     def _worker_ativo(self):
-        thread = getattr(self, "_worker_thread", None)
-        return bool(thread and thread.is_alive())
+        return bool(self._worker_thread and self._worker_thread.is_alive())
 
     def _preparador_ativo(self):
-        thread = getattr(self, "_preparo_thread", None)
-        return bool(thread and thread.is_alive())
+        return bool(self._preparo_thread and self._preparo_thread.is_alive())
 
     def _worker_encerrado(self, worker, _resultado):
         with self._worker_lock:
             if self._worker_lote_id == worker.lote_id:
-                self._progresso_worker(worker, "encerrado")
                 self._worker_thread = None
                 self._worker_lote_id = None
 
@@ -629,12 +575,10 @@ class ServicoOtimizador:
             from fila_producao_v3 import WorkerFilaProducaoV3
             worker = WorkerFilaProducaoV3(
                 self.gateway, str(lote_id), self._worker_encerrado, esteira=esteira,
-                ao_progresso=self._progresso_worker,
             )
             thread = threading.Thread(target=worker.executar, name="otimizador-fila-v3", daemon=True)
             self._worker_lote_id = str(lote_id)
             self._worker_thread = thread
-            self._worker_estado = self._estado_local("iniciando", lote_id)
             thread.start()
 
     def _iniciar_preparador_integral(self, lote_id, esteira=False):
@@ -765,33 +709,6 @@ class ServicoOtimizador:
         # executando. Ela precisa responder mesmo quando uma consulta extensa
         # de régua/fila estiver em curso; os gates completos continuam nas
         # rotas próprias do painel.
-        trava = getattr(self, "_worker_lock", None)
-        if trava is None:
-            worker_ativo = False
-            preparador_ativo = False
-            worker = self._copia_estado_local(getattr(self, "_worker_estado", {}))
-            preparador = self._copia_estado_local(getattr(self, "_preparo_estado", {}))
-            iniciado_em = getattr(self, "_servidor_iniciado_em", None)
-        else:
-            with trava:
-                worker_ativo = self._worker_ativo()
-                preparador_ativo = self._preparador_ativo()
-                worker = self._copia_estado_local(getattr(self, "_worker_estado", {}))
-                preparador = self._copia_estado_local(getattr(self, "_preparo_estado", {}))
-                iniciado_em = getattr(self, "_servidor_iniciado_em", None)
-        agora = time.time()
-        inicio_linha = worker.get("inicio_linha_epoch")
-        decorrido = (max(0, int(agora - inicio_linha))
-                     if worker_ativo and isinstance(inicio_linha, (int, float)) else None)
-        if worker_ativo:
-            linha = worker.get("linha_id")
-            etapa = worker.get("etapa") or "trabalhando"
-            resumo = (f"Worker ativo · linha {linha} · {etapa}"
-                      if linha is not None else f"Worker ativo · {etapa}")
-        elif preparador_ativo:
-            resumo = "Preparador ativo · montando a fila"
-        else:
-            resumo = "Servidor local ativo · nenhum worker local"
         return {
             "ok": True, "aplicativo": APLICATIVO_ID,
             "versao_interface": INTERFACE_VERSAO,
@@ -799,13 +716,6 @@ class ServicoOtimizador:
             "pode_rodar": None,
             "modo": "consulta_local_v3; esteira_integral_v6_sem_publicacao",
             "acesso": "somente contratos selados",
-            "servidor_iniciado_em_epoch": iniciado_em,
-            "worker_ativo": worker_ativo,
-            "worker": worker,
-            "worker_resumo": resumo,
-            "worker_decorrido_segundos": decorrido,
-            "preparador_ativo": preparador_ativo,
-            "preparador": preparador,
         }
 
 

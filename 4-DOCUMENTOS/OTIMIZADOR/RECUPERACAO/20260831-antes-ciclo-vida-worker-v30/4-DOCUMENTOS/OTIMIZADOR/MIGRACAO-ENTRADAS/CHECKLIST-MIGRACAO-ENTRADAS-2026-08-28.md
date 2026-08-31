@@ -278,25 +278,6 @@ Data: 28/08/2026. Estado inicial: **não ativado em produção**.
   como se fosse o código V3; snapshot pré-ativação em
   RECUPERACAO/20260831-antes-ativacao-v21/.
 
-## Ciclo de vida visível do aplicativo — V30 (31/08/2026)
-
-- [x] snapshot recuperável criado antes do ajuste em
-  RECUPERACAO/20260831-antes-ciclo-vida-worker-v30/;
-- [x] o executável local passou a manter um único controlador persistente na
-  bandeja do Windows; fechar a janela do painel não encerra nem oculta o estado
-  do worker;
-- [x] /api/saude passou a expor somente telemetria local do processo:
-  worker/preparador ativos, etapa, lote/linha/IDs atuais e tempo da linha; não
-  lê, altera ou substitui os estados selados da fila;
-- [x] a interface atualiza essa saúde a cada dois segundos e distingue “worker
-  ativo” de “servidor pronto sem worker”;
-- [x] quando o banco marca uma linha processando e o processo local não possui
-  worker, a interface denuncia a divergência e não afirma que a fila está rodando
-  nem tenta retomar/tomar reserva automaticamente;
-- [x] compilação do launcher 1.5.0 e smoke HTTP V30 validaram o contrato de saúde;
-- [x] fórmula, pesos, moldes, fila, schema, publicação, estados de pausa/parada e
-  Ímpetos condicionais não foram alterados.
-
 ## Rollback
 
 1. Repor somente os hunks de consumidor pelo patch/snapshot da etapa.

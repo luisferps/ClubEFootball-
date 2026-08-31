@@ -116,6 +116,25 @@ class FilaProducaoV3Test(unittest.TestCase):
         self.assertNotIn("otimizador_fila_teste_v2", nomes)
         self.assertNotIn("gravar_build", nomes)
 
+    def test_worker_emite_marcos_reais_sem_alterar_a_sequencia_da_fila(self):
+        gateway = GatewayDaFila()
+        eventos = []
+        worker = WorkerControlado(
+            gateway, "00000000-0000-0000-0000-000000000123", esperar=0.01,
+            ao_progresso=lambda _worker, etapa, item, detalhe: eventos.append(
+                (etapa, (item or {}).get("linha_id"), detalhe)
+            ),
+        )
+        worker.executar()
+        etapas = [etapa for etapa, _linha, _detalhe in eventos]
+        self.assertEqual(etapas[:4], [
+            "conferindo_selo", "preparando_executor", "aguardando_linha", "linha_reservada",
+        ])
+        self.assertIn(("calculando", 7001, None), eventos)
+        self.assertIn(("gravando_resultado", 7001, None), eventos)
+        self.assertIn(("linha_concluida", 7001, None), eventos)
+        self.assertEqual(gateway.resultados[0]["b1"], 104.0)
+
     def test_migracao_declara_snapshot_rsl_ids_e_gates_sem_legado(self):
         texto = MIGRACAO.read_text(encoding="utf-8")
         for trecho in (

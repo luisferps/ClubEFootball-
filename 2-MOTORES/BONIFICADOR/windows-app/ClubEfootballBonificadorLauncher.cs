@@ -50,23 +50,23 @@ namespace ClubEfootballBonificador
         private static void ValidatePackage(string root)
         {
             foreach (string file in new[] { Path.Combine(root, "interface", "servidor.py"), Path.Combine(root, "motor_bonus.py") }) if (!File.Exists(file)) throw new InvalidOperationException("O pacote do Bonificador está incompleto: " + file);
+            if (!File.Exists(Path.Combine(root, "runtime", "python.exe")) || !File.Exists(Path.Combine(root, "runtime", "python312.zip"))) throw new InvalidOperationException("O runtime portátil do Bonificador está incompleto. Copie a pasta runtime inteira junto do executável.");
             if (!File.Exists(Path.Combine(Directory.GetParent(root).FullName, "config.txt"))) throw new InvalidOperationException("A configuração compartilhada não foi encontrada em 2-MOTORES\\config.txt.");
         }
         private static void StartHiddenServer(string root)
         {
             string python = FindPython(); if (python == null) throw new InvalidOperationException("O runtime do Bonificador não foi encontrado. Mantenha a pasta runtime junto do executável.");
             string log = Path.Combine(root, "COMPONENTE-LOCAL-BONIFICADOR.log");
-            ProcessStartInfo p = new ProcessStartInfo { FileName = python, Arguments = "-u \"" + Path.Combine(root, "interface", "servidor.py") + "\"", WorkingDirectory = root, UseShellExecute = false, CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden, RedirectStandardOutput = true, RedirectStandardError = true };
+            ProcessStartInfo p = new ProcessStartInfo { FileName = python, Arguments = "-I -u \"" + Path.Combine(root, "interface", "servidor.py") + "\"", WorkingDirectory = root, UseShellExecute = false, CreateNoWindow = true, WindowStyle = ProcessWindowStyle.Hidden, RedirectStandardOutput = true, RedirectStandardError = true };
             p.EnvironmentVariables["CLUBEF_BONIFICADOR_PORT"] = AppPort.ToString(); p.EnvironmentVariables["PYTHONUTF8"] = "1";
+            foreach (string inherited in new[] { "PYTHONHOME", "PYTHONPATH", "PYTHONUSERBASE", "VIRTUAL_ENV" }) p.EnvironmentVariables.Remove(inherited);
             Process child = Process.Start(p); if (child == null) throw new InvalidOperationException("Não foi possível iniciar o componente local.");
             ThreadPool.QueueUserWorkItem(delegate { try { File.AppendAllText(log, child.StandardOutput.ReadToEnd() + child.StandardError.ReadToEnd()); } catch { } });
         }
         private static string FindPython()
         {
-            string user = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile); List<string> paths = new List<string> { Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "runtime", "python.exe"), Path.Combine(user, ".cache", "codex-runtimes", "codex-primary-runtime", "dependencies", "python", "python.exe") };
-            string programs = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "Python");
-            if (Directory.Exists(programs)) { string[] folders = Directory.GetDirectories(programs, "Python*"); Array.Sort(folders); Array.Reverse(folders); foreach (string f in folders) paths.Add(Path.Combine(f, "python.exe")); }
-            foreach (string p in paths) if (File.Exists(p)) return p; return null;
+            string portable = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "runtime", "python.exe");
+            return File.Exists(portable) ? portable : null;
         }
     }
 

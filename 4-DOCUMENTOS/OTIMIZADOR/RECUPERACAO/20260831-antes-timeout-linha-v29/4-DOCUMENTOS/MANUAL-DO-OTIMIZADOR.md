@@ -277,37 +277,6 @@ hipóteses comparadas, mas não prova ausência de estado fracionário interno n
 
 ## 10. Validação e recuperação
 
-### Ciclo de vida do aplicativo local — V30
-
-O aplicativo oficial é 2-MOTORES/OTIMIZADOR/Otimizador ClubEfootball.exe.
-Um clique abre o painel e mantém um único controlador do Otimizador no ícone perto
-do relógio do Windows. Esse ícone é a referência do processo local:
-
-- **Worker ativo · linha N · calculando**: este computador está de fato avaliando
-  aquela linha; o painel pode ser fechado e reaberto pelo ícone sem interromper
-  o trabalho;
-- **Servidor local ativo · nenhum worker local**: o aplicativo está pronto, mas
-  não afirma que uma linha esteja sendo calculada neste computador;
-- **Servidor local indisponível**: não inicie nem retome por tentativa; o painel
-  deixa claro que não consegue falar com o serviço local.
-
-Fechar a janela do navegador não pausa, não encerra e não “esconde” uma decisão de
-fila: apenas fecha a visualização. Para pausar ou parar, usar exclusivamente os
-botões **Pausar** ou **Parar** do painel. O controlador permanece visível perto do
-relógio justamente para que o operador não precise procurar processos no Gerenciador
-de Tarefas para saber se uma execução ainda existe.
-
-Se a fila do banco mostrar uma linha processando, mas o estado local disser que
-não há worker, a interface mostra a divergência e não a chama de “rodando”. Ela não
-tenta reassumir, recalcular ou tomar a reserva automaticamente: a recuperação dessa
-linha exige o contrato/ação segura apropriado, preservando o token, os resultados
-concluídos e a proibição de publicação.
-
-O snapshot imediatamente anterior a esse ajuste é
-4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260831-antes-ciclo-vida-worker-v30/.
-O ajuste V30 só acrescenta observabilidade e o controlador persistente: não muda
-fórmula, pesos, moldes, fila, resultado, banco ou publicação.
-
 Os testes permanentes ficam em `4-DOCUMENTOS/OTIMIZADOR/TESTES`:
 
 - `teste_formula_aprovada.py` executa fórmula, Otimizador local,

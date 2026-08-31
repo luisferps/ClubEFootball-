@@ -22,6 +22,6 @@ if (-not $precisaCompilar) {
     Get-Item -LiteralPath $output | Select-Object FullName,Length,LastWriteTime
     return
 }
-& $compiler /nologo /target:winexe /optimize+ /platform:anycpu /reference:System.dll /reference:System.Drawing.dll /reference:System.Windows.Forms.dll "/win32icon:$icon" "/out:$output" $source
+& $compiler /nologo /target:winexe /optimize+ /platform:anycpu /reference:System.dll /reference:System.Windows.Forms.dll "/win32icon:$icon" "/out:$output" $source
 if ($LASTEXITCODE -ne 0 -or -not (Test-Path -LiteralPath $output)) { throw 'Falha ao compilar o aplicativo Windows.' }
 Get-Item -LiteralPath $output | Select-Object FullName,Length,LastWriteTime

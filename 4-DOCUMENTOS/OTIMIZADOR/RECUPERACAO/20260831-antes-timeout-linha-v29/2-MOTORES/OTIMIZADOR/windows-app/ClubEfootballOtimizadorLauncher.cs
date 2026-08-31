@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -14,21 +12,20 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Painel local de execução e acompanhamento do Otimizador")]
 [assembly: AssemblyProduct("Otimizador ClubEfootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("1.5.0.0")]
-[assembly: AssemblyFileVersion("1.5.0.0")]
+[assembly: AssemblyVersion("1.4.0.0")]
+[assembly: AssemblyFileVersion("1.4.0.0")]
 
 namespace ClubEfootballOtimizador
 {
     internal static class Program
     {
         private const int AppPort = 8769;
-        private const string AppUrl = "http://127.0.0.1:8769/?v=20260831-v30";
+        private const string AppUrl = "http://127.0.0.1:8769/?v=20260831-v28";
         private const string StatusUrl = "http://127.0.0.1:8769/api/saude";
         private const string ExpectedApp = "\"aplicativo\": \"otimizador_clubefootball\"";
-        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v30\"";
+        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v28\"";
         private static readonly object DiagnosticLock = new object();
         private static readonly StringBuilder StartupDiagnostic = new StringBuilder();
-        private static Mutex LauncherMutex;
 
         [STAThread]
         private static void Main()
@@ -36,30 +33,19 @@ namespace ClubEfootballOtimizador
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             string root = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
-            bool ownsMutex = false;
             try
             {
-                LauncherMutex = new Mutex(true, @"Local\ClubEfootballOtimizadorLauncherV30", out ownsMutex);
                 string health = ReadHealth();
                 if (!ExpectedServer(health))
                 {
                     if (health != null)
-                        throw new InvalidOperationException("A porta interna do Otimizador está ocupada por outro aplicativo. Se o ícone do Otimizador estiver perto do relógio, dê duplo clique nele para reabrir o painel. Caso contrário, a porta 8769 pertence a outro aplicativo.");
+                        throw new InvalidOperationException("A porta interna do Otimizador está ocupada por outro aplicativo. Feche somente a outra janela do Otimizador e clique novamente neste ícone.");
                     ValidatePackage(root);
                     StartHiddenServer(root);
                     WaitForServer();
                 }
                 if (Environment.GetEnvironmentVariable("CLUBEF_OTIMIZADOR_NO_BROWSER") == "1") return;
-                if (!ownsMutex)
-                {
-                    // Uma segunda abertura só traz a janela de volta. Ela nunca
-                    // cria um segundo controlador nem interfere na fila ativa.
-                    OpenBrowser(root);
-                    return;
-                }
-                TrayController controller = new TrayController(root);
-                controller.OpenPanel();
-                Application.Run(controller);
+                OpenBrowser(root);
             }
             catch (Exception error)
             {
@@ -67,13 +53,6 @@ namespace ClubEfootballOtimizador
                 try { File.WriteAllText(Path.Combine(root, "ERRO-ABERTURA-OTIMIZADOR.txt"), message + Environment.NewLine); } catch { }
                 MessageBox.Show(message + "\n\nO detalhe também foi salvo em ERRO-ABERTURA-OTIMIZADOR.txt.",
                     "Otimizador ClubEfootball", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                if (ownsMutex && LauncherMutex != null)
-                {
-                    try { LauncherMutex.ReleaseMutex(); } catch { }
-                }
             }
         }
 
@@ -206,129 +185,6 @@ namespace ClubEfootballOtimizador
             };
             foreach (string candidate in candidates) if (File.Exists(candidate)) return candidate;
             return null;
-        }
-
-        /// <summary>
-        /// Controlador persistente na bandeja do Windows. Fechar o navegador
-        /// apenas esconde o painel: este ícone continua mostrando se o worker
-        /// deste computador está ativo e permite reabrir a mesma tela.
-        /// </summary>
-        private sealed class TrayController : ApplicationContext
-        {
-            private readonly string root;
-            private readonly NotifyIcon tray;
-            private readonly System.Windows.Forms.Timer refreshTimer;
-            private readonly ToolStripMenuItem stateItem;
-            private string lastSummary;
-
-            internal TrayController(string applicationRoot)
-            {
-                root = applicationRoot;
-                ContextMenuStrip menu = new ContextMenuStrip();
-                ToolStripMenuItem openItem = new ToolStripMenuItem("Abrir painel do Otimizador");
-                openItem.Click += delegate { OpenPanel(); };
-                stateItem = new ToolStripMenuItem("Estado: verificando o serviço local");
-                stateItem.Enabled = false;
-                ToolStripMenuItem refreshItem = new ToolStripMenuItem("Atualizar estado");
-                refreshItem.Click += delegate { RefreshStatus(); };
-                ToolStripMenuItem hintItem = new ToolStripMenuItem("Fechar a janela não interrompe a fila");
-                hintItem.Enabled = false;
-                menu.Items.Add(openItem);
-                menu.Items.Add(new ToolStripSeparator());
-                menu.Items.Add(stateItem);
-                menu.Items.Add(refreshItem);
-                menu.Items.Add(new ToolStripSeparator());
-                menu.Items.Add(hintItem);
-
-                tray = new NotifyIcon();
-                tray.Icon = SystemIcons.Application;
-                tray.Visible = true;
-                tray.ContextMenuStrip = menu;
-                tray.Text = "Otimizador · verificando serviço local";
-                tray.DoubleClick += delegate { OpenPanel(); };
-
-                refreshTimer = new System.Windows.Forms.Timer();
-                refreshTimer.Interval = 2000;
-                refreshTimer.Tick += delegate { RefreshStatus(); };
-                RefreshStatus();
-                refreshTimer.Start();
-                tray.ShowBalloonTip(
-                    7000,
-                    "Otimizador em segundo plano",
-                    "Fechar a janela apenas esconde o painel. O ícone perto do relógio mostra o estado e reabre o Otimizador.",
-                    ToolTipIcon.Info);
-            }
-
-            internal void OpenPanel()
-            {
-                OpenBrowser(root);
-            }
-
-            private void RefreshStatus()
-            {
-                string health = ReadHealth();
-                if (!ExpectedServer(health))
-                {
-                    SetStatus("Servidor local indisponível", SystemIcons.Error);
-                    return;
-                }
-                bool workerActive = ReadJsonBoolean(health, "worker_ativo");
-                string summary = ReadJsonString(health, "worker_resumo");
-                if (String.IsNullOrWhiteSpace(summary))
-                    summary = workerActive ? "Worker local ativo" : "Servidor local ativo · nenhum worker local";
-                SetStatus(summary, workerActive ? SystemIcons.Information : SystemIcons.Application);
-            }
-
-            private void SetStatus(string summary, Icon icon)
-            {
-                summary = String.IsNullOrWhiteSpace(summary) ? "Estado local não informado" : summary.Trim();
-                tray.Icon = icon;
-                tray.Text = CompactTooltip("Otimizador · " + summary);
-                stateItem.Text = "Estado: " + summary;
-                if (!String.Equals(lastSummary, summary, StringComparison.Ordinal))
-                {
-                    lastSummary = summary;
-                    // O balão é informativo e não representa decisão de pausa,
-                    // parada ou recuperação da fila.
-                    if (summary.IndexOf("indisponível", StringComparison.OrdinalIgnoreCase) >= 0)
-                        tray.ShowBalloonTip(5000, "Otimizador", summary, ToolTipIcon.Warning);
-                }
-            }
-
-            private static string CompactTooltip(string value)
-            {
-                const int maximum = 63;
-                return value.Length <= maximum ? value : value.Substring(0, maximum - 1) + "…";
-            }
-
-            private static bool ReadJsonBoolean(string json, string property)
-            {
-                if (String.IsNullOrEmpty(json)) return false;
-                return Regex.IsMatch(
-                    json,
-                    "\"" + Regex.Escape(property) + "\"\\s*:\\s*true",
-                    RegexOptions.IgnoreCase);
-            }
-
-            private static string ReadJsonString(string json, string property)
-            {
-                if (String.IsNullOrEmpty(json)) return null;
-                Match match = Regex.Match(
-                    json,
-                    "\"" + Regex.Escape(property) + "\"\\s*:\\s*\"(?<value>(?:\\\\.|[^\"])*)\"");
-                if (!match.Success) return null;
-                try { return Regex.Unescape(match.Groups["value"].Value); }
-                catch { return match.Groups["value"].Value; }
-            }
-
-            protected override void ExitThreadCore()
-            {
-                refreshTimer.Stop();
-                refreshTimer.Dispose();
-                tray.Visible = false;
-                tray.Dispose();
-                base.ExitThreadCore();
-            }
         }
     }
 }
