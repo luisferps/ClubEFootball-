@@ -1,6 +1,6 @@
 # Manual do Extrator de Fotos
 
-Atualizado em 31/08/2026 para a interface local de execução direta, retomada segura e transferência para outro computador.
+Atualizado em 31/08/2026 para a interface local de execução direta, Session pooler, retomada segura, diagnóstico por logs e operação em computador dedicado.
 
 ## O que o aplicativo faz
 
@@ -32,28 +32,34 @@ O terceiro campo não recebe Secret Key, `service_role` nem chave `anon` do Supa
 postgresql://postgres:[SUA-SENHA]@db.SEUPROJETO.supabase.co:5432/postgres
 ```
 
-Para obtê-la:
+Para obtê-la no computador que executará o Extrator:
 
 1. abra o projeto no Supabase;
 2. clique em **Connect**;
-3. escolha **Direct connection**;
+3. escolha **Session pooler** quando o computador estiver em uma rede IPv4 comum;
 4. copie a connection string;
-5. substitua `[YOUR-PASSWORD]` pela senha atual do banco.
+5. confirme que a porta é `5432`;
+6. se a URL contiver `[YOUR-PASSWORD]`, substitua somente esse trecho pela senha atual do banco. Se o painel já entregar a URL preenchida, não acrescente outro texto.
 
-Se a conexão direta não funcionar porque a rede do computador não oferece IPv6, use em **Connect** a opção **Session pooler**, na porta 5432. Não use o Transaction pooler da porta 6543 para esta execução longa.
+A conexão **Direct connection** usa `db.<project-ref>.supabase.co:5432` e normalmente exige IPv6. A conexão **Session pooler** usa `aws-<região>.pooler.supabase.com:5432` e é a opção adequada para este aplicativo persistente quando a rede é somente IPv4. Não use o Transaction pooler da porta `6543` para esta execução longa.
 
-Se a senha contiver `@`, `:`, `/`, `#`, `%` ou outro caractere reservado de URL, ela precisa estar percent-encoded dentro da connection string. Quando a senha foi esquecida, use **Reset database password** no painel e monte novamente a URL com a nova senha.
+Se a senha contiver `@`, `:`, `/`, `#`, `%` ou outro caractere reservado de URL, ela precisa estar percent-encoded dentro da connection string. Quando a senha foi esquecida, use **Reset database password** no painel e monte novamente a URL com a nova senha. O reset não atualiza automaticamente o cofre do Extrator: preencha novamente os três campos em cada computador que executa o aplicativo.
+
+O nome técnico `direct_postgres_transaction` nos logs significa que o Extrator está usando o driver PostgreSQL e uma transação direta com o banco. Ele também aparece quando o endereço de rede escolhido é o Session pooler; não significa que o host IPv6 da opção **Direct connection** foi usado.
 
 ## Como iniciar
 
 1. Dê dois cliques em `INICIAR-EXTRATOR-DE-FOTOS.cmd`.
-2. Aguarde a janela preta informar o endereço local `http://127.0.0.1:PORTA`.
-3. Aguarde o navegador abrir a tela **Extrator de Fotos**.
-4. Na primeira utilização desse computador, cole as três credenciais.
-5. Clique uma vez em **INICIAR**.
-6. Não clique novamente enquanto aparecer execução em andamento.
+2. Na primeira utilização, aguarde a instalação automática das dependências verificadas. A mensagem `added 14 packages` é normal.
+3. Aguarde a janela preta informar o endereço local `http://127.0.0.1:PORTA`.
+4. Aguarde o navegador abrir a tela **Extrator de Fotos**.
+5. Na primeira utilização desse computador, cole as três credenciais.
+6. Clique uma vez em **INICIAR**.
+7. Não clique novamente enquanto aparecer execução em andamento.
 
-Depois da primeira conexão válida, os campos mostram **Salva nesta máquina**. Nas próximas aberturas, basta clicar em **INICIAR**. Se os três campos forem preenchidos de novo, as credenciais salvas serão substituídas somente depois de a nova conexão ser aceita.
+Depois que a descoberta do Supabase for aceita, os campos mostram **Salva nesta máquina**. Nas próximas aberturas, basta clicar em **INICIAR**. Se a descoberta falhar antes de validar a coluna, as credenciais novas não são salvas e os três campos precisam ser preenchidos de novo. Se os três campos forem preenchidos novamente, o cofre anterior só é substituído depois de a nova conexão ser aceita.
+
+Se a janela preta mostrar acentos como `dependÃªncias` ou `utilizaÃ§Ã£o`, isso é somente uma diferença de codificação visual do console do Windows. Não altera chaves, URLs, imagens ou banco e não representa falha de execução.
 
 ## Quais janelas precisam ficar abertas
 
@@ -68,7 +74,7 @@ Depois de aparecer **Concluído**, a aba e a janela preta podem ser fechadas.
 
 ## Como interpretar a tela
 
-- **Consultando o Supabase**: está criando uma fotografia ordenada das cartas atualmente sem link.
+- **Consultando o Supabase**: está criando uma fotografia ordenada das cartas atualmente sem link. Em universos grandes e usando Session pooler, essa etapa pode levar alguns minutos; a versão atual permite até 5 minutos.
 - **Buscando e enviando fotos**: está verificando Cloudinary e, quando necessário, EFHub.
 - **Gravando e conferindo o lote**: o manifesto está sendo validado, aplicado e relido.
 - **Lote conferido**: aquele lote já fechou com segurança e o próximo pode começar.
@@ -130,6 +136,8 @@ Quando não existe conflito, o campo `counts.conflict_preserved` pode não ser g
 
 O fluxo operacional usa conexão PostgreSQL no servidor local, que é um processo confiável e não o código do navegador. Não é necessário expor `clube_novo` na Data API, conceder acesso a `anon`/`authenticated` nem colocar Secret Key do Supabase no navegador. A mudança do Supabase que exige opt-in explícito para novas tabelas na Data API não afeta este acesso PostgreSQL direto.
 
+A descoberta inicial é somente leitura e possui `statement_timeout` de até 5 minutos porque precisa contar e ordenar dezenas de milhares de cartas. O APPLY continua com limite independente de 30 segundos por transação de lote; aumentar o tempo da descoberta não afrouxa a proteção das gravações.
+
 ## Credenciais e segurança local
 
 - A interface é servida somente em `127.0.0.1`, em porta temporária.
@@ -159,6 +167,15 @@ Arquivos principais:
 
 O manifesto recebe SHA-256 canônico. Se for alterado depois de criado, o APPLY é recusado.
 
+Para uma falha ocorrida ainda em **Consultando o Supabase**, abra primeiro:
+
+```text
+output\discoveries\<pasta-mais-recente>\summary.json
+output\discoveries\<pasta-mais-recente>\events.jsonl
+```
+
+Para uma falha durante download/upload, use a pasta mais recente de `output\runs`. Para uma falha durante gravação ou readback do banco, use a pasta mais recente de `output\applies`. O `summary.json` mostra o resultado geral; o `events.jsonl` contém a causa exata. Não envie arquivos de credenciais nem URLs que contenham senha.
+
 ## Se ocorrer uma falha
 
 1. Não fique clicando repetidamente em **INICIAR**.
@@ -181,6 +198,7 @@ Erros comuns:
 
 - **Password authentication failed**: a senha na Database URL está errada ou desatualizada;
 - **connection refused/timeout**: confirme internet, firewall e o tipo de conexão; em rede IPv4, tente Session pooler;
+- **canceling statement due to statement timeout** com `column_verified: false`, `selected: 0` e `database_modified: false`: a conexão funcionou, mas a consulta inicial ultrapassou o limite de 30 segundos da versão antiga. Atualize o aplicativo; a descoberta agora possui até 5 minutos, sem alterar o limite curto e seguro do APPLY;
 - **Cloudinary HTTP 401**: API Key ou API Secret incorretos;
 - **Cloudinary/EFHub 429 ou falha temporária**: o programa tenta novamente; se esgotar, o lote para com log;
 - **Operação terminou com falha**: abra o resumo e o log mais recentes para encontrar a causa específica.
@@ -192,7 +210,7 @@ Erros comuns:
 1. Feche o Extrator e outros programas que possam estar gravando arquivos dentro do projeto.
 2. Na raiz de `ClubEFootball--main`, abra somente `3-ATUALIZAR-O-GITHUB.bat`. Esse é o botão central de publicação de todo o projeto; a cópia existente na pasta `GitHub` apenas chama esse mesmo botão.
 3. Confira o resumo de arquivos novos, alterados e excluídos. Não confirme exclusões que você não reconhece.
-4. Para autorizar o conjunto inteiro, digite `PUBLICAR TUDO`. Se houver exclusões, o botão exige também `CONFIRMAR EXCLUSOES`.
+4. Para autorizar o conjunto inteiro, pressione **S** quando aparecer `Confirmação [S/N]`. Não é necessário copiar texto nem pressionar Enter. Se houver exclusões, o botão apresenta uma segunda confirmação **S/N** separada.
 5. Antes de executar `git add`, criar commit ou enviar qualquer coisa, o botão cria e compara um backup físico completo, inclusive com `.git`, em:
 
 ```text
@@ -213,9 +231,21 @@ C:\Users\Luis Fernando\Downloads\ClubEFootball--main\_BACKUPS-ANTES-GITHUB\ClubE
 
 O cofre DPAPI do computador anterior não deve ser copiado e não funcionará no novo computador. Os links já gravados no Supabase e os assets já existentes no Cloudinary serão detectados; portanto, a nova máquina continua somente o que ainda falta.
 
+### Atualizar um clone que já existe na máquina dedicada
+
+1. Na máquina principal, publique primeiro pelo botão 3 e aguarde **SUBIU E FOI CONFERIDO NO GITHUB**.
+2. Na máquina dedicada, espere a execução atual terminar ou falhar e feche a aba do Extrator e a janela preta.
+3. Confirme que esse clone dedicado não possui alterações de código que precisem ser publicadas. A pasta `output`, os logs e o cofre DPAPI são locais e não contam como alteração de código.
+4. Na raiz do clone dedicado, execute `4-BAIXAR-DO-GITHUB.bat`.
+5. O botão 4 usa avanço `fast-forward` e para diante de conflito local; ele não executa reset forçado. Não use o botão 4 em uma máquina que possua alterações de código ainda não publicadas.
+6. Depois da confirmação da atualização, abra novamente `8 - EXTRATOR DE FOTOS\INICIAR-EXTRATOR-DE-FOTOS.cmd`.
+7. O cofre DPAPI e os registros de `output` permanecem nessa máquina. Se a senha do banco tiver sido resetada, preencha os três campos novamente; caso contrário, clique em **INICIAR** usando as credenciais lembradas.
+
+Uma atualização do código não apaga o progresso real: a autoridade de retomada é o estado atual do Supabase e os assets existentes no Cloudinary. Ao reiniciar, a fila é reconstruída somente com os registros que continuam NULL.
+
 ## Referências oficiais do Supabase
 
-Orientações verificadas novamente em 31/08/2026:
+Orientações verificadas novamente em 31/08/2026. O changelog não apresentou mudança posterior que altere o uso deste aplicativo: Session pooler permanece na porta 5432 para clientes persistentes em IPv4, enquanto a porta 6543 permanece no modo Transaction pooler.
 
 - [Conectar ao banco Postgres](https://supabase.com/docs/guides/database/connecting-to-postgres)
 - [Proteger os dados e as conexões diretas](https://supabase.com/docs/guides/database/secure-data)

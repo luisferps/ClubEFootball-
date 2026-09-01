@@ -274,7 +274,7 @@
   +'@media(max-width:760px){.emp-page{padding:12px}.emp-title{font-size:18px}.emp-grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.emp-grid2{grid-template-columns:1fr}.emp-weak-compare{grid-template-columns:1fr}.emp-weak-vs{transform:rotate(90deg);margin:-3px 0}.emp-list{max-height:46vh}.emp-panel{padding:12px}.emp-weak-head{align-items:flex-start}.emp-weak-context{justify-content:flex-start}}@media(max-width:480px){.emp-weak-head{display:block}.emp-weak-context{margin-top:7px}.emp-weak-player{grid-template-columns:46px minmax(0,1fr)}.emp-weak-score{grid-column:2;text-align:left;padding:4px 0 0}.emp-weak-score small,.emp-weak-score b{display:inline}.emp-weak-score b{font-size:17px;margin-left:5px}}@media(max-width:420px){.emp-grid4,.emp-weak-facts{grid-template-columns:1fr}.emp-top{align-items:flex-start}}';
   document.head.appendChild(s);
  }
- function miniaturaCard(cardId,ocorrenciaId){return '<img class="emp-thumb" data-emp-thumb="'+esc(ocorrenciaId||idCard(cardId))+'" alt="" aria-hidden="true" loading="lazy" src="https://efimg.com/efootballhub22/images/player_cards/'+esc(idCard(cardId))+'_l.png" onerror="this.style.visibility=&quot;hidden&quot;">';}
+ function miniaturaCard(cardId,ocorrenciaId){var foto=window.ClubeNovoReadModel?window.ClubeNovoReadModel.foto(idCard(cardId)):'';return '<img class="emp-thumb" data-emp-thumb="'+esc(ocorrenciaId||idCard(cardId))+'" alt="" aria-hidden="true" loading="lazy" src="'+esc(foto)+'" onerror="this.style.visibility=&quot;hidden&quot;">';}
  function removeMiniaturasDuplicadas(root){
   if(!root||typeof root.querySelectorAll!=='function')return 0;
   var vistos=Object.create(null),removidas=0,nos=root.querySelectorAll('.emp-thumb[data-emp-thumb]');

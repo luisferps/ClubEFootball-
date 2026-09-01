@@ -420,6 +420,31 @@ def _executa_busca_contando_builds(M, carta, tecnicos, fila_incidencia):
         M._melhor_tecnico = original
     return build, (max(1, comparadas[0]) if build else comparadas[0])
 
+
+def _tecnico_id_canonico_do_multiplicador(tecnicos, multiplicador):
+    """Resolve somente a identidade persistível do multiplicador já usado.
+
+    A busca matemática já escolheu ``multiplicador``. Em cenários onde nenhum
+    boost toca um atributo ponderado, ela não precisa escolher um técnico pelo
+    boost e devolve ``tecnico_id=None``. A gravação, porém, exige a FK canônica.
+    Esta ponte escolhe de modo determinístico o menor ID entre os técnicos que
+    têm exatamente o mesmo multiplicador já aplicado; não altera barras, nota,
+    habilidades, Ímpetos, pesos ou qualquer decisão do Otimizador.
+    """
+    if multiplicador is None:
+        return None
+    candidatos = []
+    for tecnico in tecnicos or []:
+        tecnico_id = tecnico.get('id')
+        if tecnico_id is None or tecnico.get('m') != multiplicador:
+            continue
+        try:
+            candidatos.append(int(tecnico_id))
+        except (TypeError, ValueError):
+            continue
+    return min(candidatos) if candidatos else None
+
+
 def trabalha(r):
     """UMA linha card x funcao. Devolve o resultado COM A CADEIA INTEIRA."""
     t0 = time.time()
@@ -558,6 +583,14 @@ def trabalha(r):
         return {'ERRO': '%s / %s: %s' % (bid, fid, e), 'n': r.get('n')}
     if not b:
         return {'ERRO': '%s / %s: build vazia' % (bid, fid), 'n': r.get('n')}
+
+    # A fórmula já aplicou ``b['m']``. Quando a busca não precisou escolher um
+    # boost útil, ela não preenche o técnico; só então resolvemos a FK canônica
+    # equivalente para a saída persistida. Não há recálculo neste ponto.
+    if b.get('tecnico_id') is None:
+        b = dict(b)
+        b['tecnico_id'] = _tecnico_id_canonico_do_multiplicador(
+            _W.get('TECS') or [], b.get('m'))
 
     builds_possiveis = _conta_builds_possiveis(c,M,_W['TECS'],_pool_universo)
 

@@ -1,0 +1,13 @@
+
+Algorithm : SHA256
+Hash      : 72BF25DE99E81C6E29B65379456B78CD4AC8D8CFA4211AB9C62E622E630ECAA8
+Path      : C:\Users\Luis Fernando\Downloads\ClubEFootball--main\ClubEFootball--main\2-MOTORES\OTIMIZADOR\windows-app\ClubEfootballOtimizadorLauncher.cs
+
+Algorithm : SHA256
+Hash      : 90E344DA53634BB2AFFA6C1BAC483C9A374BB39960EDB44B4AAF5D9767BA6DBC
+Path      : C:\Users\Luis Fernando\Downloads\ClubEFootball--main\ClubEFootball--main\2-MOTORES\OTIMIZADOR\Otimizador ClubEfootball.exe
+
+Algorithm : SHA256
+Hash      : 953CC514F3198466251C6DAA73684B9145C1B2967E5230109CA4A11285215D53
+Path      : C:\Users\Luis Fernando\Downloads\ClubEFootball--main\ClubEFootball--main\4-DOCUMENTOS\OTIMIZADOR\TESTES\teste_interface_local_otimizador.py
+

@@ -1,0 +1,14 @@
+PACOTE LOCAL DA FILA INTEGRAL
+
+Esta pasta faz parte do aplicativo do Otimizador.
+
+Ela contém a fotografia selada da fila, dividida em blocos de até 1.000 linhas.
+Copie a pasta OTIMIZADOR inteira para outro computador, incluindo esta pasta,
+runtime e interface. Não copie apenas o arquivo .exe.
+
+Não há senha, URL, chave de banco ou resultado publicado nesta pasta.
+Os resultados que o motor produzir ficam no runtime local e são enviados por
+um processo separado, em sublotes idempotentes de até 100 resultados.
+
+Se esta pasta faltar, o aplicativo deve recusar a execução: ele não baixa a
+fila de novo em segundo plano.

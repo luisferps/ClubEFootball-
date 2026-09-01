@@ -1,6 +1,6 @@
 # Manual do Otimizador — ClubEfootball
 
-**Versão 2.0 · 31/08/2026**
+**Versão 2.1 · 31/08/2026**
 
 ## 1. Finalidade e nome
 
@@ -1227,3 +1227,755 @@ recusada pelo banco com `57014: statement timeout` no contrato
 deve ser considerada validada sobre esse lote enquanto a consulta de status não
 for otimizada e retestada. Isto é um bloqueio de desempenho do contrato, não uma
 alteração de fórmula ou resultado.
+
+## 18. Produto portátil e recuperação automática — V38 (31/08/2026)
+
+Esta é a regra operacional atual para abrir o Otimizador em um PC Windows
+compatível. Ela substitui qualquer instrução antiga que peça para abrir `.bat`,
+PowerShell, URL local ou o executável dentro de `runtime/`.
+
+### Um ícone, sem terminal
+
+O único arquivo que o operador abre é:
+
+`2-MOTORES/OTIMIZADOR/Otimizador ClubEfootball.exe`
+
+No primeiro clique ele mostra imediatamente **Abrindo o Otimizador**, inicia em
+segundo plano `runtime/OtimizadorServico.exe`, espera a saúde local e abre o painel.
+Não requer Python instalado no computador de operação. Fechar a janela do painel só
+fecha a visualização; o ícone perto do relógio continua responsável por reabri-la e
+por informar se há worker local.
+
+Um segundo clique durante a abertura não cria serviço duplicado nem pede outro
+clique: espera até 15 segundos pelo primeiro processo e abre o painel quando ele
+responder. Ao encontrar na porta interna uma cópia anterior do próprio Otimizador
+com `worker_ativo=false`, o lançador a substitui automaticamente. Um worker ativo
+nunca é encerrado por essa troca.
+
+### Levar para outro computador
+
+Copie/baixe o checkout com a pasta **OTIMIZADOR inteira**, principalmente:
+
+- `Otimizador ClubEfootball.exe`;
+- `runtime/`, inclusive `runtime/_internal/`;
+- `interface/`.
+
+Não copie somente o `.exe`. O runtime portátil usa vários arquivos ao lado dele.
+Na primeira abertura de uma cópia que ainda não tiver conexão, o próprio aplicativo
+mostra a janela **Configurar conexão do Otimizador**. Basta colar uma vez a URL
+`https://...` e a chave privada do aplicativo; ele grava `OTIMIZADOR/config.txt`
+somente naquela máquina. Esse arquivo é ignorado pelo Git, não entra no navegador e
+nunca deve ser enviado para GitHub. Nas aberturas seguintes, volta a ser apenas um
+clique no mesmo ícone.
+
+### Quando o banco oscila
+
+O painel não chama mais a falha remota de “rodando”. Se o contrato privado em
+`clube_novo` estiver indisponível, ele mostra **Reconectando ao banco**, desabilita
+todos os controles e não inicia, retoma, pausa ou para nenhuma linha. A primeira
+falha abre um circuito local de 30 segundos: abas, cliques e atualizações não
+repetem a mesma RPC contra o banco durante essa janela. A página tenta de novo de
+forma espaçada (5, 10, 20, 40 e 60 segundos).
+
+Isso é uma proteção de produto, não um fallback de dados: a interface não inventa
+estado de fila, não lê legado e não usa cache para autorizar trabalho. Quando o
+contrato voltar, a próxima leitura confirmada reabilita apenas as ações que ele
+selar.
+
+No momento deste registro, o Data API remoto respondeu `503`/timeout também para
+`otimizador_producao_status_v5`; portanto o aplicativo abre e se recupera sozinho,
+mas nenhuma linha deve ser iniciada até que o serviço remoto volte a responder. Não
+é seguro tentar compensar esse estado com repetição de cliques ou com execução
+manual de lote.
+
+### Prova e recuperação
+
+- snapshot anterior: `4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260831-produto-portatil-v37-antes/`;
+- checklist desta entrega: `4-DOCUMENTOS/OTIMIZADOR/CHECKLIST-ESTABILIDADE-PRODUTO-V38.md`;
+- executável V38: arquivo `1.6.7.0`, interface `20260831-v38`;
+- validação controlada: abertura do ícone em **3,993 s**, sem worker ativo;
+- sob indisponibilidade real: o RPC fica limitado a 5 s; a leitura completa medida
+  foi **5,110 s** e foi devolvida fail-closed; a segunda resposta local saiu em
+  **2 ms**, com zero controles habilitados;
+- `teste_interface_local_otimizador.py`: 17/17 testes verdes, além de sintaxe
+  Python e JavaScript válidas.
+
+Nenhum item desta seção altera fórmula, pesos, moldes, regras de negócio, banco,
+linhas, resultados, publicação ou a política de Ímpetos condicionais.
+
+## 19. Fila operacional acompanhável e abertura V40 (31/08/2026)
+
+Esta é a regra atual da tela **Fila integral**. Ela substitui a apresentação V32
+que colocava as linhas mais recentes no alto e dificultava ver o que ainda seria
+calculado.
+
+### Ordem que aparece na tela
+
+A primeira página da aba **Fila integral** é uma fila de trabalho, e não um
+histórico:
+
+1. uma linha em processamento, se existir;
+2. as pendentes, em `ordem_fila` canônica crescente — a próxima a rodar aparece
+   no topo;
+3. as linhas já concluídas, bloqueadas, falhas ou interrompidas, somente depois
+   das abertas.
+
+Assim que uma linha termina, ela deixa a cabeça de trabalho e fica no fim da
+fila. A aba **Resultados** continua sendo o histórico: mostra somente estados
+finais, com os mais recentes primeiro. Esta é apenas uma troca de leitura e
+apresentação; não altera reserva, prioridade real, fórmula, pesos, moldes,
+gates, publicação ou qualquer resultado do Otimizador.
+
+O contrato de leitura que garante isso é
+`otimizador_producao_fila_operacional_v3`. A primeira página verificada do lote
+ativo devolveu as ordens **246, 247, 248, 249 e 250**, todas pendentes; a primeira
+página de Resultados devolveu **245, 244, 243, 242 e 241**, todas finalizadas. A
+interface exibe explicitamente `próximas primeiro; concluídas por último` para
+evitar ambiguidade.
+
+### Abertura e leitura rápida
+
+O único ícone continua sendo
+`2-MOTORES/OTIMIZADOR/Otimizador ClubEfootball.exe`. O lançador V40 verifica a
+saúde local e abre `runtime/OtimizadorServico.exe` em segundo plano. A Fila não
+espera o catálogo pesado de técnicos/régua: ela lê primeiro apenas os rótulos
+canônicos leves de função e posição por ID. O catálogo completo só é solicitado
+quando se abre **Testar uma carta** ou o detalhe de um Resultado.
+
+Para evitar que uma oscilação do Data API faça a tela parar por timeout, o
+servidor local pode usar a ponte privada restrita
+`otimizador_portal_local_v3`, configurada somente no computador. Ela aceita uma
+lista fechada de contratos de leitura do Otimizador e não expõe tabelas,
+credenciais ou acesso ao banco para o navegador. Sem uma leitura confirmada, a
+interface falha fechada e não habilita controles de fila.
+
+As migrações de recuperação desta entrega são
+`MIGRACAO-PONTE-LOCAL-PRIVADA-V13.sql` e
+`MIGRACAO-PAINEL-RAPIDO-V16.sql`, cada uma com o rollback correspondente. A V16
+substitui a tentativa intermediária V14 para a paginação de Resultados; a V15
+ficou apenas como arquivo histórico e **não foi aplicada**. O snapshot anterior
+está em `4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260831-v40-ponte-privada-antes/`.
+
+### Prova controlada desta versão
+
+Sem iniciar worker, preparar lote, reservar, calcular ou escrever linha, foram
+confirmados:
+
+- 20/20 testes da interface e o teste da fórmula aprovada: Messi 99 + Capello
+  +1 + Precisão +4 = **104**;
+- serviço portátil V40: saúde local, leitura do banco, ordem operacional e
+  Resultados responderam corretamente;
+- ícone oficial V40: abriu o serviço em loopback, declarou
+  `worker_ativo=false`, conectou ao banco e devolveu as cinco próximas linhas
+  pendentes acima;
+- o processo usado exclusivamente para a prova foi encerrado ao final.
+
+O checklist correspondente é
+`4-DOCUMENTOS/OTIMIZADOR/CHECKLIST-ESTABILIDADE-PRODUTO-V40.md`.
+
+## 20. Leitura da Fila integral estável — V41 (31/08/2026)
+
+Esta versão conclui a correção de produto da tela **Fila integral**: ela abre pelo
+único ícone do Otimizador e mostra primeiro as linhas que ainda serão calculadas.
+Uma linha concluída sai da cabeça operacional e fica depois das abertas; a aba
+**Resultados** permanece sendo o histórico, em ordem de término mais recente
+primeiro.
+
+### De onde vêm os dados
+
+Os dados continuam no modelo operacional **`clube_novo`**. O schema `public` não
+é uma cópia, fonte alternativa nem tabela de jogo: ele abriga somente a porta
+restrita de RPC que o servidor local usa para pedir dados permitidos. O navegador
+fala apenas com `127.0.0.1` e nunca recebe uma credencial ou acesso direto ao
+banco.
+
+Para os nomes da tabela de Fila, a V17 adicionou o contrato mínimo
+`otimizador_rotulos_cartas_fila_v1`. Ele lê somente `clube_novo.carta_jogo` por
+`card_id` e devolve apenas `card_id` e nome oficial. A ponte local V4 aceita esse
+contrato em allowlist; acesso anônimo foi revogado. O readback de segurança
+confirmou, entre outros, `52781926899717 · Gerard Moreno` e
+`8538111 · Welington Pauletto`. Não existe fallback para `clube`, tabela legada
+ou nome inventado.
+
+Função e posição seguem sendo resolvidas pelos IDs canônicos através de
+`otimizador_rotulos_fila_v1`. A tabela normal não carrega o catálogo amplo de
+técnicos/régua/habilidades para desenhar as próximas linhas; esses detalhes só
+são necessários no Resultado ou no detalhe de uma build campeã.
+
+### Prova real do executável
+
+Com o lote preservado, sem iniciar worker, preparador, reserva, cálculo ou
+publicação, a versão `20260831-v41` foi verificada duas vezes:
+
+- serviço portátil em porta isolada: a primeira página completa de 100 linhas
+  respondeu sem timeout; mostrou as ordens 246 a 345, todas pendentes;
+- o ícone oficial `2-MOTORES/OTIMIZADOR/Otimizador ClubEfootball.exe` abriu a
+  mesma versão na porta normal, sem worker/preparador, e devolveu as 100 próximas
+  linhas sem timeout; a primeira leitura fria final levou 13,412 s e as três
+  leituras seguintes levaram 190 ms, 82 ms e 45 ms;
+- a primeira linha foi `246 · 52781926899717 · Gerard Moreno` e a última foi
+  `345 · 52847425204350 · Kylian Mbappé`;
+- Eventos (100) e Resultados (100) também responderam pela instância aberta pelo
+  ícone, sem expor credencial.
+
+Isso prova a leitura e a apresentação. Não é uma autorização para disparar um
+lote nem uma alteração da fórmula. A fórmula aprovada foi testada de novo:
+Messi 99 + Capello +1 + Precisão +4 = **104**.
+
+### Recuperação e distribuição
+
+- snapshot anterior à V17:
+  `4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260831-v41-rotulos-carta-antes/`;
+- migração e rollback: `OTIMIZADOR/FILA-PRODUCAO-V3/MIGRACAO-ROTULOS-CARTAS-RAPIDOS-V17.sql`
+  e `ROLLBACK-ROTULOS-CARTAS-RAPIDOS-V17.sql`;
+- checklist desta entrega:
+  `4-DOCUMENTOS/OTIMIZADOR/CHECKLIST-ESTABILIDADE-PRODUTO-V41.md`.
+
+Em outro computador, copie a pasta **OTIMIZADOR inteira**, incluindo
+`runtime/_internal/`, e abra somente `Otimizador ClubEfootball.exe`. Não abra o
+executável de `runtime/` diretamente e não copie apenas o arquivo `.exe` do
+ícone. A configuração local continua fora do Git e fora do navegador.
+
+O arquivo de abertura V41 tem versão de arquivo `1.7.0.0` e mutex próprio V41.
+Assim, se houver uma bandeja V40 ociosa em outro computador, o novo ícone chega
+à checagem segura da porta e a substitui; se houver worker ativo, a proteção
+permanece e o novo aplicativo não o encerra.
+
+O aviso curto **Abrindo o Otimizador** fecha assim que o painel é solicitado. A
+bandeja continua viva em segundo plano, mas o aviso não pode mais permanecer
+sobre a tela do painel durante a sessão.
+
+Se a tela disser **Rodando**, mas também disser **nenhum worker local**, isso
+significa que o lote selado está em estado Rodando no banco e este computador
+ainda não reassumiu o cálculo. Não é seguro retomar automaticamente só porque o
+painel foi aberto. O botão **Retomar worker local** é a ação explícita que
+continua somente as pendências, sem duplicar linha; abrir ou fechar o painel não
+aciona essa ação por conta própria.
+
+## 21. Estado imediato e lista em segundo plano — V42 (01/09/2026)
+
+Esta revisão corrige uma falha de produto observada em uma fila integral grande:
+a tela podia esperar a página de linhas, os rótulos e os nomes de cartas antes de
+dizer se a esteira estava Rodando. A espera visual parecia um travamento, embora
+o estado do lote fosse uma consulta separada e mais curta.
+
+O aplicativo oficial agora abre o painel em duas etapas, sempre pelo ícone
+`2-MOTORES/OTIMIZADOR/Otimizador ClubEfootball.exe`:
+
+1. consulta primeiro somente `otimizador_producao_status_v6`; ela mostra estado,
+   totais, controles e a linha atualmente processada, sem esperar catálogo nem
+   página;
+2. consulta depois a página de linhas e seus rótulos oficiais por ID. Enquanto
+   ela chega, a tabela declara claramente que está carregando em segundo plano;
+   não finge que uma linha foi alterada e não bloqueia Pausar, Parar ou Atualizar.
+
+Essa separação é somente de apresentação e tempo de resposta. A lista continua
+em ordem operacional: processando/pendentes primeiro, concluídas por último. A
+fórmula, pesos, moldes, gates, fila, reserva, resultado e publicação não foram
+alterados. O browser permanece em loopback, sem credencial, e o processo local
+só chama contratos permitidos da fachada protegida para dados de `clube_novo`.
+
+### Prova da V42
+
+Com o lote integral preservado e sem iniciar worker, preparador, reserva,
+cálculo, publicação ou nova linha, a cópia portátil V42 foi aberta em porta
+isolada e devolveu:
+
+- saúde local com versão `20260901-v42`;
+- status real V6 em **800 ms**: lote `rodando`, 184.702 linhas, 245 concluídas,
+  184.457 pendentes, zero processando, sem itens de página nessa primeira etapa;
+- primeira linha visual em **393 ms** pela rota separada:
+  `3399 · 52781926899717 · Gerard Moreno`, pendente, com o nome oficial vindo do
+  contrato canônico;
+- o processo usado só na prova foi encerrado ao final.
+
+O ícone/lançador passou a exigir a versão `20260901-v42` (arquivo `1.7.1.0`) e
+usa mutex próprio V42, evitando abrir uma cópia antiga do serviço após a
+substituição da pasta. O
+snapshot recuperável anterior está em
+`4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260831-v42-preparo-status-rapido-antes/`.
+O checklist desta entrega é
+`4-DOCUMENTOS/OTIMIZADOR/CHECKLIST-ESTABILIDADE-PRODUTO-V42.md`.
+
+## 22. Recuperação de queda de contrato antes da reserva — V43 / V18 (01/09/2026)
+
+Esta revisão corrige um erro de produto específico, sem mudar a regra do
+Otimizador. Antes dela, uma oscilação simultânea da ponte local e da Data API
+podia fazer o processo local chamar a rotina de falha do lote mesmo sem ter
+reservado uma linha. A fila inteira passava a aparecer como **Falhou**, embora
+as linhas concluídas e pendentes ainda estivessem corretas.
+
+Agora a ordem é esta:
+
+1. se a conexão cair **antes** da reserva, o worker local aguarda/reconecta e
+   não grava `Falhou` no lote;
+2. timeout ambíguo de uma reserva não é repetido cegamente: o banco continua
+   sendo a autoridade sobre a linha, evitando duplicação;
+3. somente o incidente histórico exato abaixo pode ser recuperado uma vez pelo
+   contrato V18, com fórmula aprovada, zero linha processando e publicação
+   desligada:
+   `nenhum contrato seguro respondeu (ponte privada local e Data API); nenhuma linha foi iniciada`;
+4. qualquer erro de fórmula, selo, entrada, carta ou resultado continua
+   fail-closed — esta recuperação não o aceita.
+
+No lote integral ativo, a recuperação V18 exige no banco: lote integral,
+`formula_fingerprint` aprovado, `pode_publicar=false`, estado `falhou`, a
+mensagem exata acima, pendências existentes e zero linhas `processando`. Ela
+altera somente o cabeçalho do lote de `falhou` para `rodando`, limpa a mensagem
+de falha e registra o evento `lote_retomado` com o motivo
+`recuperacao_falha_transporte_v18`. Não recria, não apaga, não recalcula e não
+publica uma linha.
+
+O painel continua chamando `otimizador_producao_status_v6` no caminho normal.
+Somente para esse incidente ele consulta `otimizador_producao_status_v7`, que
+libera **Retomar** pelo selo do banco. O clique chama
+`otimizador_producao_recuperar_falha_transporte_v1`, inicia o preparador e o
+worker locais apenas depois da confirmação de `rodando`, e mantém a esteira em
+`clube_novo` por IDs canônicos. A ponte privada V5 mantém allowlist fechada; o
+navegador continua em `127.0.0.1`, sem URL de banco ou credencial.
+
+### Como operar
+
+- Se o painel disser que está reconectando, aguarde a tentativa automática; não
+  clique repetidamente em Iniciar/Retomar.
+- Se o painel disser **Falhou** com a mensagem de falha transitória acima, use
+  **Retomar** uma única vez. Ele só estará habilitado se o próprio contrato V18
+  confirmar que não existe linha ativa.
+- Se a mensagem for outra, não force retomada: ela não é um erro de transporte
+  autorizado e exige investigação da causa.
+- Para interromper normalmente, use **Pausar**, aguarde a linha atômica
+  finalizar/bloquear e então feche a janela. Não encerre o processo pelo
+  Gerenciador de Tarefas enquanto houver uma linha processando.
+
+### Recuperação e prova
+
+- snapshot anterior ao V43:
+  `4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260901-v43-transporte-antes/`;
+- migração: `OTIMIZADOR/FILA-PRODUCAO-V3/MIGRACAO-RESILIENCIA-TRANSPORTE-V18.sql`;
+- rollback de portas: `OTIMIZADOR/FILA-PRODUCAO-V3/ROLLBACK-RESILIENCIA-TRANSPORTE-V18.sql`.
+  O rollback não apaga eventos, linhas ou resultados e deve ser usado somente
+  após substituir o aplicativo que chama V18;
+- a fórmula permanece: barras com teto 99 -> proficiência com piso 40/teto 99
+  -> boost técnico -> ímpetos. A regressão Messi/Capello continua **104**;
+- o checklist desta entrega é
+  `4-DOCUMENTOS/OTIMIZADOR/CHECKLIST-ESTABILIDADE-PRODUTO-V43.md`.
+
+## 23. Preparação e abertura portátil confiáveis — complemento V43 (01/09/2026)
+
+Esta revisão resolve duas situações que faziam o aplicativo parecer travado ou
+parar de funcionar ao ser levado para outro computador. Ela não muda fórmula,
+pesos, moldes, dados, fila, publicação nem a regra do Otimizador.
+
+### O que mudou para quem opera
+
+1. Quando a rede cai ou uma chamada demora demais, o preparador mostra que está
+   tentando reconectar e tenta de novo. Isso não marca o lote como falho antes
+   de uma linha ser reservada.
+2. Quando o problema não é rede — por exemplo, contrato recusado, arquivo
+   ausente, configuração inválida ou erro de programação — ele não fica mais
+   dizendo eternamente que está “preparando”. O preparador local para e mostra
+   a causa real. Banco, fila, linha, resultado e publicação ficam intactos.
+3. O serviço do aplicativo agora localiza a própria pasta mesmo quando o Windows
+   o abre por um caminho diferente. Isso evita a falha falsa de que
+   `interface/servidor.py` estaria ausente quando a pasta está completa.
+
+### Como levar para outro computador
+
+Copie a pasta inteira `2-MOTORES/OTIMIZADOR/`, incluindo `runtime/_internal/`,
+`interface/` e os arquivos Python na raiz dela. Não copie somente o `.exe`.
+Depois abra apenas **Otimizador ClubEfootball.exe**. O navegador fala somente
+com o servidor local; credenciais não aparecem na tela nem são enviadas ao
+browser.
+
+Abrir o aplicativo não começa cálculo sozinho. Isso evita rodar por acidente.
+Com o painel aberto, use **Retomar worker local** somente quando quiser que
+este computador continue as pendências do lote. Se houver erro determinístico,
+leia a mensagem exibida e corrija a causa antes de tentar retomar; não clique
+repetidamente.
+
+### Prova desta revisão
+
+Com o lote integral preservado em `rodando`, 245 linhas concluídas, 184.457
+pendentes, zero em processamento e publicação desligada, foram testados sem
+iniciar nenhuma nova linha:
+
+- o ícone oficial, em porta local isolada;
+- o serviço portátil diretamente, em outra porta local isolada;
+- saúde e status reais nos dois casos, sem credencial exposta;
+- testes de preparação transitória e de erro determinístico, testes da fila,
+  testes da interface e a regressão Messi/Capello = 104.
+
+Após a prova, os processos de teste foram encerrados. O snapshot anterior ao
+complemento está em
+`4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260901-v44-preparo-antes/`; o snapshot
+anterior à recuperação V18 está em
+`4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260901-v43-transporte-antes/`.
+
+## 24. Uma fotografia única para a tela e o Otimizador — V44 / V19 (01/09/2026)
+
+O problema que esta revisão elimina é simples: o painel e o worker não podem
+montar a mesma linha por caminhos diferentes. A partir desta versão, ambos
+recebem a linha pela view privada
+`clube_novo.otimizador_entrada_linha_v1`.
+
+- A aba **Fila integral** lê a página pelo contrato
+  `otimizador_producao_fila_operacional_v4`. Ele entrega a carta, IDs de função
+  e posição, rótulos canônicos para apresentação, estado e, se houver, saída
+  já persistida.
+- O worker reserva a próxima linha por
+  `otimizador_producao_reservar_entrada_v7`. A mesma fotografia traz carta,
+  régua, selos, `card_id`, `funcao_id`, `posicao_id` e gates antes de qualquer
+  cálculo. Não há uma segunda consulta de contexto/carta para a esteira.
+- A conclusão continua gravando o resultado real na tabela já existente de
+  builds do Otimizador. A aba **Resultados** lê esse mesmo resultado pela view;
+  não há uma tabela paralela de resultado nem publicação por esta tela.
+
+Os IDs são a base de toda decisão. Nomes como “Ala finalizador” e “Meia
+esquerda” são enviados pela própria view apenas para leitura humana; renomear
+um rótulo não muda a função, posição, fórmula ou build. A view está em
+`clube_novo`, usa `security_invoker=true` e não tem acesso para `anon`,
+`authenticated` ou `public`. O navegador continua falando só com
+`127.0.0.1`; a chave fica somente no processo local.
+
+### O que foi corrigido no produto
+
+1. O cache de contadores da fila não tenta mais inserir totais negativos antes
+   de somá-los. Isso era recusado pelo banco e fazia a primeira reserva falhar.
+   Agora o delta é aplicado com trava por lote ou o total é recalculado de forma
+   segura.
+2. A preparação final usa os IDs de função e posição da linha física
+   `build_linha_card`, em vez de procurá-los na tabela de linhagem que não os
+   possui. Assim as últimas candidatas não ficam presas por uma coluna ausente.
+3. O worker da esteira não transforma uma falha local pré-reserva em falha das
+   dezenas de milhares de pendências. Se uma linha já estiver reservada, ela
+   continua sob autoridade do banco; se nenhuma estiver reservada, o lote fica
+   intacto para retomar.
+4. A Data API segura é o caminho padrão em qualquer Windows. A ponte privada é
+   somente contingência para queda transitória; uma recusa real do contrato não
+   é mascarada por um segundo caminho.
+
+### Abrir e retomar
+
+Copie a pasta inteira `2-MOTORES/OTIMIZADOR/` para o outro computador e abra
+somente **Otimizador ClubEfootball.exe** — o arquivo com ícone próprio. A pasta
+`runtime/_internal/` deve acompanhá-lo. A primeira vez em cada computador, o
+aplicativo pede a URL e a chave local; depois, basta abrir o mesmo ícone.
+
+O aplicativo abre o painel e não calcula por conta própria. Quando a fila
+estiver em **Falhou** por exatamente o incidente pré-reserva já comprovado, o
+botão **Iniciar** fica habilitado e executa uma única recuperação segura:
+confere selos, confirma zero linha ativa, muda o lote para **Rodando**, liga
+preparador e worker e continua somente as pendências. Qualquer outra falha
+permanece bloqueada e explícita; não há “destravar” genérico.
+
+### Prova V44
+
+Sem rodar linha produtiva, a reserva V7 foi chamada dentro de uma transação
+revertida para a linha `3399` (`52781926899717`, Gerard Moreno, função 12,
+posição 6). Ela devolveu a fotografia privada correta e fez cache e contagem
+real coincidirem temporariamente em `184.456 pendentes / 1 processando / 245
+concluídas`. Após rollback, o readback confirmou o lote original intacto:
+`falhou`, `184.457 pendentes`, `0 processando`, `245 concluídas`, sem
+publicação.
+
+O executável portátil V44 (`versao_interface=20260901-v44`, arquivo 1.7.4.0)
+foi aberto pelo próprio runtime, sem browser e sem worker. Pelo loopback ele
+mostrou a recuperação V19 como única ação de início e as três próximas linhas
+com carta, função e posição vindas da view. Nenhuma linha foi calculada nessa
+prova. A regressão da fórmula permanece: Messi/Capello = **104**.
+
+Recuperação desta alteração:
+
+- snapshot: `OTIMIZADOR/RECUPERACAO/20260901-v46-contrato-unico-antes/`;
+- migração aplicada: `OTIMIZADOR/FILA-PRODUCAO-V3/MIGRACAO-CONTRATO-UNICO-V19.sql`;
+- rollback: `OTIMIZADOR/FILA-PRODUCAO-V3/ROLLBACK-CONTRATO-UNICO-V19.sql`.
+
+O rollback não apaga linhas, resultados ou eventos. Ele só deve ser usado com
+o aplicativo V44 parado e se for decidido abandonar o contrato único.
+
+## 25. Atualização visível da Fila e Resultados — interface V45 (01/09/2026)
+
+Esta revisão não muda o motor, a fórmula, a fila, o banco ou a publicação. Ela
+corrige somente como o painel acompanha o que já está acontecendo.
+
+- A tela continua recebendo primeiro o resumo rápido (estado e contadores), mas
+  a leitura da lista de fila e de Resultados agora tem limite de 15 segundos.
+  Se uma leitura não responder, ela é cancelada, mostra o motivo na própria
+  tela e tenta novamente no próximo ciclo; não fica carregando para sempre.
+- A aba **Resultados** não depende mais da leitura de Eventos. Se Eventos tiver
+  problema, as Builds concluídas continuam sendo exibidas; se Resultados tiver
+  problema, a tela informa claramente qual leitura falhou.
+- A lista de Fila informa a falha de carregamento em vez de parecer vazia. A
+  linha em processamento continua vindo do status e é completada pela página
+  detalhada assim que ela responde.
+- `index.html` pede `app.js?v=20260901-v45`. Isso impede que uma janela WebView
+  reutilize o JavaScript antigo que ainda esperava a lista dentro da rota de
+  status.
+
+Nenhum destes mecanismos reserva, conclui, bloqueia, pausa, para ou publica uma
+linha. Eles fazem apenas `GET` em loopback. Para carregar a revisão em uma
+janela já aberta, feche somente a janela do painel e abra novamente
+**Otimizador ClubEfootball.exe**; isso reabre a tela e não altera a fila.
+
+Prova realizada com o serviço local ativo: `GET /api/fila/linhas` devolveu 100
+linhas de uma fila de 184.827, `GET /api/resultados` devolveu 100 resultados de
+521 e ambos incluíram a linha atual. O teste de interface passou com 29 casos,
+incluindo timeout, falha explícita da lista, independência de Eventos e a chave
+de cache V45. Snapshot anterior:
+`OTIMIZADOR/RECUPERACAO/20260901-v45-ui-atualizacao-antes/`.
+
+## 26. Pacote portátil V45 recompilado (01/09/2026)
+
+O aplicativo que o usuário abre por ícone e o serviço que ele inicia formam um
+único pacote: `Otimizador ClubEfootball.exe`, a pasta `runtime` e a pasta
+`interface`. Após a correção visual V45, ambos os executáveis foram recompilados
+com a mesma versão `20260901-v45`; o lançador abre a página já com a chave V45 e
+recusa um serviço de outra versão.
+
+Foi feita uma abertura limpa do pacote recompilado: a saúde local devolveu V45,
+a página carregou `app.js?v=20260901-v45`, Fila e Resultados responderam pelo
+loopback e a publicação permaneceu desligada. A prova não enviou nenhum comando
+de fila e não iniciou worker. O snapshot recuperável anterior está em
+`OTIMIZADOR/RECUPERACAO/20260901-v45-pacote-portatil-antes/`.
+
+Para levar o programa a outro computador, copie a pasta `OTIMIZADOR` inteira,
+inclusive `runtime` e `interface`; a configuração privada local continua fora do
+Git e deve existir somente na máquina que vai operar o banco.
+
+## 27. Retomada integral confiável — aplicativo V46 (01/09/2026)
+
+Esta revisão corrige um defeito de produto encontrado quando uma fila integral
+já estava totalmente preparada e o operador clicava **Retomar**. Nessa situação
+o aplicativo chamava o worker antigo de fila V3 em vez do worker da esteira V7.
+O V3 tentava ler um contrato diferente, a linha era reservada e a tela acabava
+em **Falhou** com `contrato recusou a consulta (400)`.
+
+Agora a regra é única: toda fila do tipo **integral**, esteja ela ainda sendo
+preparada ou já 100% preparada, inicia e retoma pelo worker da esteira V7. Ele
+recebe a fotografia única e selada de `clube_novo` por
+`otimizador_producao_reservar_entrada_v7`. Não há mudança de fórmula, pesos,
+moldes, cartões, publicação ou Bonificador.
+
+### Recuperação do incidente real
+
+Foi incluída a porta V20, deliberadamente limitada a esta falha específica. Ela
+só funciona se todos estes fatos forem verdadeiros ao mesmo tempo:
+
+- lote integral em **Falhou** com a mensagem 400 exata;
+- preparação completa;
+- fórmula aprovada selada;
+- publicação desligada;
+- exatamente uma linha ainda reservada;
+- nenhuma Build nem resultado gravado nessa linha.
+
+Ela devolve essa única linha para **pendente**, limpa somente a reserva e deixa
+o lote **Pausado**. Qualquer outro erro continua bloqueado — não existe botão
+genérico de “destravar”. A recuperação aplicada em 01/09/2026 devolveu a linha
+`3675` (`52885811474558`) sem resultado; preservou as 521 concluídas, 184.306
+pendentes, zero em processamento e `SEM PUBLICAÇÃO`.
+
+### Como operar agora
+
+Abra somente **Otimizador ClubEfootball.exe**. O painel abre já em estado
+seguro; abrir o ícone não calcula uma carta por acidente. Quando a tela disser
+**Pausado** e o botão verde disser **Retomar**, clique **uma vez**. O próprio
+aplicativo liga o worker correto e a tela deve passar a mostrar uma linha em
+processamento. Não é necessário abrir `.bat`, terminal ou uma segunda cópia.
+
+### Provas V46
+
+- migração aplicada:
+  `OTIMIZADOR/FILA-PRODUCAO-V3/MIGRACAO-RECUPERACAO-RETOMADA-INTEGRAL-V20.sql`;
+- rollback de porta futura:
+  `OTIMIZADOR/FILA-PRODUCAO-V3/ROLLBACK-RECUPERACAO-RETOMADA-INTEGRAL-V20.sql`;
+- o contrato V20 ficou com execução somente para `service_role`; não expõe
+  tabela, SQL ou credencial ao navegador;
+- 32 testes locais passaram, incluindo a regressão de retomada integral já
+  preparada que exige worker V7;
+- o ícone oficial foi aberto depois da recompilação. A saúde real devolveu
+  `20260901-v46`, o HTML carregou `app.js?v=20260901-v46`, Fila e Resultados
+  responderam por loopback, e o lote permaneceu pausado, sem worker e sem
+  publicação.
+
+Snapshot anterior a esta revisão:
+`OTIMIZADOR/RECUPERACAO/20260901-v46-recuperacao-pos-preparo-antes/`.
+O rollback do banco remove somente a porta V20 para usos futuros; ele não apaga
+linhas, Builds, eventos ou a evidência da recuperação já concluída.
+
+## 28. Conclusão segura de Build — aplicativo V47 (01/09/2026)
+
+Esta revisão fecha a causa que fazia a fila integral calcular uma carta e, em
+seguida, parar ao tentar gravar o resultado. Ela não muda fórmula, pesos,
+moldes, barrinhas, técnico escolhido, Ímpetos, dados do jogo, fila, publicação
+ou Bonificador.
+
+### Causa comprovada
+
+Uma Build do Otimizador sempre precisa guardar o `tecnico_id` canônico: é uma
+FK obrigatória da tabela existente `clube_novo.build_otimizador`. Em alguns
+cenários legítimos, nenhum boost do técnico atinge os atributos que aquela
+função está pesando. A matemática já escolhia corretamente o multiplicador
+mais alto do técnico, mas a saída desse ramo deixava de carregar a identidade
+do mesmo técnico. O banco recusava a conclusão antes de salvar a Build.
+
+Foi exatamente o que ocorreu na linha `3675` (`52885811474558`, função `14`,
+posição `9`): a linha foi calculada, mas a gravação foi recusada porque
+`tecnico_id` chegou nulo. Isso não prova problema de velocidade nem de fórmula.
+
+### Proteção V47
+
+1. Depois de a fórmula escolher a Build e o multiplicador, o adaptador de
+   saída em `roda_lote_v6.py` encontra apenas o `tecnico_id` canônico que já
+   possui **aquele mesmo multiplicador** no contrato de técnicos. Em empate
+   real, usa o menor ID canônico como desempate estável. Não usa nome ou rótulo
+   e não recalcula nota, barras, habilidades, Ímpeto ou técnico.
+2. Antes de chamar a gravação, o worker exige um `tecnico_id` inteiro. Se a
+   identidade não existir no contrato, ele bloqueia somente aquela linha com o
+   motivo explícito. Não deixa a fila inteira presa em “processando”.
+3. Se a chamada de conclusão receber uma recusa HTTP 400 comprovadamente
+   anterior à gravação, o worker bloqueia somente a linha reservada. Timeout,
+   queda de rede e qualquer resposta ambígua continuam sem retentativa cega:
+   ficam para a recuperação segura já existente.
+
+A matemática aprovada continua literalmente: **barras com teto 99 ->
+proficiência com piso 40/teto 99 -> boost técnico -> Ímpetos**. A regressão
+Messi/Capello continua `104`; `motor.py`, `equacao.py` e `regua.py` não foram
+alterados nesta revisão.
+
+### Estado seguro liberado
+
+O lote integral `ddbcbc86-1ae7-4b95-b9f0-22601f41b61d` foi recuperado sem
+recalcular nada: linha `3675` voltou para **pendente**, há **521 concluídas**,
+**184.306 pendentes**, **0 em processamento**, **0 bloqueadas** e
+**SEM PUBLICAÇÃO**. O lote ficou **Pausado** de propósito: abrir o aplicativo
+ou instalar a atualização não inicia cartas sozinho.
+
+Para continuar, abra somente **Otimizador ClubEfootball.exe** e, quando o
+painel mostrar **Pausado**, clique uma vez em **Retomar**. O aplicativo passa a
+buscar a próxima linha pendente, começando pela linha recuperada. Não use
+`.bat`, terminal nem abra uma segunda cópia do aplicativo.
+
+### Provas da entrega
+
+- Uma execução transacional revertida da linha `3676` gerou
+  `tecnico_id=17606144688129`, nota `-357.0`, `5` Builds comparadas e `55`
+  possíveis; a RPC V6 aceitou a gravação temporária e o rollback deixou a fila
+  produtiva intacta.
+- Passaram `10` testes de `teste_fila_producao_v3.py`, `7` de
+  `teste_impetos_linhas_v12.py`, a regressão da fórmula e `32` testes da
+  interface local. Também passaram `py_compile` dos módulos alterados e
+  `node --check interface/app.js`.
+- O pacote recompilado responde por loopback com
+  `versao_interface=20260901-v47`; Fila e Resultados leem o contrato V6 e a
+  saúde confirma que não há credencial no navegador.
+
+Não houve migração de banco nesta revisão: foi uma correção de saída antes da
+FK obrigatória existente. O snapshot completo imediatamente anterior está em
+`4-DOCUMENTOS/OTIMIZADOR/RECUPERACAO/20260901-v47-tecnico-canonico-antes/`.
+Ele contém os arquivos-fonte, testes, manual, executável e runtime anteriores.
+Para mover o produto a outro computador, copie a pasta `2-MOTORES/OTIMIZADOR/`
+inteira, inclusive `runtime/_internal/` e `interface/`; não copie somente o
+`.exe`.
+
+## 29. Fila portátil em blocos — aplicativo V59 (01/09/2026)
+
+Esta é a forma operacional atual do Otimizador. A fila integral não é mais
+baixada no computador que vai calcular: ela já acompanha a pasta do
+Otimizador, pronta para copiar para outro Windows.
+
+### O que deve viajar junto
+
+Copie a pasta `2-MOTORES/OTIMIZADOR/` inteira. Ela inclui:
+
+- `Otimizador ClubEfootball.exe`: o único ícone que o operador abre;
+- `runtime/` e `runtime/_internal/`: o serviço local que o ícone inicia;
+- `interface/`: o painel local em `127.0.0.1`;
+- `PACOTE-FILA-INTEGRAL/ddbcbc86-1ae7-4b95-b9f0-22601f41b61d/`: a fotografia
+  de entrada, com 19.363 cartas e 183.287 pendências físicas;
+- 20 arquivos de cartas e 184 blocos de linhas, cada um com no máximo 1.000
+  linhas.
+
+O pacote não contém URL, chave, senha, resultado, reserva ou estado de outra
+máquina. Mesmo se a pasta inteira for copiada por pendrive, o aplicativo usa
+um diretório de execução identificado pela máquina em `runtime/fila-local/`;
+por isso o destino não herda uma reserva ou um envio pendente da origem. A
+primeira abertura em um novo computador pode pedir a configuração local já
+autorizada daquele computador; essa configuração fica fora do Git e nunca deve
+ser copiada para repositório. Depois disso, abrir o ícone não baixa a fila
+novamente.
+
+Se a pasta `PACOTE-FILA-INTEGRAL` estiver ausente, o aplicativo falha de modo
+claro antes de iniciar uma linha: ele pede a cópia da pasta completa, em vez de
+tentar um download escondido ou parecer travado.
+
+### Como a execução funciona
+
+1. O painel lê a mesma fila já armazenada no computador e apresenta as próximas
+   pendências primeiro; a ordem oficial e a reserva continuam sendo decididas
+   por `clube_novo`.
+2. O motor recebe, por vez, um bloco local de no máximo 1.000 linhas. A fórmula
+   continua literalmente `barras com teto 99 -> proficiência com piso 40/teto
+   99 -> boost técnico -> Ímpetos`.
+3. Cada resultado é primeiro gravado de forma atômica no `runtime/fila-local/`
+   daquela máquina. Esse estado pode ser retomado após queda sem tocar na
+   fotografia que viaja entre computadores.
+4. Um enviador separado confirma somente resultados duráveis e envia no máximo
+   100 de cada vez pelo contrato selado. Se a rede cair, o arquivo fica local e
+   é reenviado depois; ele não recalcula nem duplica uma Build.
+
+Ímpetos condicionais continuam desligados. Nenhum resultado desse fluxo é
+publicado: `pode_publicar=false` permanece obrigatório.
+
+### Teste real V59
+
+Foi feita uma prova controlada no lote integral já pausado. Antes do teste havia
+1.540 concluídas, 183.287 pendentes e nenhuma reserva ativa. O worker retomou
+somente a ordem `1541` (`linha_id=4694`, Ademola Lookman, Atacante criador,
+Ponta esquerda), calculou-a localmente, enviou-a e pausou automaticamente antes
+de tentar uma segunda linha.
+
+O readback do contrato `clube_novo.otimizador_entrada_linha_v1` confirmou:
+
+- estado `concluido`;
+- pontuação `-401.9`;
+- duração real `3,34272 s`;
+- 3 Builds comparadas de 55 possíveis;
+- técnico canônico `17606144688129`, barras e habilidades persistidos;
+- depois da prova: 1.541 concluídas, 183.286 pendentes, 0 em processamento,
+  0 bloqueadas, 0 interrompidas e sem publicação.
+
+O piloto possui uma trava adicional: o limite de uma linha conta a primeira
+linha que conseguiu reserva, mesmo que ela falhe. Portanto uma falha no piloto
+não autoriza o worker a seguir para a próxima linha.
+
+### Operação diária
+
+1. Abra apenas `Otimizador ClubEfootball.exe`.
+2. Aguarde o painel mostrar a fila e o estado **Pausado**.
+3. Para calcular a fila inteira, clique uma vez em **Retomar**. Não abra
+   `.bat`, terminal nem uma segunda cópia do aplicativo.
+4. Para interromper com segurança, clique **Pausar** e espere o estado
+   **Pausado** antes de fechar a janela. Fechar a janela esconde somente o
+   painel; a fila não deve ser presumida como parada sem o estado **Pausado**.
+
+Snapshots de recuperação desta revisão: `RECUPERACAO/20260901-v57-pacote-portatil-fatiado-antes/`,
+`RECUPERACAO/20260901-v58-servico-portatil-antes/` e
+`RECUPERACAO/20260901-v59-piloto-limite-antes/`. A recuperação desses arquivos
+não apaga nenhuma linha ou Build já confirmada no banco.
+
+### Complemento V60 — cópia física segura entre computadores
+
+O estado de trabalho agora é separado também por máquina. Portanto, se a pasta
+inteira for levada por pendrive ou compactada, a nova máquina continua usando a
+mesma fila de entrada, mas abre outro diretório local para reservas e resultados
+pendentes. Ela não pode reenviar uma saída ou considerar uma reserva da máquina
+de origem como sua.
+
+O caminho completo do ícone foi validado depois da recompilação: `Otimizador
+ClubEfootball.exe` iniciou `runtime/OtimizadorServico.exe`, que respondeu em
+loopback com estado `pausado`, 1.541 concluídas, 183.286 pendentes, zero worker
+e `pode_publicar=false`. O serviço de prova foi fechado em seguida; nenhum lote
+ficou rodando.
+
+Passaram 11 testes do pacote local e 32 testes do painel. Não foram alterados
+`motor.py`, `equacao.py`, `regua.py`, pesos, moldes ou fórmula.

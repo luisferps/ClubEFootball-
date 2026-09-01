@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Otimizador ClubEfootball</title>
-  <link rel="stylesheet" href="/style.css?v=20260831-v32">
+  <link rel="stylesheet" href="/style.css?v=20260901-v48">
 </head>
 <body>
 <header class="topo">
@@ -54,21 +54,9 @@
       </div>
       <p class="orientacao"><strong>Iniciar</strong> liga a esteira: o preparador sela linhas e o Otimizador calcula apenas as já prontas. <strong>Pausar</strong> termina a unidade atômica atual e <strong>Parar</strong> encerra sem publicar.</p>
       <p id="fila-aviso" class="aviso" aria-live="polite">Consultando a fila ativa…</p>
-      <p id="progresso-ao-vivo" class="progresso-ao-vivo" hidden></p>
     </section>
 
     <div id="totais-fila" class="totais" aria-label="Resumo da rodada"></div>
-
-    <section class="painel linha-atual-painel">
-      <div class="painel-cabecalho">
-        <div>
-          <p class="sobrelinha">AGORA</p>
-          <h3>Linha em processamento</h3>
-        </div>
-        <button id="ir-linha-atual" type="button" class="discreto" disabled>Ir para o andamento</button>
-      </div>
-      <dl id="linha-atual"><div><dt>Estado</dt><dd>Nenhuma linha em processamento.</dd></div></dl>
-    </section>
 
     <section class="painel painel-tabela">
       <div class="painel-cabecalho">
@@ -104,11 +92,6 @@
       </div>
     </section>
 
-    <details class="painel detalhes-tecnicos">
-      <summary>Detalhes técnicos e eventos recentes</summary>
-      <dl id="detalhes-lote"></dl>
-      <pre id="eventos-fila">Nenhum evento carregado.</pre>
-    </details>
   </section>
 
   <section id="aba-individual" class="aba" hidden>
@@ -148,6 +131,6 @@
 
 <dialog id="dialog-build-campea" class="dialog-build"><article><div class="dialog-build-cabecalho"><h2>Build campeã</h2><button id="fechar-build-campea" type="button" class="discreto">Fechar</button></div><p id="build-campea-aviso" class="aviso"></p><dl id="build-campea-detalhe"></dl></article></dialog>
 <template id="linha"><div><dt></dt><dd></dd></div></template>
-  <script src="/app.js?v=20260831-v32"></script>
+<script src="/app.js?v=20260901-v48"></script>
 </body>
 </html>

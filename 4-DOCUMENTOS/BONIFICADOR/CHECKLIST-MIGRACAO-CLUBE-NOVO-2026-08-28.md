@@ -4,7 +4,82 @@
 **Escopo:** somente leituras de dados do jogo do Bonificador  
 **Estado inicial:** auditoria e plano criados antes de qualquer troca de runtime ou banco
 
+## Contrato canônico de pontuação final V1 — 01/09/2026
+
+- [x] Snapshot anterior confirmou que a view e a RPC não existiam; havia 613 linhas
+  com ambos os resultados, todas de teste, e 0 linhas publicadas.
+- [x] `clube_novo.build_pontuacao_final_v1` une por IDs estáveis a linha, a Build
+  candidata (`build_otimizador_id`) e o resultado do Bonificador
+  (`build_bonificador_id`), sem consultar `clube.*` nem alterar qualquer motor.
+- [x] A composição final é feita somente no banco: `pontuacao_otimizador +
+  bonus_total_bonificador`, preservando a regra existente; readback das 613 linhas
+  encontrou 0 divergências de paridade.
+- [x] A projeção expõe estado final, motivo, elegibilidade, publicação, versões,
+  fingerprints e proveniência. Falta de resultado, selo incompatível e lote de teste
+  permanecem fail-closed.
+- [x] `public.frontend_build_publicada_v1` é a única porta de leitura para Ranking,
+  Elenco e Ficha: é SELECT-only, limitada a 500 linhas e devolve exclusivamente
+  Builds publicadas. `anon`/`authenticated` não recebem `SELECT` na view privada.
+- [x] Readback com papel `anon`: 0 linhas visíveis. Portanto, os 613 resultados de
+  teste continuam sem publicação; não houve escrita, promoção ou lote novo.
+- [x] Rollback recuperável: `SQL/ROLLBACK-CONTRATO-PONTUACAO-FINAL-V1.sql` remove
+  somente a view/RPC; não toca em linhas nem em resultados persistidos.
+
+## Fila operacional V4 — 31/08/2026
+
+## Correção de resultado e selos na interface — 31/08/2026
+
+- [x] Contrato privado `bonificador_resultados_v1` separa resultados confirmados da
+  fila pendente e preserva carta, função e posição humanas após a confirmação.
+
+- [x] Contrato privado `bonificador_contexto_fila_v5`: 613/613 linhas com nome de
+  carta, função e posição canônicos; `bonificador_runtime=true`, `anon=false`.
+- [x] A interface V2.0.23 separa fila pendente da fila de resultados e exibe nomes
+  humanos; IDs não são mostrados como texto operacional.
+- [x] O writer V4 deixa `build_bonificador.id` no `DEFAULT` do banco. Readback da
+  rodada falha anterior: 0 resultados, 0 linhas confirmadas e 613 pendentes.
+
+- [x] O cliente WinForms fixa `Encoding.UTF8` ao ler as respostas do componente
+  local; a prova automatizada confere `Função ID 19` sem mojibake.
+
+- [x] A lista JSON retornada pela fila V4 passou a ser enumerada corretamente pela
+  janela nativa; não há mais descarte silencioso das linhas recebidas.
+- [x] O motor emite `FILA_RESULTADO` por linha com parcelas e gate, e a tela mostra
+  esse resultado real, sem recalcular fórmula no cliente.
+- [x] A saída do componente é UTF-8 de ponta a ponta.
+- [x] O gate conserva a igualdade de `carta_versao`, mas usa o fingerprint da
+  fotografia canônica `bonificador_carta_v2` no resultado/escritor V4. Foi removida
+  somente a comparação indevida entre fingerprints ou versões de contratos distintos.
+- [x] Readback restrito confirmou que a versão da carta coincide com a linha e que os
+  dois fingerprints eram diferentes por serem projeções distintas. Nenhuma fórmula,
+  peso, molde, ordem ou regra foi alterada.
+- [x] Recuperação do escritor: `SQL/ROLLBACK-ESCRITOR-FILA-BONIFICADOR-V4-CARTA-FINGERPRINT.sql`.
+
+- [x] A fonte operacional é exclusivamente `clube_novo.build_linha_card`: linha sem
+  `build_bonificador_id`, com o marcador canônico `bonificador_nao_executado` e os
+  estados `lote_estado=concluido`, `estado=pendente` e
+  `estado_otimizador=concluido`.
+- [x] `public.bonificador_contexto_fila_v4` substituiu a fila V3 no motor e no
+  aplicativo. Não consulta `clube.*`, `bonificador_par`, `execucao_tipo` ou um
+  marcador de teste; não há fallback para essas fontes.
+- [x] Readback independente: 613 linhas, 50 cartas e 19 funções canônicas prontas
+  para o Bonificador. A leitura empacotada do componente local devolveu a mesma
+  fila pela RPC V4.
+- [x] O índice parcial `build_linha_card_bonificador_pronta_v4_idx` está válido;
+  o índice provisório GIN foi removido. Não ficou índice redundante para a fila.
+- [x] O login local `bonificador_runtime` só recebe `CONNECT`, `USAGE` e `EXECUTE`
+  nas quatro RPCs V2/V4 do Bonificador. Não possui `SELECT` em tabelas do jogo.
+- [x] A paridade estrutural da fórmula (`5` funções de cálculo) contra o snapshot
+  pré-V4 foi aprovada. Fórmulas, pesos, moldes, ordem e regras não foram alterados.
+- [x] Nenhum lote foi iniciado nesta validação e `clube_novo.build_bonificador`
+  permanecia sem resultado antes do ensaio de leitura.
+- [x] Recuperação: `RECUPERACAO/2026-08-31-ANTES-FILA-OPERACIONAL-V4`; rollback
+  explícito em `SQL/ROLLBACK-FILA-BONIFICADOR-V4.sql`.
+
 ## Fila V3 aplicada — 31/08/2026
+
+> Histórico de ensaio. A V3 não é uma rota operacional do motor ou do aplicativo
+> atual; foi substituída integralmente pela fila V4 acima.
 
 - [x] Snapshot recuperável e ensaio integral com rollback: 613 linhas, 50 cartas, 345 pares distintos.
 - [x] `clube_novo.bonificador_par` preenchida só por IDs canônicos (`card_id`, `funcao_id`).

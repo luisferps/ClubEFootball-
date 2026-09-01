@@ -17,10 +17,12 @@ import re
 import signal
 import subprocess
 import sys
+import tempfile
 import threading
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -31,6 +33,10 @@ if getattr(sys, "frozen", False):
     MOTOR = Path(sys._MEIPASS) / "motor_bonus.py"
 else:
     MOTOR = PASTA.parent / "motor_bonus.py"
+if getattr(sys, "frozen", False) and "--pipeline" in sys.argv:
+    import runpy
+    runpy.run_path(str(MOTOR), run_name="__main__")
+    raise SystemExit(0)
 CARD_ID_VALIDO = re.compile(r"^[A-Za-z0-9@_-]{1,64}$")
 FUNCOES_PURAS = {
     "nota_da_medida",
@@ -55,7 +61,7 @@ def achar_raiz() -> Path:
     raise ErroDaInterface("configuração compartilhada não encontrada", 503)
 
 
-def ler_config() -> tuple[str, str]:
+def ler_config() -> tuple[str, str, str]:
     config_fornecida = os.environ.get("CLUBEF_BONIFICADOR_CONFIG", "")
     config = Path(config_fornecida) if config_fornecida else achar_raiz() / "2-MOTORES" / "config.txt"
     valores: dict[str, str] = {}
@@ -66,9 +72,12 @@ def ler_config() -> tuple[str, str]:
             valores[chave.strip()] = valor.strip()
     url = valores.get("SUPABASE_URL", "").rstrip("/")
     chave = valores.get("SUPABASE_KEY", "")
+    banco = valores.get("BONIFICADOR_DATABASE_URL", "")
+    if banco:
+        return url, chave, banco
     if not url or not chave or "COLE_AQUI" in chave:
         raise ErroDaInterface("configuração local do Bonificador está incompleta", 503)
-    return url, chave
+    return url, chave, ""
 
 
 def carregar_funcoes_puras() -> dict[str, object]:
@@ -92,15 +101,49 @@ class GatewayBonificador:
     """Fronteira única para RPCs; não expõe schema ou credencial ao navegador."""
 
     def __init__(self):
-        self.url, self.chave = ler_config()
+        self.url, self.chave, self.banco = ler_config()
+
+    def _rpc_banco(self, nome: str, corpo: dict | None):
+        """Executa apenas a allowlist de contratos via login local restrito."""
+        try:
+            import psycopg
+        except ImportError as erro:
+            raise ErroDaInterface("componente local sem dependência de banco", 503) from erro
+        try:
+            with psycopg.connect(self.banco, connect_timeout=15) as conexao:
+                with conexao.cursor() as cursor:
+                    if nome == "bonificador_regua_v2":
+                        cursor.execute("select public.bonificador_regua_v2()")
+                        return cursor.fetchone()[0]
+                    if nome == "bonificador_carta_v2":
+                        cursor.execute("select public.bonificador_carta_v2(%s)", ((corpo or {}).get("p_card_id"),))
+                        return cursor.fetchone()[0]
+                    if nome == "bonificador_contexto_fila_v5":
+                        cursor.execute("select * from public.bonificador_contexto_fila_v5(%s,%s)", (
+                            (corpo or {}).get("p_limit", 1000), (corpo or {}).get("p_offset", 0)))
+                        colunas = [d.name for d in cursor.description]
+                        return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
+                    if nome == "bonificador_resultados_v1":
+                        cursor.execute("select * from public.bonificador_resultados_v1(%s,%s)", (
+                            (corpo or {}).get("p_limit", 1000), (corpo or {}).get("p_offset", 0)))
+                        colunas = [d.name for d in cursor.description]
+                        return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
+                    cursor.execute("select public.gravar_build_bonificador_v4(%s::jsonb)", (json.dumps((corpo or {}).get("p_resultado")),))
+                    return cursor.fetchone()[0]
+        except Exception as erro:
+            raise ErroDaInterface(f"contrato local indisponível ({type(erro).__name__})", 503) from erro
 
     def rpc(self, nome: str, corpo: dict | None = None):
         if nome not in {
             "bonificador_regua_v2",
             "bonificador_carta_v2",
-            "bonificador_contexto_fila_v3",
+            "bonificador_contexto_fila_v5",
+            "bonificador_resultados_v1",
+            "gravar_build_bonificador_v4",
         }:
             raise ErroDaInterface("contrato não permitido", 403)
+        if self.banco:
+            return self._rpc_banco(nome, corpo)
         pedido = urllib.request.Request(
             f"{self.url}/rest/v1/rpc/{nome}",
             data=json.dumps(corpo or {}).encode("utf-8"),
@@ -158,12 +201,11 @@ class ServicoBonificador:
     def fila_pendente(self, limite: int = 5000) -> dict:
         """Lê a fila operacional do contrato, sem tabela direta nem escrita."""
         limite = max(1, min(int(limite), 5000))
-        bruto = self.gateway.rpc("bonificador_contexto_fila_v3", {
+        bruto = self.gateway.rpc("bonificador_contexto_fila_v5", {
             "p_limit": limite, "p_offset": 0,
         }) or []
         if not isinstance(bruto, list):
             raise ErroDaInterface("contrato da fila do Bonificador devolveu formato inesperado", 503)
-        nomes = {item["id"]: item["nome"] for item in self.catalogo_funcoes(self.regua())}
         itens = []
         for dado in bruto:
             try:
@@ -175,20 +217,36 @@ class ServicoBonificador:
             itens.append({
                 "linha_id": linha_id,
                 "card_id": str(dado.get("card_id") or ""),
+                "carta_nome": str(dado.get("carta_nome") or "Carta sem nome canônico"),
+                "carta_tipo": str(dado.get("carta_tipo") or "Coleção não informada"),
+                "carta_box": str(dado.get("carta_box") or ""),
+                "carta_overall": dado.get("carta_overall"),
                 "funcao_id": funcao_id,
                 "funcao_codigo": str(dado.get("funcao_codigo") or ""),
-                "funcao_nome": nomes.get(funcao_id) or f"Função ID {funcao_id}",
+                "funcao_nome": str(dado.get("funcao_nome") or "Função canônica sem rótulo"),
                 "posicao_id": posicao_id,
+                "posicao_codigo": str(dado.get("posicao_codigo") or ""),
+                "posicao_nome": str(dado.get("posicao_nome") or "Posição canônica sem nome"),
                 "carta_versao": dado.get("carta_versao"),
                 "carta_fingerprint": dado.get("carta_fingerprint"),
             })
         return {
-            "contrato": "bonificador_contexto_fila_v3",
+            "contrato": "bonificador_contexto_fila_v5",
             "itens": itens,
             "total": len(itens),
             "total_exato": len(itens) < limite,
             "limite": limite,
         }
+
+    def resultados_persistidos(self, limite: int = 5000) -> dict:
+        """Lê resultados já confirmados por contrato próprio, sem depender da fila pendente."""
+        limite = max(1, min(int(limite), 5000))
+        bruto = self.gateway.rpc("bonificador_resultados_v1", {
+            "p_limit": limite, "p_offset": 0,
+        }) or []
+        if not isinstance(bruto, list):
+            raise ErroDaInterface("contrato de resultados devolveu formato inesperado", 503)
+        return {"contrato": "bonificador_resultados_v1", "itens": bruto, "total": len(bruto)}
 
     @staticmethod
     def _preparar_regua(regua: dict) -> dict:
@@ -319,10 +377,11 @@ class PipelineBonificador:
         self._lock = threading.RLock()
         self._processo = None
         self._parada_solicitada = False
+        self._arquivo_parada: Path | None = None
         self._estado = {"estado": "parado", "mensagem": "Pipeline não iniciado.",
                         "aguardando": False, "confirmados": 0, "calculados": 0,
                         "total_rodada": 0, "linha_atual": None, "eventos": [],
-                        "codigo_saida": None}
+                        "resultados": {}, "codigo_saida": None}
 
     def estado(self) -> dict:
         with self._lock:
@@ -346,14 +405,21 @@ class PipelineBonificador:
                        "stdout": subprocess.PIPE, "stderr": subprocess.STDOUT,
                        "text": True, "encoding": "utf-8", "errors": "replace", "bufsize": 1,
                        "env": {**os.environ, "PYTHONUTF8": "1"}}
+            arquivo_parada = Path(tempfile.gettempdir()) / ("clubef-bonificador-parar-" + uuid.uuid4().hex + ".flag")
+            opcoes["env"]["CLUBEF_BONIFICADOR_STOP_FILE"] = str(arquivo_parada)
+            if ler_config()[2]:
+                opcoes["env"]["CLUBEF_BONIFICADOR_USAR_BANCO_DIRETO"] = "1"
             if os.name == "nt":
                 opcoes["creationflags"] = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
-            self._processo = self._popen([sys.executable, "-u", str(MOTOR)], **opcoes)
+            comando = ([sys.executable, "--pipeline"] if getattr(sys, "frozen", False)
+                       else [sys.executable, "-u", str(MOTOR)])
+            self._processo = self._popen(comando, **opcoes)
             self._parada_solicitada = False
+            self._arquivo_parada = arquivo_parada
             self._estado = {"estado": "iniciando", "mensagem": "Iniciando o pipeline canônico...",
                             "aguardando": False, "confirmados": 0, "calculados": 0,
                             "total_rodada": 0, "linha_atual": None, "eventos": [],
-                            "codigo_saida": None}
+                            "resultados": {}, "codigo_saida": None}
             processo = self._processo
         threading.Thread(target=self._ler_saida, args=(processo,), daemon=True).start()
         threading.Thread(target=self._aguardar_saida, args=(processo,), daemon=True).start()
@@ -366,8 +432,11 @@ class PipelineBonificador:
                 return self.estado()
             self._parada_solicitada = True
             self._estado.update(estado="parando", mensagem="Parada solicitada; terminando a rodada atual.")
+            arquivo_parada = self._arquivo_parada
         try:
-            processo.send_signal(signal.CTRL_BREAK_EVENT if os.name == "nt" and hasattr(signal, "CTRL_BREAK_EVENT") else signal.SIGINT)
+            if arquivo_parada is None:
+                raise RuntimeError("sinal cooperativo ausente")
+            arquivo_parada.touch(exist_ok=True)
         except Exception as erro:
             self._atualizar(estado="erro", mensagem="Não foi possível solicitar a parada: %s" % type(erro).__name__)
         return self.estado()
@@ -395,6 +464,15 @@ class PipelineBonificador:
                 campos.update(estado="processando", aguardando=False)
             elif texto.startswith("FILA_CALCULADA:"):
                 campos["calculados"] = int(self.estado().get("calculados") or 0) + 1
+            elif texto.startswith("FILA_RESULTADO:"):
+                try:
+                    resultado = json.loads(texto.split(":", 1)[1].strip())
+                    linha_id = str(resultado["linha_id"])
+                    resultados = dict(self.estado().get("resultados") or {})
+                    resultados[linha_id] = resultado
+                    campos["resultados"] = resultados
+                except (ValueError, KeyError, TypeError):
+                    campos["mensagem"] = "resultado de fila inválido"
             elif texto.startswith("FILA_CONFIRMADA:"):
                 campos["confirmados"] = int(self.estado().get("confirmados") or 0) + 1
             if "AGUARDANDO NOVAS LINHAS" in texto:
@@ -414,6 +492,8 @@ class PipelineBonificador:
         with self._lock:
             if processo is not self._processo:
                 return
+            arquivo_parada = self._arquivo_parada
+            self._arquivo_parada = None
             self._estado.update(codigo_saida=codigo, aguardando=False)
             if self._parada_solicitada or codigo == 0:
                 self._estado.update(estado="parado", mensagem="Pipeline parado normalmente.")
@@ -423,6 +503,11 @@ class PipelineBonificador:
                 if detalhe and detalhe not in {"Iniciando o pipeline canônico...", mensagem}:
                     mensagem += " Detalhe: %s" % detalhe
                 self._estado.update(estado="erro", mensagem=mensagem)
+        if arquivo_parada:
+            try:
+                arquivo_parada.unlink(missing_ok=True)
+            except OSError:
+                pass
 
 
 def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
@@ -481,12 +566,27 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
                     return self.responder_json(200, servico.simular(card_id, funcao_id))
                 if caminho.path == "/api/auditoria":
                     return self.responder_json(200, {"ok": True, "auditoria": servico.auditoria()})
+                if caminho.path == "/api/resultados":
+                    return self.responder_json(200, {"ok": True, "resultados": servico.resultados_persistidos()})
                 if caminho.path == "/api/fila/status":
                     fila = servico.fila_pendente()
                     estado = pipeline.estado()
                     atual = estado.get("linha_atual") or {}
+                    resultados = estado.get("resultados") or {}
                     for item in fila["itens"]:
-                        item["estado"] = "calculando" if str(item["linha_id"]) == str(atual.get("linha_id")) else "pendente"
+                        resultado = resultados.get(str(item["linha_id"]))
+                        if resultado:
+                            item.update({
+                                "estado": resultado.get("estado") or "calculada",
+                                "b_corpo": resultado.get("b_corpo"),
+                                "b_pe_ruim": resultado.get("b_pe_ruim"),
+                                "b_estilo": resultado.get("b_estilo"),
+                                "b_ia": resultado.get("b_ia"),
+                                "b_total": resultado.get("b_total"),
+                                "faltou": resultado.get("faltou") or [],
+                            })
+                        else:
+                            item["estado"] = "calculando" if str(item["linha_id"]) == str(atual.get("linha_id")) else "pendente"
                     fila["pipeline"] = estado
                     return self.responder_json(200, {"ok": True, "fila": fila})
                 if caminho.path == "/api/pipeline/estado":

@@ -110,7 +110,7 @@ def run() -> None:
 
     def fake_rpc(name, body):
         calls.append((name, body))
-        assert name == "gravar_build_bonificador_v3"
+        assert name == "gravar_build_bonificador_v4"
         payload = body["p_resultado"]
         assert set(payload) == {
             "build_linha_card_id", "card_id", "funcao_id", "posicao_id",
@@ -154,7 +154,7 @@ def run() -> None:
     assert all(call[0] != "gravar_bonus" for call in calls)
 
     def divergent_rpc(name, body):
-        assert name == "gravar_build_bonificador_v3"
+        assert name == "gravar_build_bonificador_v4"
         payload = body["p_resultado"]
         return {
             "gravado": True,
@@ -176,7 +176,7 @@ def run() -> None:
 
     assert "rpc('gravar_bonus'" not in SOURCE
     assert "rpc('bonificador_pares_v1'" not in SOURCE
-    assert "bonificador_contexto_fila_v3" in SOURCE
+    assert "bonificador_contexto_fila_v4" in SOURCE
     assert "Content-Profile" not in SOURCE and "Accept-Profile" not in SOURCE
     print("OK: bloqueado não escreve; apto usa somente writer público para clube_novo; retorno divergente falha fechado")
 

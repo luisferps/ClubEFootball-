@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -14,18 +15,25 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Painel local de execução e acompanhamento do Otimizador")]
 [assembly: AssemblyProduct("Otimizador ClubEfootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("1.6.1.0")]
-[assembly: AssemblyFileVersion("1.6.1.0")]
+[assembly: AssemblyVersion("1.8.1.0")]
+[assembly: AssemblyFileVersion("1.8.1.0")]
 
 namespace ClubEfootballOtimizador
 {
     internal static class Program
     {
         private const int AppPort = 8769;
-        private const string AppUrl = "http://127.0.0.1:8769/?v=20260831-v32";
+        // O identificador do painel precisa acompanhar o contrato que o
+        // serviço realmente expõe. Caso contrário uma cópia nova interpreta o
+        // próprio serviço novo como se fosse uma porta de outro aplicativo.
+        private const string AppUrl = "http://127.0.0.1:8769/?v=20260901-v52";
         private const string StatusUrl = "http://127.0.0.1:8769/api/saude";
         private const string ExpectedApp = "\"aplicativo\": \"otimizador_clubefootball\"";
-        private const string ExpectedVersion = "\"versao_interface\": \"20260831-v32\"";
+        // O lançador conhece o contrato mínimo que precisa para operar a
+        // fotografia local. Aceita revisões posteriores para que uma mudança
+        // visual não transforme o próprio serviço atualizado em falso conflito
+        // de porta; ainda recusa V48/V51 e troca essa cópia somente se ociosa.
+        private const string MinimumInterfaceVersion = "20260901-v52";
         private static readonly object DiagnosticLock = new object();
         private static readonly StringBuilder StartupDiagnostic = new StringBuilder();
         private static Mutex LauncherMutex;
@@ -37,19 +45,83 @@ namespace ClubEfootballOtimizador
             Application.SetCompatibleTextRenderingDefault(false);
             string root = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
             bool ownsMutex = false;
+            StartupNotice startup = Environment.GetEnvironmentVariable("CLUBEF_OTIMIZADOR_NO_BROWSER") == "1"
+                ? null : new StartupNotice();
             try
             {
-                LauncherMutex = new Mutex(true, @"Local\ClubEfootballOtimizadorLauncherV30", out ownsMutex);
+                // V54 precisa poder substituir uma bandeja antiga ociosa. Se
+                // compartilhassem o mesmo mutex, o novo ícone só esperaria a
+                // versão antiga e nunca chegaria à verificação segura da porta.
+                LauncherMutex = new Mutex(true, @"Local\ClubEfootballOtimizadorLauncherV54", out ownsMutex);
+                if (!ownsMutex)
+                {
+                    // Outro clique durante a inicialização não cria segundo
+                    // processo nem obriga o operador a clicar uma terceira vez:
+                    // ele aguarda silenciosamente o primeiro abrir a porta e
+                    // abre o painel por conta própria.
+                    if (startup != null) startup.SetStatus("O Otimizador já está abrindo. Aguardando o painel local…");
+                    if (!WaitForServer(75, startup))
+                    {
+                        MessageBox.Show(
+                            "O Otimizador não terminou de iniciar em 15 segundos. Nenhuma fila foi iniciada. " +
+                            "Confira ERRO-ABERTURA-OTIMIZADOR.txt se ele existir.",
+                            "Otimizador ClubEfootball", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    if (Environment.GetEnvironmentVariable("CLUBEF_OTIMIZADOR_NO_BROWSER") != "1") OpenBrowser(root);
+                    return;
+                }
                 string health = ReadHealth();
                 if (!ExpectedServer(health))
                 {
-                    if (health != null)
-                        throw new InvalidOperationException("A porta interna do Otimizador está ocupada por outro aplicativo. Se o ícone do Otimizador estiver perto do relógio, dê duplo clique nele para reabrir o painel. Caso contrário, a porta 8769 pertence a outro aplicativo.");
-                    ValidatePackage(root);
-                    StartHiddenServer(root);
-                    WaitForServer();
+                    // Ao substituir o pacote, um serviço antigo e ocioso pode
+                    // continuar na porta interna. O novo ícone o troca sozinho
+                    // somente se ele se identifica como Otimizador e confirma
+                    // que não há worker; um cálculo real nunca é interrompido.
+                    if (CanReplaceIdlePreviousService(health))
+                    {
+                        StopPreviousIdleService();
+                        Thread.Sleep(250);
+                        health = ReadHealth();
+                    }
+                    // Uma porta aberta pode ser apenas o próprio serviço que
+                    // acabou de ser lançado por um clique anterior. Esperamos
+                    // alguns segundos antes de chamar isso de conflito.
+                    if (!ExpectedServer(health) && PortaInternaOcupada())
+                    {
+                        if (startup != null) startup.SetStatus("Conferindo o serviço local já aberto…");
+                        if (WaitForServer(25, startup)) health = ReadHealth();
+                        else
+                        {
+                            health = ReadHealth();
+                            if (CanReplaceIdlePreviousService(health))
+                            {
+                                StopPreviousIdleService();
+                                Thread.Sleep(250);
+                                health = ReadHealth();
+                            }
+                        }
+                    }
+                    if (!ExpectedServer(health))
+                    {
+                        if (health != null || PortaInternaOcupada())
+                            throw new InvalidOperationException("A porta interna 8769 está em uso por outro aplicativo ou por um Otimizador com worker ativo. Nenhuma fila foi interrompida. Feche somente o outro aplicativo que usa essa porta; se o ícone do Otimizador estiver perto do relógio, dê duplo clique nele para reabrir o painel.");
+                        EnsureConfiguration(root);
+                        ValidatePackage(root);
+                        if (startup != null) startup.SetStatus("Iniciando o componente local do Otimizador…");
+                        StartHiddenServer(root);
+                        if (startup != null) startup.SetStatus("Conectando o painel local…");
+                        if (!WaitForServer(150, startup))
+                        {
+                            string diagnostic;
+                            lock (DiagnosticLock) diagnostic = StartupDiagnostic.ToString().Trim();
+                            throw new InvalidOperationException("O componente interno do Otimizador não respondeu." +
+                                (String.IsNullOrEmpty(diagnostic) ? "" : "\n\nDetalhe técnico: " + diagnostic));
+                        }
+                    }
                 }
                 if (Environment.GetEnvironmentVariable("CLUBEF_OTIMIZADOR_NO_BROWSER") == "1") return;
+                if (startup != null) startup.SetStatus("Abrindo o painel…");
                 if (!ownsMutex)
                 {
                     // Uma segunda abertura só traz a janela de volta. Ela nunca
@@ -59,6 +131,15 @@ namespace ClubEfootballOtimizador
                 }
                 TrayController controller = new TrayController(root);
                 controller.OpenPanel();
+                // O aviso inicial só serve até o painel ser solicitado. A
+                // bandeja fica viva por Application.Run, portanto deixá-lo
+                // para o finally manteria "Abrindo o Otimizador" sobre uma
+                // tela já aberta durante toda a sessão.
+                if (startup != null)
+                {
+                    startup.Dispose();
+                    startup = null;
+                }
                 Application.Run(controller);
             }
             catch (Exception error)
@@ -70,6 +151,7 @@ namespace ClubEfootballOtimizador
             }
             finally
             {
+                if (startup != null) startup.Dispose();
                 if (ownsMutex && LauncherMutex != null)
                 {
                     try { LauncherMutex.ReleaseMutex(); } catch { }
@@ -81,20 +163,101 @@ namespace ClubEfootballOtimizador
         {
             try
             {
-                using (WebClient client = new WebClient())
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(StatusUrl);
+                request.Proxy = null;
+                request.Timeout = 1500;
+                request.ReadWriteTimeout = 1500;
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
                 {
-                    client.Proxy = null;
-                    return client.DownloadString(StatusUrl);
+                    return reader.ReadToEnd();
                 }
             }
             catch { return null; }
+        }
+
+        private static bool PortaInternaOcupada()
+        {
+            try
+            {
+                using (TcpClient client = new TcpClient())
+                {
+                    IAsyncResult tentativa = client.BeginConnect("127.0.0.1", AppPort, null, null);
+                    if (!tentativa.AsyncWaitHandle.WaitOne(750)) return false;
+                    client.EndConnect(tentativa);
+                    return true;
+                }
+            }
+            catch { return false; }
         }
 
         private static bool ExpectedServer(string status)
         {
             if (status == null) return false;
             bool ok = status.Contains("\"ok\": true") || status.Contains("\"ok\":true");
-            return ok && status.Contains(ExpectedApp) && status.Contains(ExpectedVersion);
+            return ok && status.Contains(ExpectedApp) &&
+                SupportedInterfaceVersion(ReadJsonString(status, "versao_interface"));
+        }
+
+        private static bool SupportedInterfaceVersion(string received)
+        {
+            Match minimum = Regex.Match(MinimumInterfaceVersion, "^(?<date>\\d{8})-v(?<revision>\\d+)$");
+            Match current = Regex.Match(received ?? "", "^(?<date>\\d{8})-v(?<revision>\\d+)$");
+            if (!minimum.Success || !current.Success) return false;
+            int dateComparison = String.CompareOrdinal(current.Groups["date"].Value, minimum.Groups["date"].Value);
+            if (dateComparison != 0) return dateComparison > 0;
+            int currentRevision;
+            int minimumRevision;
+            return Int32.TryParse(current.Groups["revision"].Value, out currentRevision) &&
+                Int32.TryParse(minimum.Groups["revision"].Value, out minimumRevision) &&
+                currentRevision >= minimumRevision;
+        }
+
+        private static string ReadJsonString(string json, string property)
+        {
+            if (String.IsNullOrEmpty(json)) return null;
+            Match match = Regex.Match(
+                json,
+                "\\\"" + Regex.Escape(property) + "\\\"\\s*:\\s*\\\"(?<value>(?:\\\\\\\\.|[^\\\"])*)\\\"");
+            if (!match.Success) return null;
+            try { return Regex.Unescape(match.Groups["value"].Value); }
+            catch { return match.Groups["value"].Value; }
+        }
+
+        private static bool CanReplaceIdlePreviousService(string status)
+        {
+            if (String.IsNullOrEmpty(status) || !status.Contains(ExpectedApp)) return false;
+            return status.Contains("\"worker_ativo\": false") || status.Contains("\"worker_ativo\":false");
+        }
+
+        private static void StopPreviousIdleService()
+        {
+            foreach (Process process in Process.GetProcessesByName("OtimizadorServico"))
+            {
+                try
+                {
+                    // Esta rotina só é chamada depois de a própria porta 8769
+                    // se identificar como Otimizador e afirmar worker_ativo=false.
+                    // Assim ela pode trocar uma cópia antiga em outra pasta,
+                    // mas jamais toca um cálculo em curso.
+                    process.Kill();
+                    process.WaitForExit(3000);
+                }
+                catch { }
+            }
+            foreach (Process process in Process.GetProcessesByName("Otimizador ClubEfootball"))
+            {
+                try
+                {
+                    // A cópia anterior pode manter somente o ícone da bandeja
+                    // depois da troca do pacote. A porta já confirmou que não
+                    // existe worker, e jamais encerramos o próprio lançador.
+                    if (process.Id == Process.GetCurrentProcess().Id) continue;
+                    process.Kill();
+                    process.WaitForExit(3000);
+                }
+                catch { }
+            }
         }
 
         private static bool ServerReady()
@@ -102,17 +265,15 @@ namespace ClubEfootballOtimizador
             return ExpectedServer(ReadHealth());
         }
 
-        private static void WaitForServer()
+        private static bool WaitForServer(int attempts, StartupNotice startup = null)
         {
-            for (int attempt = 0; attempt < 150; attempt++)
+            for (int attempt = 0; attempt < attempts; attempt++)
             {
-                if (ServerReady()) return;
+                if (ServerReady()) return true;
+                if (startup != null) startup.Pump();
                 Thread.Sleep(200);
             }
-            string diagnostic;
-            lock (DiagnosticLock) diagnostic = StartupDiagnostic.ToString().Trim();
-            throw new InvalidOperationException("O componente interno do Otimizador não respondeu." +
-                (String.IsNullOrEmpty(diagnostic) ? "" : "\n\nDetalhe técnico: " + diagnostic));
+            return false;
         }
 
         private static void StartHiddenServer(string root)
@@ -152,9 +313,97 @@ namespace ClubEfootballOtimizador
         private static string FindConfiguration(string root)
         {
             string parent = Directory.GetParent(root).FullName;
-            string[] candidates = new string[] { Path.Combine(parent, "config.txt"), Path.Combine(root, "config.txt") };
+            string[] candidates = new string[] { Path.Combine(root, "config.txt"), Path.Combine(parent, "config.txt") };
             foreach (string candidate in candidates) if (File.Exists(candidate)) return candidate;
             return null;
+        }
+
+        private static bool IsConfigurationValid(string config)
+        {
+            if (String.IsNullOrEmpty(config) || !File.Exists(config)) return false;
+            try
+            {
+                string text = File.ReadAllText(config);
+                return text.IndexOf("SUPABASE_URL=", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                    text.IndexOf("SUPABASE_KEY=", StringComparison.OrdinalIgnoreCase) >= 0 &&
+                    text.IndexOf("COLE_AQUI", StringComparison.OrdinalIgnoreCase) < 0;
+            }
+            catch { return false; }
+        }
+
+        private static string ConfigurationValue(string config, string name)
+        {
+            if (String.IsNullOrEmpty(config) || !File.Exists(config)) return "";
+            try
+            {
+                foreach (string raw in File.ReadAllLines(config))
+                {
+                    string line = raw.Trim();
+                    if (line.StartsWith(name + "=", StringComparison.OrdinalIgnoreCase))
+                        return line.Substring(name.Length + 1).Trim();
+                }
+            }
+            catch { }
+            return "";
+        }
+
+        private static void EnsureConfiguration(string root)
+        {
+            string existing = FindConfiguration(root);
+            if (IsConfigurationValid(existing)) return;
+
+            string target = Path.Combine(root, "config.txt");
+            string initialUrl = ConfigurationValue(existing, "SUPABASE_URL");
+            using (Form dialog = new Form())
+            {
+                dialog.Text = "Configurar conexão do Otimizador";
+                dialog.StartPosition = FormStartPosition.CenterScreen;
+                dialog.FormBorderStyle = FormBorderStyle.FixedDialog;
+                dialog.MaximizeBox = false;
+                dialog.MinimizeBox = false;
+                dialog.ClientSize = new Size(540, 270);
+
+                Label title = new Label { Left = 22, Top = 18, Width = 495, Height = 42,
+                    Text = "Esta cópia ainda não tem conexão local. Cole uma vez a URL e a chave do Supabase. Elas ficam somente neste computador e nunca vão para o navegador.",
+                    AutoSize = false };
+                Label urlLabel = new Label { Left = 22, Top = 78, Width = 150, Text = "URL do Supabase" };
+                TextBox url = new TextBox { Left = 22, Top = 99, Width = 495, Text = initialUrl };
+                Label keyLabel = new Label { Left = 22, Top = 135, Width = 240, Text = "Chave privada do aplicativo" };
+                TextBox key = new TextBox { Left = 22, Top = 156, Width = 495, UseSystemPasswordChar = true };
+                Label hint = new Label { Left = 22, Top = 188, Width = 495, Height = 28,
+                    Text = "Depois de salvar, este mesmo ícone abre com um clique. O arquivo config.txt não é publicado no GitHub.",
+                    AutoSize = false };
+                Button cancel = new Button { Left = 328, Top = 228, Width = 88, Text = "Cancelar", DialogResult = DialogResult.Cancel };
+                Button save = new Button { Left = 429, Top = 228, Width = 88, Text = "Salvar", DialogResult = DialogResult.None };
+                save.Click += delegate
+                {
+                    string connectionUrl = url.Text.Trim().TrimEnd('/');
+                    string connectionKey = key.Text.Trim();
+                    if (!connectionUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase) || String.IsNullOrWhiteSpace(connectionKey) || connectionKey.IndexOf("COLE_AQUI", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        MessageBox.Show("Informe uma URL https:// válida e uma chave não vazia.", "Configuração local", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    try
+                    {
+                        File.WriteAllText(target, "SUPABASE_URL=" + connectionUrl + Environment.NewLine + "SUPABASE_KEY=" + connectionKey + Environment.NewLine, new UTF8Encoding(false));
+                        dialog.DialogResult = DialogResult.OK;
+                    }
+                    catch (Exception error)
+                    {
+                        MessageBox.Show("Não foi possível guardar a configuração local.\n\n" + error.Message, "Configuração local", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                };
+                dialog.Controls.Add(title); dialog.Controls.Add(urlLabel); dialog.Controls.Add(url);
+                dialog.Controls.Add(keyLabel); dialog.Controls.Add(key); dialog.Controls.Add(hint);
+                dialog.Controls.Add(cancel); dialog.Controls.Add(save);
+                dialog.AcceptButton = save;
+                dialog.CancelButton = cancel;
+                if (dialog.ShowDialog() != DialogResult.OK)
+                    throw new InvalidOperationException("A conexão local não foi configurada. Nenhuma fila foi iniciada.");
+            }
+            if (!IsConfigurationValid(target))
+                throw new InvalidOperationException("A configuração local não pôde ser validada. Nenhuma fila foi iniciada.");
         }
 
         private static void ValidatePackage(string root)
@@ -168,13 +417,11 @@ namespace ClubEfootballOtimizador
             };
             foreach (string file in required)
                 if (!File.Exists(file)) throw new InvalidOperationException("O pacote está incompleto. Copie a pasta OTIMIZADOR inteira, inclusive runtime e interface.");
+            if (!Directory.Exists(Path.Combine(root, "runtime", "_internal")))
+                throw new InvalidOperationException("O runtime portátil está incompleto. Copie a pasta runtime inteira, inclusive a pasta _internal.");
             string config = FindConfiguration(root);
-            if (String.IsNullOrEmpty(config)) throw new InvalidOperationException("A conexão local ainda não foi configurada nesta cópia. Instale config.txt uma única vez na pasta 2-MOTORES ou OTIMIZADOR.");
-            string text = File.ReadAllText(config);
-            if (text.IndexOf("SUPABASE_URL=", StringComparison.OrdinalIgnoreCase) < 0 ||
-                text.IndexOf("SUPABASE_KEY=", StringComparison.OrdinalIgnoreCase) < 0 ||
-                text.IndexOf("COLE_AQUI", StringComparison.OrdinalIgnoreCase) >= 0)
-                throw new InvalidOperationException("A configuração local do Otimizador está incompleta. Atualize config.txt uma única vez.");
+            if (!IsConfigurationValid(config))
+                throw new InvalidOperationException("A conexão local do Otimizador está incompleta. Nenhuma fila foi iniciada.");
         }
 
         private static void OpenBrowser(string root)
@@ -206,6 +453,58 @@ namespace ClubEfootballOtimizador
             };
             foreach (string candidate in candidates) if (File.Exists(candidate)) return candidate;
             return null;
+        }
+
+        /// <summary>
+        /// Retorno visual imediato no primeiro clique. Não tem controles de
+        /// fila e não executa trabalho: só evita que a inicialização silenciosa
+        /// seja confundida com um ícone que não funcionou.
+        /// </summary>
+        private sealed class StartupNotice : IDisposable
+        {
+            private readonly Form form;
+            private readonly Label status;
+
+            internal StartupNotice()
+            {
+                form = new Form();
+                form.Text = "Otimizador ClubEfootball";
+                form.StartPosition = FormStartPosition.CenterScreen;
+                form.FormBorderStyle = FormBorderStyle.FixedDialog;
+                form.ControlBox = false;
+                form.MaximizeBox = false;
+                form.MinimizeBox = false;
+                form.ShowInTaskbar = true;
+                form.ClientSize = new Size(420, 125);
+                Label title = new Label { Left = 20, Top = 20, Width = 375, Height = 28,
+                    Text = "Abrindo o Otimizador", Font = new Font(SystemFonts.MessageBoxFont, FontStyle.Bold) };
+                status = new Label { Left = 20, Top = 60, Width = 375, Height = 42,
+                    Text = "Preparando o painel local…", AutoSize = false };
+                form.Controls.Add(title);
+                form.Controls.Add(status);
+                form.Show();
+                Pump();
+            }
+
+            internal void SetStatus(string text)
+            {
+                status.Text = text;
+                Pump();
+            }
+
+            internal void Pump()
+            {
+                if (form.IsDisposed) return;
+                form.Refresh();
+                Application.DoEvents();
+            }
+
+            public void Dispose()
+            {
+                if (form.IsDisposed) return;
+                form.Close();
+                form.Dispose();
+            }
         }
 
         /// <summary>
@@ -241,7 +540,8 @@ namespace ClubEfootballOtimizador
                 menu.Items.Add(hintItem);
 
                 tray = new NotifyIcon();
-                tray.Icon = SystemIcons.Application;
+                try { tray.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath) ?? SystemIcons.Application; }
+                catch { tray.Icon = SystemIcons.Application; }
                 tray.Visible = true;
                 tray.ContextMenuStrip = menu;
                 tray.Text = "Otimizador · verificando serviço local";

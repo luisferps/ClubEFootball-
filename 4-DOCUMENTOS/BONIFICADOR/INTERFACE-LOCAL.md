@@ -1,6 +1,79 @@
 # Aplicativo local do Bonificador
 
-**Versão:** 2.0.15 · **Data:** 31/08/2026 · **Estado:** consulta e controle local do pipeline
+**Versão:** 2.0.24 · **Data:** 31/08/2026 · **Estado:** filas humanas, resultados persistidos e controle local do pipeline
+
+## Revisão V2.0.24 — resultados preservam a referência humana
+
+A aba **Fila de resultados** usa `bonificador_resultados_v1`, contrato privado que
+lê o resultado já confirmado em `build_bonificador` e o associa novamente à carta,
+função e posição canônicas. Ela não tenta usar a fila de pendências como dicionário:
+uma linha confirmada deixa essa fila e por isso não pode mais depender dela para
+mostrar o nome humano.
+
+## Revisão V2.0.23 — filas para o operador
+
+A tela separa **Fila do Bonificador** (somente pendentes) de **Fila de resultados**
+(somente linhas calculadas na rodada). A segunda aba mostra as parcelas reais e os
+bloqueios; a primeira não mistura pendência com resultado.
+
+O contrato privado `bonificador_contexto_fila_v5` projeta apenas a apresentação
+humana necessária da mesma linha canônica: nome da carta, coleção, overall, função e
+posição por extenso. Readback: 613 de 613 linhas possuem os três nomes. A janela não
+consulta tabelas diretamente, e os IDs permanecem internos ao motor.
+
+O escritor V4 também passou a deixar a coluna de identidade gerada pelo próprio banco.
+O erro de identidade (`cannot insert a non-DEFAULT value into column id`) foi corrigido
+sem alterar fórmula, parcelas, pesos, moldes, gates ou regra. A tentativa anterior teve
+0 confirmações e nenhuma escrita parcial.
+
+## Revisão V2.0.22 — UTF-8 na leitura do contrato
+
+O servidor local já enviava JSON UTF-8. A falha remanescente estava no cliente
+WinForms: `WebClient` usava a página de código padrão do Windows ao ler a resposta.
+Agora ele força `Encoding.UTF8` em todo GET e POST local. Nomes recebidos como
+`Função` deixam de aparecer como `FunÃ§Ã£o`; não houve alteração de dados, contrato,
+fórmula ou fila.
+
+## Revisão V2.0.21 — resultado visível e texto correto
+
+A primeira aba agora mostra cada linha da fila que o processo acabou de tratar, sem
+reconstruir resultado no navegador: situação (`apta` ou `bloqueada`), corpo, pé ruim,
+estilo, IA, total e, se houver, o motivo do gate. A tabela continua mostrando as 613
+linhas pendentes antes da execução; durante a execução ela é atualizada com os eventos
+`FILA_RESULTADO` que o próprio motor emite.
+
+Foi corrigida a conversão do retorno JSON da RPC no aplicativo WinForms: o retorno
+canônico é uma coleção e não uma `ArrayList`; antes a janela recebia a fila, mas
+descartava suas linhas ao montar a grade. O processo local também fixa a saída em UTF-8
+e a janela lê essa saída em UTF-8, para que acentos como **função**, **posição** e
+**não executado** não apareçam corrompidos.
+
+O gate de proveniência foi alinhado aos contratos canônicos: a versão da carta ainda
+precisa ser a mesma da linha da build, mas o fingerprint de `build_linha_card` não é
+comparado ao fingerprint de `bonificador_carta_v2`, pois são fotografias diferentes.
+O resultado e o escritor V4 usam o fingerprint da carta canônica. Da mesma forma,
+`bonificador-regua-v2` e `bonificador-carta-v2` não são tratados como se fossem uma
+única versão. Isso remove apenas um bloqueio falso de selos; não altera fórmula,
+pesos, moldes, ordem, regras ou valores matemáticos.
+
+## Estado operacional atual — fila V4
+
+A fila exibida pelo único EXE é `public.bonificador_contexto_fila_v4`. Ela lista
+somente as linhas canônicas de `clube_novo.build_linha_card` que ainda têm o marcador
+`bonificador_nao_executado` e já concluíram os estados de prontidão. Não usa
+`bonificador_par`, recorte de teste, `clube.build` ou qualquer tabela legada.
+
+O componente local usa o login restrito `bonificador_runtime`, que só pode chamar
+`bonificador_regua_v2`, `bonificador_carta_v2`, a fila V4 e o escritor V4; a janela
+nunca recebe acesso a tabela ou a credencial administrativa. A leitura empacotada
+confirmou 613 linhas, 50 cartas e 19 funções. Abrir ou atualizar a tela não calcula
+nem grava bônus. O botão de iniciar continua sendo a única ação que pode iniciar o
+motor local.
+
+A abertura prioriza a fila. O catálogo de funções só é consultado quando a aba
+**Testar uma carta** é aberta; ele não pode atrasar, bloquear ou apagar a lista de
+pendências. O processo iniciado pelo botão recebe o caminho explícito da configuração
+do Bonificador, inclusive quando o componente está empacotado.
 
 Abra `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe`. Ele é um aplicativo local
 com ícone próprio: o EXE extrai o componente local incorporado para a área local do
@@ -37,6 +110,9 @@ por banco continua recomendado.
 - validação visual e online: Iker Casillas `88045755827028`, função #5, exibiu slots
   `291`/`336`, todos os gates aprovados, `b_estilo=1.5000`, `b_total=1.6875` e console
   sem erros.
+- `TESTES/testar_interface_local.py` e `TESTES/testar_pipeline_incremental.py`:
+  aprovados após a emissão de `FILA_RESULTADO`, a parada cooperativa por arquivo local
+  e a leitura da lista JSON; a tela permanece responsiva.
 
 O rollback de todos os arquivos exclusivos está em
 `RECUPERACAO/2026-08-28-ANTES-INTERFACE-LOCAL`; ele não toca motor, `config.txt`,
@@ -45,20 +121,25 @@ contratos, banco, Otimizador ou Extrator.
 O snapshot específico antes desta integração está em
 `RECUPERACAO/2026-08-31-ANTES-INTEGRACAO-PIPELINE-APP`.
 
-## Revisão V2: janela nativa e fila
+## Histórico de revisão V2: janela nativa e fila
 
 O EXE V2.0.0 substitui a abertura no Edge por uma janela WinForms, como o Extrator.
 A primeira aba replica a organização útil do Otimizador: controles de iniciar/parar,
-estado, progresso, linha atual, totais, tabela e eventos. A fila não é local: o
-servidor loopback lê somente `bonificador_contexto_escrita_v2`; a janela nunca recebe
-credencial, URL de banco, schema ou acesso direto a tabelas. As abas de simulação e
-auditoria permanecem separadas.
+estado, progresso, linha atual, totais, tabela e eventos. Essa revisão foi substituída
+pela fila V4 descrita no início deste documento; não é uma rota de runtime atual.
+As abas de simulação e auditoria permanecem separadas.
 
-A leitura real de 31/08/2026 confirmou `bonificador_regua_v1` apta e revelou que
-`bonificador_contexto_escrita_v2` ainda está ausente da cache do PostgREST (`PGRST202`).
-A janela conserva esse detalhe seguro e o motor permanece fail-closed, sem fallback,
-escrita ou lote. O rollback dos arquivos desta revisão é
+A leitura desta revisão revelou uma indisponibilidade de cache do PostgREST. Ela foi
+superada pela leitura local restrita das RPCs V2/V4, confirmada no pacote atual.
+O rollback dos arquivos desta revisão é
 `RECUPERACAO/2026-08-31-ANTES-INTERFACE-NATIVA-FILA`.
+
+## Prova de abertura do pacote V2.0.19
+
+Em 31/08/2026, o componente incorporado ao único EXE respondeu por loopback à fila
+V4 e à saúde da régua: 613 linhas, primeira linha `2433`, contrato
+`bonificador_contexto_fila_v4`, régua `bonificador-regua-v2` apta. O ensaio encerrou
+a árvore temporária do componente ao fim e não iniciou o pipeline nem escreveu bônus.
 
 ## Correção de responsividade V2.0.7 — 31/08/2026
 

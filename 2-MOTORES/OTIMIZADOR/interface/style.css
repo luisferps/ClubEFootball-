@@ -91,7 +91,6 @@ button:disabled { opacity: .42; cursor: not-allowed; filter: grayscale(.25); }
 .barra-progresso span { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #1da96a, #7ae2a8); transition: width .35s ease; }
 .orientacao { grid-column: 1 / -1; color: var(--texto-suave); font-size: .86rem; }
 .aviso { grid-column: 1 / -1; color: var(--amarelo); margin-top: 2px; }
-.progresso-ao-vivo { grid-column: 1 / -1; padding: 10px 12px; border: 1px solid #35b979; border-radius: 9px; background: #103d2c; color: #b9ffd7; font-weight: 700; }
 .reserva-sem-worker { color: #ffd778; font-weight: 700; }
 
 .totais { display: grid; grid-template-columns: repeat(6, minmax(125px, 1fr)); gap: 10px; margin-top: 12px; }
@@ -101,8 +100,6 @@ button:disabled { opacity: .42; cursor: not-allowed; filter: grayscale(.25); }
 .total.total-destaque { border-color: #2f7d59; background: #0f2d24; }
 .total.total-problema strong { color: #ff9da2; }
 
-.linha-atual-painel { border-left: 4px solid var(--azul); }
-.linha-atual-painel dl { margin-top: 12px; }
 .painel-tabela { padding-bottom: 14px; }
 .resumo-lista { color: var(--texto-suave); font-size: .84rem; font-variant-numeric: tabular-nums; }
 

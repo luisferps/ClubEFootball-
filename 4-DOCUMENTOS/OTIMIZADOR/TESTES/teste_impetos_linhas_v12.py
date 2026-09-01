@@ -104,6 +104,21 @@ class ImpetosLinhasV12Test(unittest.TestCase):
         self.assertEqual(build, {"nota": 1})
         self.assertEqual(comparadas, 7)
 
+    def test_saida_sem_boost_util_persiste_o_tecnico_do_mesmo_multiplicador(self):
+        # Não escolhe por nome nem recalcula: o adaptador só identifica, por
+        # ID canônico, qual técnico já forneceu o multiplicador da busca.
+        tecnicos = [
+            {"id": "900", "m": 1.036},
+            {"id": "14", "m": 1.036},
+            {"id": "7", "m": 1.020},
+        ]
+        self.assertEqual(
+            runner._tecnico_id_canonico_do_multiplicador(tecnicos, 1.036), 14
+        )
+        self.assertIsNone(
+            runner._tecnico_id_canonico_do_multiplicador(tecnicos, 1.050)
+        )
+
     def test_banco_identifica_nivel_e_guarda_os_dois_contadores(self):
         sql = MIGRACAO.read_text(encoding="utf-8")
         contadores = MIGRACAO_CONTADORES.read_text(encoding="utf-8")

@@ -1,24 +1,81 @@
 # Manual do Bonificador — ClubEfootball
 
-**Versão 1.4 · 31/08/2026**
+**Versão 1.11 · 01/09/2026**
 
-**Aplicativo local atual: V2.0.15.** Há um único ícone para o operador:
+Há um único ícone para o operador:
 `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe`.
 
-## Fila canônica V3
+## Pontuação final canônica para Ranking, Elenco e Ficha
 
-O Bonificador usa `public.bonificador_contexto_fila_v3`, contrato privado que
-expõe 613 linhas de teste canônicas: 50 cartas e 19 funções. A projeção própria
-`clube_novo.bonificador_par` contém os 345 pares carta×função distintos; as
-linhas repetidas permanecem identificadas por `build_linha_card.id`.
+O Bonificador não entrega uma segunda pontuação solta para a tela somar. A projeção
+privada `clube_novo.build_pontuacao_final_v1` une, pela mesma linha canônica, a
+Build candidata do Otimizador e o resultado do Bonificador. Ela preserva os IDs da
+linha, carta, função, posição e dos dois resultados, os selos, versões, fingerprints,
+proveniência e o motivo de qualquer bloqueio.
+
+A pontuação final candidata é calculada pelo banco com a composição já aprovada:
+**pontuação do Otimizador + bônus total do Bonificador**. O navegador nunca recebe
+as duas parcelas para decidir ou somar por conta própria. O resultado só fica
+`elegivel_para_publicacao` quando os dois motores concluíram a mesma versão de carta
+e todos os seus selos coincidem. Lote de teste, selo incompatível ou resultado ausente
+continuam bloqueados.
+
+Para a interface existe somente a RPC de leitura
+`public.frontend_build_publicada_v1(card_id, funcao_id, limit, offset)`. Ela devolve
+apenas Builds já publicadas e seladas; não devolve candidatas, não grava nada e não
+expõe as tabelas de `clube_novo`. A rodada de 613 linhas existente é de teste e segue
+bloqueada de propósito: **0 linhas foram publicadas por esta implantação**.
+
+## Ciclo operacional: Extrator → Bonificador
+
+O Bonificador não é uma fila eterna e não recalcula uma linha que já foi
+confirmada. Em 31/08/2026, a rodada aberta pelo operador calculou e confirmou
+**613 linhas**. O contrato canônico voltou a **0 pendências**: cada uma dessas
+linhas recebeu seu resultado em `clube_novo.build_bonificador` e deixou a fila.
+
+Por isso, abrir o **Extrator** depois de uma rodada concluída não repete nem
+altera esses 613 resultados. O propósito dele é trazer cartas novas ou suas
+atualizações. Quando o fluxo canônico gerar para uma delas uma
+`build_linha_card` pronta, com o marcador `bonificador_nao_executado`, ela passa
+a aparecer na **Fila do Bonificador**. Se o Bonificador estiver iniciado, ele
+consulta a fila periodicamente e calcula somente essas novas linhas.
+
+Em resumo: **Extrator prepara dados novos; Bonificador calcula os bônus das
+linhas novas prontas; linhas confirmadas ficam gravadas e não voltam para a
+fila.** Apenas abrir qualquer uma das telas não cria, recalcula ou grava uma
+linha.
+
+## O que a tela mostra enquanto roda
+
+Na aba **Fila do Bonificador**, a lista inicial contém as cartas e funções prontas
+para receber bônus. Ela mostra nome da carta, coleção, overall, função e posição por
+extenso. A aba separada **Fila de resultados** mostra somente o resultado real da
+rodada: corpo, pé ruim, estilo, IA, total e bloqueio, se houver. A aba usa os resultados
+confirmados no banco, portanto continua mostrando a identidade humana mesmo depois que
+a linha deixa a lista de pendências. A tela não mistura
+pendência com resultado nem inventa valores.
+
+Os textos do aplicativo são UTF-8 de ponta a ponta: tanto o componente local quanto a
+janela WinForms leem a resposta do contrato em UTF-8. Portanto, acentos e as 613 linhas da fila não dependem de arquivo de texto,
+navegador ou conversão manual. O botão **Parar normalmente** termina a rodada atual e
+impede a próxima, sem travar a janela.
+
+## Fila canônica V4
+
+O Bonificador usa `public.bonificador_contexto_fila_v4`, contrato privado que
+lista diretamente as linhas canônicas marcadas com `bonificador_nao_executado`
+em `clube_novo.build_linha_card`. A identidade permanece em
+`build_linha_card.id`; não há recorte de teste nem dependência de `bonificador_par`.
+Para entrar na lista, a própria linha também precisa estar `concluido/pendente/concluido`
+nos seus três estados canônicos de prontidão. Isso não consulta uma fila externa.
 
 Motor e aplicativo local leem `bonificador_regua_v2`, `bonificador_carta_v2`
-e a fila V3. O escritor `gravar_build_bonificador_v3` é transacional, aceita
-somente esse lote de teste e confere identidade, gates, versões, fingerprints
-e a soma das parcelas. Ele não publica nem aceita lote produtivo.
+e a fila V4. O escritor `gravar_build_bonificador_v4` é transacional, aceita
+somente linha que ainda tenha a marca canônica e confere identidade, gates,
+versões, fingerprints e a soma das parcelas. Ele não publica nem cria lote.
 
-Recuperação: `BONIFICADOR/SQL/ROLLBACK-FILA-BONIFICADOR-V3.sql`, antes de
-haver resultado. Snapshot: `BONIFICADOR/RECUPERACAO/2026-08-31-ANTES-FILA-BONIFICADOR-V3`.
+Recuperação: `BONIFICADOR/SQL/ROLLBACK-FILA-BONIFICADOR-V4.sql`, antes de
+haver resultado. Snapshot: `BONIFICADOR/RECUPERACAO/2026-08-31-ANTES-FILA-OPERACIONAL-V4`.
 
 > Este é o manual oficial de funcionamento do Bonificador. O checklist e a pasta
 > `4-DOCUMENTOS/BONIFICADOR` guardam a prova técnica, SQL de recuperação e auditorias;
@@ -31,9 +88,9 @@ numa função de jogo: leitura corporal, pé ruim, estilo de jogo e estilos de I
 cria atributos novos nem muda a carta. Ele apenas lê a fotografia canônica da carta,
 aplica a régua vigente e prepara o resultado para a build do Otimizador.
 
-O pipeline do Bonificador está pronto para operar junto do Otimizador, mas **nenhuma
-carta foi gravada durante esta migração**. Ele só toca uma linha depois que o Otimizador
-a confirmou e os gates canônicos a devolverem como apta.
+O pipeline do Bonificador usa sua própria fila, mas **nenhuma carta é gravada ao abrir
+a tela**. Ele só toca uma linha depois do clique do operador e quando os gates canônicos
+da carta e da régua a devolverem como apta.
 
 ### O que ele lê da carta
 
@@ -69,11 +126,15 @@ nunca inventa zero para uma ausência.
 ### Origem canônica e contratos
 
 O motor de lote não abre tabelas diretamente. Ele lê `bonificador_regua_v2`,
-`bonificador_carta_v2` e `public.bonificador_contexto_fila_v3`, e grava somente
-por `public.gravar_build_bonificador_v3`. Esses contratos usam
+`bonificador_carta_v2` e `public.bonificador_contexto_fila_v4`, e grava somente
+por `public.gravar_build_bonificador_v4`. Esses contratos usam
 IDs físicos/canônicos para carta, posição, playstyle, corpo e função. A referência
 legada sobrevive apenas como fotografia de auditoria e recuperação, fora de gates e da
 decisão do motor.
+
+O aplicativo local usa o login `bonificador_runtime`, restrito a essas quatro RPCs.
+Assim a janela continua sem credencial de administrador e sem acesso a tabela; ela fala
+somente com o componente local e este chama contratos versionados.
 
 O motor de lote permanece em `2-MOTORES/BONIFICADOR/motor_bonus.py`. O ponto normal de
 uso é o aplicativo local `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe`: seus
@@ -113,8 +174,8 @@ Bonificador.
 | payload interno de compilação | `2-MOTORES/BONIFICADOR/windows-app/assets/BonificadorComponente.bin` |
 | receita | `public.bonificador_regua_v2()` |
 | carta | `public.bonificador_carta_v2(card_id)` |
-| fila canônica | `public.bonificador_contexto_fila_v3(limit, offset)` → linhas pendentes e selos calculados pelo banco |
-| gravação preparada | `public.gravar_build_bonificador_v3(p_resultado jsonb)` |
+| fila canônica | `public.bonificador_contexto_fila_v4(limit, offset)` → linhas marcadas `bonificador_nao_executado` e selos calculados pelo banco |
+| gravação preparada | `public.gravar_build_bonificador_v4(p_resultado jsonb)` |
 | destino | `clube_novo.build_bonificador` ligado à linha exata em `build_linha_card` |
 
 `RODAR-O-MOTOR.bat` e `RODAR-TUDO.bat` executam somente o Otimizador
@@ -140,9 +201,9 @@ gravada nem impressa. O lote produtivo não foi executado nesta migração.
 | playstyle do slot 2 | `slot_defensivo_id` + `clube.estilo_defensivo` | estilo físico gravado no segundo slot | `clube_novo.carta_playstyle_jogo` + `playstyle` | (`card_id`,`slot_fisico=2`); `playstyle_id=id_jogo`; catálogo apto |
 | regra de estilo | `clube.estilo_regra` + `posicao_slot` | regra ClubEfootball de casa/ativação e slot dominante | `clube_novo.bonificador_regra_playstyle` + `bonificador_posicao_slot` | `playstyle.id_jogo`, `posicao_jogo.id`, `funcao_sistema.id`; 90 regras, incluindo 291 físico |
 | estilos de IA | JSON `clube.carta_jogo.estilos_ia` | quantidade de bits de IA ligados na carta | `clube_novo.carta_estilo_ia_jogo` + `estilo_ia` | (`card_id`,`bit_estilo_ia`); catálogo pelo bit físico e `pode_rodar` |
-| pares card × função | `clube.build` | universo já calculado pelo Otimizador | `clube_novo.bonificador_par` | projeção privada com FKs (`card_id`,`funcao_id`); está vazia, pois não houve lote autorizado |
+| pares card × função | `clube.build` | universo histórico já calculado | `clube_novo.build_linha_card` filtrado por `pendencias @> {'bonificador_nao_executado'}` | `build_linha_card.id`, `card_id`, `funcao_id`; fonte operacional V4, sem `clube.build` nem `bonificador_par` |
 | parâmetros não físicos | `clube.bonus_parametro` | tetos e pesos da regra ClubEfootball | `clube_novo.bonificador_parametro` | 14 valores preservados, sem semântica por texto legado |
-| saída | `clube.build.b_*` via writer legado | fotografia histórica | `clube_novo.build_bonificador` via `gravar_build_bonificador_v3` | writer canônico; nenhuma execução produtiva autorizada |
+| saída | `clube.build.b_*` via writer legado | fotografia histórica | `clube_novo.build_bonificador` via `gravar_build_bonificador_v4` | writer canônico; nenhuma execução produtiva autorizada |
 
 As dimensões de nacionalidade, clube, liga e tipo, as habilidades, as posições
 secundárias, os técnicos e os ímpetos foram inventariados e deliberadamente não entram
@@ -158,15 +219,15 @@ qualificadas e `EXECUTE` apenas para `service_role`:
 - `bonificador_carta_v2(card_id)` — somente os campos usados pelo Bonificador, com
   proveniência, cardinalidades, completude vigente, versões, fingerprints e
   `pode_rodar`;
-- `public.bonificador_contexto_fila_v3(limit, offset)` — identidade exata da
-  linha pendente, card, função, posição e fingerprints calculados pelo banco.
+- `public.bonificador_contexto_fila_v4(limit, offset)` — identidade exata da
+  linha marcada, card, função, posição e fingerprints calculados pelo banco.
 
 `PUBLIC`, `anon` e `authenticated` não recebem execução. Nenhuma tabela de
 `clube_novo` é exposta e nenhuma policy/RLS existente é alterada.
 
 O runtime produtivo não chama mais `public.gravar_bonus` e não escreve em
 `clube.build`. Para cada resultado apto ele chama exclusivamente
-`public.gravar_build_bonificador_v3`, que relê a completude, confere identidade,
+`public.gravar_build_bonificador_v4`, que relê a completude, confere identidade,
 selos, parcelas, total e ligação, tudo na mesma transação. O retorno só é aceito se
 trouxer `readback=ok`, a mesma linha, os mesmos selos e um fingerprint SHA-256.
 `bonus_fisico_detalhe` leva a contribuição efetiva de cada medida e sua soma decimal
@@ -293,8 +354,8 @@ principal, o Otimizador ou o Extrator.
 ## 11. Estado operacional e gates
 
 O caminho efetivo lê `bonificador_regua_v2`, `bonificador_carta_v2` e
-`bonificador_contexto_fila_v3`. A gravação, quando autorizada, passa somente por
-`gravar_build_bonificador_v3`. As relações de `clube_novo` continuam privadas: a
+`bonificador_contexto_fila_v4`. A gravação, quando autorizada, passa somente por
+`gravar_build_bonificador_v4`. As relações de `clube_novo` continuam privadas: a
 janela não recebe URL de banco, chave, schema nem acesso direto a tabela.
 
 `funcao_id` é a chave que liga o par, o molde e a regra de playstyle. `funcao_codigo`
@@ -322,14 +383,22 @@ não fazem parte do pacote operacional.
 ### O que a tela mostra
 
 - **Fila do Bonificador:** estado, progresso, linha atual, pendentes, calculadas,
-  confirmadas, eventos e pares retornados pela fila V3.
+  confirmadas, eventos e pares retornados pela fila V4.
 - **Testar uma carta:** consulta somente leitura de corpo, pé ruim, posição principal,
   slots 1 e 2 de playstyle, IA, molde, régua, parcelas e gates.
 - **Auditoria e paridade:** contrato, proveniência, cardinalidades e fingerprints.
 
-As consultas rodam em segundo plano. Se contrato, rede ou banco demorarem, a janela
-continua responsiva e informa a falha; ela não fica presa em “Não está respondendo”.
-O tempo máximo de uma chamada local é de dez segundos.
+As consultas rodam em segundo plano. A fila V4 e a régua são verificadas
+separadamente: a fila não consulta a régua apenas para montar rótulos. Se a régua
+falhar, a tela continua mostrando a fila já lida como **Fila disponível; régua
+indisponível** e mantém o início bloqueado. Se a fila falhar, a tela mostra **Fila
+indisponível**. Assim ela não mistura uma fila existente com erro de contrato. A janela
+permanece responsiva; o tempo máximo de uma chamada local é de dez segundos.
+
+Se o contrato responder que a credencial foi recusada, a tela mostra a mensagem do
+componente local e mantém o início bloqueado. A correção é atualizar a credencial
+privada de serviço no `2-MOTORES/config.txt`; não há fallback para legado, acesso direto
+ao schema ou uso de credencial no navegador.
 
 ## 13. Operação segura
 

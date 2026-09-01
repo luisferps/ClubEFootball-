@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Guardas offline da esteira V6 do Otimizador.
+"""Guardas offline da esteira V6/V19 do Otimizador.
 
 Nenhum teste toca o banco, cria lote ou calcula uma build real. A intenção é
 provar o contrato: o preparador só sela entradas, o worker só consome linha já
@@ -19,6 +19,8 @@ FILA = RAIZ / "4-DOCUMENTOS" / "OTIMIZADOR" / "FILA-PRODUCAO-V3"
 MIGRACAO = FILA / "MIGRACAO-ESTEIRA-PREPARO-EXECUCAO-V6.sql"
 ROLLBACK = FILA / "ROLLBACK-ESTEIRA-PREPARO-EXECUCAO-V6.sql"
 IDENTITY_V7 = FILA / "MIGRACAO-ESTEIRA-PREPARO-EXECUCAO-V7-IDENTITY.sql"
+TRANSPORTE_V18 = FILA / "MIGRACAO-RESILIENCIA-TRANSPORTE-V18.sql"
+CONTRATO_UNICO_V19 = FILA / "MIGRACAO-CONTRATO-UNICO-V19.sql"
 
 
 def carregar(nome: str, arquivo: Path):
@@ -40,9 +42,9 @@ class GatewayPreparoEsteira:
 
     def rpc(self, nome, corpo=None):
         self.chamadas.append((nome, corpo or {}))
-        if nome == "otimizador_producao_status_v5":
+        if nome == "otimizador_producao_status_v6":
             return {
-                "contrato": preparo.CONTRATO,
+                "contrato": preparo.CONTRATO_V6,
                 "lote_id": "00000000-0000-0000-0000-000000000606",
                 "estado": "rodando", "estado_lote": "rodando",
                 "pode_publicar": False,
@@ -51,7 +53,7 @@ class GatewayPreparoEsteira:
         if nome == "otimizador_producao_preparar_fatia_v6":
             self.pendentes = 0
             return {
-                "contrato": preparo.CONTRATO,
+                "contrato": preparo.CONTRATO_V5,
                 "lote_id": "00000000-0000-0000-0000-000000000606",
                 "estado": "rodando", "estado_lote": "rodando",
                 "pode_publicar": False,
@@ -69,20 +71,12 @@ class GatewayWorkerEsteira:
     def rpc(self, nome, corpo=None):
         corpo = corpo or {}
         self.chamadas.append((nome, corpo))
-        if nome == "otimizador_producao_contexto_lote_v3":
-            return {
-                "contrato": fila.CONTRATO,
-                "lote_id": "00000000-0000-0000-0000-000000000606",
-                "formula_fingerprint": fila.FORMULA_APROVADA,
-                "motor_versao": fila.MOTOR_VERSAO,
-                "impetos_condicionais": "desligados", "pode_publicar": False,
-                "regua": {"contrato": "otimizador_regua_v2", "gate": {"pode_rodar": True}},
-            }
-        if nome == "otimizador_producao_reservar_linha_v6":
+        if nome == "otimizador_producao_reservar_entrada_v7":
             self.reservas += 1
             if self.reservas == 1:
                 return {
-                    "contrato": fila.CONTRATO, "reservada": True,
+                    "contrato": fila.CONTRATO_ENTRADA_V7, "reservada": True,
+                    "lote_id": "00000000-0000-0000-0000-000000000606",
                     "linha_id": 8001, "reserva_token": "00000000-0000-0000-0000-000000000606",
                     "card_id": "8538111", "funcao_id": 1, "posicao_id": 12,
                     "impeto_condicional_codigo": None, "impeto_condicional_nivel": None,
@@ -91,12 +85,13 @@ class GatewayWorkerEsteira:
                     "formula_fingerprint": fila.FORMULA_APROVADA,
                     "contrato_fingerprint": "contrato-fp", "motor_versao": fila.MOTOR_VERSAO,
                     "lote_fingerprint": "seed-fp", "impetos_condicionais": "desligados",
+                    "regua": {"contrato": "otimizador_regua_v2", "gate": {"pode_rodar": True}},
                 }
-            return {"contrato": fila.CONTRATO, "reservada": False, "estado_lote": "pausado"}
+            return {"contrato": fila.CONTRATO_ENTRADA_V7, "reservada": False, "estado_lote": "pausado"}
         if nome == "otimizador_producao_concluir_linha_v6":
             self.resultados.append(corpo["p_resultado"])
             return {"contrato": fila.CONTRATO, "linha_id": 8001, "pode_publicar": False}
-        if nome == "otimizador_producao_status_v3":
+        if nome == "otimizador_producao_controle_lote_v1":
             return {"contrato": fila.CONTRATO, "estado_lote": "pausado", "corrente": []}
         raise AssertionError("RPC inesperada: " + nome)
 
@@ -119,6 +114,25 @@ class WorkerEsteiraControlado(fila.WorkerFilaProducaoV3):
         }
 
 
+class FalhaTransporteControlada(Exception):
+    recuperavel = True
+    repetivel = False
+
+
+class WorkerComTransporteInterrompido(fila.WorkerFilaProducaoV3):
+    def _reservar_com_reconexao(self):
+        raise FalhaTransporteControlada("rede interrompida antes da reserva")
+
+
+class GatewaySemFalhaDeLote:
+    def __init__(self):
+        self.chamadas = []
+
+    def rpc(self, nome, corpo=None):
+        self.chamadas.append((nome, corpo or {}))
+        raise AssertionError("não deve chamar RPC após a queda pré-reserva: " + nome)
+
+
 class EsteiraV6Test(unittest.TestCase):
     def test_preparador_da_esteira_usa_v6_e_para_quando_nao_resta_candidata(self):
         gateway = GatewayPreparoEsteira()
@@ -127,12 +141,12 @@ class EsteiraV6Test(unittest.TestCase):
         ).executar()
         self.assertEqual(final["preparo"]["pendentes"], 0)
         self.assertEqual([nome for nome, _ in gateway.chamadas], [
-            "otimizador_producao_status_v5",
+            "otimizador_producao_status_v6",
             "otimizador_producao_preparar_fatia_v6",
         ])
         self.assertEqual(gateway.chamadas[1][1]["p_limite"], 20)
 
-    def test_worker_da_esteira_consume_reserva_v6_e_persiste_sem_publicar(self):
+    def test_worker_da_esteira_consume_fotografia_unica_v7_e_persiste_sem_publicar(self):
         gateway = GatewayWorkerEsteira()
         worker = WorkerEsteiraControlado(
             gateway, "00000000-0000-0000-0000-000000000606", esperar=0.01, esteira=True,
@@ -141,8 +155,9 @@ class EsteiraV6Test(unittest.TestCase):
         self.assertEqual(final["estado_lote"], "pausado")
         self.assertEqual(len(gateway.resultados), 1)
         nomes = [nome for nome, _ in gateway.chamadas]
-        self.assertIn("otimizador_producao_reservar_linha_v6", nomes)
+        self.assertIn("otimizador_producao_reservar_entrada_v7", nomes)
         self.assertIn("otimizador_producao_concluir_linha_v6", nomes)
+        self.assertNotIn("otimizador_producao_contexto_lote_v3", nomes)
         self.assertNotIn("otimizador_proxima_fila_v1", nomes)
         self.assertNotIn("gravar_build", nomes)
 
@@ -185,6 +200,42 @@ class EsteiraV6Test(unittest.TestCase):
 
     def test_formula_aprovada_permanece_exatamente_a_mesma(self):
         self.assertEqual(fila.formula_fingerprint(), fila.FORMULA_APROVADA)
+
+    def test_queda_de_transporte_pre_reserva_nao_marca_lote_como_falho(self):
+        gateway = GatewaySemFalhaDeLote()
+        worker = WorkerComTransporteInterrompido(
+            gateway, "00000000-0000-0000-0000-000000000606", esperar=0.01, esteira=True,
+        )
+        final = worker.executar()
+        self.assertTrue(final["recuperavel"])
+        self.assertEqual(final["estado_lote"], "rodando")
+        self.assertFalse(gateway.chamadas)
+
+    def test_migracao_v18_recupera_so_o_incidente_transitorio_sem_tocar_formula(self):
+        texto = TRANSPORTE_V18.read_text(encoding="utf-8").lower()
+        self.assertIn("nenhum contrato seguro respondeu", texto)
+        self.assertIn("estado_otimizador = 'processando'", texto)
+        self.assertIn("formula_fingerprint", texto)
+        self.assertIn("pode_publicar is not false", texto)
+        self.assertIn("otimizador_portal_local_v5", texto)
+        self.assertNotIn("delete from", texto)
+        self.assertNotIn("update clube_novo.build_linha_card", texto)
+
+    def test_contrato_unico_v19_usa_a_mesma_view_privada_para_tela_e_worker(self):
+        texto = CONTRATO_UNICO_V19.read_text(encoding="utf-8").lower()
+        for trecho in (
+            "create or replace view clube_novo.otimizador_entrada_linha_v1",
+            "security_invoker = true",
+            "otimizador_producao_reservar_entrada_v7",
+            "otimizador_producao_fila_operacional_v4",
+            "otimizador_producao_recuperar_falha_pre_reserva_v2",
+            "otimizador_portal_local_v6",
+            "pode_publicar is distinct from false",
+            "impetos_condicionais', 'desligados",
+        ):
+            self.assertIn(trecho, texto)
+        self.assertNotIn("clube.fila", texto)
+        self.assertNotIn("clube.build", texto)
 
 
 if __name__ == "__main__":

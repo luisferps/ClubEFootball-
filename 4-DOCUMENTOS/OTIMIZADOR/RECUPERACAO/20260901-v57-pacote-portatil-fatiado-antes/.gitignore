@@ -1,0 +1,60 @@
+node_modules
+
+# ⛔ A CHAVE NUNCA SOBE. Regra do Luis, em toda sessão.
+config.txt
+*.key
+*.pem
+*.secret
+*.secrets
+credenciais.local.*
+configuracao.local.*
+.env
+.env.*
+7-VARREDURA-DO-JOGO/configuracao.local.json
+configuracao.local.json
+
+# lixo que não pertence ao repositório
+_LIXO/
+_ERRO-DO-GITHUB.txt
+_ULTIMO-BAIXAR-DO-GITHUB.txt
+*.zip
+graphify-out/
+checkpoints/
+7-VARREDURA-DO-JOGO/logs/
+7-VARREDURA-DO-JOGO/artefatos/desktop/
+
+# pacotes NDJSON integrais sao gerados localmente, superam o limite do GitHub
+# e permanecem preservados no computador e nos backups fisicos.
+7-VARREDURA-DO-JOGO/artefatos/preparacao-protecao-motores/**/seed-completude-motores.ndjson
+
+# artefatos compilados locais — o código-fonte é a referência.
+# O botão 4 apenas sincroniza arquivos; ele nunca compila o Extrator.
+7-VARREDURA-DO-JOGO/Extrator eFootball.exe
+7-VARREDURA-DO-JOGO/Extrator eFootball.novo.exe
+
+# arquivos de trabalho do motor — não existem mais desde 27/08,
+# mas ficam aqui para o caso de sobrar cópia velha em alguma máquina
+dados/base_unica.json
+dados/cards.json
+cards_efhub.json
+fila_v6.json
+fila_EXTRA.json
+fila_PRIORIDADE.json
+fila_ADIADA_pool_vazio.json
+fila_EXCLUIDOS.csv
+saida_v6/
+log_v6.txt
+feitos.txt
+NAO-SEI.txt
+PARAR.txt
+LIGAR-MOTOR-AUTOMATICO.txt
+FONTE-UNICA.txt
+GRAVA-DIRETO.txt
+
+# lixo do Python
+__pycache__/
+*.pyc
+
+# Fotografia local da fila do Otimizador: é recriada pelo contrato selado em
+# cada computador, não contém credencial e não deve ocupar o repositório.
+2-MOTORES/OTIMIZADOR/runtime/fila-local/

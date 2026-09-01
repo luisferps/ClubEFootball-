@@ -54,26 +54,20 @@
                        if(typeof render==='function')render();}catch(e){}
                    window.scrollTo(0,0); },
      on:function(){ return !emFicha() && !ver('homewrap') && !ver('mtwrap'); }},
-    {n:'BoxAtual', t:'Boxes atuais',
+    {n:'BoxAtual', t:'Boxes cadastradas',
      f:function(){ saiDaFicha(); try{document.documentElement.classList.remove('t6elenco');}catch(e){} window._t6abaBox=true; window._t6cc=false;
                    if(window.t6Painel){ window.t6Painel('boxatual'); return; }
                    homeToggle(1); if(window.boxModo) boxModo(0);
                    window.scrollTo(0,0); },
      on:function(){ if(window.T6TELAS) return ver('homewrap') && painel()==='boxatual';
                      return ver('homewrap') && !!window._t6abaBox
-                      && !window._t6box && !window._t6cc; }},
-    {n:'BoxAnt',   t:'Boxes anteriores',
-     f:function(){ saiDaFicha(); try{document.documentElement.classList.remove('t6elenco');}catch(e){} window._t6abaBox=false; window._t6cc=false;
-                   if(window.t6Painel){ window.t6Painel('boxant'); return; }
-                   homeToggle(1); if(window.boxModo) boxModo(1); window.scrollTo(0,0); },
-     on:function(){ if(window.T6TELAS) return ver('homewrap') && painel()==='boxant';
-                      return ver('homewrap') && !!window._t6box && !window._t6cc; }}
+                       && !window._t6box && !window._t6cc; }}
   ];
   /* Esta é a única porta para as páginas principais. Cliques e restauração
      usam a mesma rotina, sem reproduzir eventos de mouse nem criar outra rota. */
   function ativaAba(a,boot){
     if(!a) return false;
-    try{var p=a.n==='BoxAtual'?'boxatual':(a.n==='BoxAnt'?'boxant':(a.n==='Inicio'?'inicio':null));if(p&&window.RouteState)window.RouteState.setPanel(p);}catch(e){}
+    try{var p=a.n==='BoxAtual'?'boxatual':(a.n==='Inicio'?'inicio':null);if(p&&window.RouteState)window.RouteState.setPanel(p);}catch(e){}
     try{var q=document.getElementById('q'),s=document.getElementById('t6GlobalSuggest');if(q)q.value='';if(s)s.hidden=true;window._t6BuscaGlobal='';}catch(e){}
     try{ a.f(); }catch(e){}
     pinta();
@@ -88,8 +82,8 @@
     }
     return true;
   }
-  var ROTA_POR_NOME={Inicio:'inicio',MeuTime:'meutime',Ranking:'ranking',BoxAtual:'boxatual',BoxAnt:'boxant'};
-  var NOME_POR_ROTA={inicio:'Inicio',meutime:'MeuTime',ranking:'Ranking',boxatual:'BoxAtual',boxant:'BoxAnt'};
+  var ROTA_POR_NOME={Inicio:'inicio',MeuTime:'meutime',Ranking:'ranking',BoxAtual:'boxatual',BoxAnt:'boxatual'};
+  var NOME_POR_ROTA={inicio:'Inicio',meutime:'MeuTime',ranking:'Ranking',boxatual:'BoxAtual',boxant:'BoxAtual'};
   window.t6RenderRota=function(rota,opcoes){
     var nome=NOME_POR_ROTA[rota]||rota;
     for(var i=0;i<ABAS.length;i++) if(ABAS[i].n===nome) return ativaAba(ABAS[i],!!(opcoes&&opcoes.boot));
@@ -144,7 +138,7 @@
   }
   /* o contador, o tema e o #cnt sobem para a barra assim que existirem —
      eles sao criados por outros patches, em outra hora. E os tres botoes que
-     viraram aba somem da fila de baixo: ⌂ inicio, ★ elenco e boxes anteriores. */
+     viraram aba somem da fila de baixo: ⌂ início, ★ elenco e Boxes cadastradas. */
   function recolhe(){
     var dir=document.getElementById('t6dir'); if(!dir) return;
     tiraOsVelhos();
@@ -258,12 +252,6 @@
     n = String(n || '');
     return mapa[n] || n;
   }
-  function destacaPontosBox(molde){
-    return molde.replace(
-      '<b style="{{ c.pctSt }}">{{ c.pct }}%</b>\n<em style="font-style:normal;font-family:inherit;font-size:10px;color:var(--d13)">{{ c.pts }} pts</em>',
-      '<b style="font-family:inherit;font-size:19px;font-weight:700;letter-spacing:-.4px;color:var(--d25)">{{ c.pts }}</b>\n<em style="font-style:normal;font-family:inherit;font-size:10px;color:var(--d13);white-space:nowrap">Recomendação: {{ c.pct }}%</em>'
-    );
-  }
   window.t6card = function(c, i){
     var p = pct(c);
     return {r: (i + 1) + 'º', nome: esc(c.nome), est: esc(estiloTela(c.modelo || '')),
@@ -272,188 +260,116 @@
             pts: n2(c && isFinite(Number(c._t6PtsExibida)) ? Number(c._t6PtsExibida) : nota(c)),
             k: esc(c.id + '|' + c.tipo)};
   };
+  function idCardBox(c){
+    var v=c&&(c.card_id!==undefined?c.card_id:c.id);
+    return v===undefined||v===null?'':String(v).split('@')[0].trim();
+  }
+  function nomeBoxCanonico(c){
+    var valor=c&&(c.box!==undefined?c.box:c.box_nome);
+    var nome=String(valor===undefined||valor===null?'':valor).trim();
+    var chave=nome.toLocaleLowerCase('pt-BR');
+    if(!nome||chave==='0'||chave==='dummy'||chave==='[[not use]]')return '';
+    return nome;
+  }
+  function campoBox(c,camel,snake){
+    if(!c)return null;
+    if(c[camel]!==undefined&&c[camel]!==null)return c[camel];
+    return c[snake]!==undefined&&c[snake]!==null?c[snake]:null;
+  }
+  function numeroCadastroBox(c,camel,snake){
+    var valor=campoBox(c,camel,snake);
+    if(valor===null||String(valor).trim()==='')return null;
+    var n=Number(valor);return isFinite(n)?n:null;
+  }
+  function comparaTextoBox(a,b){
+    var x=String(a||''),y=String(b||''),r=x.localeCompare(y,'pt-BR',{sensitivity:'base'});
+    return r||x.localeCompare(y);
+  }
   window.t6PorBox = function(){
-    var cx = {};
-    var central = window._t6BoxNomePorCard || {};
-    var histPorId = {};
-    try{ Object.keys(BOXHIST||{}).forEach(function(nome){
-      (BOXHIST[nome].ids||[]).forEach(function(id){ histPorId[String(id)] = nome; });
-    }); }catch(e){}
-    for (var i = 0; i < D.length; i++){
-      var c = D[i];
-      if (!c || c.id === 'MOLDE') continue;
-      var cid = String(c.id).split('@')[0];
-      var historico = histPorId[cid], pacotes = central[cid] || [];
-      if (!Array.isArray(pacotes)) pacotes=[pacotes];
-      if (!pacotes.length && (historico || c.pacote)) pacotes=[historico || c.pacote];
-      if (!pacotes.length) continue;
-      /* A associação histórica corrigida prevalece sobre um pacote antigo ou
-         duplicado. Assim o Cristiano fica somente em Living Legends. */
-      pacotes.forEach(function(pacote){(cx[pacote] = cx[pacote] || []).push(c);});
+    var cx={},linhas=Array.isArray(window.CLUBE_NOVO_BOXES)
+      ? window.CLUBE_NOVO_BOXES:[];
+    for(var i=0;i<linhas.length;i++){
+      var base=linhas[i],id=idCardBox(base),nome=nomeBoxCanonico(base);
+      if(!id||!nome)continue;
+      var card=Object.assign({},base,{id:id,box:nome});
+      (cx[nome]=cx[nome]||[]).push(card);
     }
     return cx;
   };
-  window.t6MesclaCadastroBoxes = function(boxes){
-    var meta=window._t6BoxMeta=window._t6BoxMeta||{};
-    var nomePorCard=window._t6BoxNomePorCard=window._t6BoxNomePorCard||{};
-    (boxes||[]).forEach(function(b){
-      meta[b.nome]=b;
-      (b.card_ids||[]).forEach(function(cid){
-        var k=String(cid), lista=nomePorCard[k]=nomePorCard[k]||[];
-        if(lista.indexOf(b.nome)<0)lista.push(b.nome);
-      });
-    });
-  };
-  window.t6MesclaRetratosBoxes = function(linhas){
-    var mapa=window._t6BoxRetratos=window._t6BoxRetratos||{};
-    (linhas||[]).forEach(function(r){mapa[String(r.box_id)+'|'+String(r.card_id)]=r;});
-  };
-  window.t6CarregaRetratosBoxes = function(boxes){
-    var ids=(boxes||[]).filter(function(b){return b&&b.status==='anterior';})
-      .map(function(b){return String(b.id);});
-    if(!ids.length)return Promise.resolve();
-    var raiz='https://trqqpsnafpbudtvvicch.supabase.co/rest/v1/';
-    var chave='sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj';
-    var cab={apikey:chave,Authorization:'Bearer '+chave};
-    var u=raiz+'box_card_retratos?select=box_id,card_id,funcao,pontuacao,recomendacao,etiqueta_codigo,etiqueta'
-      +'&box_id=in.('+ids.join(',')+')&limit=5000';
-    return fetch(u,{headers:cab,cache:'no-store'}).then(function(r){
-      if(!r.ok)throw new Error('retratos '+r.status);return r.json();
-    }).then(window.t6MesclaRetratosBoxes);
-  };
-  window.t6CarregaNomesEtiquetas = function(){
-    if(window._t6EtiquetasPromessa)return window._t6EtiquetasPromessa;
-    var raiz='https://trqqpsnafpbudtvvicch.supabase.co/rest/v1/';
-    var chave='sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj';
-    var cab={apikey:chave,Authorization:'Bearer '+chave};
-    window._t6EtiquetasPromessa=fetch(raiz+'box_etiquetas?select=codigo,nome&order=ordem.asc',{
-      headers:cab,cache:'no-store'
-    }).then(function(r){if(!r.ok)throw new Error('etiquetas '+r.status);return r.json();})
-      .then(function(rows){
-        var mapa=window._t6EtiquetasNomes={};
-        (rows||[]).forEach(function(x){mapa[x.codigo]=x.nome;});
-      }).catch(function(){window._t6EtiquetasNomes=window._t6EtiquetasNomes||{};});
-    return window._t6EtiquetasPromessa;
-  };
   function painelAtual(){try{return window.RouteState?window.RouteState.panel():'inicio';}catch(e){return 'inicio';}}
-  window.t6CarregaCadastroBoxes = function(status){
-    status=status||(painelAtual()==='boxatual'?'atual':'anterior');
-    window._t6BoxStatusPronto=window._t6BoxStatusPronto||{};
-    window._t6BoxStatusCarregando=window._t6BoxStatusCarregando||{};
-    if(window._t6BoxStatusPronto[status]||window._t6BoxStatusCarregando[status])return;
-    window._t6BoxStatusCarregando[status]=true;
-    var raiz='https://trqqpsnafpbudtvvicch.supabase.co/rest/v1/';
-    var chave='sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj';
-    var cab={apikey:chave,Authorization:'Bearer '+chave};
-    var base=raiz+'boxes?select=id,nome,status,data_lancamento,data_coleta,card_ids'
-      +'&status=eq.'+status+'&order=data_lancamento.desc.nullslast,nome.asc';
-    fetch(base+'&limit=24',{headers:cab,cache:'no-store'})
-    .then(function(r){if(!r.ok)throw new Error('boxes '+r.status);return r.json();})
-    .then(function(boxes){
-      window.t6MesclaCadastroBoxes(boxes);
-      return Promise.all([
-        window.t6CarregaRetratosBoxes(boxes),
-        window.t6CarregaNomesEtiquetas()
-      ]).then(function(){return boxes;});
-    }).then(function(boxes){
-      window._t6boxesCargaRapida=0;
-      function carregaRestante(){
-        /* O primeiro quadro ja esta na tela. O cadastro restante chega depois,
-           em lotes, sem bloquear a navegacao nem voltar ao "Carregando boxes". */
-        setTimeout(function carregaLote(offset){
-        fetch(base+'&limit=200&offset='+offset,{headers:cab,cache:'no-store'})
-        .then(function(r){if(!r.ok)throw new Error('boxes '+r.status);return r.json();})
-        .then(function(lote){
-          window.t6MesclaCadastroBoxes(lote);
-          return window.t6CarregaRetratosBoxes(lote).then(function(){return lote;});
-        }).then(function(lote){
-          if((lote||[]).length===200)setTimeout(function(){carregaLote(offset+200);},0);
-          else if(painelAtual()==='boxatual'||painelAtual()==='boxant')window.t6Painel(painelAtual());
-        }).catch(function(){});
-        },0,24);
-      }
-      window.t6CarregaBoxesPrimeiro(function(){
-        window._t6BoxStatusPronto[status]=true;
-        window._t6BoxStatusCarregando[status]=false;
-        if(painelAtual()==='boxatual'||painelAtual()==='boxant')window.t6Painel(painelAtual());
-        carregaRestante();
-      });
-    }).catch(function(){window._t6BoxStatusCarregando[status]=false;});
-  };
-  /* As duas abas usam a mesma carga progressiva. A relacao PACOTE informa os
-     cards de cada campanha; a aba aberta escolhe atuais ou historicas, pinta
-     essa primeira leva e deixa o restante seguir em segundo plano. */
+  function estadoBoxes(){
+    return window.CLUBE_NOVO_BOXES_ESTADO&&typeof window.CLUBE_NOVO_BOXES_ESTADO==='object'
+      ? window.CLUBE_NOVO_BOXES_ESTADO:{codigo:'NAO_INICIADO'};
+  }
+  function publicaEstadoBoxes(codigo,mensagem){
+    var estado={codigo:codigo,mensagem:String(mensagem||'')};
+    if(codigo==='PRONTO')estado.total=Array.isArray(window.CLUBE_NOVO_BOXES)
+      ? window.CLUBE_NOVO_BOXES.length:0;
+    window.CLUBE_NOVO_BOXES_ESTADO=estado;
+    try{window.dispatchEvent(new CustomEvent('clube-novo:boxes-estado',{detail:estado}));}catch(e){}
+    if(codigo==='PRONTO'){
+      try{window.dispatchEvent(new CustomEvent('clube-novo:boxes-pronto',{detail:estado}));}catch(e){}
+    }
+  }
+  function boxesProntas(){
+    return estadoBoxes().codigo==='PRONTO'&&Array.isArray(window.CLUBE_NOVO_BOXES);
+  }
+  function terminaCargaBoxes(erro){
+    window._t6BoxesCarregando=false;
+    window._t6BoxesErro=erro||null;
+    if(erro)publicaEstadoBoxes(erro.code||'BOXES_INDISPONIVEIS',
+      erro.message||'Cadastro de boxes indisponível.');
+    else publicaEstadoBoxes('PRONTO','Cadastro de boxes carregado.');
+    var espera=window._t6BoxesEspera||[];
+    window._t6BoxesEspera=[];
+    espera.forEach(function(fn){try{fn(erro);}catch(e){}});
+    if(painelAtual()==='boxatual'||painelAtual()==='boxant'){
+      try{window.t6Painel('boxatual');}catch(e){}
+    }
+  }
   window.t6CarregaBoxesPrimeiro = function(aoTerminar){
-    if(window._t6boxesCargaRapida) return;
-    var ativas={}, ids=[], historicas=(painelAtual()==='boxant');
-    try{
-      var statusDesejado=historicas?'anterior':'atual', meta=window._t6BoxMeta||{};
-      Object.keys(meta).forEach(function(nome){
-        if(meta[nome].status!==statusDesejado)return;
-        /* Big Time é categoria comemorativa do card, não nome de box. Um
-           histórico antigo gravou essa coluna como associação e duplicou
-           jogadores em boxes fictícias. Ela nunca participa da montagem. */
-        if(/^Big Time(?:\s|$)/i.test(nome))return;
-        (meta[nome].card_ids||[]).forEach(function(id){ids.push(String(id));});
-      });
-      /* Compatibilidade somente durante o primeiro instante, antes de o
-         cadastro central responder. Depois dele, nenhuma fonte paralela
-         decide quais cards pertencem a uma box. */
-      if(!ids.length){
-        (BOXATIVA||[]).forEach(function(n){ativas[n]=1;});
-        Object.keys(PACOTE||{}).forEach(function(id){
-          var ehAtiva=!!ativas[PACOTE[id]];
-          if(historicas ? !ehAtiva : ehAtiva) ids.push(String(id));
-        });
+    if(typeof aoTerminar==='function'){
+      window._t6BoxesEspera=window._t6BoxesEspera||[];
+      window._t6BoxesEspera.push(aoTerminar);
+    }
+    if(boxesProntas()){
+      var esperaPronta=window._t6BoxesEspera||[];
+      window._t6BoxesEspera=[];
+      esperaPronta.forEach(function(fn){try{fn(null);}catch(e){}});
+      return;
+    }
+    if(window._t6BoxesCarregando)return;
+    var CN=window.ClubeNovoReadModel;
+    if(!CN||typeof CN.boxes!=='function'){
+      var indisponivel=new Error('A view pública de Boxes ainda não está disponível.');
+      indisponivel.code='BOXES_VIEW_INDISPONIVEL';
+      terminaCargaBoxes(indisponivel);return;
+    }
+    window._t6BoxesCarregando=true;
+    window._t6BoxesErro=null;
+    window.CLUBE_NOVO_BOXES=[];
+    publicaEstadoBoxes('CARREGANDO','Carregando cadastro de boxes…');
+    var linhas=[],offset=0,limite=1000,paginas=0;
+    function carregaLote(){
+      var pedido;
+      if(++paginas>10000){
+        terminaCargaBoxes(new Error('A paginação da view de Boxes não terminou.'));return;
       }
-      /* O histórico é a fonte completa da box. Alguns cards antigos não têm
-         vínculo em PACOTE; sem esta união eles desaparecem (Living Legends é
-         o caso de teste). */
-      if (historicas && typeof BOXHIST !== 'undefined'){
-        Object.keys(BOXHIST||{}).forEach(function(nome){
-          if (ativas[nome]) return;
-          if (nome !== 'Living Legends 2026') return;
-          var h=BOXHIST[nome]||{};
-          (h.ids||[]).forEach(function(id){ ids.push(String(id)); });
-        });
-      }
-    }catch(e){ if(aoTerminar)aoTerminar(); return; }
-    if(!ids.length){if(aoTerminar)aoTerminar();return;}
-    window._t6boxesCargaRapida=1;
-    var lista='("'+ids.join('","')+'")';
-    /* ⛔ 25/08 — lista de boxes e ancora do topo: view enxuta (sem arows
-       e sem falta). Quem abre a ficha recebe os dois sob demanda. */
-    var baseUrl='https://trqqpsnafpbudtvvicch.supabase.co/rest/v1/casa_lista';
-    var url=baseUrl
-      +'?select=linha&card_id=in.'+encodeURIComponent(lista)
-      +(historicas ? '' : '&forca=not.is.null')
-      +'&limit=5000';
-    /* A recomendacao precisa do lider oficial de cada funcao. Buscar somente
-       os cards visiveis transforma o melhor DA TELA em 100%. As linhas com
-       maior `forca` sao a ancora persistida pelo banco para conter todos os
-       lideres; chegam junto com as boxes e nunca dependem da ordem da tela. */
-    var urlTop=baseUrl+'?select=linha&order=forca.desc.nullslast&limit=2000';
-    var chave='sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj';
-    var cab={apikey:chave,Authorization:'Bearer '+chave};
-    Promise.all([urlTop,url].map(function(u){
-      return fetch(u,{headers:cab}).then(function(r){
-        if(!r.ok)throw new Error('HTTP '+r.status);return r.json();
-      });
-    })).then(function(partes){
-       var rows=(partes[0]||[]).concat(partes[1]||[]);
-       var tem={};
-       (D||[]).forEach(function(c){if(c&&c.id!=='MOLDE')tem[String(c.id).split('@')[0]+'|'+c.tipo]=1;});
-       (rows||[]).forEach(function(r){
-         var c=r&&r.linha;if(!c||c.id===undefined||c.tipo===undefined)return;
-         var k=String(c.id).split('@')[0]+'|'+c.tipo;if(!tem[k]){tem[k]=1;D.push(c);}
-       });
-       try{if(typeof window._pos_D==='function')window._pos_D();}catch(e){}
-       /* Qualquer topo memorizado antes da ancora chegar e provisório. */
-       try{if(typeof _TOPO!=='undefined')_TOPO={};}catch(e){}
-       if(aoTerminar)aoTerminar();
-       else try{if(painelAtual()==='boxatual'||painelAtual()==='boxant')window.t6Painel(painelAtual());}catch(e){}
-     }).catch(function(){window._t6boxesCargaRapida=0;if(aoTerminar)aoTerminar();});
+      try{pedido=CN.boxes({offset:offset,limit:limite});}
+      catch(e){terminaCargaBoxes(e);return;}
+      Promise.resolve(pedido).then(function(lote){
+        if(!Array.isArray(lote))throw new Error('A view de Boxes devolveu um lote inválido.');
+        Array.prototype.push.apply(linhas,lote);
+        if(lote.length===limite){offset+=lote.length;setTimeout(carregaLote,0);return;}
+        window.CLUBE_NOVO_BOXES=linhas;
+        terminaCargaBoxes(null);
+      }).catch(terminaCargaBoxes);
+    }
+    carregaLote();
   };
+  /* Nome antigo preservado somente como porta de entrada. A consulta e a
+     paginação pertencem exclusivamente à view pública frontend_boxes_v1. */
+  window.t6CarregaCadastroBoxes=window.t6CarregaBoxesPrimeiro;
   /* ---------------- quem manda no painel ----------------
      ⛔ A CAMADA VELHA SAI DE CENA. Assim que este arquivo existe, o desenho
         antigo do painel para de ser montado (ele testa window.T6TELAS). Duas
@@ -470,6 +386,9 @@
   window.t6Painel = function(qual){
     var w = document.getElementById('homewrap');
     if (!w) return;
+    /* `boxant` permanece aceito em links e estado salvo, mas há uma única tela
+       canônica. A rota antiga é normalizada antes de qualquer renderização. */
+    if(qual==='boxant')qual='boxatual';
     if(qual==='boxatual'||qual==='boxant'||qual==='busca'){
       var linhaRanking=document.getElementById('mline');
       if(linhaRanking) linhaRanking.innerHTML='';
@@ -484,8 +403,7 @@
       return;
     }
     try{ homeToggle(1); }catch(e){}
-      if (qual === 'boxant')        h = window.t6TelaBoxes(true);
-      else if (qual === 'boxatual') h = window.t6TelaBoxes(false);
+      if (qual === 'boxatual')      h = window.t6TelaBoxes();
       else if (qual === 'como')     h = window.t6TelaComo();
       else if (qual === 'ranking')  h = window.t6TelaRanking();
       else if (qual === 'busca')    h = typeof window.t6TelaBusca === 'function' ? window.t6TelaBusca() : '';
@@ -499,8 +417,8 @@
     /* Se a fonte das Boxes ainda não chegou, a tela anterior não pode ficar
        exposta. Mostra o carregamento da própria aba até a próxima atualização. */
     if (!h || String(h).replace(/<[^>]*>/g,'').trim().length < 3){
-      if(qual==='boxatual'||qual==='boxant'){
-        h='<div style="min-height:360px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--d13)">Carregando '+(qual==='boxatual'?'boxes atuais':'boxes anteriores')+'…</div>';
+      if(qual==='boxatual'){
+        h='<div style="min-height:360px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--d13)">Carregando cadastro de boxes…</div>';
       }else return;
     }
     w.innerHTML = '<div class="t6tela">' + h + '</div>';
@@ -518,15 +436,14 @@
       el.onclick = function(ev){ ev.stopPropagation();
         try{ abrir(el.dataset.k); }catch(e){} };
     });
-    var troca = raiz.querySelector('[data-t6boxalternar]');
-    if (troca) troca.onclick = function(){
-      var proxima = painelAtual() === 'boxant' ? 'boxatual' : 'boxant';
-      try{if(window.RouteState)window.RouteState.setPanel(proxima);}catch(e){}
-      window._t6boxesCargaRapida = 0;
-      window.t6Painel(proxima);
-      setTimeout(function(){ if(window.t6CarregaBoxesPrimeiro) window.t6CarregaBoxesPrimeiro(); }, 0);
-      try{ window.scrollTo(0, 0); }catch(e){}
-    };
+    raiz.querySelectorAll('[data-t6card-id]').forEach(function(el){
+      if(typeof window.t6AbreFichaCadastral==='function')el.style.cursor='pointer';
+      el.onclick=function(ev){
+        if(typeof window.t6AbreFichaCadastral!=='function')return;
+        ev.stopPropagation();
+        window.t6AbreFichaCadastral(el.getAttribute('data-t6card-id'));
+      };
+    });
     raiz.querySelectorAll('[data-t6abrirbox]').forEach(function(el){
       el.onclick=function(ev){ ev.stopPropagation(); window.t6AbreBox(el.dataset.t6abrirbox, el.dataset.t6origem || painelAtual()); };
     });
@@ -535,10 +452,10 @@
       var mostrarMais = function(){
         var chave = maisBoxes.getAttribute('data-t6maisboxes');
         var posicaoY = window.pageYOffset || document.documentElement.scrollTop || 0;
-        window._t6BoxesVisiveis = window._t6BoxesVisiveis || {atual:24,anterior:24};
+        window._t6BoxesVisiveis = window._t6BoxesVisiveis || {boxes:24};
         window._t6BoxesVisiveis[chave] = (window._t6BoxesVisiveis[chave] || 24) + 24;
         if (window._t6ObservadorBoxes) window._t6ObservadorBoxes.disconnect();
-        window.t6Painel(chave === 'anterior' ? 'boxant' : 'boxatual');
+        window.t6Painel('boxatual');
         requestAnimationFrame(function(){
           window.scrollTo(0, posicaoY);
           requestAnimationFrame(function(){ window.scrollTo(0, posicaoY); });
@@ -562,7 +479,7 @@
         window._t6FiltroBoxes = valor;
         clearTimeout(window._t6FiltroBoxesTimer);
         window._t6FiltroBoxesTimer = setTimeout(function(){
-          window.t6Painel(painelAtual() || 'boxant');
+          window.t6Painel('boxatual');
           setTimeout(function(){
             var novoFiltro = document.querySelector('[data-t6boxfiltro]');
             if (!novoFiltro) return;
@@ -572,36 +489,16 @@
         }, 180);
       };
     }
-    raiz.querySelectorAll('[data-t6boxdata]').forEach(function(el){
-      el.value = window[el.getAttribute('data-t6boxdata')] || '';
-      /* Campo de data nativo emite eventos antes do ano estar completo em
-         alguns navegadores. Redesenhar naquele instante desmontava o input e
-         fazia o cursor sair no primeiro dígito. Só aplica uma data completa,
-         depois de uma breve pausa — ou quando o campo perde o foco. */
-      var aplicaData = function(){
-        var chave=el.getAttribute('data-t6boxdata'), valor=el.value || '';
-        /* Enquanto o usuário ainda está trocando o ano, Chrome pode expor
-           valores como 0002-08-06 e até disparar `change`. Não são uma busca
-           válida: só datas completas a partir de 2000 podem redesenhar a tela. */
-        if(valor && (!/^\d{4}-\d{2}-\d{2}$/.test(valor) || +valor.slice(0,4)<2000)) return;
-        if((window[chave] || '') === valor) return;
-        window[chave]=valor;
-        window.t6Painel(painelAtual() || 'boxant');
-      };
-      el.oninput = function(){
-        clearTimeout(el._t6dataTimer);
-        el._t6dataTimer=setTimeout(aplicaData,900);
-      };
-      /* Nem `change` nem perda de foco redesenham: o seletor nativo pode
-         dispará-los entre os dígitos do ano. O único gatilho é a pausa após
-         uma data válida. */
-      el.onchange = function(){};
-      el.onblur = function(){};
-    });
     var voltaBox=raiz.querySelector('[data-t6voltabox]');
     if(voltaBox) voltaBox.onclick=function(){
-      var retorno = window._t6BoxRetorno || 'boxatual';
-      window.t6Painel(retorno); window.scrollTo(0,0);
+      window.t6Painel('boxatual'); window.scrollTo(0,0);
+    };
+    var repetirBoxes=raiz.querySelector('[data-t6retryboxes]');
+    if(repetirBoxes)repetirBoxes.onclick=function(){
+      window._t6BoxesErro=null;window._t6BoxesCarregando=false;
+      window.CLUBE_NOVO_BOXES=[];
+      publicaEstadoBoxes('NAO_INICIADO','Nova tentativa solicitada.');
+      window.t6Painel('boxatual');
     };
   };
 
@@ -613,191 +510,87 @@
   /* O painel só é desenhado pela navegação ou por carregamento explícito.
      O vigia periódico podia redesenhar uma aba já pronta no meio de outra ação. */
 
-  /* ---------------- BOXES (atuais e anteriores) ---------------- */
-  /* O molde e o mesmo da foto 3; o que muda entre as duas abas e o titulo,
-     a linha de baixo e quais boxes entram. */
-  window.t6TelaBoxes = function(anteriores){
-    var statusDesejado=anteriores?'anterior':'atual';
-    if (!M || !M['boxes'] || !M['boxes'].corpo){
-      try{ if(window.t6CarregaCadastroBoxes) window.t6CarregaCadastroBoxes(statusDesejado); }catch(e){}
-      return '<div style="min-height:360px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--d13)">Carregando '+(anteriores?'boxes anteriores':'boxes atuais')+'…</div>';
-    }
-    if (!window._t6BoxStatusPronto || !window._t6BoxStatusPronto[statusDesejado]){
-      window.t6CarregaCadastroBoxes(statusDesejado);
-      return '<div style="min-height:360px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--d13)">Carregando boxes…</div>';
-    }
-    var cx = window.t6PorBox(), ativas = {}, meta = window._t6BoxMeta || {};
-    Object.keys(meta).forEach(function(n){if(meta[n].status==='atual')ativas[n]=1;});
-    var nomes = Object.keys(cx).filter(function(n){
-      if (n === 'Sem box confirmada') return false;
-      if (/^Big Time(?:\s|$)/i.test(n)) return false;
-      return !!meta[n] && meta[n].status===statusDesejado;
-    });
-    /* Nunca apresenta uma lista parcial como se estivesse pronta. A primeira
-       leva do banco pode conhecer apenas duas boxes; a tela aguarda a leva
-       completa e o redesenho final libera todas de uma vez. */
-    var esperadas = 0;
-    esperadas = Object.keys(ativas).length;
-    /* Não bloqueia a tela aguardando todas as associações. A primeira leva
-       aparece imediatamente e o carregamento progressivo completa o restante. */
-    /* anteriores: da mais nova para a mais velha, pela data que o historico guarda */
-    function quando(n){
-      try{
-        return (meta[n] && meta[n].data_lancamento) || '';
+  /* ---------------- BOXES CADASTRADAS ---------------- */
+  function telaErroBoxes(){
+    var estado=estadoBoxes();
+    return '<section role="status" style="min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;padding:24px"><h2 style="margin:0;color:#f0a531;font-size:19px">Cadastro de Boxes ainda indisponível</h2><p style="margin:0;color:var(--d13);font-size:13px">'+esc(estado.mensagem||'A view pública de Boxes não respondeu.')+'</p><p style="margin:0;color:var(--d17);font-size:11px">Esta tela consulta somente frontend_boxes_v1.</p><button type="button" data-t6retryboxes style="margin-top:9px;padding:9px 14px;border:1px solid #4c9f70;border-radius:9px;background:#13271b;color:#eaf8ef;font-weight:700;cursor:pointer">Tentar novamente</button></section>';
+  }
+  window.t6TelaBoxes = function(){
+    if(window._t6BoxesErro)return telaErroBoxes();
+    if(!boxesProntas()){
+      window.t6CarregaBoxesPrimeiro();
+      if(window._t6BoxesErro)return telaErroBoxes();
+      if(!boxesProntas()){
+        return '<div style="min-height:360px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--d13)">Carregando cadastro de boxes…</div>';
       }
-      catch(e){ return ''; }
     }
-    function melhorPct(n){
-      var cs = cx[n] || [], melhor = -Infinity;
-      for (var i = 0; i < cs.length; i++){
-        var p = pct(cs[i]);
-        if (isFinite(p) && p > melhor) melhor = p;
-      }
-      return melhor;
+    var cx=window.t6PorBox(),nomes=Object.keys(cx).sort(comparaTextoBox);
+    if(!nomes.length){
+      return '<section role="status" style="min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;text-align:center;padding:24px"><h2 style="margin:0;color:#f0a531;font-size:19px">Nenhuma Box cadastrada</h2><p style="margin:0;color:var(--d13);font-size:13px">A view de Boxes não trouxe cards com um nome de Box válido.</p></section>';
     }
-    if (anteriores) nomes.sort(function(a, b){ return (quando(b) || '').localeCompare(quando(a) || ''); });
-    else nomes.sort(function(a, b){
-      return melhorPct(b) - melhorPct(a) || a.localeCompare(b, 'pt-BR');
-    });
-    var termo = String(window._t6FiltroBoxes || '').trim().toLocaleLowerCase();
-    if (anteriores && termo){
-      nomes = nomes.filter(function(n){
-        return String(n).toLocaleLowerCase().indexOf(termo) >= 0
-          || String(quando(n) || '').toLocaleLowerCase().indexOf(termo) >= 0;
-      });
+    var termo=String(window._t6FiltroBoxes||'').trim().toLocaleLowerCase('pt-BR');
+    if(termo)nomes=nomes.filter(function(n){return n.toLocaleLowerCase('pt-BR').indexOf(termo)>=0;});
+    window._t6BoxesVisiveis=window._t6BoxesVisiveis||{boxes:24};
+    var quantas=Math.min(window._t6BoxesVisiveis.boxes||24,nomes.length);
+    var totalCards=Object.keys(cx).reduce(function(total,n){return total+(cx[n]||[]).length;},0);
+    function cardHtml(c){
+      var foto=c.fotoUrl
+        ? '<img data-t6boxfoto="1" src="'+esc(c.fotoUrl)+'" alt="" style="width:42px;height:56px;border-radius:8px;object-fit:cover;background:linear-gradient(160deg,var(--d33),var(--d32));border:1px solid var(--d7);flex:none;display:block">'
+        : '<span data-t6boxfoto="1" style="width:42px;height:56px;border-radius:8px;background:linear-gradient(160deg,var(--d33),var(--d32));border:1px solid var(--d7);flex:none;display:block"></span>';
+      var info='<span data-t6boxinfo="1" style="min-width:0;display:flex;flex-direction:column;gap:3px"><b style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(c.nome)+'</b>'
+        +'<em style="font-style:normal;font-size:10.5px;color:var(--d13);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(c.pos)+(c.tipo?' <b style="margin-left:5px;color:var(--d45)">· '+esc(c.tipo)+'</b>':'')+'</em>'
+        +(c.estadoCadastro?'<em style="font-style:normal;font-size:9.5px;color:#f0a531;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(c.estadoCadastro)+'</em>':'')+'</span>';
+      var overall='<span data-t6overall="1" style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:34px"><b style="font-family:inherit;font-size:18px;font-weight:700;letter-spacing:-.4px;color:var(--d25);white-space:nowrap">'+esc(c.overall)+'</b><em style="font-style:normal;font-family:inherit;font-size:9px;color:var(--d13);white-space:nowrap">OVR</em></span>';
+      return '<div data-t6boxlinha="1"'+(c.cardId?' data-t6card-id="'+esc(c.cardId)+'"':'')+' style="display:grid;grid-template-columns:18px 42px minmax(0,1fr) auto;gap:8px;align-items:center"><span style="font-size:10px;color:var(--d13)">'+esc(c.r)+'</span>'+foto+info+overall+'</div>';
     }
-    if (anteriores && (window._t6BoxDataDe || window._t6BoxDataAte)){
-      var de = window._t6BoxDataDe ? Date.parse(window._t6BoxDataDe) : -Infinity;
-      var ate = window._t6BoxDataAte ? Date.parse(window._t6BoxDataAte + 'T23:59:59') : Infinity;
-      nomes = nomes.filter(function(n){
-        var t = Date.parse(quando(n));
-        return !isNaN(t) && t >= de && t <= ate;
-      });
+    function boxHtml(nome){
+      var todos=window.t6OrdenaCardsDaBox(cx[nome]||[]),totalBox=todos.length;
+      var declarado=todos.length?numeroCadastroBox(todos[0],'boxTotalCards','box_total_cards'):null;
+      if(declarado!==null&&declarado>=0)totalBox=declarado;
+      var cards=todos.slice(0,3).map(window.t6cardBox).map(cardHtml).join('');
+      return '<section data-t6boxcard="1" style="border-radius:15px;background:linear-gradient(158deg,var(--d42),var(--d43));border:1px solid var(--d20);overflow:hidden">'
+        +'<div data-t6boxcab="1" style="display:flex;align-items:center;width:100%;box-sizing:border-box;gap:16px;padding:12px 16px;background:var(--d12);border-bottom:1px solid var(--d7)"><b style="font-size:15px;line-height:1.25;min-width:0;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(nome)+'</b><span style="font-size:10px;line-height:1.25;color:var(--d13);white-space:nowrap;text-align:right;margin-left:auto;flex:0 0 auto">'+totalBox+' card'+(totalBox===1?'':'s')+'</span></div>'
+        +'<div style="padding:12px 13px;display:flex;flex-direction:column;gap:10px">'+cards
+        +(todos.length>3?'<button data-t6abrirbox="'+esc(nome)+'" data-t6origem="boxatual" style="margin-top:2px;padding:7px 10px;border-radius:8px;border:1px solid var(--d18);background:var(--d32);color:var(--d30);font:inherit;font-size:11px;cursor:pointer">ver todos os '+totalBox+' cards</button>':'')+'</div></section>';
     }
-    /* Os dados podem chegar todos em segundo plano, mas o navegador só desenha
-       um grupo por vez. Isso evita criar mais de mil boxes no HTML de uma vez. */
-    window._t6BoxesVisiveis = window._t6BoxesVisiveis || {atual:24,anterior:24};
-    var chaveVisivel = anteriores ? 'anterior' : 'atual';
-    var quantas = Math.min(window._t6BoxesVisiveis[chaveVisivel] || 24, nomes.length);
-    var dados = {boxesAnt: nomes.slice(0, quantas).map(function(n, idx){
-      var cs = cx[n] || [];
-      var destaque = !anteriores && idx < 2
-        && !(window.matchMedia && window.matchMedia('(max-width:820px)').matches);
-      var todos = window.t6Melhores(cs, 9999, n);
-      var cards = todos.slice(0, 3).map(window.t6cardBox);
-      cards.forEach(function(c){
-        c.fotoTam = destaque ? 'width:58px;height:76px;' : (anteriores ? 'width:46px;height:62px;' : 'width:38px;height:50px;');
-        c.fotoCol = destaque ? '58px' : (anteriores ? '46px' : '38px');
-        c.rowSt = destaque
-          ? 'display:flex;align-items:center;gap:11px;'
-          : 'display:grid;grid-template-columns:16px ' + c.fotoCol + ' minmax(0,1fr);gap:8px;align-items:center;';
-        c.scoreSt = destaque
-          ? 'display:flex;flex-direction:column;align-items:flex-end;gap:3px;'
-          : 'grid-column:2 / 4;display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 8px;align-items:center;margin-top:-3px;';
-        if (!destaque){
-          c.vSt += ';grid-column:1 / 3;justify-self:end';
-        }
-      });
-      return {n: esc(n), data: esc(quando(n)), nomeCru:n, total:todos.length,
-              q: todos.length + ' card' + (todos.length === 1 ? '' : 's'),
-              colSt: !anteriores ? ('grid-column:span ' + (destaque ? 6 : 4) + ';') : '',
-              cards: cards};
-    })};
-    /* Esta pagina nao passa mais pelo molde antigo. As substituicoes de texto
-       eram frageis: pequenas diferencas no molde faziam pontos e recomendacao
-       sumirem apenas nas caixas compactas. Uma unica montagem agora entrega o
-       HTML final e conserva os mesmos dados, cliques, cores e hierarquia. */
-    function cardHtml(c, destaque){
-      var foto = '<span data-t6boxfoto="1" style="' + c.fotoTam
-        + 'border-radius:8px;background:' + c.foto + ' center/cover no-repeat,'
-        + 'linear-gradient(160deg,var(--d33),var(--d32));border:1px solid var(--d7);flex:none;display:block"></span>';
-      var info = '<span data-t6boxinfo="1" style="min-width:0;display:flex;flex-direction:column;gap:3px">'
-        + '<b style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + c.nome + '</b>'
-        + '<em style="font-style:normal;font-size:10.5px;color:var(--d13);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + c.est
-        + (c.pos ? ' <b style="margin-left:5px;color:var(--d45)">· ' + c.pos + '</b>' : '') + '</em></span>';
-      var nota = '<span data-t6score="1" style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;min-width:0">'
-        + '<b style="font-family:inherit;font-size:19px;font-weight:700;letter-spacing:-.4px;color:var(--d25);white-space:nowrap">' + c.pts + '</b>'
-        + '<em data-t6rec="1" style="font-style:normal;font-family:inherit;font-size:10px;color:var(--d13);white-space:nowrap">Recomendação: ' + c.pct + '%</em>'
-        + '<em data-t6veredito="1" style="' + c.vSt + '">' + c.v + '</em></span>';
-      if (destaque){
-        return '<div data-t6boxlinha="1" data-k="' + c.k + '" style="display:grid;grid-template-columns:18px 58px minmax(0,1fr) auto;gap:11px;align-items:center">'
-          + '<span style="font-size:10px;color:var(--d13)">' + c.r + '</span>' + foto + info + nota + '</div>';
-      }
-      return '<div data-t6boxlinha="1" data-k="' + c.k + '" style="display:grid;grid-template-columns:18px ' + (c.fotoCol || '38px') + ' minmax(0,1fr) auto;gap:8px;align-items:center">'
-        + '<span style="font-size:10px;color:var(--d13)">' + c.r + '</span>' + foto + info + nota + '</div>';
-    }
-    function boxHtml(bx, idx){
-      var destaque = !anteriores && idx < 2
-        && !(window.matchMedia && window.matchMedia('(max-width:820px)').matches);
-      var cards = bx.cards.map(function(c){ return cardHtml(c, destaque); }).join('');
-      return '<section data-t6boxcard="1" style="' + bx.colSt
-        + 'border-radius:15px;background:linear-gradient(158deg,var(--d42),var(--d43));border:1px solid var(--d20);overflow:hidden">'
-        + '<div data-t6boxcab="1" style="display:flex;align-items:center;width:100%;box-sizing:border-box;gap:16px;padding:12px 16px;background:var(--d12);border-bottom:1px solid var(--d7)">'
-        + '<b style="font-size:15px;line-height:1.25;min-width:0;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + bx.n + (bx.data ? '<small style="display:block;margin-top:3px;font-size:11px;color:var(--d13);font-weight:600">' + bx.data + '</small>' : '') + '</b>'
-        + '<span style="font-size:10px;line-height:1.25;color:var(--d13);white-space:nowrap;text-align:right;margin-left:auto;flex:0 0 auto">' + bx.q + '</span></div>'
-        + '<div style="padding:' + (destaque ? '14px 17px' : '12px 13px') + ';display:flex;flex-direction:column;gap:' + (destaque ? '12px' : '10px') + '">' + cards
-        + (bx.total>3?'<button data-t6abrirbox="'+bx.nomeCru.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'" data-t6origem="'+(anteriores?'boxant':'boxatual')+'" style="margin-top:2px;padding:7px 10px;border-radius:8px;border:1px solid var(--d18);background:var(--d32);color:var(--d30);font:inherit;font-size:11px;cursor:pointer">ver todos os '+bx.total+' cards</button>':'')
-        + '</div></section>';
-    }
-    var titulo = anteriores ? 'BOXES ANTERIORES' : 'BOXES ATUAIS';
-    var acao = anteriores ? 'voltar às atuais' : 'ver as anteriores';
-    var grade = anteriores ? 'repeat(3,minmax(0,1fr))' : 'repeat(12,minmax(0,1fr))';
-    /* Régua de decisão: os mesmos veredictos dos cards, apenas como leitura rápida. */
-    var referenciaEtiquetas = '<div data-t6reguaetiquetas="1" aria-label="Etiquetas de contratação" style="display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap">'
-        + '<span style="padding:4px 8px;border-radius:999px;font-size:9px;font-weight:800;white-space:nowrap;color:#eef7ff;background:#1961b5;border:1px solid #73b6ff;box-shadow:0 0 10px rgba(115,182,255,.18)">PAGAR QUALQUER PREÇO</span>'
-        + '<span style="padding:4px 8px;border-radius:999px;font-size:9px;font-weight:800;white-space:nowrap;color:#f0fff6;background:#177741;border:1px solid #6ee7a0;box-shadow:0 0 10px rgba(110,231,160,.18)">PAGAR CARO</span>'
-        + '<span style="padding:4px 8px;border-radius:999px;font-size:9px;font-weight:900;white-space:nowrap;color:#e8fff0;background:linear-gradient(135deg,rgba(28,158,78,.32),rgba(98,235,141,.48));border:1px solid #98f5bd;box-shadow:0 0 12px rgba(98,235,141,.28)">PAGAR</span>'
-        + '<span style="padding:4px 8px;border-radius:999px;font-size:9px;font-weight:800;white-space:nowrap;color:var(--t6-hire-worth-fg);background:var(--t6-hire-worth-bg);border:1px solid var(--t6-hire-worth-bd)">PAGAR POUCO</span>'
-        + '<span style="padding:4px 8px;border-radius:999px;font-size:9px;font-weight:800;white-space:nowrap;color:var(--t6-hire-cheap-fg);background:var(--t6-hire-cheap-bg);border:1px solid var(--t6-hire-cheap-bd)">PAGAR MUITO POUCO</span>'
-        + '<span style="padding:4px 8px;border-radius:999px;font-size:9px;font-weight:800;white-space:nowrap;color:var(--t6-hire-free-fg);background:var(--t6-hire-free-bg);border:1px solid var(--t6-hire-free-bd)">NÃO PAGAR</span>'
-        + '</div>';
-    var filtroHtml = anteriores
-      ? '<input data-t6boxfiltro placeholder="pesquisar por nome" style="width:125px;padding:8px 9px;border-radius:9px;border:1px solid var(--d18);background:var(--d10);color:var(--d8);font:inherit;font-size:12px">'
-        + '<span style="display:flex;flex-direction:column;gap:4px"><input type="date" data-t6boxdata="_t6BoxDataDe" title="data inicial" style="width:110px;padding:5px 7px;border-radius:7px;border:1px solid var(--d18);background:var(--d10);color:var(--d8);font:inherit;font-size:11px"><input type="date" data-t6boxdata="_t6BoxDataAte" title="data final" style="width:110px;padding:5px 7px;border-radius:7px;border:1px solid var(--d18);background:var(--d10);color:var(--d8);font:inherit;font-size:11px"></span>'
-      : '';
-    var cabecalhoHtml = anteriores
-      ? '<div data-t6boxfiltros="1" style="display:grid;grid-template-columns:minmax(130px,1fr) auto minmax(360px,1fr);align-items:center;gap:10px"><h2 style="margin:0;font-size:19px;font-weight:700">' + titulo + '</h2>' + referenciaEtiquetas
-        + '<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;min-width:0">' + filtroHtml + '<button data-t6boxalternar="1" style="border:1px solid var(--d18);background:var(--d32);color:var(--d30);padding:7px 11px;border-radius:9px;cursor:pointer;white-space:nowrap">' + acao + '</button></div></div>'
-      : '<div data-t6boxfiltros="1" style="display:grid;grid-template-columns:minmax(150px,1fr) auto minmax(150px,1fr);align-items:center;gap:12px"><h2 style="margin:0;font-size:19px;font-weight:700">' + titulo + '</h2>' + referenciaEtiquetas
-        + '<div style="display:flex;justify-content:flex-end;align-items:center;gap:12px;min-width:0">' + filtroHtml + '<button data-t6boxalternar="1" style="border:1px solid var(--d18);background:var(--d32);color:var(--d30);padding:7px 11px;border-radius:9px;cursor:pointer;white-space:nowrap">' + acao + '</button></div></div>';
-    var h = '<div style="padding:22px;display:flex;flex-direction:column;gap:16px">'
-      + cabecalhoHtml
-      + '<div style="display:grid;grid-template-columns:' + grade + ';gap:13px">'
-      + dados.boxesAnt.map(boxHtml).join('') + '</div>'
-      + (quantas < nomes.length ? '<div data-t6maisboxes="'+chaveVisivel+'" style="height:2px" aria-hidden="true"></div>' : '')
-      + '</div>';
-    var sub = anteriores
-      ? (nomes.length + ' boxes encerradas · top 3 de cada uma · mostrando as '
-         + Math.min(quantas, nomes.length) + ' mais recentes')
-      : (nomes.length + ' boxes no ar');
-    return h;
+    return '<div style="padding:22px;display:flex;flex-direction:column;gap:16px">'
+      +'<div data-t6boxfiltros="1" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><span style="min-width:220px"><h2 style="margin:0;font-size:19px;font-weight:700">BOXES CADASTRADAS</h2><small style="display:block;margin-top:4px;color:var(--d13);font-size:11px">'+Object.keys(cx).length+' boxes · '+totalCards+' cards cadastrados</small></span><input data-t6boxfiltro placeholder="pesquisar por nome" style="margin-left:auto;width:min(260px,100%);padding:8px 9px;border-radius:9px;border:1px solid var(--d18);background:var(--d10);color:var(--d8);font:inherit;font-size:12px"></div>'
+      +'<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:13px">'+nomes.slice(0,quantas).map(boxHtml).join('')+'</div>'
+      +(quantas<nomes.length?'<div data-t6maisboxes="boxes" style="height:2px" aria-hidden="true"></div>':'')+'</div>';
   };
 
   window.t6AbreBox = function(nome, origem){
     var w=document.getElementById('homewrap'); if(!w) return;
-    window._t6BoxRetorno = origem === 'boxant' ? 'boxant' : 'boxatual';
-    var lista=(window.t6PorBox()[nome]||[]), todos=window.t6Melhores(lista,9999,nome);
+    window._t6BoxRetorno = 'boxatual';
+    var lista=(window.t6PorBox()[nome]||[]), todos=window.t6OrdenaCardsDaBox(lista);
     function item(c,i,destaque){
-      var x=window.t6cardBox(c,i), v=destaque?'width:92px;height:124px':'width:64px;height:86px';
-      return '<article data-t6boxitem="1" data-k="'+x.k+'" style="display:grid;grid-template-columns:'+v.split(';')[0].split(':')[1]+' minmax(0,1fr);gap:11px;padding:'+(destaque?'15px':'11px')+';border-radius:13px;border:1px solid var(--d20);background:linear-gradient(158deg,var(--d42),var(--d43));cursor:pointer">'
-       +'<span style="'+v+';border-radius:8px;background:'+x.foto+' center/cover no-repeat;border:1px solid var(--d7)"></span>'
-       +'<span data-t6boxinfo="1" style="min-width:0;display:flex;flex-direction:column;gap:4px"><b style="font-size:'+(destaque?'15px':'13px')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+x.nome+'</b><em style="font-style:normal;font-size:11px;color:var(--d13);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+x.est+' <b style="color:var(--d45)">· '+x.pos+'</b></em><b style="margin-top:auto;font-size:'+(destaque?'20px':'16px')+';color:var(--d25)">'+x.pts+'</b><em style="font-style:normal;font-size:10px;color:var(--d13)">Recomendação: '+x.pct+'%</em><em data-t6veredito="1" style="'+x.vSt+';align-self:flex-start">'+x.v+'</em></span></article>';
+      var x=window.t6cardBox(c,i), largura=destaque?'92px':'64px', altura=destaque?'124px':'86px';
+      var foto=x.fotoUrl
+        ? '<img src="'+esc(x.fotoUrl)+'" alt="" style="width:'+largura+';height:'+altura+';border-radius:8px;object-fit:cover;background:linear-gradient(160deg,var(--d33),var(--d32));border:1px solid var(--d7)">'
+        : '<span style="width:'+largura+';height:'+altura+';border-radius:8px;background:linear-gradient(160deg,var(--d33),var(--d32));border:1px solid var(--d7)"></span>';
+      var cadastro='<em style="font-style:normal;font-size:11px;color:var(--d13);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(x.pos)+(x.tipo?' <b style="color:var(--d45)">· '+esc(x.tipo)+'</b>':'')+'</em>'
+        +'<span style="display:flex;align-items:baseline;gap:6px;margin-top:auto"><b style="font-size:'+(destaque?'20px':'16px')+';color:var(--d25)">'+esc(x.overall)+'</b><em style="font-style:normal;font-size:9px;color:var(--d13)">OVR</em></span>'
+        +(x.estadoCadastro?'<em style="font-style:normal;font-size:9.5px;color:#f0a531">'+esc(x.estadoCadastro)+'</em>':'');
+      return '<article data-t6boxitem="1"'+(x.cardId?' data-t6card-id="'+esc(x.cardId)+'"':'')+' style="display:grid;grid-template-columns:'+largura+' minmax(0,1fr);gap:11px;padding:'+(destaque?'15px':'11px')+';border-radius:13px;border:1px solid var(--d20);background:linear-gradient(158deg,var(--d42),var(--d43))">'
+       +foto
+       +'<span data-t6boxinfo="1" style="min-width:0;display:flex;flex-direction:column;gap:4px"><b style="font-size:'+(destaque?'15px':'13px')+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(x.nome)+'</b>'+cadastro+'</span></article>';
     }
     var top=todos.slice(0,3).map(function(c,i){return item(c,i,true)}).join('');
     var resto=todos.slice(3).map(function(c,i){return item(c,i+3,false)}).join('');
-    var rotuloVolta = window._t6BoxRetorno === 'boxant' ? '← Boxes anteriores' : '← Boxes atuais';
+    var rotuloVolta = '← Boxes cadastradas';
     var h='<div style="padding:22px;display:flex;flex-direction:column;gap:16px"><div data-t6boxdetcab="1" style="display:flex;align-items:center;gap:12px"><button data-t6voltabox="1" style="padding:7px 11px;border-radius:9px;border:1px solid var(--d18);background:var(--d32);color:var(--d30);cursor:pointer">'+rotuloVolta+'</button><h2 style="margin:0;font-size:19px">'+esc(nome)+'</h2><span data-t6boxq="1" style="margin-left:auto;color:var(--d13);font-size:11px">'+todos.length+' cards</span></div><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px">'+top+'</div>'+(resto?'<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px">'+resto+'</div>':'')+'</div>';
     /* Mantém a aba de origem enquanto o detalhe está aberto. O estado
        `boxdetalhe` fazia o renderizador geral interpretar o primeiro clique
        como uma volta para a página inicial. */
-    try{if(window.RouteState)window.RouteState.setPanel(window._t6BoxRetorno || 'boxatual');}catch(e){}
+    try{if(window.RouteState)window.RouteState.setPanel('boxatual');}catch(e){}
     window._t6BoxDetalhe = true;
     w.innerHTML='<div class="t6tela">'+h+'</div>'; window.t6Cliques(w); window.scrollTo(0,0);
   };
 
   /* ---------------- INICIO ---------------- */
-  var FOTO = 'https://efimg.com/efootballhub22/images/player_cards/';
-  function url(c){ return FOTO + String(c.id).split('@')[0] + '_l.png'; }
+  function url(c){
+    return window.ClubeNovoReadModel ? window.ClubeNovoReadModel.foto(c) : '';
+  }
   function medSt(c, w, h, r){
     /* o quadrado da foto: o molde deixa o estilo por nossa conta, entao a foto
        entra por aqui — sem mexer na marcacao dela. */
@@ -806,37 +599,30 @@
          + 'background:url(' + url(c) + ') center/cover no-repeat,'
          + 'linear-gradient(160deg,var(--d33),var(--d32))';
   }
-  function veredicto(p, congelado, codigoCongelado){
-    var C = window.T6_CORTES || [99, 98, 97, 96];
-    if (C.length < 4) C = [99, 98, 97, 96];
-    var fixo=String(congelado||'').toUpperCase();
-    var nomes=window._t6EtiquetasNomes||{};
-    function nome(codigo,padrao){return nomes[codigo]||padrao;}
-    var codigo=String(codigoCongelado||'');
-    if (codigo==='qualquer_preco' || fixo==='PAGAR QUALQUER PREÇO' || fixo==='MELHOR DA FUNÇÃO' || fixo==='TOPO DA FUNÇÃO' || (!codigo && p >= 99.995)) return [nome('qualquer_preco','PAGAR QUALQUER PREÇO'), 'var(--t6-hire-top-fg)', 'var(--t6-hire-top-bg)', 'var(--t6-hire-top-bd)', 'var(--t6-hire-top-sh)'];
-    if (codigo==='caro' || fixo==='PAGAR CARO' || fixo==='CONTRATAR A QUALQUER CUSTO') return [nome('caro','PAGAR CARO'), 'var(--t6-hire-any-fg)', 'var(--t6-hire-any-bg)', 'var(--t6-hire-any-bd)'];
-    if (codigo==='pagar' || fixo==='PAGAR') return [nome('pagar','PAGAR'), 'var(--t6-hire-pay-fg)', 'var(--t6-hire-pay-bg)', 'var(--t6-hire-pay-bd)', '0 0 12px rgba(98,235,141,.28)'];
-    if (codigo==='pouco' || fixo==='PAGAR POUCO' || fixo==='COMPENSA CONTRATAR') return [nome('pouco','PAGAR POUCO'), 'var(--t6-hire-worth-fg)', 'var(--t6-hire-worth-bg)', 'var(--t6-hire-worth-bd)'];
-    if (codigo==='muito_pouco' || fixo==='PAGAR MUITO POUCO' || fixo==='CONTRATAR SE FOR BARATO') return [nome('muito_pouco','PAGAR MUITO POUCO'), 'var(--t6-hire-cheap-fg)', 'var(--t6-hire-cheap-bg)', 'var(--t6-hire-cheap-bd)'];
-    if (codigo==='nao_pagar' || fixo==='NÃO PAGAR' || fixo==='CONTRATAR SE FOR GRÁTIS') return [nome('nao_pagar','NÃO PAGAR'), 'var(--t6-hire-free-fg)', 'var(--t6-hire-free-bg)', 'var(--t6-hire-free-bd)'];
-    if (p >= 99.995) return [nome('qualquer_preco','PAGAR QUALQUER PREÇO'), 'var(--t6-hire-top-fg)', 'var(--t6-hire-top-bg)', 'var(--t6-hire-top-bd)', 'var(--t6-hire-top-sh)'];
-    if (p >= C[0]) return [nome('caro','PAGAR CARO'), 'var(--t6-hire-any-fg)', 'var(--t6-hire-any-bg)', 'var(--t6-hire-any-bd)'];
-    if (p >= C[1]) return [nome('pagar','PAGAR'), 'var(--t6-hire-pay-fg)', 'var(--t6-hire-pay-bg)', 'var(--t6-hire-pay-bd)', '0 0 12px rgba(98,235,141,.28)'];
-    if (p >= C[2]) return [nome('pouco','PAGAR POUCO'), 'var(--t6-hire-worth-fg)', 'var(--t6-hire-worth-bg)', 'var(--t6-hire-worth-bd)'];
-    if (p >= C[3]) return [nome('muito_pouco','PAGAR MUITO POUCO'), 'var(--t6-hire-cheap-fg)', 'var(--t6-hire-cheap-bg)', 'var(--t6-hire-cheap-bd)'];
-    return [nome('nao_pagar','NÃO PAGAR'), 'var(--t6-hire-free-fg)', 'var(--t6-hire-free-bg)', 'var(--t6-hire-free-bd)'];
-  }
   window.t6cardBox = function(c, i){
-    var d = window.t6card(c, i), p = parseFloat(d.pct),
-        v = veredicto(p, c&&c._t6Congelado&&c._t6Congelado.etiqueta,
-                      c&&c._t6Congelado&&c._t6Congelado.etiqueta_codigo);
-    d.foto = 'url(' + url(c) + ')';
-    d.v = v[0];
-    d.vSt = 'font-style:normal;font-family:inherit;font-size:8.5px;font-weight:700;'
-          + 'letter-spacing:.7px;padding:3px 7px;border-radius:999px;white-space:nowrap;'
-          + 'color:' + v[1] + ';background:' + v[2] + ';border:1px solid ' + v[3]
-          + (v[4] ? ';box-shadow:' + v[4] : '');
-    return d;
+    var id=idCardBox(c),rank=numeroCadastroBox(c,'rankBoxOverall','rank_box_overall');
+    var overall=numeroCadastroBox(c,'overall','overall');
+    var posicao=campoBox(c,'posicaoSigla','posicao_principal_codigo')
+      ||campoBox(c,'posicaoNome','posicao_nome')||'posição não informada';
+    var tipo=campoBox(c,'tipoCartaNome','tipo_carta_nome')||'';
+    var integridade=campoBox(c,'integridadeCadastro','integridade_cadastro');
+    var pendencias=campoBox(c,'pendencias','pendencias'),qPendencias=0;
+    if(Array.isArray(pendencias))qPendencias=pendencias.length;
+    else if(pendencias&&typeof pendencias==='object')qPendencias=Object.keys(pendencias).length;
+    else if(pendencias&&String(pendencias).trim()&&String(pendencias).trim()!=='[]'
+      &&String(pendencias).trim()!=='{}')qPendencias=1;
+    var codigoIntegridade=String(integridade===null?'':integridade).trim().toLocaleLowerCase('pt-BR');
+    var integra=integridade===true||codigoIntegridade==='ok'||codigoIntegridade==='integro'
+      ||codigoIntegridade==='íntegro'||codigoIntegridade==='completo';
+    var estadoCadastro=qPendencias
+      ? qPendencias+' pendência'+(qPendencias===1?'':'s')+' no cadastro'
+      : integridade!==null&&!integra?'cadastro: '+String(integridade):'';
+    return {
+      r:rank!==null?String(Math.trunc(rank))+'º':'—',nome:String(c&&c.nome||id),
+      pos:String(posicao),tipo:String(tipo),overall:overall===null?'—':String(overall),
+      cardId:id,fotoUrl:String(c&&((c.fotoUrl||c.foto_url_cloudinary))||''),
+      estadoCadastro:estadoCadastro
+    };
   };
   /* o seletor de funcao da barra dela abre o mesmo menu que a casca ja tem */
   window.t6FnMenu = function(raiz){
@@ -1281,6 +1067,7 @@
      pode alterar o que se mede. E o resultado fica no proprio card (`_nMot`),
      entao a conta roda uma vez por funcao, nao a cada desenho. */
   function _notaDoMotor(x){
+    if(x&&x.__cn&&typeof x.pontuacao_final==='number')return x.pontuacao_final;
     if (x._nMot !== undefined) return x._nMot;
     var v = null;
     try{
@@ -1851,64 +1638,44 @@
     if (window._T6_CARGA_CARD[base] === 'pronto') return true;
     if (window._T6_CARGA_CARD_PROMESSA[base]) return window._T6_CARGA_CARD_PROMESSA[base];
     window._T6_CARGA_CARD[base] = 'carregando';
-    window._T6_BONUS_POS = window._T6_BONUS_POS || {};
-    window._T6_BONUS_POS_CARGA = window._T6_BONUS_POS_CARGA || {};
-    window._T6_BONUS_POS_PROMESSA = window._T6_BONUS_POS_PROMESSA || {};
-    var cargaBonus;
-    if(window._T6_BONUS_POS_CARGA[base]==='pronto') cargaBonus=Promise.resolve(true);
-    else if(window._T6_BONUS_POS_PROMESSA[base]) cargaBonus=window._T6_BONUS_POS_PROMESSA[base];
-    else{
-      window._T6_BONUS_POS_CARGA[base] = 'carregando';
-      var ubp = 'https://trqqpsnafpbudtvvicch.supabase.co/rest/v1/bonus_posicao'
-        + '?select=card_id,funcao,posicao,estilo_ativo,b_estilo,b_total,nota&card_id=eq.'
-        + encodeURIComponent(base);
-      var kbp = 'sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj';
-      cargaBonus=window._T6_BONUS_POS_PROMESSA[base]=fetch(ubp,{headers:{apikey:kbp,Authorization:'Bearer '+kbp}})
-       .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-       .then(function(rows){
-         (rows||[]).forEach(function(z){
-           window._T6_BONUS_POS[z.card_id+'|'+z.funcao+'|'+z.posicao]=z;
-         });
-         window._T6_BONUS_POS_CARGA[base]='pronto';
-         delete window._T6_BONUS_POS_PROMESSA[base]; return true;
-       },function(e){
-         window._T6_BONUS_POS_CARGA[base]='erro';
-         delete window._T6_BONUS_POS_PROMESSA[base]; throw e;
-       });
+    if(!window.ClubeNovoReadModel){
+      window._T6_CARGA_CARD[base] = 'erro';
+      return Promise.reject(new Error('read-model canônico indisponível'));
     }
-    /* ⛔ ESTA CONTINUA NA `casa_tela` (a linha inteira): e UM card so,
-       custa poucos KB, e assim o card aberto por aqui ja chega com
-       `arows` e `falta` dentro — sem depender do sob demanda. */
-    var url = 'https://trqqpsnafpbudtvvicch.supabase.co/rest/v1/casa_tela'
-      + '?select=linha&card_id=eq.' + encodeURIComponent(base) + '&order=funcao.asc';
-    var chave = 'sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj';
-    var cargaLinhas=fetch(url, {headers:{apikey:chave, Authorization:'Bearer ' + chave}})
-      .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function(rows){
-        (rows || []).forEach(function(r){
-          var x = r && r.linha;
+    /* Card-base e builds possuem contratos diferentes. A identidade e a ficha
+       física vêm do catálogo; resultados e funções vêm somente da geração de
+       builds publicada, sem soma ou escolha local de variante. */
+    var carga=Promise.all([
+      window.ClubeNovoReadModel.carta(base),
+      window.ClubeNovoReadModel.card(base).catch(function(e){
+        if(e&&e.code==='SEM_BUILD_PUBLICADA')return [];
+        throw e;
+      })
+    ]).then(function(partes){
+        var carta=partes[0],rows=partes[1]||[];
+        window._T6_CARTA_BASE=window._T6_CARTA_BASE||{};
+        window._T6_CARTA_BASE[base]=carta;
+        (rows || []).forEach(function(x){
           if (!x || x.id === undefined || x.tipo === undefined) return;
-          var xb = String(x.id).split('@')[0], repetida = false;
+          var xb = String(x.id).split('@')[0], repetida = false, meta=x.__cn||{};
           for (var di = 0; di < D.length; di++){
             var ja = D[di];
+            var metaJa=ja&&ja.__cn||{};
             if (ja && ja.id !== 'MOLDE' && String(ja.id).split('@')[0] === xb
-                && _mesmaFn(ja.tipo, x.tipo)){
-              try{
-                if(_notaDoMotor(x)>_notaDoMotor(ja)) D[di]=x;
-              }catch(e){}
+                && String(metaJa.functionId) === String(meta.functionId)){
+              if(String(metaJa.generationId)!==String(meta.generationId))
+                throw new Error('Contrato ambíguo: gerações diferentes para o mesmo card e função.');
+              D[di]=x;
               repetida = true; break;
             }
           }
           if (!repetida) D.push(x);
         });
-        return true;
-      });
-    var carga=Promise.all([cargaLinhas,cargaBonus]).then(function(){
-      try{ if (typeof _pos_D === 'function') _pos_D(); }catch(e){}
-      window._T6_CARGA_CARD[base] = 'pronto';
-      delete window._T6_CARGA_CARD_PROMESSA[base];
-      return true;
-    },function(e){
+        try{ if (typeof _pos_D === 'function') _pos_D(); }catch(e){}
+        window._T6_CARGA_CARD[base] = 'pronto';
+        delete window._T6_CARGA_CARD_PROMESSA[base];
+        return {carta:carta,builds:rows};
+      },function(e){
         window._T6_CARGA_CARD[base] = 'erro';
         delete window._T6_CARGA_CARD_PROMESSA[base];
         throw e;
@@ -4451,46 +4218,19 @@
     });
   };
 
-  window.t6Melhores = function(lista, quantos, nomeBox){
-    var meta=(window._t6BoxMeta||{})[nomeBox], retratos=window._t6BoxRetratos||{};
-    if(meta && meta.status==='anterior'){
-      var vistos={};
-      (lista||[]).forEach(function(c){
-        var cid=String(c.id).split('@')[0], s=retratos[String(meta.id)+'|'+cid];
-        if(!s)return;
-        var atual=vistos[cid];
-        if(!atual || String(c.tipo)===String(s.funcao)){
-          var copia=Object.assign({},c);
-          copia._t6Congelado=s;
-          copia._t6PtsExibida=Number(s.pontuacao);
-          vistos[cid]=copia;
-        }
-      });
-      return Object.keys(vistos).map(function(k){return vistos[k];}).sort(function(a,b){
-        return Number(b._t6Congelado.recomendacao)-Number(a._t6Congelado.recomendacao)
-          || Number(b._t6Congelado.pontuacao)-Number(a._t6Congelado.pontuacao);
-      }).slice(0,quantos||3);
-    }
-    var por = {};
-    lista.forEach(function(c){
-      var k = c.nome, v = nota(c), r = pct(c);
-      /* Cada função tem uma âncora diferente. Portanto, a maior nota absoluta
-         não é necessariamente o melhor desempenho relativo. A recomendação
-         vem do maior percentual entre as funções, enquanto o número grande
-         mostra a maior nota real que existe na ficha daquele card. */
-      if(!por[k])por[k]=[c,v,r,v];
-      else{
-        if(v>por[k][3])por[k][3]=v;
-        if(r>por[k][2] || (r===por[k][2] && v>por[k][1])){por[k][0]=c;por[k][1]=v;por[k][2]=r;}
+  window.t6OrdenaCardsDaBox = function(lista){
+    var cards=(lista||[]).slice();
+    cards.sort(function(a,b){
+      var ar=numeroCadastroBox(a,'rankBoxOverall','rank_box_overall');
+      var br=numeroCadastroBox(b,'rankBoxOverall','rank_box_overall');
+      if(ar!==null||br!==null){
+        if(ar===null)return 1;
+        if(br===null)return -1;
+        if(ar!==br)return ar-br;
       }
+      return comparaTextoBox(idCardBox(a),idCardBox(b));
     });
-    return Object.keys(por).map(function(k){ return por[k]; })
-      .sort(function(a, b){
-        return b[2] - a[2] || b[1] - a[1];
-      })
-      .slice(0, quantos || 3).map(function(x){
-        var copia=Object.assign({},x[0]);copia._t6PtsExibida=x[3];return copia;
-      });
+    return cards;
   };
 })();
 

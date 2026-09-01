@@ -7,8 +7,8 @@ O QUE MUDOU NESTA VERSAO
      playstyles e estilos de IA saem exclusivamente de contratos v1 sobre
      clube_novo. Nao existe fallback para carta_do_motor nem para JSON antigo.
   2. GRAVA SOMENTE NO MODELO NOVO. Cada resultado apto passa pelo writer
-     transacional public.gravar_build_bonificador_v3. Nao existe chamada
-     produtiva para public.gravar_bonus nem gravacao em clube.build.
+     transacional public.gravar_build_bonificador_v4. Nao existe chamada
+     produtiva ou gravacao em estruturas legadas.
   3. O BONUS DE ESTILO E POR FUNCAO, NAO POR POSICAO.  <-- a correcao de fundo
      Antes: o estilo ligava na POSICAO, entao Defensor criativo montado como
      Zagueiro de combate ganhava o mesmo 1,0 que um destruidor legitimo.
@@ -21,8 +21,8 @@ O QUE MUDOU NESTA VERSAO
 AS PORTAS DO BANCO
     public.bonificador_regua_v2() a receita allowlisted e seus gates
     public.bonificador_carta_v2() somente as entradas usadas pelo Bonificador
-    public.bonificador_contexto_fila_v3() linhas e selos vigentes
-    public.gravar_build_bonificador_v3(jsonb) a volta transacional
+    public.bonificador_contexto_fila_v4() linhas e selos vigentes
+    public.gravar_build_bonificador_v4(jsonb) a volta transacional
 
 A CHAVE sai do config.txt na hora de rodar. Nunca e gravada nem impressa aqui.
 """
@@ -52,6 +52,10 @@ if _MEU_LUGAR in _sys.path:
 _sys.path.insert(0, _MEU_LUGAR)
 
 import os, sys, json, time, urllib.request, urllib.error, decimal, signal, threading
+try:
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+except Exception:
+    pass
 
 
 # ========================================================= PIPELINE VIVO
@@ -80,6 +84,10 @@ def _executar_pipeline_vivo():
     max_rodadas = _inteiro_ambiente('CLUBEF_BONIFICADOR_MAX_RODADAS', 0, 0)
     rodada = 0
     parar = threading.Event()
+    arquivo_parada = _os.environ.get('CLUBEF_BONIFICADOR_STOP_FILE', '')
+
+    def parada_solicitada():
+        return parar.is_set() or bool(arquivo_parada and _os.path.exists(arquivo_parada))
 
     def solicitar_parada(_sinal, _quadro):
         if not parar.is_set():
@@ -95,7 +103,7 @@ def _executar_pipeline_vivo():
     print('  PIPELINE VIVO: consulta linhas confirmadas pelo Otimizador continuamente.')
     print('  Quando não houver linha apta, espera %ds. Ctrl+C para parar normalmente.' % espera)
     try:
-        while not parar.is_set():
+        while not parada_solicitada():
             rodada += 1
             _os.environ[_MARCADOR_RODADA] = str(rodada)
             resultado = None
@@ -112,14 +120,17 @@ def _executar_pipeline_vivo():
                 print('  PARADA DE TESTE: limite de %d rodada(s) atingido.' % max_rodadas)
                 return
 
-            if parar.is_set():
+            if parada_solicitada():
                 break
 
             confirmou = int((resultado or {}).get('enviados') or 0)
             if confirmou == 0:
                 print('  AGUARDANDO NOVAS LINHAS: nenhuma linha apta confirmada nesta rodada; '
                       'nova consulta em %ds. Ctrl+C para parar.' % espera)
-                parar.wait(espera)
+                for _ in range(espera * 10):
+                    if parada_solicitada():
+                        break
+                    time.sleep(0.1)
             else:
                 print('  CONTINUANDO: %d resultado(s) confirmado(s); consultando novas linhas.' % confirmou)
     except KeyboardInterrupt:
@@ -136,14 +147,14 @@ if __name__ == '__main__' and not _os.environ.get(_MARCADOR_RODADA):
     raise SystemExit(0)
 
 MOTOR_BONUS = 'v9-3108-clube-novo-writer-v1'
-WRITER_BONUS = 'gravar_build_bonificador_v3'
+WRITER_BONUS = 'gravar_build_bonificador_v4'
 LOTE = 200
 NAOSEI = 'NAO-SEI.txt'
 
 
 def pausa(msg='Enter para fechar...'):
     try:
-        if sys.stdin and sys.stdin.isatty():
+        if _os.environ.get('CLUBEF_BONIFICADOR_INTERATIVO') == '1' and sys.stdin and sys.stdin.isatty():
             input(msg)
     except Exception:
         pass
@@ -151,16 +162,19 @@ def pausa(msg='Enter para fechar...'):
 
 # ===================================================== A LIGACAO COM O BANCO
 cfg = {}
-if os.path.exists('config.txt'):
-    for linha in open('config.txt', encoding='utf-8'):
+CONFIG_BONIFICADOR = _os.environ.get('CLUBEF_BONIFICADOR_CONFIG', 'config.txt')
+if os.path.exists(CONFIG_BONIFICADOR):
+    for linha in open(CONFIG_BONIFICADOR, encoding='utf-8'):
         linha = linha.strip()
         if linha and not linha.startswith('#') and '=' in linha:
             k, v = linha.split('=', 1)
             cfg[k.strip()] = v.strip()
 URL = cfg.get('SUPABASE_URL', '').rstrip('/')
 KEY = cfg.get('SUPABASE_KEY', '')
+DB_URL = cfg.get('BONIFICADOR_DATABASE_URL', '')
+USAR_BANCO_DIRETO = bool(DB_URL and _os.environ.get('CLUBEF_BONIFICADOR_USAR_BANCO_DIRETO') == '1')
 
-if not URL or not KEY or 'COLE_AQUI' in KEY:
+if not DB_URL and (not URL or not KEY or 'COLE_AQUI' in KEY):
     print('')
     print('  PAREI: sem config.txt com a chave do Supabase.')
     print('  Esta versao do motor le e grava NO BANCO — sem a chave nao ha o que fazer.')
@@ -168,9 +182,39 @@ if not URL or not KEY or 'COLE_AQUI' in KEY:
 
 CAB = {'apikey': KEY, 'Authorization': 'Bearer ' + KEY,
        'Content-Type': 'application/json'}
+_CONEXAO_BONIFICADOR = None
+
+
+def _rpc_banco(nome, corpo):
+    """Acesso local restrito aos contratos; não abre tabela nem schema ao motor."""
+    global _CONEXAO_BONIFICADOR
+    import psycopg
+    if _CONEXAO_BONIFICADOR is None or _CONEXAO_BONIFICADOR.closed:
+        _CONEXAO_BONIFICADOR = psycopg.connect(DB_URL, connect_timeout=15)
+    with _CONEXAO_BONIFICADOR.cursor() as cur:
+        if nome == 'bonificador_regua_v2':
+            cur.execute('select public.bonificador_regua_v2()')
+            return cur.fetchone()[0]
+        if nome == 'bonificador_carta_v2':
+            cur.execute('select public.bonificador_carta_v2(%s)', ((corpo or {}).get('p_card_id'),))
+            return cur.fetchone()[0]
+        if nome == 'bonificador_contexto_fila_v4':
+            cur.execute('select * from public.bonificador_contexto_fila_v4(%s,%s)', (
+                (corpo or {}).get('p_limit', 1000), (corpo or {}).get('p_offset', 0)))
+            colunas = [d.name for d in cur.description]
+            return [dict(zip(colunas, linha)) for linha in cur.fetchall()]
+        if nome == WRITER_BONUS:
+            cur.execute('select public.gravar_build_bonificador_v4(%s::jsonb)',
+                        (json.dumps((corpo or {}).get('p_resultado')),))
+            resultado = cur.fetchone()[0]
+            _CONEXAO_BONIFICADOR.commit()
+            return resultado
+    raise RuntimeError('contrato local não permitido: %s' % nome)
 
 
 def rpc(nome, corpo=None, timeout=180):
+    if USAR_BANCO_DIRETO:
+        return _rpc_banco(nome, corpo)
     req = urllib.request.Request(
         '%s/rest/v1/rpc/%s' % (URL, nome),
         data=json.dumps(corpo or {}).encode('utf-8'),
@@ -489,12 +533,12 @@ print('[2/4] baixando as linhas pendentes e os selos vigentes')
 pares, passo, de = [], 1000, 0
 while True:
     try:
-        lote = rpc('bonificador_contexto_fila_v3',
+        lote = rpc('bonificador_contexto_fila_v4',
                    {'p_limit': passo, 'p_offset': de})
     except urllib.error.HTTPError as e:
         detalhe = e.read().decode('utf-8')[:300]
         print('')
-        print('  PAREI: porta publica da fila V3 indisponivel: %s' % detalhe)
+        print('  PAREI: contrato canônico da fila V4 indisponível: %s' % detalhe)
         print('  Nao existe fallback para qualquer tabela ou contrato legado.')
         pausa(); sys.exit(1)
     if not lote:
@@ -528,6 +572,13 @@ while True:
         break
 print('   pares card x funcao ................ %d      ' % len(pares))
 print('FILA_TOTAL: %d' % len(pares))
+
+# A fila só identifica linhas marcadas. A régua já foi lida uma vez acima e
+# fornece os selos usados pelo writer; não se reavalia a régua para cada linha.
+for par_da_fila in pares:
+    par_da_fila['contrato_versao'] = str(rb.get('contrato') or par_da_fila['contrato_versao'])
+    par_da_fila['contrato_fingerprint'] = str(
+        rb.get('contrato_fingerprint') or par_da_fila['contrato_fingerprint'])
 
 if not pares:
     print('')
@@ -573,11 +624,12 @@ for contexto in pares:
     for selo in ('carta_versao', 'carta_fingerprint'):
         if not isinstance(c.get(selo), str) or not c.get(selo).strip():
             falhas_contrato.append('contrato sem %s' % selo)
-    if c.get('carta_versao') != contexto.get('carta_versao') or c.get('carta_fingerprint') != contexto.get('carta_fingerprint'):
-        falhas_contrato.append('selos da carta divergiram do contexto de escrita')
-    contrato_carta = c.get('contrato_versao') or c.get('contrato')
-    if contrato_carta != contexto.get('contrato_versao'):
-        falhas_contrato.append('versao do contrato divergiu do contexto de escrita')
+    if c.get('carta_versao') != contexto.get('carta_versao'):
+        falhas_contrato.append('versao da carta divergiu da linha canônica')
+    else:
+        # A carta é a fonte física. O fingerprint da linha identifica a build;
+        # o fingerprint do contrato de carta sela o insumo do Bonificador.
+        contexto['carta_fingerprint'] = str(c.get('carta_fingerprint') or '')
     falhas_contrato = list(dict.fromkeys(falhas_contrato))
     contrato_ok = bool(c.get('pode_rodar')) and not falhas_contrato
 
@@ -647,6 +699,12 @@ for contexto in pares:
         'contrato_versao': contexto.get('contrato_versao'),
         'contrato_fingerprint': contexto.get('contrato_fingerprint'),
         'formula_fingerprint': contexto.get('formula_fingerprint')})
+    print('FILA_RESULTADO: ' + json.dumps({
+        'linha_id': linha_id, 'card_id': cid, 'funcao_id': fun_id,
+        'estado': 'bloqueada' if faltou else 'apta',
+        'b_corpo': b_corpo, 'b_pe_ruim': b_pe, 'b_estilo': b_est,
+        'b_ia': b_ia, 'b_total': b_total, 'faltou': faltou,
+    }, ensure_ascii=False, separators=(',', ':')))
     print('FILA_CALCULADA: linha=%d estado=%s' % (
         linha_id, 'bloqueada' if faltou else 'apta'))
 

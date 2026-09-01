@@ -54,3 +54,10 @@ GRAVA-DIRETO.txt
 # lixo do Python
 __pycache__/
 *.pyc
+
+# Fotografia local da fila do Otimizador: é recriada pelo contrato selado em
+# cada computador, não contém credencial e não deve ocupar o repositório.
+# O estado mutável continua aqui (reservas, resultados e reenvios). A
+# fotografia portátil oficial, já dividida em blocos de 1.000, fica em
+# 2-MOTORES/OTIMIZADOR/PACOTE-FILA-INTEGRAL e é propositalmente copiável.
+2-MOTORES/OTIMIZADOR/runtime/fila-local/

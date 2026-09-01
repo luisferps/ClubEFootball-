@@ -7,6 +7,7 @@ import {
   auditImageContent,
   assertCardId,
   cloudinarySettingsFromEnv,
+  DISCOVERY_STATEMENT_TIMEOUT_MS,
   deliveryUrl,
   idsFromCsv,
   mapWithConcurrency,
@@ -34,6 +35,7 @@ import {
 
 test("interface local simples liga tres campos password ao fluxo direto sem armazenamento no navegador", async () => {
   assert.equal(LOOPBACK_HOST, "127.0.0.1");
+  assert.equal(DISCOVERY_STATEMENT_TIMEOUT_MS, 300000);
   const credentials = validateCredentialPayload({
     cloudinaryApiKey: "key-ficticia",
     cloudinaryApiSecret: "secret-ficticia",

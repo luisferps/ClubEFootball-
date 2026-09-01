@@ -901,3 +901,48 @@ cada envelope, abre uma transação e registra a auditoria em
 domínio ficam deliberadamente separados. Dados legados e estruturas de mapa
 nunca são alvo. Enquanto `PRODUCTIVE_WRITES_LOCKED=true`, inclusive os
 destinos canônicos continuam fechados.
+
+## Views públicas por tela do front-end — 01/09/2026
+
+O navegador não monta mais um catálogo genérico nem junta tabelas do banco.
+Cada superfície cadastral lê um único contrato `SELECT-only` em `public`,
+derivado do cadastro atual de `clube_novo`:
+
+| View | Consumidor | Grão e responsabilidade |
+|---|---|---|
+| `public.frontend_boxes_v1` | Boxes cadastradas | Uma linha por `card_id` com Box válida, posição, tipo, overall, total da Box e `rank_box_overall`. |
+| `public.frontend_home_v1` | Home | No máximo três cards da Box destaque, já ordenados e contados pelo banco. |
+| `public.frontend_busca_v1` | Busca global | Uma linha cadastral por card. `busca_documento` é o `tsvector` prefixável indexado; os playstyles do resultado são agregados por `LATERAL` somente depois do recorte. |
+| `public.frontend_ficha_v1` | Ficha cadastral | Uma linha por `card_id`, com identidade, dados físicos e grupos JSON de atributos, posições, habilidades, IA, pés, playstyles e ímpetos. |
+| `clube_novo.build_pontuacao_final_v1` | Projeção interna de Build final | Liga uma linha canônica à Build candidata e ao resultado do Bonificador, com IDs, selos, estado, motivo, elegibilidade, score final e proveniência. Não é exposta ao navegador. |
+| `public.frontend_build_publicada_v1` | RPC de Build para Ranking/Elenco/Ficha | Leitura limitada e somente de Builds já publicadas e seladas. Retorna a pontuação final pronta; o front-end não soma parcelas nem acessa `clube_novo`. |
+
+`frontend_busca_v1` pesquisa somente campos mantidos na própria
+`carta_jogo` (`card_id`, nome, Box, posição, estilo e nacionalidade). Tipo,
+posição principal e playstyles continuam no resultado, mas não entram no
+documento indexado. Isso mantém a view sempre atual sem tabela-espelho nem
+trigger. O índice é
+`clube_novo.carta_jogo_frontend_busca_v1_fts_idx`.
+
+`anon` e `authenticated` têm `SELECT` somente nessas quatro views e não têm
+`USAGE` nem privilégios de tabela no schema bruto `clube_novo`. As views
+pertencem a `clube_frontend_view_owner`, role sem login, herança, escrita ou
+`BYPASSRLS`, com leitura limitada às tabelas cadastrais declaradas. Boxes,
+Home e Ficha usam `security_barrier=true`. Busca usa a exceção explícita
+`security_barrier=false`: ela não esconde linhas e precisa permitir que o
+filtro FTS desça ao índice antes da agregação lateral.
+
+O contrato canônico de pontuação final é `clube_novo.build_pontuacao_final_v1`.
+Ele só declara elegibilidade depois de os dois motores concluírem a mesma versão da
+carta com selos válidos, e a única porta para o navegador é a RPC
+`public.frontend_build_publicada_v1`. Ela devolve exclusivamente linhas com
+publicação explícita; candidatos e lotes de teste continuam fora. Ranking, Elenco e
+Ficha devem consumir essa RPC e nunca somar localmente saídas do Otimizador e do
+Bonificador. Enquanto a interface não trocar o contrato antigo por essa RPC, ela
+continua corretamente bloqueada. As contagens observadas em validação são
+diagnóstico, nunca cardinalidade contratual.
+
+Migração e retorno estrutural:
+`4-DOCUMENTOS/INTEGRACAO-DE-SISTEMAS/MIGRACAO-VIEWS-FRONTEND-POR-TELA-V1.sql`
+e
+`4-DOCUMENTOS/INTEGRACAO-DE-SISTEMAS/ROLLBACK-VIEWS-FRONTEND-POR-TELA-V1.sql`.

@@ -1239,7 +1239,8 @@
        Tem de ser setProperty com a prioridade. */
     if(!lig){ el.style.removeProperty("display"); return; }
     var c=I[el.getAttribute("data-k")]; if(!c) return;
-    var n=nota(c), t=topoDoTipo(c.tipo), p=t>0?100*n/t:0, ok=true;
+    var n=(c.__cn&&typeof c.pontuacao_final==='number')?c.pontuacao_final:nota(c),
+        p=(c.__cn&&typeof c.percentual_topo==='number')?c.percentual_topo:0, ok=true;
     if(pmin!==null&&n<pmin) ok=false;
     if(pmax!==null&&n>pmax) ok=false;
     if(cmin!==null&&p<cmin) ok=false;
@@ -2122,8 +2123,7 @@ window.elMudaPosicao=function(indice,pos){
    +'<div class=eltop>'+tag+pt+'</div>'
    +'<div class=elcorpo>'
      +'<div class=elident>'
-      +'<div class=elfoto><img'+cargaFoto+' src="https://efimg.com/efootballhub22'
-      +'/images/player_cards/'+idb+'_l.png" '
+       +'<div class=elfoto><img'+cargaFoto+' src="'+esc(window.ClubeNovoReadModel?window.ClubeNovoReadModel.foto(c):'')+'" '
       +'onerror="elFalhaFotoCard(this)"></div>'
      +'<div class=elnm title="'+esc(c.nome)+'">'+esc(c.nome)+'</div>'
      +'<div class=eles title="'+esc(est)+'">'+esc(est)+'</div>'
@@ -4463,8 +4463,8 @@ window.bldApaga=function(idb, referencia){
    var idb=String(c.id).split("@")[0];
    var est=(c.modelo&&c.modelo!==c.tipo)?c.modelo:"";
    li.innerHTML=
-    '<img src="https://efimg.com/efootballhub22/images/player_cards/'
-    +idb+'_l.png" onerror="this.style.visibility=&quot;hidden&quot;">'
+     '<img src="'+esc(window.ClubeNovoReadModel?window.ClubeNovoReadModel.foto(c):'')
+     +'" onerror="this.style.visibility=&quot;hidden&quot;">'
     +'<div style="flex:1;min-width:0">'
      +'<b>'+esc(c.nome)+'</b>'
      +'<div class=mini><b style="opacity:.75;letter-spacing:.5px">'
@@ -4512,8 +4512,8 @@ window.bldApaga=function(idb, referencia){
    var it=itens[i], est=(it.c.modelo&&it.c.modelo!==it.c.tipo)?it.c.modelo:"";
    h+='<div class=mtli style="'+(it.pode?"":"opacity:.5")+'" '
     +'onclick="mtPoe(\''+it.k+'\')">'
-    +'<img src="https://efimg.com/efootballhub22/images/player_cards/'
-    +it.idb+'_l.png" onerror="this.style.visibility=&quot;hidden&quot;">'
+     +'<img src="'+esc(window.ClubeNovoReadModel?window.ClubeNovoReadModel.foto(it.c):'')
+     +'" onerror="this.style.visibility=&quot;hidden&quot;">'
     +'<div style="flex:1;min-width:0"><b>'+esc(it.c.nome)+'</b>'
     +'<div class=mini><b style="opacity:.75;letter-spacing:.5px">'
     +esc(it.c.np||it.c.pos||"")+'</b> \u00b7 '+esc(it.c.tipo)+'</div>'
@@ -4715,7 +4715,7 @@ document.addEventListener("input", agendaLista, true);
  function linhaCard(x,i,bloqueado,vaga){var detalhe=vaga?(x.functionId||x.modelo||''):
   [sigla(x.posNativa),x.modelo].filter(Boolean).join(' · ');
   return '<button type="button" class="eladd-op" data-el-add="candidato" data-i="'+i+'"'+(bloqueado?' disabled title="já está no Elenco"':'')+' style="display:flex;align-items:center;gap:11px">'
-  +'<img alt="" src="https://efimg.com/efootballhub22/images/player_cards/'+esc(x.cardId)+'_l.png" style="width:46px;height:61px;object-fit:cover;border-radius:7px" onerror="this.style.visibility=&quot;hidden&quot;">'
+  +'<img alt="" src="'+esc(window.ClubeNovoReadModel?window.ClubeNovoReadModel.foto(x.cardId):'')+'" style="width:46px;height:61px;object-fit:cover;border-radius:7px" onerror="this.style.visibility=&quot;hidden&quot;">'
   +'<span style="display:flex;flex-direction:column;gap:3px;min-width:0;flex:1"><b>'+esc(x.nome)+'</b><small style="color:var(--d17)">'+esc(detalhe)+'</small></span>'
   +(vaga?'<b style="color:var(--d25);font-size:14px">'+(+x.score||0).toFixed(2)+'</b>':'')+'</button>';}
  function corpoBusca(){var vaga=estado.contexto.origin==='slot',m=modelo(),sl=vaga&&m&&m.slots[+estado.contexto.slotIndex],pos=[];

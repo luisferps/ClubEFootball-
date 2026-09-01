@@ -23,6 +23,7 @@ const SUPABASE_URL_COLUMN = "foto_url_cloudinary";
 const SOURCE_PREFIX = "https://efimg.com/efootballhub22/images/player_cards/";
 const MAX_BATCH = 100;
 const MAX_CONCURRENCY = 8;
+export const DISCOVERY_STATEMENT_TIMEOUT_MS = 5 * 60 * 1000;
 
 export function assertCardId(value) {
   const id = String(value ?? "").trim();
@@ -680,7 +681,11 @@ async function createPostgresAdapter(settings) {
     async discoverMissing() {
       const client = await connect();
       try {
-        await client.query("SET statement_timeout = '30s'");
+        // A descoberta conta e ordena dezenas de milhares de cartas. No
+        // Session pooler ela pode ultrapassar 30 segundos sem estar travada.
+        // Este limite maior vale somente para a sessão de leitura; o APPLY
+        // mantém abaixo seu limite curto e independente de 30 segundos.
+        await client.query("SELECT set_config('statement_timeout', $1, false)", [`${DISCOVERY_STATEMENT_TIMEOUT_MS}ms`]);
         const columnResult = await client.query(
           `SELECT data_type, is_nullable FROM information_schema.columns WHERE table_schema = $1 AND table_name = $2 AND column_name = $3`,
           [SUPABASE_SCHEMA, SUPABASE_TABLE, SUPABASE_URL_COLUMN]
