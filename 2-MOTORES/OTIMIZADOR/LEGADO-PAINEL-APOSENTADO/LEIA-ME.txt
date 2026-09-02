@@ -1,0 +1,19 @@
+PAINEL ANTIGO APOSENTADO
+========================
+
+Esta pasta guarda, sem apagar, o executavel, o runtime, o lancador e o teste
+do painel antigo. Eles foram separados para nao serem abertos por engano.
+
+NAO USE O LANCADOR DESTA PASTA PARA OPERAR A FILA.
+
+A OPERACAO ATUAL E:
+
+  ..\OPERACAO-LOCAL-JSON\PROCESSAR-FILA.bat
+  ..\OPERACAO-LOCAL-JSON\ENVIAR-RESULTADOS.bat
+
+O primeiro calcula uma linha por vez e grava JSON local. O segundo envia uma
+linha por vez e so marca como enviada depois da confirmacao do banco.
+
+As pastas interface e windows-app continuam na raiz do OTIMIZADOR porque ha
+trabalho separado no front-end. Elas foram preservadas e nao fazem parte da
+operacao atual em batch.

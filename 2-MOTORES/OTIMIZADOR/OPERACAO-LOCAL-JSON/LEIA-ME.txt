@@ -1,0 +1,62 @@
+OPERACAO LOCAL EM JSON
+=======================
+
+Esta e a frente operacional nova do Otimizador. Ela nao usa a tela antiga,
+nao cria worker do painel e nao deixa reserva aberta no banco.
+
+O QUE APARECE NA TELA PRETA
+----------------------------
+
+O batch mostra os mesmos dados de acompanhamento que faziam falta no painel:
+quantidade de cartas, linhas do pacote, concluidas, pendentes, JSONs prontos,
+enviadas, problemas e a linha que esta sendo tratada. A linha atual aparece
+com nome da carta, ID da carta junto do nome, funcao, posicao e tempo gasto.
+Nenhum ID fica solto na tela.
+
+1. PROCESSAR-FILA.bat
+   - trabalha sem internet;
+   - le a fotografia pronta em PACOTE-FILA-INTEGRAL;
+   - calcula uma linha por vez;
+   - guarda resultados em RESULTADOS-JSON\<lote>\PENDENTES, em arquivos de
+     ate 100 resultados. Um jornal duravel protege cada linha ate o arquivo
+     final ficar pronto.
+
+2. ENVIAR-RESULTADOS.bat
+   - le apenas os JSONs ja prontos;
+   - manda uma linha por vez;
+   - so marca a linha como enviada depois da confirmacao do banco;
+   - grava o recibo com calculado_em_utc e enviado_em_utc. A segunda hora e a
+     hora oficial devolvida pelo banco.
+
+Pode abrir os dois batches ao mesmo tempo: o segundo espera apenas pelos JSONs
+completos. Para interromper qualquer um, use Ctrl+C na janela dele. Nada que
+ja esteja gravado ou confirmado se perde.
+
+CONFIGURACAO NO OUTRO COMPUTADOR
+--------------------------------
+
+O config.txt pode ficar nesta pasta ou em 2-MOTORES. Ele fica somente no
+computador local e nao deve ser enviado ao GitHub. O processamento nao usa a
+chave; somente o envio precisa dela.
+
+Existe um config.exemplo.txt nesta pasta. Copie-o como config.txt e preencha
+somente no computador que vai enviar os resultados.
+
+    SUPABASE_URL=https://SEU-PROJETO.supabase.co
+    SUPABASE_KEY=sb_secret_SUA_CHAVE_LOCAL
+
+PARA LEVAR PARA OUTRO COMPUTADOR
+--------------------------------
+
+Copie a pasta OPERACAO-LOCAL-JSON completa, incluindo bin e
+PACOTE-FILA-INTEGRAL. Ela abre sozinha no destino: nao precisa instalar Python,
+nao baixa a fila novamente e nao precisa levar o painel antigo. No destino,
+ponha o config.txt local com a chave daquele computador antes de executar
+ENVIAR-RESULTADOS.bat.
+
+NAO APAGUE
+----------
+
+RESULTADOS-JSON, especialmente PENDENTES, RECIBOS e ENVIADOS, sao o historico
+recuperavel da rodada. FALHAS-CALCULO e FALHAS-ENVIO guardam o motivo exato de
+uma linha que precisou de revisao.

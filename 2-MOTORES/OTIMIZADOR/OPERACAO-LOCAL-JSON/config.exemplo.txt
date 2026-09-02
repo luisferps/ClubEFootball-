@@ -1,0 +1,4 @@
+# Copie este arquivo para config.txt e preencha somente neste computador.
+# Nao envie config.txt para o GitHub nem para outra pessoa.
+SUPABASE_URL=https://SEU-PROJETO.supabase.co
+SUPABASE_KEY=sb_secret_SUA_CHAVE_LOCAL
