@@ -18,9 +18,6 @@ _LIXO/
 _ERRO-DO-GITHUB.txt
 _ULTIMO-BAIXAR-DO-GITHUB.txt
 *.zip
-# O runtime portátil do Otimizador precisa deste arquivo para iniciar o
-# Python interno em outro computador. Ele é pequeno e deve viajar pelo Git.
-!2-MOTORES/OTIMIZADOR/runtime/_internal/base_library.zip
 graphify-out/
 checkpoints/
 7-VARREDURA-DO-JOGO/logs/

@@ -1979,3 +1979,18 @@ ficou rodando.
 
 Passaram 11 testes do pacote local e 32 testes do painel. Não foram alterados
 `motor.py`, `equacao.py`, `regua.py`, pesos, moldes ou fórmula.
+
+### Correção V61 — runtime completo no GitHub
+
+O serviço portátil usa `runtime/_internal/base_library.zip` para iniciar o
+Python interno. Esse arquivo é obrigatório mesmo quando o outro Windows já tem
+Python instalado. A regra geral de Git que ignorava arquivos `.zip` foi
+corrigida para incluir especificamente essa biblioteca do Otimizador. Assim,
+uma cópia baixada do GitHub recebe o runtime completo, e não fica parada em
+“Conectando o painel local”.
+
+O ícone agora também verifica esse arquivo antes de iniciar o serviço. Se uma
+cópia estiver incompleta, ele informa exatamente o arquivo ausente e não tenta
+abrir uma fila. O `config.txt` precisa conter somente URL literal HTTPS e chave
+privada literal, uma por linha — não cole links formatados como Markdown. A
+chave permanece local e não entra no GitHub.

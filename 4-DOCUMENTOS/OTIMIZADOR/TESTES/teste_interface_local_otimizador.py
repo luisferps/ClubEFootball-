@@ -886,7 +886,7 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         atalho = (raiz_motor / "RODAR-OTIMIZADOR.bat").read_text(encoding="utf-8")
         self.assertIn('ExpectedApp = "\\\"aplicativo\\\": \\"otimizador_clubefootball\\\""', launcher)
         self.assertIn('MinimumInterfaceVersion = "20260901-v52"', launcher)
-        self.assertIn('AssemblyFileVersion("1.8.1.0")', launcher)
+        self.assertIn('AssemblyFileVersion("1.8.2.0")', launcher)
         self.assertIn('Local\\ClubEfootballOtimizadorLauncherV54', launcher)
         self.assertIn('SupportedInterfaceVersion(ReadJsonString(status, "versao_interface"))', launcher)
         self.assertIn("OtimizadorServico.exe", launcher)
@@ -911,6 +911,8 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         self.assertIn("StartupNotice", launcher)
         self.assertIn("Abrindo o Otimizador", launcher)
         self.assertIn('"runtime", "_internal"', launcher)
+        self.assertIn('"base_library.zip"', launcher)
+        self.assertIn("Uri.TryCreate(connectionUrl", launcher)
         self.assertIn("Fechar a janela não interrompe a fila", launcher)
         self.assertIn("precisaCompilar", compilador)
         self.assertIn("System.Drawing.dll", compilador)
@@ -926,6 +928,8 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         self.assertIn('"interface" / "servidor.py"', bootstrap)
         self.assertIn("Otimizador ClubEfootball.exe", atalho)
         self.assertNotIn("COMPILAR-APLICATIVO.ps1", atalho)
+        gitignore = (RAIZ / ".gitignore").read_text(encoding="utf-8")
+        self.assertIn("!2-MOTORES/OTIMIZADOR/runtime/_internal/base_library.zip", gitignore)
 
     def test_ponte_privada_v17_e_fechada_por_allowlist(self):
         pasta = RAIZ / "4-DOCUMENTOS" / "OTIMIZADOR" / "FILA-PRODUCAO-V3"

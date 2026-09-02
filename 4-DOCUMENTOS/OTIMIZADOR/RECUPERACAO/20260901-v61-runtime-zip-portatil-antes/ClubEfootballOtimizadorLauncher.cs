@@ -15,8 +15,8 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Painel local de execução e acompanhamento do Otimizador")]
 [assembly: AssemblyProduct("Otimizador ClubEfootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("1.8.2.0")]
-[assembly: AssemblyFileVersion("1.8.2.0")]
+[assembly: AssemblyVersion("1.8.1.0")]
+[assembly: AssemblyFileVersion("1.8.1.0")]
 
 namespace ClubEfootballOtimizador
 {
@@ -106,8 +106,8 @@ namespace ClubEfootballOtimizador
                     {
                         if (health != null || PortaInternaOcupada())
                             throw new InvalidOperationException("A porta interna 8769 está em uso por outro aplicativo ou por um Otimizador com worker ativo. Nenhuma fila foi interrompida. Feche somente o outro aplicativo que usa essa porta; se o ícone do Otimizador estiver perto do relógio, dê duplo clique nele para reabrir o painel.");
-                        ValidatePackage(root);
                         EnsureConfiguration(root);
+                        ValidatePackage(root);
                         if (startup != null) startup.SetStatus("Iniciando o componente local do Otimizador…");
                         StartHiddenServer(root);
                         if (startup != null) startup.SetStatus("Conectando o painel local…");
@@ -324,16 +324,9 @@ namespace ClubEfootballOtimizador
             try
             {
                 string text = File.ReadAllText(config);
-                string connectionUrl = ConfigurationValue(config, "SUPABASE_URL").Trim();
-                string connectionKey = ConfigurationValue(config, "SUPABASE_KEY").Trim();
-                Uri parsed;
                 return text.IndexOf("SUPABASE_URL=", StringComparison.OrdinalIgnoreCase) >= 0 &&
                     text.IndexOf("SUPABASE_KEY=", StringComparison.OrdinalIgnoreCase) >= 0 &&
-                    text.IndexOf("COLE_AQUI", StringComparison.OrdinalIgnoreCase) < 0 &&
-                    !String.IsNullOrWhiteSpace(connectionKey) &&
-                    Uri.TryCreate(connectionUrl, UriKind.Absolute, out parsed) &&
-                    String.Equals(parsed.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase) &&
-                    !String.IsNullOrWhiteSpace(parsed.Host);
+                    text.IndexOf("COLE_AQUI", StringComparison.OrdinalIgnoreCase) < 0;
             }
             catch { return false; }
         }
@@ -417,7 +410,6 @@ namespace ClubEfootballOtimizador
         {
             string[] required = new string[] {
                 Path.Combine(root, "runtime", "OtimizadorServico.exe"),
-                Path.Combine(root, "runtime", "_internal", "base_library.zip"),
                 Path.Combine(root, "interface", "servidor.py"),
                 Path.Combine(root, "interface", "index.html"),
                 Path.Combine(root, "interface", "app.js"),
@@ -427,9 +419,9 @@ namespace ClubEfootballOtimizador
                 if (!File.Exists(file)) throw new InvalidOperationException("O pacote está incompleto. Copie a pasta OTIMIZADOR inteira, inclusive runtime e interface.");
             if (!Directory.Exists(Path.Combine(root, "runtime", "_internal")))
                 throw new InvalidOperationException("O runtime portátil está incompleto. Copie a pasta runtime inteira, inclusive a pasta _internal.");
-            FileInfo bibliotecaBase = new FileInfo(Path.Combine(root, "runtime", "_internal", "base_library.zip"));
-            if (bibliotecaBase.Length < 1024)
-                throw new InvalidOperationException("O runtime portátil está incompleto (base_library.zip). Atualize a pasta inteira pelo GitHub; nenhuma fila foi iniciada.");
+            string config = FindConfiguration(root);
+            if (!IsConfigurationValid(config))
+                throw new InvalidOperationException("A conexão local do Otimizador está incompleta. Nenhuma fila foi iniciada.");
         }
 
         private static void OpenBrowser(string root)
