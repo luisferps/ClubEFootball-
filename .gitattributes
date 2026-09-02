@@ -5,3 +5,14 @@
 *.bat text eol=crlf
 *.cmd text eol=crlf
 *.ps1 text eol=crlf
+
+# O pacote selado da fila e conferido por sha256 byte a byte
+# (fila_local_v1.validar_integridade). Se o git converter LF em CRLF no
+# checkout, cada fatia ganha um byte por linha, o sha muda e o motor recusa
+# o pacote com "integridade invalida". Estes arquivos NUNCA podem ser
+# convertidos: -text desliga qualquer traducao de fim de linha.
+2-MOTORES/OTIMIZADOR/OPERACAO-LOCAL-JSON/PACOTE-FILA-INTEGRAL/** -text
+*.jsonl -text
+
+# Os resultados e recibos locais tambem sao lidos byte a byte pelo envio.
+2-MOTORES/OTIMIZADOR/OPERACAO-LOCAL-JSON/RESULTADOS-JSON/** -text
