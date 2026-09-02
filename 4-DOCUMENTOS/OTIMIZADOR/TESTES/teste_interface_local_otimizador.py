@@ -29,6 +29,14 @@ MIGRACAO_CONTRATO_UNICO_V19 = (
     RAIZ / "4-DOCUMENTOS" / "OTIMIZADOR" / "FILA-PRODUCAO-V3"
     / "MIGRACAO-CONTRATO-UNICO-V19.sql"
 )
+MIGRACAO_LISTA_LEVE_V63 = (
+    RAIZ / "4-DOCUMENTOS" / "OTIMIZADOR" / "FILA-PRODUCAO-V3"
+    / "MIGRACAO-LISTA-LEVE-V63.sql"
+)
+ROLLBACK_LISTA_LEVE_V63 = (
+    RAIZ / "4-DOCUMENTOS" / "OTIMIZADOR" / "FILA-PRODUCAO-V3"
+    / "ROLLBACK-LISTA-LEVE-V63.sql"
+)
 MIGRACAO_RECUPERACAO_RETOMADA_V20 = (
     RAIZ / "4-DOCUMENTOS" / "OTIMIZADOR" / "FILA-PRODUCAO-V3"
     / "MIGRACAO-RECUPERACAO-RETOMADA-INTEGRAL-V20.sql"
@@ -886,8 +894,8 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         atalho = (raiz_motor / "RODAR-OTIMIZADOR.bat").read_text(encoding="utf-8")
         self.assertIn('ExpectedApp = "\\\"aplicativo\\\": \\"otimizador_clubefootball\\\""', launcher)
         self.assertIn('MinimumInterfaceVersion = "20260901-v52"', launcher)
-        self.assertIn('AssemblyFileVersion("1.8.3.0")', launcher)
-        self.assertIn('Local\\ClubEfootballOtimizadorLauncherV54', launcher)
+        self.assertIn('AssemblyFileVersion("1.8.4.0")', launcher)
+        self.assertIn('Local\\ClubEfootballOtimizadorLauncherV64', launcher)
         self.assertIn('SupportedInterfaceVersion(ReadJsonString(status, "versao_interface"))', launcher)
         self.assertIn("OtimizadorServico.exe", launcher)
         self.assertIn("CLUBEF_OTIMIZADOR_ROOT", launcher)
@@ -914,7 +922,8 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         self.assertIn('"base_library.zip"', launcher)
         self.assertIn("Uri.TryCreate(connectionUrl", launcher)
         self.assertIn("ConfiguracaoLocalExigeReinicio(root)", launcher)
-        self.assertIn("Aplicando a configuração local atualizada", launcher)
+        self.assertIn("Aplicando a atualização local do Otimizador", launcher)
+        self.assertIn('Path.Combine(root, "runtime", "OtimizadorServico.exe")', launcher)
         self.assertIn('Process.GetProcessesByName("OtimizadorServico")', launcher)
         self.assertIn("Fechar a janela não interrompe a fila", launcher)
         self.assertIn("precisaCompilar", compilador)
@@ -1029,6 +1038,30 @@ class InterfaceOtimizadorTest(unittest.TestCase):
         self.assertIn("Data API com chave de serviço é o caminho padrão", servidor)
         self.assertNotIn("clube.build", texto)
         self.assertNotIn("clube.fila", texto)
+
+    def test_lista_leve_v63_nao_reconta_fila_nem_altera_dominio(self):
+        migracao = MIGRACAO_LISTA_LEVE_V63.read_text(encoding="utf-8").lower()
+        rollback = ROLLBACK_LISTA_LEVE_V63.read_text(encoding="utf-8").lower()
+        for texto in (migracao, rollback):
+            self.assertEqual(texto.count("begin;"), 1)
+            self.assertEqual(texto.count("commit;"), 1)
+            self.assertIn("otimizador_producao_fila_operacional_v4", texto)
+            self.assertIn("security definer", texto)
+            self.assertIn("set search_path to ''", texto)
+            self.assertIn("revoke all", texto)
+            self.assertIn("grant execute", texto)
+            self.assertNotIn("clube.build", texto)
+            self.assertNotIn("clube.fila", texto)
+        self.assertIn("clube_novo.otimizador_lote_producao_status_v1", migracao)
+        self.assertIn("offset p_offset limit p_limite", migracao)
+        self.assertIn("set statement_timeout to '5s'", migracao)
+        self.assertNotIn("select count(*)", migracao)
+        self.assertNotIn("select e.*", migracao)
+        self.assertNotIn("insert into", migracao)
+        self.assertNotIn("update clube_novo", migracao)
+        self.assertIn("select count(*)", rollback)
+        self.assertIn("select e.*", rollback)
+        self.assertIn("reset statement_timeout", rollback)
 
     def test_painel_nao_esconde_falha_da_lista_ou_resultados_e_invalida_js_antigo(self):
         app = APP.read_text(encoding="utf-8")

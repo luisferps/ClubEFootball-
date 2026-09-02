@@ -225,6 +225,29 @@ class FilaLocalV1Test(unittest.TestCase):
         self.pacote.marcar_bloco_pronto("000001", 1)
         self.assertEqual(len(self.pacote.arquivos_pendentes(somente_blocos_prontos=True)), 1)
 
+    def test_enviador_confirma_cem_sem_esperar_o_fim_do_bloco_de_mil(self):
+        for numero in range(1, fila_local.TAMANHO_LOTE_ENVIO + 1):
+            reserva = {
+                "linha_id": 10_000 + numero,
+                "ordem_fila": numero,
+                "reserva_token": f"token-{numero}",
+            }
+            self.pacote.gravar_reserva(reserva)
+            self.pacote.gravar_resultado(
+                reserva,
+                {"b1": 104.0, "tecnico_id": 89},
+                bloco_id="000001",
+            )
+
+        enviador = fila_local.EnviadorLotesLocalV1(self.gateway, self.pacote)
+        self.assertEqual(enviador.enviar_disponiveis(forcar=False), fila_local.TAMANHO_LOTE_ENVIO)
+        self.assertEqual(len(self.gateway.lotes_recebidos), 1)
+        self.assertEqual(
+            len(self.gateway.lotes_recebidos[0]["p_resultados"]),
+            fila_local.TAMANHO_LOTE_ENVIO,
+        )
+        self.assertEqual(self.pacote.arquivos_pendentes(), [])
+
     def test_piloto_controlado_calcula_uma_linha_e_confirma_pausa_antes_da_proxima(self):
         gateway = GatewayPilotoControlado()
         worker = fila_local.WorkerFilaLocalV1(gateway, self.pacote, esperar=0.01, limite_linhas=1)

@@ -2002,3 +2002,43 @@ o Windows. Abra novamente o ícone `Otimizador ClubEfootball.exe`: se o serviço
 local estiver ocioso e a configuração tiver sido alterada, o ícone encerra
 somente esse serviço ocioso e o abre de novo com a configuração atual. Se houver
 um worker calculando, ele nunca é encerrado por essa verificação.
+
+### Correção V63 — lista da fila sem travar a tela
+
+A aba **Fila integral** continua usando a mesma visão privada de onde o
+Otimizador lê as linhas. A correção é apenas no modo de consultar: antes, a
+tela contava todas as linhas do lote a cada atualização e depois buscava a
+página. Com 184.827 linhas, essa contagem podia ultrapassar o limite de tempo
+do banco e a tela ficava em reconexão mesmo com a configuração correta.
+
+Agora o total vem do resumo que o banco já atualiza junto de cada mudança de
+estado, e a consulta lê somente as até 100 linhas e os campos mostrados na
+tela. A ordem da fila, a fórmula, o motor, os resultados gravados e a
+publicação não mudam. Se a consulta voltar a ficar lenta por uma regressão,
+ela falha de forma explícita após cinco segundos; não inicia nem duplica uma
+linha.
+
+### Correção V64 — cálculo local um por vez, confirmação de cem em cem
+
+A fotografia portátil continua separada em arquivos de até 1.000 linhas para
+que a pasta possa viajar inteira entre computadores. Isso não é o tamanho do
+envio: o motor calcula uma linha de cada vez e, assim que houver 100 resultados
+duráveis na pasta local, o enviador os confirma no banco sem esperar o fim das
+1.000 linhas.
+
+Antes desta correção, a confirmação esperava o bloco físico inteiro. Por isso a
+tela podia mostrar centenas de itens como “em andamento”, embora o motor
+estivesse calculando só uma linha por vez e as demais já estivessem prontas na
+pasta local. Agora esse número fica limitado ao trecho ainda não confirmado e
+o total de concluídas avança em lotes de 100.
+
+Ao clicar **Pausar**, o motor termina a linha atual, confirma também um trecho
+menor que 100 já salvo localmente e só então apresenta **Pausado**. Se o Windows
+ou a rede caírem, os resultados que já estavam gravados nessa pasta voltam a
+ser enviados na próxima abertura; no máximo a única linha que estava sendo
+calculada naquele instante precisa ser recuperada pela rotina segura.
+
+O ícone foi recompilado como `1.8.4.0`. Uma pasta nova do Otimizador pode ser
+copiada ao lado da pasta antiga: ao abrir o ícone novo, ele troca sozinho o
+serviço anterior apenas se a fila estiver pausada/ociosa. A configuração local
+continua fora da cópia e não é apagada.

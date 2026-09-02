@@ -654,11 +654,14 @@ class EnviadorLotesLocalV1:
         enviados = 0
         with self._trava:
             while True:
-                # O processo de cálculo entrega um bloco físico de até 1.000
-                # linhas na pasta. O enviador é outro processo/thread e só
-                # começa um bloco concluído; na pausa, ``forcar`` descarrega
-                # com segurança o trecho já calculado para não perder trabalho.
-                arquivos = self.pacote.arquivos_pendentes(somente_blocos_prontos=not forcar)
+                # O bloco físico de até mil linhas serve somente para a cópia
+                # portátil. Resultado já calculado é durável no disco e deve
+                # subir assim que completar cem itens: esperar o bloco inteiro
+                # fazia a tela chamar centenas de resultados prontos de
+                # "processando" até o fim da milhar. O marco BLOCO-PRONTO
+                # continua sendo auditoria do arquivo local, não uma barreira
+                # para o lote de envio.
+                arquivos = self.pacote.arquivos_pendentes()
                 if not arquivos or (not forcar and len(arquivos) < TAMANHO_LOTE_ENVIO):
                     pendentes_totais = len(self.pacote.arquivos_pendentes())
                     self.pacote.atualizar_estado(pendentes_envio=pendentes_totais)
@@ -883,8 +886,8 @@ class WorkerFilaLocalV1:
             for bloco_id, linhas_bloco in self.pacote.iter_blocos_linhas():
                 # A entrada já está separada fisicamente: o motor recebe uma
                 # fatia de no máximo mil linhas e grava suas saídas no diretório
-                # do próprio bloco. O enviador, em outra thread, só sobe essa
-                # pasta depois de o bloco ser marcado pronto.
+                # do próprio bloco. O enviador, em outra thread, confirma cada
+                # centena já calculada sem esperar o fim da fatia de mil.
                 self._progresso(
                     "bloco_local_iniciado", linhas_bloco[0] if linhas_bloco else None,
                     f"bloco local {bloco_id}: {len(linhas_bloco)} linhas",
