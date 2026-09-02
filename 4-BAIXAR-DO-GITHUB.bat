@@ -90,10 +90,14 @@ rem vez de a remover durante a atualizacao, o botao para sem escrever nada.
 call :VALIDAR_CONFIG_LOCAL
 if errorlevel 1 goto ERRO_CONFIG_LOCAL
 
-rem Sem reset forçado: uma copia existente avanca apenas por fast-forward.
+rem Sem reset forcado: uma copia existente avanca apenas por fast-forward.
 rem Alteracoes locais conflitantes cancelam a operacao em vez de serem perdidas.
 if "%PRIMEIRA_SINCRONIZACAO%"=="1" (
-  git checkout -B main FETCH_HEAD
+  rem Pasta vinda de ZIP: os arquivos existem soltos e o git recusa escrever
+  rem por cima deles sem autorizacao. Nesta primeira vez a autorizacao e o -f.
+  rem So aqui: numa copia ja estabelecida o merge --ff-only continua protegendo
+  rem qualquer alteracao local em vez de sobrescrever.
+  git checkout -f -B main FETCH_HEAD
 ) else (
   git merge --ff-only FETCH_HEAD
 )

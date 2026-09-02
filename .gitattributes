@@ -1,0 +1,7 @@
+# Windows le .bat por byte. Sem o CR a leitura desalinha e cada comando
+# perde a primeira letra ("copy" vira "opy"). O GitHub entrega o ZIP com
+# o que estiver no repositorio, entao sem esta regra o botao 4 quebra em
+# qualquer maquina que baixe por ZIP.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
