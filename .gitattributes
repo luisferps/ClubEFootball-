@@ -1,18 +1,20 @@
-# Windows le .bat por byte. Sem o CR a leitura desalinha e cada comando
-# perde a primeira letra ("copy" vira "opy"). O GitHub entrega o ZIP com
-# o que estiver no repositorio, entao sem esta regra o botao 4 quebra em
-# qualquer maquina que baixe por ZIP.
+# REGRA GERAL: o git NAO converte nada neste repositorio.
+#
+# Duas coisas aqui sao conferidas byte a byte:
+#   * a FORMULA_APROVADA (fila_producao_v3.py) e o sha256 de equacao.py,
+#     motor.py, regua.py, fonte_unica.py e roda_lote_v6.py lidos do disco;
+#   * o pacote selado da fila tem sha256 por fatia
+#     (fila_local_v1.validar_integridade).
+#
+# Se o git trocar LF por CRLF no checkout, cada arquivo ganha um byte por
+# linha e os dois selos deixam de bater. Foi o que aconteceu em 02/09 na
+# segunda maquina: "a formula local nao corresponde a formula aprovada" e
+# "integridade invalida em 000001.jsonl".
+* -text
+
+# A UNICA EXCECAO: o Windows le .bat por byte. Sem o CR a leitura desalinha
+# e cada comando perde a primeira letra ("copy" vira "opy"). Estes precisam
+# de CRLF no disco, e por isso vem depois da regra geral, que eles anulam.
 *.bat text eol=crlf
 *.cmd text eol=crlf
 *.ps1 text eol=crlf
-
-# O pacote selado da fila e conferido por sha256 byte a byte
-# (fila_local_v1.validar_integridade). Se o git converter LF em CRLF no
-# checkout, cada fatia ganha um byte por linha, o sha muda e o motor recusa
-# o pacote com "integridade invalida". Estes arquivos NUNCA podem ser
-# convertidos: -text desliga qualquer traducao de fim de linha.
-2-MOTORES/OTIMIZADOR/OPERACAO-LOCAL-JSON/PACOTE-FILA-INTEGRAL/** -text
-*.jsonl -text
-
-# Os resultados e recibos locais tambem sao lidos byte a byte pelo envio.
-2-MOTORES/OTIMIZADOR/OPERACAO-LOCAL-JSON/RESULTADOS-JSON/** -text
