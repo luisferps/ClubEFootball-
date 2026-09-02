@@ -1994,11 +1994,3 @@ cópia estiver incompleta, ele informa exatamente o arquivo ausente e não tenta
 abrir uma fila. O `config.txt` precisa conter somente URL literal HTTPS e chave
 privada literal, uma por linha — não cole links formatados como Markdown. A
 chave permanece local e não entra no GitHub.
-
-### Correção V62 — configuração aplicada pelo próximo clique
-
-Depois de editar `config.txt`, não é necessário caçar processos nem reiniciar
-o Windows. Abra novamente o ícone `Otimizador ClubEfootball.exe`: se o serviço
-local estiver ocioso e a configuração tiver sido alterada, o ícone encerra
-somente esse serviço ocioso e o abre de novo com a configuração atual. Se houver
-um worker calculando, ele nunca é encerrado por essa verificação.

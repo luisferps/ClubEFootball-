@@ -15,8 +15,8 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Painel local de execução e acompanhamento do Otimizador")]
 [assembly: AssemblyProduct("Otimizador ClubEfootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("1.8.3.0")]
-[assembly: AssemblyFileVersion("1.8.3.0")]
+[assembly: AssemblyVersion("1.8.2.0")]
+[assembly: AssemblyFileVersion("1.8.2.0")]
 
 namespace ClubEfootballOtimizador
 {
@@ -72,18 +72,6 @@ namespace ClubEfootballOtimizador
                     return;
                 }
                 string health = ReadHealth();
-                // A configuração fica fora do Git e pode ser preenchida ou
-                // trocada depois do primeiro clique. Se ela mudou desde que o
-                // serviço ocioso subiu, o próximo clique aplica o arquivo novo
-                // por conta própria; fechar apenas o painel nunca foi uma
-                // forma confiável de recarregar credenciais.
-                if (ExpectedServer(health) && ConfiguracaoLocalExigeReinicio(root) && CanReplaceIdlePreviousService(health))
-                {
-                    if (startup != null) startup.SetStatus("Aplicando a configuração local atualizada…");
-                    StopPreviousIdleService();
-                    Thread.Sleep(250);
-                    health = ReadHealth();
-                }
                 if (!ExpectedServer(health))
                 {
                     // Ao substituir o pacote, um serviço antigo e ocioso pode
@@ -348,24 +336,6 @@ namespace ClubEfootballOtimizador
                     !String.IsNullOrWhiteSpace(parsed.Host);
             }
             catch { return false; }
-        }
-
-        private static bool ConfiguracaoLocalExigeReinicio(string root)
-        {
-            string config = FindConfiguration(root);
-            if (!IsConfigurationValid(config)) return true;
-            DateTime alteradoEm;
-            try { alteradoEm = File.GetLastWriteTimeUtc(config); }
-            catch { return true; }
-            foreach (Process process in Process.GetProcessesByName("OtimizadorServico"))
-            {
-                try
-                {
-                    if (process.StartTime.ToUniversalTime() < alteradoEm) return true;
-                }
-                catch { return true; }
-            }
-            return false;
         }
 
         private static string ConfigurationValue(string config, string name)
