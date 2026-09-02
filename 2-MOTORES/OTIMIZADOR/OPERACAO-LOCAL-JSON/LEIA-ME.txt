@@ -54,6 +54,12 @@ nao baixa a fila novamente e nao precisa levar o painel antigo. No destino,
 ponha o config.txt local com a chave daquele computador antes de executar
 ENVIAR-RESULTADOS.bat.
 
+A pasta bin desta versao contem somente OperacaoLocalJson.exe. Nao existe
+uma pasta _internal para copiar. Se aparecer o erro "No module named
+'encodings'" em uma copia antiga, feche a janela e substitua apenas a pasta
+bin do outro computador pela bin desta versao; mantenha PACOTE-FILA-INTEGRAL,
+RESULTADOS-JSON e o config.txt como estao.
+
 NAO APAGUE
 ----------
 

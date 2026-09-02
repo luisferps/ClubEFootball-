@@ -23,7 +23,7 @@ $temporario = Join-Path $operacao '_empacotamento'
 if (Test-Path -LiteralPath $temporario) { Remove-Item -LiteralPath $temporario -Recurse -Force }
 New-Item -ItemType Directory -Path $temporario -Force | Out-Null
 try {
-    & $python -m PyInstaller --noconfirm --clean --onedir --name 'OperacaoLocalJson' `
+    & $python -m PyInstaller --noconfirm --clean --onefile --name 'OperacaoLocalJson' `
         --paths $root --hidden-import numpy `
         --add-data "$root\equacao.py;." `
         --add-data "$root\motor.py;." `
@@ -31,12 +31,11 @@ try {
         --workpath (Join-Path $temporario 'build') --distpath (Join-Path $temporario 'dist') `
         --specpath $temporario $source
     if ($LASTEXITCODE -ne 0) { throw 'Falha ao empacotar a operacao local.' }
-    $pastaGerada = Join-Path $temporario 'dist\OperacaoLocalJson'
-    $gerado = Join-Path $pastaGerada 'OperacaoLocalJson.exe'
+    $gerado = Join-Path $temporario 'dist\OperacaoLocalJson.exe'
     if (-not (Test-Path -LiteralPath $gerado)) { throw 'O empacotamento nao gerou OperacaoLocalJson.exe.' }
     if (Test-Path -LiteralPath $bin) { Remove-Item -LiteralPath $bin -Recurse -Force }
     New-Item -ItemType Directory -Path $bin -Force | Out-Null
-    Copy-Item -Path (Join-Path $pastaGerada '*') -Destination $bin -Recurse -Force
+    Copy-Item -LiteralPath $gerado -Destination $output -Force
 } finally {
     if (Test-Path -LiteralPath $temporario) { Remove-Item -LiteralPath $temporario -Recurse -Force }
 }

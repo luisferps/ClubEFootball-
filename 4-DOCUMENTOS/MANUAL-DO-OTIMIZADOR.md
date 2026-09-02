@@ -1,6 +1,6 @@
 # Manual do Otimizador — ClubEfootball
 
-**Versão 2.1 · 31/08/2026**
+**Versão 2.3 · 02/09/2026**
 
 ## 1. Finalidade e nome
 
@@ -13,9 +13,12 @@ O nome principal do componente é **Otimizador**. Os nomes históricos `motor`,
 `2-MOTORES` e funções como `fila_do_motor` continuam existindo no código e no banco
 por compatibilidade técnica; não significam um segundo componente.
 
-O executável local do Otimizador fica em `2-MOTORES/OTIMIZADOR/`. A pasta
-`2-MOTORES/` conserva apenas a configuração compartilhada e arquivos comuns de
-outros fluxos; o Bonificador fica separado em `2-MOTORES/BONIFICADOR/`.
+O caminho operacional atual é `2-MOTORES/OTIMIZADOR/OPERACAO-LOCAL-JSON/`.
+Ele contém os dois batches, o executável portátil, a fotografia da fila e os
+JSONs recuperáveis. O painel antigo foi preservado, mas está aposentado para a
+operação diária. A pasta `2-MOTORES/` conserva apenas a configuração
+compartilhada e arquivos comuns de outros fluxos; o Bonificador fica separado
+em `2-MOTORES/BONIFICADOR/`.
 
 ## 2. O que entra e o que sai
 
@@ -1877,9 +1880,9 @@ Para mover o produto a outro computador, copie a pasta `2-MOTORES/OTIMIZADOR/`
 inteira, inclusive `runtime/_internal/` e `interface/`; não copie somente o
 `.exe`.
 
-## 29. Fila portátil em blocos — aplicativo V59 (01/09/2026)
+## 29. Registro histórico — Fila portátil em blocos, aplicativo V59 (01/09/2026)
 
-Esta é a forma operacional atual do Otimizador. A fila integral não é mais
+Esta foi a forma operacional anterior do Otimizador. A fila integral não é mais
 baixada no computador que vai calcular: ela já acompanha a pasta do
 Otimizador, pronta para copiar para outro Windows.
 
@@ -1948,7 +1951,7 @@ O piloto possui uma trava adicional: o limite de uma linha conta a primeira
 linha que conseguiu reserva, mesmo que ela falhe. Portanto uma falha no piloto
 não autoriza o worker a seguir para a próxima linha.
 
-### Operação diária
+### Operação diária histórica do painel — não usar
 
 1. Abra apenas `Otimizador ClubEfootball.exe`.
 2. Aguarde o painel mostrar a fila e o estado **Pausado**.
@@ -2018,7 +2021,7 @@ publicação não mudam. Se a consulta voltar a ficar lenta por uma regressão,
 ela falha de forma explícita após cinco segundos; não inicia nem duplica uma
 linha.
 
-### Correção V64 — cálculo local um por vez, confirmação de cem em cem
+### Correção V64 — histórico do painel anterior
 
 A fotografia portátil continua separada em arquivos de até 1.000 linhas para
 que a pasta possa viajar inteira entre computadores. Isso não é o tamanho do
@@ -2042,3 +2045,127 @@ O ícone foi recompilado como `1.8.4.0`. Uma pasta nova do Otimizador pode ser
 copiada ao lado da pasta antiga: ao abrir o ícone novo, ele troca sozinho o
 serviço anterior apenas se a fila estiver pausada/ociosa. A configuração local
 continua fora da cópia e não é apagada.
+
+## 30. Operação local em JSON — V65 (02/09/2026)
+
+Esta é a operação vigente. Ela substitui o uso do painel para processar a fila
+integral, mas não apaga seu código: o executável, runtime e lançadores antigos
+ficam preservados em `2-MOTORES/OTIMIZADOR/LEGADO-PAINEL-APOSENTADO/`.
+`interface/` e `windows-app/` continuam na raiz por serem fonte de trabalho
+separado; não são usados por esta operação.
+
+### Pasta que deve ser usada
+
+Tudo que o operador precisa fica em:
+
+```text
+2-MOTORES/OTIMIZADOR/OPERACAO-LOCAL-JSON/
+  PROCESSAR-FILA.bat
+  ENVIAR-RESULTADOS.bat
+  bin/OperacaoLocalJson.exe
+  PACOTE-FILA-INTEGRAL/
+  RESULTADOS-JSON/
+  config.exemplo.txt
+```
+
+O pacote físico viaja dentro dessa pasta. Ele traz a fotografia selada de
+cartas, funções, posições, régua e linhas de entrada; não baixa a fila de novo
+no computador de destino. O executável contém o motor e os arquivos da fórmula,
+portanto o Windows de destino não precisa ter Python instalado.
+
+A pasta `bin/` desta versão contém somente `OperacaoLocalJson.exe`; não há
+`_internal/` para copiar. Isso elimina a falha de cópia incompleta que mostrava
+`No module named 'encodings'` ao abrir o batch em outro computador.
+
+### O que aparece na tela preta
+
+O batch não despeja identificadores soltos. Durante o cálculo ou envio, ele
+mostra a linha da fila e a carta no formato humano:
+
+```text
+Linha da fila: 4697
+Carta: Ademola Lookman (ID da carta: 52881784942599)
+Função: Atacante finalizador
+Posição: Ponta direita
+```
+
+Também mostra cartas preparadas, linhas no pacote local, concluídas localmente,
+JSONs prontos, enviadas/confirmadas, item em andamento, pendentes e problemas.
+O ID continua visível para conferência, mas sempre ao lado do nome da carta.
+
+### Fluxo de trabalho
+
+1. Abra `PROCESSAR-FILA.bat`. Ele calcula **uma linha por vez**, sem rede e sem
+   reserva aberta no banco.
+2. Cada cálculo é anexado e sincronizado no jornal local. Ao completar até 100
+   resultados, o programa fecha um JSON em `RESULTADOS-JSON/<lote>/PENDENTES/`.
+3. Depois do primeiro JSON pronto, abra `ENVIAR-RESULTADOS.bat` em outra janela.
+   Ele envia e confirma **uma linha por vez**, mesmo que o arquivo tenha 100.
+4. O banco só considera enviada uma linha depois de responder positivamente. O
+   recibo local registra `calculado_em_utc` e `enviado_em_utc`; a segunda data é
+   a hora oficial devolvida pelo banco.
+
+Os dois batches podem ficar abertos ao mesmo tempo. Se o enviador for aberto
+antes de existir JSON completo, ele informa que ainda não há arquivo pronto;
+basta executá-lo de novo após o primeiro lote de até 100 resultados.
+
+`Ctrl+C` interrompe com segurança a janela em questão. Cálculo já gravado fica
+no jornal; envio já confirmado fica no recibo. Não apague `RESULTADOS-JSON/`,
+especialmente `PENDENTES`, `RECIBOS` e `ENVIADOS`.
+
+### Envio e banco
+
+O enviador chama somente a função privada
+`public.otimizador_producao_importar_json_local_v1`. Ela roda com
+`SECURITY DEFINER`, execução exclusiva de `service_role` e `search_path` vazio.
+Ela só aceita o lote pausado, sem publicação, e confere a identidade, os selos
+e o fingerprint do resultado antes de gravar em `clube_novo`.
+
+Em confirmação válida, a função grava `build_otimizador`, conclui a linha em
+`build_linha_card`, registra a data/hora de envio em
+`otimizador_finalizado_em` e `finalizada_em`, e cria o evento auditável. Para
+uma linha já concluída, só há confirmação idempotente se o fingerprint for
+exatamente o mesmo; uma divergência para e registra a falha, sem duplicar Build.
+Nenhum resultado é publicado por esse fluxo (`pode_publicar=false`).
+
+### Levar para outro computador
+
+Copie a pasta `OPERACAO-LOCAL-JSON` inteira, incluindo `bin/`,
+`PACOTE-FILA-INTEGRAL/` e `RESULTADOS-JSON/` se quiser continuar trabalho já
+feito. No destino, crie `config.txt` dentro da própria pasta a partir de
+`config.exemplo.txt`:
+
+```text
+SUPABASE_URL=https://SEU-PROJETO.supabase.co
+SUPABASE_KEY=sb_secret_SUA_CHAVE_LOCAL
+```
+
+Não coloque Markdown, aspas ou `TABELA=...` nesse arquivo: este fluxo usa a
+função de importação, não grava uma tabela diretamente. O processamento não lê
+a chave; apenas o enviador precisa de internet e da configuração local. Nunca
+envie `config.txt` ao GitHub.
+
+Se o outro computador já recebeu uma cópia antiga e ela apresentou
+`No module named 'encodings'`, feche a janela e substitua apenas a pasta
+`OPERACAO-LOCAL-JSON/bin/` pela `bin/` desta versão. Não apague nem substitua
+`PACOTE-FILA-INTEGRAL/`, `RESULTADOS-JSON/` ou o `config.txt` local: eles são a
+fila levada, o trabalho já salvo e a chave privada daquele computador.
+
+No computador de destino, não abra `Otimizador ClubEfootball.exe`, não clique
+em **Retomar** no painel antigo e não copie somente o `.exe`. Use exclusivamente
+os dois `.bat` desta seção.
+
+### Estado conferido nesta implantação
+
+Na conferência de 02/09/2026, o lote integral
+`ddbcbc86-1ae7-4b95-b9f0-22601f41b61d` estava `pausado`, com 19.363 cartas
+preparadas, 2.148 linhas concluídas, 182.679 pendentes e nenhuma linha em
+processamento. A fotografia local contém 183.287 linhas porque foi selada antes
+de parte dessas conclusões; o enviador usa a confirmação idempotente acima para
+nunca duplicar uma linha já aceita.
+
+Passaram cinco testes sem banco do protocolo de arquivos e uma prova real de
+cópia isolada: o executável calculou uma linha com a pasta operacional copiada,
+sem painel antigo e sem Python instalado. Quatro resultados de validação ficam
+somente no jornal local da origem; ainda não foram enviados ao banco e serão
+aproveitados normalmente quando o processamento continuar.
