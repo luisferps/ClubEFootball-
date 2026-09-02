@@ -1,6 +1,18 @@
 # Aplicativo local do Bonificador
 
-**Versão:** 2.0.24 · **Data:** 31/08/2026 · **Estado:** filas humanas, resultados persistidos e controle local do pipeline
+**Versão:** 2.0.25 · **Data:** 02/09/2026 · **Estado:** filas humanas, resultados persistidos e controle local do pipeline
+
+## Revisão V2.0.25 — pacote único e fila unificada
+
+O pipeline e a janela agora chamam a mesma porta canônica
+`public.bonificador_contexto_fila_v5`. A V5 preserva o gate da V4 e acrescenta os
+nomes de carta, função e posição usados pela janela; não muda fórmula, pesos, moldes,
+ordem, writer ou regra de negócio.
+
+O único `Bonificador ClubEfootball.exe` foi recompilado na versão `2.0.25.0` com um
+novo componente interno validado em loopback. A versão nova cria uma pasta local nova
+para o componente, portanto não reaproveita o binário de uma abertura anterior. O
+snapshot recuperável está em `RECUPERACAO/2026-09-02-ANTES-REEMPACOTAMENTO-V2-0-25`.
 
 ## Revisão V2.0.24 — resultados preservam a referência humana
 
@@ -56,7 +68,7 @@ O resultado e o escritor V4 usam o fingerprint da carta canônica. Da mesma form
 única versão. Isso remove apenas um bloqueio falso de selos; não altera fórmula,
 pesos, moldes, ordem, regras ou valores matemáticos.
 
-## Estado operacional atual — fila V4
+## Estado operacional histórico — fila V4
 
 A fila exibida pelo único EXE é `public.bonificador_contexto_fila_v4`. Ela lista
 somente as linhas canônicas de `clube_novo.build_linha_card` que ainda têm o marcador
@@ -64,7 +76,7 @@ somente as linhas canônicas de `clube_novo.build_linha_card` que ainda têm o m
 `bonificador_par`, recorte de teste, `clube.build` ou qualquer tabela legada.
 
 O componente local usa o login restrito `bonificador_runtime`, que só pode chamar
-`bonificador_regua_v2`, `bonificador_carta_v2`, a fila V4 e o escritor V4; a janela
+`bonificador_regua_v2`, `bonificador_carta_v2`, a fila V5 e o escritor V4; a janela
 nunca recebe acesso a tabela ou a credencial administrativa. A leitura empacotada
 confirmou 613 linhas, 50 cartas e 19 funções. Abrir ou atualizar a tela não calcula
 nem grava bônus. O botão de iniciar continua sendo a única ação que pode iniciar o
@@ -130,7 +142,7 @@ pela fila V4 descrita no início deste documento; não é uma rota de runtime at
 As abas de simulação e auditoria permanecem separadas.
 
 A leitura desta revisão revelou uma indisponibilidade de cache do PostgREST. Ela foi
-superada pela leitura local restrita das RPCs V2/V4, confirmada no pacote atual.
+superada pela leitura local restrita das RPCs V2/V5, confirmada no pacote atual.
 O rollback dos arquivos desta revisão é
 `RECUPERACAO/2026-08-31-ANTES-INTERFACE-NATIVA-FILA`.
 

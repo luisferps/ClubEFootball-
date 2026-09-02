@@ -1198,10 +1198,8 @@
   var alvo=document.getElementById("mdl");
   var dep=alvo?alvo.closest(".fld"):ctl.firstChild;
   var f1=faixa("pnt","pontuação","mín","máx");
-  var f2=faixa("pct","% do topo","mín","máx");
-  if(dep&&dep.nextSibling) { ctl.insertBefore(f1,dep.nextSibling);
-                             ctl.insertBefore(f2,f1.nextSibling); }
-  else { ctl.appendChild(f1); ctl.appendChild(f2); }
+  if(dep&&dep.nextSibling) ctl.insertBefore(f1,dep.nextSibling);
+  else ctl.appendChild(f1);
 
   /* --- 9 · o que nao e filtro desce para um bloco proprio --- */
   var g=document.createElement("div"); g.id="ferrag";
@@ -1228,10 +1226,9 @@
    if(!e||e.value==="") return null; var v=parseFloat(e.value.replace(",","."));
    return isNaN(v)?null:v; }
   function aplicaFaixa(){
-   var pmin=num("pntmin"), pmax=num("pntmax"),
-       cmin=num("pctmin"), cmax=num("pctmax");
+   var pmin=num("pntmin"), pmax=num("pntmax");
    var out=document.getElementById("out"); if(!out) return;
-   var lig=(pmin!==null||pmax!==null||cmin!==null||cmax!==null);
+   var lig=(pmin!==null||pmax!==null);
    var I=indice(), fora=0, dentro=0;
    Array.prototype.slice.call(out.querySelectorAll("[data-k]")).forEach(function(el){
     /* ⚠️ o tema poe display:grid!important no .cd — um display:none
@@ -1239,12 +1236,9 @@
        Tem de ser setProperty com a prioridade. */
     if(!lig){ el.style.removeProperty("display"); return; }
     var c=I[el.getAttribute("data-k")]; if(!c) return;
-    var n=(c.__cn&&typeof c.pontuacao_final==='number')?c.pontuacao_final:nota(c),
-        p=(c.__cn&&typeof c.percentual_topo==='number')?c.percentual_topo:0, ok=true;
+    var n=(c.__cn&&typeof c.pontuacao_final==='number')?c.pontuacao_final:nota(c), ok=true;
     if(pmin!==null&&n<pmin) ok=false;
     if(pmax!==null&&n>pmax) ok=false;
-    if(cmin!==null&&p<cmin) ok=false;
-    if(cmax!==null&&p>cmax) ok=false;
     if(ok) el.style.removeProperty("display");
     else   el.style.setProperty("display","none","important");
     if(ok) dentro++; else fora++;
@@ -1252,12 +1246,12 @@
    var av=document.getElementById("faixaav");
    if(!av){ av=document.createElement("div"); av.id="faixaav";
     av.style.cssText="font-size:10.5px;font-weight:700;margin-top:7px;opacity:.8";
-    var p2=document.getElementById("pctmax");
+    var p2=document.getElementById("pntmax");
     if(p2) p2.closest(".fld").appendChild(av); }
    av.textContent = lig ? (dentro+" na faixa · "+fora+" escondidos") : "";
   }
   window.aplicaFaixa=aplicaFaixa;
-  ["pntmin","pntmax","pctmin","pctmax"].forEach(function(id){
+  ["pntmin","pntmax"].forEach(function(id){
    var e=document.getElementById(id); if(e) e.addEventListener("input",aplicaFaixa);
   });
   if(typeof window.render==="function"){

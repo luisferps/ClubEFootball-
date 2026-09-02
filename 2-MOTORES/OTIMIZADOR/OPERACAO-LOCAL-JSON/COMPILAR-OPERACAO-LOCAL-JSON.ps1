@@ -28,6 +28,8 @@ try {
         --add-data "$root\equacao.py;." `
         --add-data "$root\motor.py;." `
         --add-data "$root\regua.py;." `
+        --add-data "$root\fonte_unica.py;." `
+        --add-data "$root\roda_lote_v6.py;." `
         --workpath (Join-Path $temporario 'build') --distpath (Join-Path $temporario 'dist') `
         --specpath $temporario $source
     if ($LASTEXITCODE -ne 0) { throw 'Falha ao empacotar a operacao local.' }

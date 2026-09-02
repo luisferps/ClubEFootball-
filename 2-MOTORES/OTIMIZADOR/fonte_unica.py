@@ -286,6 +286,57 @@ def _traduz_regua_v2(rp):
                         for x in (impeto.get('efeitos') or [])},
         }
 
+    # Ímpetos adicionais são um catálogo próprio do contrato selado. Eles não
+    # vêm dos dois Ímpetos já equipados na carta: aqueles continuam servindo
+    # exclusivamente para descobrir quais slots estão vagos. A regra do
+    # catálogo é validada novamente aqui para que uma régua incompleta ou
+    # adulterada nunca silencie a busca com uma lista vazia.
+    adicionais = []
+    vistos_adicionais = set()
+    for impeto in (rp.get('impetos_adicionais') or []):
+        try:
+            codigo = int(impeto['codigo_impeto'])
+            slots = sorted({int(x) for x in (impeto.get('slots') or [])})
+            regra = str(impeto.get('regra') or '')
+            nome = str(impeto.get('nome_pt') or '')
+        except (TypeError, ValueError, KeyError) as erro:
+            raise SystemExit('PAROU: catálogo de Ímpetos adicionais inválido: %s.' % erro)
+        if codigo < 0 or slots not in ([1], [2], [1, 2]):
+            raise SystemExit('PAROU: catálogo de Ímpetos adicionais tem código ou slot inválido.')
+
+        efeitos = []
+        for efeito in (impeto.get('efeitos') or []):
+            try:
+                indice = int(efeito['indice_otimizador'])
+                bruto = float(efeito['delta'])
+            except (TypeError, ValueError, KeyError) as erro:
+                raise SystemExit('PAROU: efeito de Ímpeto adicional inválido: %s.' % erro)
+            if indice < 0 or indice >= 26 or not bruto.is_integer():
+                raise SystemExit('PAROU: efeito de Ímpeto adicional fora do contrato.')
+            efeitos.append((indice, int(bruto)))
+        efeitos.sort()
+        if not efeitos or len({indice for indice, _ in efeitos}) != len(efeitos):
+            raise SystemExit('PAROU: Ímpeto adicional sem efeitos canônicos.')
+        if regra == 'delta_mais_um':
+            if any(delta != 1 for _, delta in efeitos):
+                raise SystemExit('PAROU: candidato adicional delta_mais_um diverge do +1 oficial.')
+        elif regra == 'pacote_total_excecao':
+            if nome != 'Pacote total' or any(delta != 3 for _, delta in efeitos):
+                raise SystemExit('PAROU: exceção Pacote total diverge do catálogo oficial.')
+        else:
+            raise SystemExit('PAROU: regra de Ímpeto adicional desconhecida.')
+        for slot in slots:
+            chave = (codigo, slot)
+            if chave in vistos_adicionais:
+                raise SystemExit('PAROU: catálogo de Ímpetos adicionais duplicou código e slot.')
+            vistos_adicionais.add(chave)
+            # O motor histórico usa 0 para slot 1 e 1 para slot 2.
+            adicionais.append([codigo, slot - 1, [[indice, delta] for indice, delta in efeitos]])
+
+    if not adicionais:
+        raise SystemExit('PAROU: contrato não trouxe candidatos oficiais de Ímpeto adicional.')
+    adicionais.sort(key=lambda x: (x[1], x[0], x[2]))
+
     return {
         'contrato': rp.get('contrato'), 'gate': gate,
         'molde': molde,
@@ -299,7 +350,7 @@ def _traduz_regua_v2(rp):
         'barra': rp.get('barras') or {},
         'custo_nivel': rp.get('custo_nivel') or {},
         'multiplicador': rp.get('multiplicadores') or {},
-        'fabricavel': [],
+        'impetos_adicionais': adicionais,
         'impeto': impetos_catalogo,
         'versao_molde': rp.get('versao_molde'),
     }
@@ -375,9 +426,12 @@ def habilidades_de_goleiro():
 
 
 def catalogo_fabricaveis():
-    """Não existe catálogo oficial de ímpeto adicional fabricável em clube_novo."""
-    carrega_tudo()
-    return []
+    """Candidatos adicionais oficiais do pacote selado, por slot físico."""
+    insumos = carrega_tudo()
+    catalogo = insumos.get('impetos_adicionais') or []
+    if not catalogo:
+        raise SystemExit('PAROU: catálogo oficial de Ímpetos adicionais está vazio.')
+    return catalogo
 
 
 def carrega_tecnicos_do_banco(tatica=None):

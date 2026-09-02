@@ -4,6 +4,121 @@
 **Escopo:** somente leituras de dados do jogo do Bonificador  
 **Estado inicial:** auditoria e plano criados antes de qualquer troca de runtime ou banco
 
+## Processar Fila do Bonificador — batch físico — 02/09/2026
+
+- [x] Inspecionado o padrão operacional físico do Otimizador:
+  `OTIMIZADOR/OPERACAO-LOCAL-JSON/PROCESSAR-FILA.bat`. O equivalente exclusivo do
+  Bonificador está em `BONIFICADOR/OPERACAO-LOCAL-LOTE/PROCESSAR-FILA-BONIFICADOR.bat`,
+  com a entrada `BONIFICADOR/RODAR-LOTE-BONIFICADOR.bat`.
+- [x] O batch valida `2-MOTORES/config.txt`, seleciona Python 3, força UTF-8 no
+  console, mostra estado legível e chama somente `operacao_lote.py` e o motor já
+  aprovado. Não abre Excel, navegador, interface ou aplicativo `.exe`.
+- [x] Abrir sem argumento exige confirmação `S/N`; a opção `N` encerra com sucesso
+  sem início. `status` é consulta somente leitura. `Ctrl+C` e os comandos `pausar` /
+  `parar` usam a parada cooperativa do lote e preservam readbacks já confirmados.
+- [x] Compatibilidade de ambiente: com `psycopg` instalado, os RPCs usam o canal local
+  restrito; sem ele, a mesma allowlist usa RPC HTTPS autenticada. Em nenhuma rota há
+  acesso a tabelas, `clube.*`, fallback legado, UI ou alteração de fórmula.
+- [x] Teste físico seguro aprovado pela entrada `RODAR-LOTE-BONIFICADOR.bat status`:
+  leu o lote `a69a67b0-7443-45b3-a859-334ab90919af` em estado `preparado`, com zero
+  em processamento e zero resultados; não chamou início, reserva, writer ou
+  publicação. Teste de abertura com resposta `N` também confirmou “Nenhum
+  processamento foi iniciado”.
+- [x] Diagnóstico de ambiente acrescentado sem efeito produtivo:
+  `RODAR-LOTE-BONIFICADOR.bat diagnostico` verifica Python >= 3.10, instalação,
+  `config.txt`, motor e leitura do contrato. Em ambiente sem `psycopg`, confirmou a
+  rota RPC HTTPS autenticada e o lote preparado, sem reserva, cálculo, writer ou
+  publicação.
+
+## Batch operacional persistente V1 — 02/09/2026
+
+- [x] Snapshot recuperável criado antes da mudança em
+  `RECUPERACAO/2026-09-02-ANTES-LOTE-BONIFICADOR`; contém motor, componente local e
+  lançador anteriores, com hashes registrados.
+- [x] Criadas somente em `clube_novo` as tabelas privadas com RLS
+  `bonificador_lote_operacional_v1` e `bonificador_lote_item_v1`, com FKs para lote,
+  linha estável e resultado Bonificador. Não há tabela exposta ao navegador.
+- [x] Criadas as portas privadas `bonificador_lote_status_v1`,
+  `bonificador_lote_listar_v1`, `bonificador_lote_proxima_linha_v1`,
+  `bonificador_lote_registrar_v1`, `bonificador_lote_controlar_v1` e
+  `bonificador_lote_assentar_parada_v1`; `anon=false` e
+  `bonificador_runtime=true` no readback de execução.
+- [x] A seleção do batch preserva exclusivamente o contrato direto V5:
+  `build_otimizador_id` presente + `estado_otimizador='concluido'` +
+  `build_bonificador_id IS NULL`. Não lê marcador, lote auxiliar, `clube.*` ou regra
+  legada. Total numérico `0` é registrado como `sem_bonus` e não é reprocessado.
+- [x] Lote preparado identificado:
+  `a69a67b0-7443-45b3-a859-334ab90919af`, 10.585 elegíveis/pendentes, publicação
+  desligada, zero itens persistidos e zero linhas processadas.
+- [x] Ensaio transacional com rollback: snapshot de 10.585 itens, reserva atômica da
+  linha 3091 e transição iniciar → pausar → pausado. A exceção deliberada reverteu a
+  transação; readback em nova conexão confirmou lote `preparado`, 0 itens e 0 novos
+  resultados.
+- [x] UI única recompilada como `Bonificador ClubEfootball.exe` V2.0.26: lote por ID,
+  contadores, linha atual humana, paginação de 100, aba de resultados e controles
+  separados **Iniciar / Retomar**, **Pausar** e **Parar lote**.
+- [x] Testes aprovados: `py_compile`, interface isolada com rotas e paginação,
+  pipeline incremental sem mudança de fórmula, organização operacional, componente
+  empacotado em loopback (`ping` V1 + leitura do lote preparado). Nenhuma chamada de
+  início real, writer, publicação ou processamento produtivo foi feita.
+
+## Fila direta do Otimizador para o Bonificador — 02/09/2026
+
+- [x] A fila V5 passou a selecionar somente a identidade canônica: resultado do
+  Otimizador presente e concluído, sem `build_bonificador_id`. Marcador, lote, estado
+  auxiliar e qualquer fonte legada foram removidos da decisão.
+- [x] O writer V4 usa o mesmo gate, tranca a linha e retorna idempotência quando já
+  há resultado ligado — inclusive bônus total numérico `0`; não reinsere nem recalcula.
+- [x] Readback: 10.585 linhas diretas visíveis pela V5, 0 delas com resultado
+  Bonificador; paginação em páginas estáveis de 5.000. A linha 2433 devolveu
+  readback idempotente (`gravado=false`) sem escrita.
+- [x] Não houve atualização de linha, lote, fórmula, pesos, moldes, Otimizador ou
+  publicação durante a migração. O lote atual permaneceu pausado e
+  `pode_publicar=false`.
+
+## Reempacotamento do aplicativo V2.0.25 — 02/09/2026
+
+- [x] Diagnóstico confirmou que a janela consultava a fila V5, mas o pipeline ainda
+  chamava a V4; ambos contratos eram canônicos, porém a cadeia tinha versões
+  diferentes. A régua estava apta, não havia processo/log de falha atual e as duas
+  filas retornavam 0 linhas elegíveis.
+- [x] Pipeline ajustado exclusivamente para `bonificador_contexto_fila_v5`, a mesma
+  porta já usada pela janela. Não houve alteração de fórmula, pesos, moldes, ordem,
+  writer, tabela, banco ou lote.
+- [x] Snapshot recuperável dos cinco artefatos do pacote criado em
+  `RECUPERACAO/2026-09-02-ANTES-REEMPACOTAMENTO-V2-0-25`.
+- [x] Novo componente local compilado em diretório temporário e validado por
+  `/api/ping` em loopback; recurso incorporado conferido por SHA-256 no EXE final.
+- [x] Único aplicativo recompilado como `Bonificador ClubEfootball.exe` V2.0.25.0.
+  A versão nova impede cache de componente de versão anterior.
+- [x] Testes locais aprovados: compilação Python, simulação Casillas, fila humana,
+  UTF-8, início/parada assíncronos e organização operacional. Nenhum pipeline foi
+  iniciado e nenhuma escrita foi enviada ao banco.
+
+## Promoção pública do Bonificador V1 — 02/09/2026
+
+- [x] Preflight independente encontrou exatamente 613 linhas distintas, 50 cartas e
+  613 pares Otimizador/Bonificador com paridade e selo final; 0 linhas sem selo,
+  divergentes ou já publicadas.
+- [x] Snapshot privado por linha em
+  `clube_novo.bonificador_promocao_publicacao_snapshot_v1` e lote privado de
+  proveniência `clube_novo.bonificador_lote_publicacao_v1`; ambos com RLS e sem
+  porta de escrita para navegador.
+- [x] Promoção transacional de somente as 613 linhas verificadas: `execucao_tipo`
+  canônico `producao`, metadados de teste removidos, selo de publicação preenchido e
+  referência ao lote privado. Fórmula, bônus, pesos, ordem, resultados e Otimizador
+  não foram alterados.
+- [x] Readback em nova conexão: snapshot=613, publicadas=613, RPC pública=613,
+  diferença de IDs/selos=0 e paridade da pontuação final=613/613. Nenhuma linha
+  fora do conjunto pré-validado foi incluída.
+- [x] As duas tentativas iniciais foram recusadas dentro da transação por checks
+  físicos do banco e revertidas integralmente, sem escrita residual. O caminho final
+  usa a proveniência privada do Bonificador, sem reutilizar ou alterar lote do
+  Otimizador.
+- [x] Rollback preciso disponível em
+  `SQL/ROLLBACK-PROMOCAO-PUBLICA-BONIFICADOR-V1.sql`; ele restaura o snapshot
+  somente se os selos atuais ainda forem os da promoção.
+
 ## Contrato canônico de pontuação final V1 — 01/09/2026
 
 - [x] Snapshot anterior confirmou que a view e a RPC não existiam; havia 613 linhas
@@ -20,8 +135,9 @@
 - [x] `public.frontend_build_publicada_v1` é a única porta de leitura para Ranking,
   Elenco e Ficha: é SELECT-only, limitada a 500 linhas e devolve exclusivamente
   Builds publicadas. `anon`/`authenticated` não recebem `SELECT` na view privada.
-- [x] Readback com papel `anon`: 0 linhas visíveis. Portanto, os 613 resultados de
-  teste continuam sem publicação; não houve escrita, promoção ou lote novo.
+- [x] Readback original com papel `anon`: 0 linhas visíveis antes da promoção. A
+  promoção posterior de 02/09/2026 está registrada acima, com 613 linhas públicas
+  conferidas pela mesma RPC.
 - [x] Rollback recuperável: `SQL/ROLLBACK-CONTRATO-PONTUACAO-FINAL-V1.sql` remove
   somente a view/RPC; não toca em linhas nem em resultados persistidos.
 

@@ -1103,6 +1103,10 @@
     return tab[base+'|'+_fnBonusPos(x.tipo)+'|'+p] || tab[base+'|'+x.tipo+'|'+p] || null;
   }
   function _notaDoMotorPos(x,p){
+    /* A posição já foi considerada e publicada pelo contrato V2. A Ficha
+       pode trocar a apresentação de posição, mas nunca reajustar a nota. */
+    if(x&&x.__cn&&typeof x.pontuacao_final==='number'&&isFinite(x.pontuacao_final))
+      return x.pontuacao_final;
     var z=_bonusPos(x,p);
     if(z && typeof z.nota==='number') return z.nota;
     var v=_notaDoMotor(x);
@@ -1110,6 +1114,8 @@
     return v;
   }
   function _ajustaNotaNaPos(x,p,valor){
+    if(x&&x.__cn&&typeof x.pontuacao_final==='number'&&isFinite(x.pontuacao_final))
+      return x.pontuacao_final;
     var z=_bonusPos(x,p); if(!z||typeof z.b_total!=='number') return valor;
     var ps=_posDaFuncao(x.tipo,x), maior=null;
     ps.forEach(function(q){ var a=_bonusPos(x,q); if(a&&typeof a.b_total==='number')
@@ -1629,6 +1635,80 @@
   /* A Ficha não nasce pela metade. O controller aguarda esta carga pontual,
      deduplicada por card, antes do único desenho. Esta rotina só prepara os
      dados; nunca abre, reabre ou agenda outra tentativa. */
+  function _t6SobrepoeFichaFisicaNaBuild(linha, carta){
+    if (!linha || !carta) return linha;
+    /* A Ficha e cadastral e a Build e V2/publicada. Esta uniao ocorre somente
+       no navegador e pelo mesmo card_id; nao altera nota, bonus nem a ordem
+       oficial que ja vieram selados no contrato de Build. */
+    linha.ovr = carta.overall;
+    linha.h = carta.altura;
+    linha.w = carta.peso;
+    linha.age = carta.idade;
+    linha.foot = carta.pe_dominante;
+    linha.inj = carta.resistencia_lesao;
+    linha.orc = carta.orcamento || 0;
+    linha.np = linha.np || carta.posicao_principal_codigo;
+    linha.sp = (carta.posicoes || []).map(function (p) {
+      return [p.codigo, p.nivel_aptidao];
+    }).filter(function (p) { return !!p[0]; });
+    linha.fab = (carta.habilidades || []).map(function (h) {
+      return h.nome || h.codigo;
+    }).filter(Boolean);
+    linha.com = (carta.estilos_ia || []).map(function (e) {
+      return e.nome || e.codigo || e.bit_estilo_ia;
+    }).filter(Boolean);
+    linha.__cn = linha.__cn || {};
+    linha.__cn.fichaCardId = carta.card_id;
+
+    /* A Build V2 sela o resultado; a Ficha física é a fonte dos atributos
+       originais e dos ímpetos nativos. Projetamos esses insumos sem alterar
+       `sis` nem a nota publicada. */
+    var indicePorCodigo = {}, base = new Array(26), baseCompleta = true;
+    for (var i = 0; i < base.length; i++) base[i] = null;
+    (carta.atributos || []).forEach(function (atributo) {
+      var indice = atributo && atributo.indice_otimizador;
+      var valor = atributo && atributo.valor;
+      if (Number.isSafeInteger(indice) && indice >= 0 && indice < 26 &&
+          typeof valor === 'number' && Number.isFinite(valor)) {
+        base[indice] = valor;
+        if (atributo.codigo) indicePorCodigo[atributo.codigo] = indice;
+      }
+    });
+    for (var b = 0; b < base.length; b++) if (base[b] === null) baseCompleta = false;
+    if (baseCompleta) linha.base = base;
+
+    var paresPorIndice = {}, impetosNativos = [], vagaLivre = false;
+    (carta.impetos || []).forEach(function (impeto) {
+      if (!impeto) return;
+      if (impeto.vaga === true) { vagaLivre = true; return; }
+      if (!impeto.nome) return;
+      var efeitos = [];
+      (impeto.efeitos || []).forEach(function (efeito) {
+        var indice = indicePorCodigo[efeito && efeito.codigo_atributo];
+        var delta = efeito && efeito.delta;
+        if (!Number.isSafeInteger(indice) || typeof delta !== 'number' || !Number.isFinite(delta)) return;
+        efeitos.push([indice, delta]);
+        paresPorIndice[indice] = (paresPorIndice[indice] || 0) + delta;
+      });
+      impetosNativos.push({
+        codigo: impeto.codigo,
+        nome: impeto.nome,
+        efeitos: efeitos,
+        condicional: impeto.condicional === true,
+        condicaoEstado: impeto.condicao_estado || null
+      });
+    });
+    linha.__cn.impetosNativosFisicos = impetosNativos;
+    linha.__cn.vagaImpetoAdicional = vagaLivre;
+    /* O vetor serve apenas para a decomposição visual das etapas; `sis`
+       continua sendo o snapshot final da Build V2. */
+    linha.nm = Object.keys(paresPorIndice).map(function (indice) {
+      return [Number(indice), paresPorIndice[indice]];
+    });
+    linha.slot = vagaLivre ? 1 : 0;
+    return linha;
+  }
+
   function _t6CompletaFuncoesDoCard(entrada){
     if (typeof D === 'undefined') return false;
     var base = String(entrada && typeof entrada==='object' ? entrada.id : entrada || '').split('@')[0];
@@ -1656,6 +1736,7 @@
         window._T6_CARTA_BASE=window._T6_CARTA_BASE||{};
         window._T6_CARTA_BASE[base]=carta;
         (rows || []).forEach(function(x){
+          x=_t6SobrepoeFichaFisicaNaBuild(x,carta);
           if (!x || x.id === undefined || x.tipo === undefined) return;
           var xb = String(x.id).split('@')[0], repetida = false, meta=x.__cn||{};
           for (var di = 0; di < D.length; di++){
@@ -2185,17 +2266,49 @@
     }
 
     /* ---------- os textos que sao dado nosso ---------- */
-    var nt = 0, tp = 0, pc = 0;
+    var nt = 0;
     try{
-      nt = nota(c);
+      /* A nota V2 já é a composição final publicada. Não a recompomos com
+         estado local da Ficha (barras, técnico ou modos de edição). */
+      nt = c.__cn && typeof c.pontuacao_final === 'number'
+        && isFinite(c.pontuacao_final) ? c.pontuacao_final : nota(c);
       /* So uma variante JA ESCOLHIDA altera a nota. `_SELPOS` tambem e usada
          enquanto o seletor esta aberto; usa-la aqui misturava MLD pendente
          com a build anterior de Atacante Infiltrador. */
       var posNota=window._T6PENDENTE_POS ? null : window._T6SELPOS_FORCADA;
       if(posNota) nt=_ajustaNotaNaPos(c,posNota,nt);
-      tp = topoDoTipo(c.tipo); pc = tp > 0 ? 100 * nt / tp : 0;
     }catch(e){}
     function sub(de, para){ h = h.split(de).join(para); }
+    /* A decisão de contratação não é um percentual global da função. Só
+       mostramos os retratos já resolvidos pelo banco para cada Box: a Box em
+       andamento é dinâmica e a finalizada é seu snapshot. Sem contexto não
+       há rótulo a inventar. */
+    function contextosDeContratacao(linha){
+      var xs = linha && linha.__cn && Array.isArray(linha.__cn.contratacoesPorBox)
+        ? linha.__cn.contratacoesPorBox : [];
+      if (!xs.length) return '';
+      return '<div style="display:flex;flex-direction:column;gap:7px">'
+        + xs.map(function(x){
+          var estado = x.estadoBox === 'em_andamento'
+            ? 'BOX EM ANDAMENTO' : 'BOX FINALIZADA';
+          return '<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:baseline;'
+            + 'padding:8px 9px;border-radius:9px;background:var(--d10);border:1px solid var(--d105)">'
+            + '<span style="min-width:0;font-family:inherit;font-size:9px;letter-spacing:1px;color:var(--d17)">'
+            + esc(estado) + ' · ' + esc(x.boxNome) + '</span>'
+            + '<b style="font-family:inherit;font-size:11px;color:var(--d8);white-space:nowrap">'
+            + esc(x.etiquetaRotulo) + '</b>'
+            + '<span style="grid-column:1/-1;font-family:inherit;font-size:10.5px;color:var(--d30)">'
+            + n2(Number(x.percentualTopo)) + '% do topo desta Box</span>'
+            + '</div>';
+        }).join('') + '</div>';
+    }
+    var blocoPercentualDoMolde = '<div style="display:flex;align-items:baseline;gap:7px">\n'
+      + '<span style="font-family:inherit;font-size:15px;font-weight:700;line-height:1;color:var(--d25)">100.00%</span>\n'
+      + '<span style="font-family:inherit;font-size:9px;letter-spacing:1.3px;color:var(--d109)">DO TOPO</span>\n'
+      + '</div>\n<div style="height:6px;border-radius:4px;background:var(--d110);overflow:hidden">\n'
+      + '<i style="display:block;height:100%;width:100%;border-radius:4px;background:linear-gradient(90deg,var(--d101),var(--d25));box-shadow:0 0 16px var(--d67)"></i>\n'
+      + '</div>';
+    h = h.replace(blocoPercentualDoMolde, contextosDeContratacao(c));
     /* O bloco de corpo mostrava nomes de implementacao (`p0`, `p1`, `p5`) e
        cabecalhos curtos demais para explicar a conta. Esses pesos continuam na
        matematica do motor, mas nao sao informacao util para o leitor. */
@@ -2236,7 +2349,6 @@
     sub('>104.20<', '>' + ((_mx && Math.abs(_mx - Math.round(_mx)) < 0.001)
         ? Math.round(_mx) : (c.ovr || '—')) + '<');
     sub('>112.26<', '>' + n2(nt) + '<');
-    sub('>100.00%<', '>' + n2(pc) + '%<');
     /* ⛔ 19/08 — o rotulo era o SETOR ("ATAQUE"), que a coluna da esquerda ja
        diz. Ordem do Luis: aqui vai a posicao nativa, com o nome escrito. */
     sub('ATACANTE <b', 'POSIÇÃO NATIVA: <b');
@@ -2565,8 +2677,19 @@
          Medido no Ruud Gullit `88039045074410`: as quatro concordam em
          `Chute +3`. */
       var nativos = [];
+      /* A fonte preferencial na Ficha V2 é o DTO físico sobreposto. Ela já
+         traz nome, efeitos e procedência; os caminhos legados abaixo ficam
+         apenas para cartões fora do contrato V2. */
       try{
-        var _fab = String(c.imp || '').split('o motor pos:')[0]
+        var fisicos = c && c.__cn && c.__cn.impetosNativosFisicos;
+        if (Array.isArray(fisicos) && fisicos.length) {
+          nativos = fisicos.map(function(impeto){
+            return {nome: impeto.nome, ef: impeto.efeitos || []};
+          });
+        }
+      }catch(e){}
+      try{
+        var _fab = !nativos.length && String(c.imp || '').split('o motor pos:')[0]
                      .replace(/^\s*de f[aá]brica:\s*/i, '')
                      .replace(/\s*⚒\s*$/, '').trim();
         if (_fab && _fab.indexOf('efeito somado') < 0){
@@ -2613,11 +2736,17 @@
 
       /* ---- o ADICIONADO ---- */
       var addNome = '';
+      var adicionalV2 = false, adicionalCodigo = null;
       try{
-        if (typeof impAdicionado === 'function') addNome = impAdicionado(c) || '';
-        else {
-          var pp = String(c.imp || '').split('o motor pos:');
-          addNome = (pp.length > 1) ? pp[1].trim() : '';
+        adicionalV2 = !!(c && c.__cn
+          && Object.prototype.hasOwnProperty.call(c.__cn, 'impetoAdicionalCodigo'));
+        adicionalCodigo = adicionalV2 ? c.__cn.impetoAdicionalCodigo : null;
+        if (!adicionalV2) {
+          if (typeof impAdicionado === 'function') addNome = impAdicionado(c) || '';
+          else {
+            var pp = String(c.imp || '').split('o motor pos:');
+            addNome = (pp.length > 1) ? pp[1].trim() : '';
+          }
         }
       }catch(e){}
 
@@ -2722,7 +2851,17 @@
                      + _sub + '</div>' : '')
              + condHtml + '</div>';
       }
-      if (addNome){
+      /* O DTO V2 só publica o código do adicional. Se ele existir, a Ficha
+         afirma a seleção pelo seu identificador e não tenta recuperar nome ou
+         efeitos por catálogo legado. Se for nulo, a vaga física continua
+         vazia — não é lícito escolher um ímpeto no navegador. */
+      if (adicionalV2 && adicionalCodigo !== null && adicionalCodigo !== undefined){
+        novo += cartao('Ímpeto adicional · código ' + adicionalCodigo,
+          'adicionado · código canônico', [],
+          '<div data-impsel="1" style="font-size:11px;color:var(--d17);line-height:1.45;'
+          + 'border-top:1px solid var(--d15);padding-top:9px;margin-top:2px">'
+          + 'Nome e efeitos não foram publicados neste contrato.</div>');
+      } else if (addNome){
         novo += cartao(addNome, 'adicionado', _doCat(addNome),
           '<div data-impsel="1" style="display:flex;align-items:center;gap:8px;'
           + 'border-top:1px solid var(--d15);padding-top:9px;margin-top:2px"></div>');

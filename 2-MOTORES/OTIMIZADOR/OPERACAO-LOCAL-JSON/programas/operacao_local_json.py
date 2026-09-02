@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import datetime as dt
+import hashlib
 import json
 import os
 import re
@@ -41,6 +42,7 @@ VERSAO = 1
 TAMANHO_JSON = 100
 NOME_PASTA = "OPERACAO-LOCAL-JSON"
 NOME_PACOTE = "PACOTE-FILA-INTEGRAL"
+PADRAO_ARQUIVO_RESULTADO = re.compile(r"^resultado-(\d{6})\.json$")
 
 
 class FalhaOperacao(RuntimeError):
@@ -53,6 +55,10 @@ class FalhaRede(FalhaOperacao):
 
 class FalhaBanco(FalhaOperacao):
     """O banco respondeu recusando o resultado; nada é apagado do disco."""
+
+
+class LinhaJaConcluidaNoBanco(FalhaBanco):
+    """A linha já tinha um resultado diferente antes deste envio local."""
 
 
 def agora_utc() -> str:
@@ -96,6 +102,7 @@ def _mostrar_processamento(
     falhas: int,
     linha_atual: dict[str, Any] | None = None,
     iniciado: float | None = None,
+    repetidos_prontos: int = 0,
 ) -> None:
     total = int(pacote.manifesto.get("linhas_total") or 0)
     cartas = int(pacote.manifesto.get("cartas_total") or 0)
@@ -103,11 +110,13 @@ def _mostrar_processamento(
     print(f"Cartas preparadas: {cartas}/{cartas}")
     print(f"Linhas no pacote local: {total}")
     print(f"Concluídas localmente: {calculadas}")
-    print(f"JSONs prontos para envio: {prontas_para_envio}")
+    print(f"Resultados únicos prontos para envio: {prontas_para_envio}")
     print(f"Enviadas e confirmadas pelo banco: {enviadas}")
     print(f"Em andamento: {1 if linha_atual else 0}")
     print(f"Pendentes de cálculo no pacote: {max(0, total - calculadas)}")
     print(f"Problemas registrados: {falhas}")
+    if repetidos_prontos:
+        print(f"Repetidos locais ignorados: {repetidos_prontos}")
     print("-" * 72)
     if linha_atual:
         carta, funcao, posicao = _rotulos_linha(linha_atual)
@@ -133,11 +142,14 @@ def _mostrar_envio(
     falhas: int,
     item_atual: dict[str, Any] | None = None,
     iniciado: float | None = None,
+    repetidos_ignorados: int = 0,
 ) -> None:
     _cabecalho_painel("RESULTADOS LOCAIS — ENVIANDO UMA LINHA POR VEZ")
     print(f"Resultados aguardando envio: {total_prontas}")
     print(f"Confirmadas nesta execução: {confirmadas}")
     print(f"Problemas de envio: {falhas}")
+    if repetidos_ignorados:
+        print(f"Repetidos locais ignorados: {repetidos_ignorados}")
     print(f"Em andamento: {1 if item_atual else 0}")
     print("-" * 72)
     if item_atual:
@@ -290,6 +302,8 @@ def garantir_estrutura(saida: Path) -> dict[str, Path]:
         "recibos": "RECIBOS",
         "falhas_calculo": "FALHAS-CALCULO",
         "falhas_envio": "FALHAS-ENVIO",
+        "conflitos_banco": "CONFLITOS-NO-BANCO",
+        "arquivados": "ARQUIVADOS-COM-CONFLITO",
         "controle": "CONTROLE",
     }
     estrutura = {chave: saida / nome for chave, nome in nomes.items()}
@@ -369,28 +383,82 @@ def _ler_envelope(caminho: Path) -> dict[str, Any]:
     return envelope
 
 
+def _arquivos_resultado(pasta: Path) -> list[Path]:
+    """Lista somente envelopes de resultado, sem resumos ou recibos.
+
+    O resumo terminal também começa com ``resultado-``. Usar o glob amplo
+    ``resultado-*.json`` faria o processador tentar tratá-lo como resultado e
+    parar com "contrato de resultado desconhecido".
+    """
+    return sorted(
+        caminho
+        for caminho in pasta.iterdir()
+        if caminho.is_file() and PADRAO_ARQUIVO_RESULTADO.fullmatch(caminho.name)
+    )
+
+
 def _arquivos_finalizados(estrutura: dict[str, Path]) -> list[Path]:
-    return sorted(list(estrutura["pendentes"].glob("resultado-*.json")) +
-                  list(estrutura["enviados"].glob("resultado-*.json")))
+    return sorted(_arquivos_resultado(estrutura["pendentes"]) +
+                  _arquivos_resultado(estrutura["enviados"]))
+
+
+def _assinatura_resultado(item: dict[str, Any]) -> str:
+    """Resume o cálculo, sem incluir a hora local, para detectar repetição.
+
+    A mesma linha pode aparecer de novo depois de uma cópia ou queda anterior.
+    Só uma repetição exatamente igual é tolerada; dois cálculos diferentes para
+    a mesma linha são uma divergência que deve parar antes de tocar no banco.
+    """
+    _validar_item(item, Path("resultado"))
+    carga = {
+        "linha_id": int(item["linha_id"]),
+        "card_id": str(item.get("card_id") or ""),
+        "funcao_id": item.get("funcao_id"),
+        "posicao_id": item.get("posicao_id"),
+        "resultado": item["resultado"],
+    }
+    return hashlib.sha256(texto_json(carga).encode("utf-8")).hexdigest()
+
+
+def _inventariar_resultados(arquivos: list[Path]) -> tuple[dict[int, tuple[Path, str]], int, int]:
+    """Lê resultados finais e devolve únicos, total físico e repetições iguais.
+
+    Não deixa a contagem física esconder uma divergência: se dois arquivos
+    trouxerem resultados distintos para a mesma linha, falha fechado antes de
+    qualquer cálculo novo ou envio ao banco.
+    """
+    unicos: dict[int, tuple[Path, str]] = {}
+    total_fisico = 0
+    repetidos = 0
+    for arquivo in arquivos:
+        for item in _ler_envelope(arquivo)["itens"]:
+            linha_id = _validar_item(item, arquivo)
+            assinatura = _assinatura_resultado(item)
+            total_fisico += 1
+            anterior = unicos.get(linha_id)
+            if anterior is None:
+                unicos[linha_id] = (arquivo, assinatura)
+                continue
+            if anterior[1] != assinatura:
+                raise FalhaOperacao(
+                    f"a linha {linha_id} tem dois resultados diferentes: "
+                    f"{anterior[0].name} e {arquivo.name}"
+                )
+            repetidos += 1
+    return unicos, total_fisico, repetidos
 
 
 def contar_resultados(pasta: Path) -> int:
     total = 0
-    for arquivo in sorted(pasta.glob("resultado-*.json")):
+    for arquivo in _arquivos_resultado(pasta):
         total += len(_ler_envelope(arquivo)["itens"])
     return total
 
 
 def linhas_ja_calculadas(estrutura: dict[str, Path]) -> set[int]:
     """Linhas já fechadas em JSON final; o jornal aberto é tratado à parte."""
-    vistos: set[int] = set()
-    for arquivo in _arquivos_finalizados(estrutura):
-        for item in _ler_envelope(arquivo)["itens"]:
-            linha_id = _validar_item(item, arquivo)
-            if linha_id in vistos:
-                raise FalhaOperacao(f"linha {linha_id} aparece em dois JSONs finais")
-            vistos.add(linha_id)
-    return vistos
+    unicos, _, _ = _inventariar_resultados(_arquivos_finalizados(estrutura))
+    return set(unicos)
 
 
 def proxima_sequencia(estrutura: dict[str, Path]) -> int:
@@ -514,6 +582,12 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
         runner._gd.LIGADO = False
         runner.prepara_lote_producao_v3(pacote.manifesto["regua"])
         concluidas = linhas_ja_calculadas(estrutura)
+        pendentes_unicos, _, repetidos_pendentes = _inventariar_resultados(
+            _arquivos_resultado(estrutura["pendentes"])
+        )
+        enviados_unicos, _, _ = _inventariar_resultados(
+            _arquivos_resultado(estrutura["enviados"])
+        )
         sequencia, jornal, itens_jornal = _jornal_atual(estrutura, pacote)
         ids_jornal = {int(item["linha_id"]) for item in itens_jornal}
         if concluidas.intersection(ids_jornal):
@@ -523,7 +597,7 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
         falhas = 0
         tentativas = 0
         falhas_total = len(list(estrutura["falhas_calculo"].glob("linha-*.json")))
-        prontos_para_envio = contar_resultados(estrutura["pendentes"])
+        prontos_para_envio = len(set(pendentes_unicos) - set(enviados_unicos))
         enviados_confirmados = contar_resultados(estrutura["enviados"])
         for linha in pacote.iter_linhas():
             linha_id = int(linha["linha_id"])
@@ -538,6 +612,7 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
                 falhas_total,
                 linha,
                 inicio_linha,
+                repetidos_prontos=repetidos_pendentes,
             )
             try:
                 resultado = calcular_linha(pacote, runner, linha)
@@ -580,6 +655,11 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
                     arquivo = finalizar_jornal(estrutura, pacote, sequencia, jornal, itens_jornal)
                     prontos_para_envio += len(itens_jornal)
                     print(f"JSON pronto para o outro batch: {len(itens_jornal)} resultados.", flush=True)
+                    # A partir daqui essas linhas já são finais no disco. Mantê-las
+                    # no conjunto da execução impede que o painel diminua a
+                    # contagem no corte de 100 e evita qualquer repetição após um
+                    # próximo trecho do mesmo processo.
+                    concluidas.update(ids_jornal)
                     sequencia += 1
                     jornal = estrutura["trabalho"] / f"resultado-{sequencia:06d}.jsonl"
                     itens_jornal = []
@@ -590,13 +670,24 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
             if limite is not None and tentativas >= limite:
                 break
 
+        # Não espera acumular 100 resultados para encerrar a execução. O
+        # jornal parcial já é durável, mas precisa virar envelope final para o
+        # enviador encontrá-lo. Isso também recupera, sem recalcular, um
+        # jornal deixado por uma versão anterior ao fim do lote.
+        if itens_jornal:
+            finalizar_jornal(estrutura, pacote, sequencia, jornal, itens_jornal)
+            prontos_para_envio += len(itens_jornal)
+            concluidas.update(ids_jornal)
+            itens_jornal = []
+            ids_jornal = set()
+
         gravar_json_atomico(estrutura["controle"] / "ESTADO-PROCESSAMENTO.json", {
             "contrato": "otimizador_estado_processamento_local_json_v1",
             "lote_id": pacote.lote_id,
             "atualizado_em_utc": agora_utc(),
             "calculadas_nesta_execucao": novos,
             "falhas_nesta_execucao": falhas,
-            "jsons_prontos": len(list(estrutura["pendentes"].glob("resultado-*.json"))),
+            "jsons_prontos": len(_arquivos_resultado(estrutura["pendentes"])),
             "resultados_no_jornal": len(itens_jornal),
         })
         _mostrar_processamento(
@@ -605,6 +696,7 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
             prontos_para_envio,
             enviados_confirmados,
             falhas_total,
+            repetidos_prontos=repetidos_pendentes,
         )
         print(
             f"Processamento terminou. Novas: {novos}; falhas registradas: {falhas}; "
@@ -659,6 +751,10 @@ def chamar_importacao(url: str, chave: str, lote_id: str, item: dict[str, Any]) 
             bruto = resposta.read().decode("utf-8")
     except urllib.error.HTTPError as erro:
         detalhe = erro.read().decode("utf-8", "replace")[:1000]
+        if erro.code == 400 and "linha concluída com resultado diferente" in detalhe:
+            raise LinhaJaConcluidaNoBanco(
+                f"a linha {item['linha_id']} já foi concluída no banco com outro resultado"
+            ) from erro
         raise FalhaBanco(f"o banco recusou a linha {item['linha_id']} (HTTP {erro.code}): {detalhe}") from erro
     except (urllib.error.URLError, TimeoutError, OSError) as erro:
         raise FalhaRede(f"conexão incerta ao enviar a linha {item['linha_id']}: {erro}") from erro
@@ -675,35 +771,135 @@ def chamar_importacao(url: str, chave: str, lote_id: str, item: dict[str, Any]) 
     return resposta
 
 
-def _recibos_confirmados(caminho: Path) -> dict[int, dict[str, Any]]:
-    confirmados: dict[int, dict[str, Any]] = {}
+def _recibos_terminais(caminho: Path) -> dict[int, dict[str, Any]]:
+    """Lê decisões duráveis: confirmação ou conflito já existente no banco."""
+    terminais: dict[int, dict[str, Any]] = {}
     for recibo in ler_jsonl(caminho):
-        if recibo.get("contrato") != CONTRATO_RECIBO or recibo.get("confirmado") is not True:
+        conflito = recibo.get("confirmado") is False and recibo.get("ignorado_por_banco") is True
+        if recibo.get("contrato") != CONTRATO_RECIBO or (recibo.get("confirmado") is not True and not conflito):
             raise FalhaOperacao(f"recibo inválido: {caminho.name}")
         try:
             linha_id = int(recibo["linha_id"])
         except (KeyError, TypeError, ValueError) as erro:
             raise FalhaOperacao(f"recibo sem linha válida: {caminho.name}") from erro
-        anterior = confirmados.get(linha_id)
+        anterior = terminais.get(linha_id)
         if anterior and anterior != recibo:
             raise FalhaOperacao(f"há dois recibos diferentes para a linha {linha_id}")
-        confirmados[linha_id] = recibo
-    return confirmados
+        terminais[linha_id] = recibo
+    return terminais
 
 
-def _mover_envio_concluido(estrutura: dict[str, Path], arquivo: Path, recibo: Path, lote_id: str, total: int) -> None:
-    destino = estrutura["enviados"] / arquivo.name
-    destino_recibo = estrutura["enviados"] / (arquivo.stem + ".recibos.jsonl")
+def _recibos_confirmados(caminho: Path) -> dict[int, dict[str, Any]]:
+    return {
+        linha_id: recibo
+        for linha_id, recibo in _recibos_terminais(caminho).items()
+        if recibo.get("confirmado") is True
+    }
+
+
+def _assinatura_recibo(recibo: dict[str, Any]) -> str:
+    """Compara decisão oficial sem confundir horas locais de cálculo."""
+    return texto_json({
+        "linha_id": int(recibo["linha_id"]),
+        "confirmado": recibo.get("confirmado"),
+        "ignorado_por_banco": recibo.get("ignorado_por_banco"),
+        "enviado_em_utc": recibo.get("enviado_em_utc"),
+        "build_otimizador_id": recibo.get("build_otimizador_id"),
+        "resultado_fingerprint": recibo.get("resultado_fingerprint"),
+        "motivo": recibo.get("motivo"),
+    })
+
+
+def _decisoes_globais(estrutura: dict[str, Path]) -> dict[int, dict[str, Any]]:
+    """Reúne decisões de arquivos pendentes, enviados e arquivados.
+
+    Assim uma cópia local repetida nunca gera uma segunda chamada ao banco,
+    inclusive quando o banco já tinha uma versão diferente antes deste lote.
+    """
+    caminhos = sorted(estrutura["recibos"].glob("*.recibos.jsonl")) + sorted(
+        estrutura["enviados"].glob("*.recibos.jsonl")
+    ) + sorted(estrutura["arquivados"].glob("*.recibos.jsonl"))
+    decisoes: dict[int, dict[str, Any]] = {}
+    for caminho in caminhos:
+        for linha_id, recibo in _recibos_terminais(caminho).items():
+            anterior = decisoes.get(linha_id)
+            if anterior is not None and _assinatura_recibo(anterior) != _assinatura_recibo(recibo):
+                raise FalhaOperacao(f"há duas decisões diferentes para a linha {linha_id}")
+            decisoes[linha_id] = recibo
+    return decisoes
+
+
+def _recibo_repeticao_local(item: dict[str, Any], confirmado: dict[str, Any], origem: str) -> dict[str, Any]:
+    """Fecha uma cópia idêntica sem reenviar a mesma linha ao banco."""
+    return {
+        "contrato": CONTRATO_RECIBO,
+        "versao": VERSAO,
+        "confirmado": True,
+        "lote_id": confirmado.get("lote_id"),
+        "linha_id": int(item["linha_id"]),
+        "calculado_em_utc": item["calculado_em_utc"],
+        "enviado_em_utc": confirmado["enviado_em_utc"],
+        "build_otimizador_id": confirmado.get("build_otimizador_id"),
+        "resultado_fingerprint": confirmado.get("resultado_fingerprint"),
+        "idempotente": True,
+        "repeticao_local_ignorada": True,
+        "confirmacao_original": origem,
+    }
+
+
+def _decisao_repeticao_conflito(item: dict[str, Any], conflito: dict[str, Any], origem: str) -> dict[str, Any]:
+    return {
+        "contrato": CONTRATO_RECIBO,
+        "versao": VERSAO,
+        "confirmado": False,
+        "ignorado_por_banco": True,
+        "lote_id": conflito.get("lote_id"),
+        "linha_id": int(item["linha_id"]),
+        "calculado_em_utc": item["calculado_em_utc"],
+        "decidido_em_utc": conflito.get("decidido_em_utc"),
+        "motivo": conflito.get("motivo"),
+        "repeticao_local_ignorada": True,
+        "decisao_original": origem,
+    }
+
+
+def _decisao_conflito_banco(lote_id: str, item: dict[str, Any], erro: Exception, arquivo: Path) -> dict[str, Any]:
+    return {
+        "contrato": CONTRATO_RECIBO,
+        "versao": VERSAO,
+        "confirmado": False,
+        "ignorado_por_banco": True,
+        "lote_id": lote_id,
+        "linha_id": int(item["linha_id"]),
+        "calculado_em_utc": item["calculado_em_utc"],
+        "decidido_em_utc": agora_utc(),
+        "motivo": str(erro),
+        "arquivo_origem": arquivo.name,
+    }
+
+
+def _mover_envio_terminal(
+    estrutura: dict[str, Path],
+    arquivo: Path,
+    recibo: Path,
+    lote_id: str,
+    total_confirmado: int,
+    total_ignorado: int,
+) -> None:
+    destino_pasta = estrutura["arquivados"] if total_ignorado else estrutura["enviados"]
+    destino = destino_pasta / arquivo.name
+    destino_recibo = destino_pasta / (arquivo.stem + ".recibos.jsonl")
     if destino.exists() and destino != arquivo:
-        raise FalhaOperacao(f"já existe um arquivo enviado com este nome: {arquivo.name}")
+        raise FalhaOperacao(f"já existe um arquivo terminal com este nome: {arquivo.name}")
     os.replace(arquivo, destino)
     if recibo.is_file():
         os.replace(recibo, destino_recibo)
-    gravar_json_atomico(estrutura["enviados"] / (arquivo.stem + ".resumo.json"), {
+    gravar_json_atomico(destino_pasta / (arquivo.stem + ".resumo.json"), {
         "contrato": "otimizador_resumo_envio_local_json_v1",
         "lote_id": lote_id,
         "arquivo": arquivo.name,
-        "total_confirmado": total,
+        "total_confirmado": total_confirmado,
+        "total_ignorado_por_banco": total_ignorado,
         "fechado_em_utc": agora_utc(),
     })
 
@@ -724,30 +920,80 @@ def enviar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
     url, chave, config = _ler_config(raiz, operacao)
     enviados_nesta_execucao = 0
     with trava_exclusiva(estrutura["controle"] / "ENVIADOR.lock", "enviador"):
-        arquivos = sorted(estrutura["pendentes"].glob("resultado-*.json"))
+        arquivos = _arquivos_resultado(estrutura["pendentes"])
         if not arquivos:
             print("Não há JSON pronto aguardando envio.", flush=True)
             return 0
-        total_prontas = contar_resultados(estrutura["pendentes"])
-        falhas_total = len(list(estrutura["falhas_envio"].glob("linha-*.json")))
-        for arquivo in arquivos:
+        arquivos_enviados = _arquivos_resultado(estrutura["enviados"])
+        for arquivo in [*arquivos_enviados, *arquivos]:
             envelope = _ler_envelope(arquivo)
             if str(envelope.get("lote_id")) != lote:
                 raise FalhaOperacao(f"{arquivo.name} pertence a outro lote")
+        pendentes_unicos, _, repetidos_pendentes = _inventariar_resultados(arquivos)
+        # Também confere o histórico já arquivado: duas versões diferentes da
+        # mesma linha nunca são escolhidas por ordem de arquivo.
+        _inventariar_resultados([*arquivos_enviados, *arquivos])
+        decisoes_globais = _decisoes_globais(estrutura)
+        total_prontas = len(set(pendentes_unicos) - set(decisoes_globais))
+        falhas_total = len(list(estrutura["falhas_envio"].glob("linha-*.json")))
+        ignoradas_nesta_execucao = 0
+        for arquivo in arquivos:
+            envelope = _ler_envelope(arquivo)
             recibo = estrutura["recibos"] / (arquivo.stem + ".recibos.jsonl")
-            confirmados = _recibos_confirmados(recibo)
+            terminais = _recibos_terminais(recibo)
             ids = {int(item["linha_id"]) for item in envelope["itens"]}
-            if not set(confirmados).issubset(ids):
+            if not set(terminais).issubset(ids):
                 raise FalhaOperacao(f"recibo contém linha fora do JSON: {arquivo.name}")
-            total_prontas -= len(confirmados)
             for item in envelope["itens"]:
                 linha_id = int(item["linha_id"])
-                if linha_id in confirmados:
+                if linha_id in terminais:
+                    continue
+                decisao_anterior = decisoes_globais.get(linha_id)
+                if decisao_anterior is not None:
+                    if decisao_anterior.get("confirmado") is True:
+                        decisao = _recibo_repeticao_local(item, decisao_anterior, "recibo local anterior")
+                    else:
+                        decisao = _decisao_repeticao_conflito(item, decisao_anterior, "decisão local anterior")
+                    acrescentar_jsonl_duravel(recibo, decisao)
+                    terminais[linha_id] = decisao
+                    print(
+                        f"Linha {linha_id} — {_carta_com_id(item)} não foi reenviada: decisão local já registrada.",
+                        flush=True,
+                    )
                     continue
                 inicio_envio = time.monotonic()
-                _mostrar_envio(lote, total_prontas, enviados_nesta_execucao, falhas_total, item, inicio_envio)
+                _mostrar_envio(
+                    lote,
+                    total_prontas,
+                    enviados_nesta_execucao,
+                    falhas_total,
+                    item,
+                    inicio_envio,
+                    repetidos_ignorados=repetidos_pendentes,
+                )
                 try:
                     resposta = chamar_importacao(url, chave, lote, item)
+                except LinhaJaConcluidaNoBanco as erro:
+                    decisao = _decisao_conflito_banco(lote, item, erro, arquivo)
+                    gravar_json_atomico(estrutura["conflitos_banco"] / f"linha-{linha_id}.json", {
+                        "contrato": "otimizador_conflito_resultado_local_json_v1",
+                        "lote_id": lote,
+                        "linha_id": linha_id,
+                        "registrado_em_utc": agora_utc(),
+                        "erro": str(erro),
+                        "arquivo_origem": arquivo.name,
+                    })
+                    acrescentar_jsonl_duravel(recibo, decisao)
+                    terminais[linha_id] = decisao
+                    decisoes_globais[linha_id] = decisao
+                    ignoradas_nesta_execucao += 1
+                    total_prontas -= 1
+                    print(
+                        f"Linha {linha_id} — {_carta_com_id(item)} já tinha outro resultado no banco; "
+                        "foi arquivada localmente e não será reenviada.",
+                        flush=True,
+                    )
+                    continue
                 except FalhaBanco as erro:
                     gravar_json_atomico(estrutura["falhas_envio"] / f"linha-{linha_id}.json", {
                         "contrato": "otimizador_falha_envio_local_json_v1",
@@ -772,7 +1018,8 @@ def enviar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
                     "idempotente": bool(resposta.get("idempotente")),
                 }
                 acrescentar_jsonl_duravel(recibo, recibo_item)
-                confirmados[linha_id] = recibo_item
+                terminais[linha_id] = recibo_item
+                decisoes_globais[linha_id] = recibo_item
                 enviados_nesta_execucao += 1
                 total_prontas -= 1
                 print(
@@ -783,18 +1030,42 @@ def enviar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
                 if limite is not None and enviados_nesta_execucao >= limite:
                     print("Limite de teste atingido; tudo o que foi confirmado está registrado.", flush=True)
                     return 0
-            if set(confirmados) == ids:
-                _mover_envio_concluido(estrutura, arquivo, recibo, lote, len(ids))
-                print(f"Arquivo concluído: {len(ids)} envios confirmados.", flush=True)
+            if set(terminais) == ids:
+                confirmadas_arquivo = sum(1 for decisao in terminais.values() if decisao.get("confirmado") is True)
+                ignoradas_arquivo = len(ids) - confirmadas_arquivo
+                _mover_envio_terminal(
+                    estrutura,
+                    arquivo,
+                    recibo,
+                    lote,
+                    confirmadas_arquivo,
+                    ignoradas_arquivo,
+                )
+                print(
+                    f"Arquivo finalizado: {confirmadas_arquivo} confirmadas; "
+                    f"{ignoradas_arquivo} já tinham resultado no banco.",
+                    flush=True,
+                )
         gravar_json_atomico(estrutura["controle"] / "ESTADO-ENVIO.json", {
             "contrato": "otimizador_estado_envio_local_json_v1",
             "lote_id": lote,
             "atualizado_em_utc": agora_utc(),
             "confirmadas_nesta_execucao": enviados_nesta_execucao,
-            "jsons_ainda_pendentes": len(list(estrutura["pendentes"].glob("resultado-*.json"))),
+            "ignoradas_por_resultado_ja_existente": ignoradas_nesta_execucao,
+            "jsons_ainda_pendentes": len(_arquivos_resultado(estrutura["pendentes"])),
         })
-        _mostrar_envio(lote, total_prontas, enviados_nesta_execucao, falhas_total)
-        print(f"Envio terminou. Linhas confirmadas nesta execução: {enviados_nesta_execucao}.", flush=True)
+        _mostrar_envio(
+            lote,
+            total_prontas,
+            enviados_nesta_execucao,
+            falhas_total,
+            repetidos_ignorados=repetidos_pendentes,
+        )
+        print(
+            f"Envio terminou. Linhas confirmadas: {enviados_nesta_execucao}; "
+            f"já concluídas no banco: {ignoradas_nesta_execucao}.",
+            flush=True,
+        )
     return 0
 
 

@@ -54,7 +54,9 @@ const D=(function(){
      clube_novo. A camada de leitura rejeita teste, pendência e build sem os
      dois motores antes que qualquer cálculo ou desenho veja a linha. */
   var CN = window.ClubeNovoReadModel;
-  var PAGINA = 1000;
+  /* A RPC V2 limita cada pagina a 500; cada leva preserva a ordem oficial
+     recebida do banco, sem pedir uma pagina que o contrato recusaria. */
+  var PAGINA = 500;
   var PRIMEIRA = 2;   // levas que vem antes da tela abrir
   function erroNaTela(e){
     var codigo=e&&e.code||'ERRO';
@@ -157,12 +159,6 @@ const D=(function(){
   function redesenha(){
     // guarda onde a pagina estava: redesenhar nao pode jogar o leitor pro topo
     var _sy = window.pageYOffset || document.documentElement.scrollTop || 0;
-    // ⛔ 18/08 — O TOPO DA FUNCAO E MEMORIZADO (_TOPO), e quem memoriza no meio
-    //    do carregamento guarda um topo PROVISORIO: a primeira leva tinha 2.000
-    //    linhas, o Goleiro ofensivo mais alto dela valia menos que o que chegou
-    //    depois — e o card virou "110,21% do topo". Nao e conta errada, e conta
-    //    feita cedo demais. A cada leva o topo se apaga e nasce de novo.
-    try{ if(typeof _TOPO !== 'undefined') _TOPO = {}; }catch(e){}
     // Primeiro a passada que carimba pacote e refaz o fisico, DEPOIS desenha.
     // As superficies vigentes reagem ao carregamento pelos seus donos atuais;
     // a Home legada nao participa desta passada.
@@ -402,7 +398,6 @@ function bonEstilo(c){ return estiloAtiva(c)?BON_ESTILO:0; }
 function toggleBonEstilo(){
  BON_I=(BON_I+1)%BON_ESCALA.length; BON_ESTILO=BON_ESCALA[BON_I];
  for(const c of D){ delete c._n; }
- _TOPO={};
  const b=document.getElementById('bonbt');
  if(b){ b.textContent=BON_ESTILO===0?'estilo ativo: sem bônus':('estilo ativo: +'+String(BON_ESTILO));
   const cor=BON_ESTILO===0?'#8b949e':'#22c58b'; b.style.borderColor=cor; b.style.color=cor; }
@@ -1170,7 +1165,7 @@ function toggleIA(){
     +(n?(s/n).toFixed(3):0)+" - PR_MAX="+PR_MAX,
     "color:"+(sem?"#f0a531":"#22c58b")+";font-weight:700");})();
   /* ===== FIM DO PE RUIM ===== */
-  function nota(c){const b=notaBase(c);if(c.id==="MOLDE")return b;if(c._fb===undefined)c._fb=bonusPronto(c,0,fisBonus);
+  function nota(c){if(c&&c.__cn&&typeof c.pontuacao_final==='number'&&isFinite(c.pontuacao_final))return c.pontuacao_final;const b=notaBase(c);if(c.id==="MOLDE")return b;if(c._fb===undefined)c._fb=bonusPronto(c,0,fisBonus);
  if(c._ia===undefined)c._ia=bonusPronto(c,3,iaBonus);
  if(c._pr===undefined)c._pr=bonusPronto(c,1,prBonus);
  /* 14/08: a punicao de migracao virou PONTO FIXO, como o fisico (±1,5), o estilo
@@ -1282,23 +1277,21 @@ function posfabUI(){
  const ord=Object.entries(c).sort((a,b)=>b[1]-a[1]);const atual=sel.value;
  sel.innerHTML='<option value="">todas</option>'+ord.map(([p])=>`<option value="${p}"${p===atual?' selected':''}>${POSN[p]||p}</option>`).join('');
  if(atual&&!ord.some(([p])=>p===atual))sel.value='';}
-/* 13/08 (Luis): quantos por cento da nota do PRIMEIRO da funcao.
-   O topo de cada funcao vale 100%. Serve para comparar entre funcoes, porque
-   funcao de molde mais duro da nota menor para todo mundo. NAO e percentil:
-   e a razao entre a nota do card e a nota do lider da MESMA funcao. */
-var _TOPO={};
-function pctTopo(c,n){
- var p=(c&&c.__cn&&typeof c.percentual_topo==='number'&&isFinite(c.percentual_topo))
-  ? c.percentual_topo : null;
- if(p===null)return '';
- var cr=p>=99.5?'#8fd694':(p>=90?'#f0a531':'var(--txt3)');
- return '<span class=pcttopo style="color:'+cr+'" title="percentual oficial publicado para esta função">'+p.toFixed(2)+'%</span>';}
-function topoDoTipo(t){
- if(_TOPO[t]!==undefined)return _TOPO[t];
- for(var i=0;i<D.length;i++){var c=D[i];if(!c||!c.__cn||c.tipo!==t)continue;
-  if(typeof c.topo_funcao==='number'&&isFinite(c.topo_funcao)&&c.topo_funcao>=0)
-   return _TOPO[t]=c.topo_funcao;}
- return _TOPO[t]=0;
+/* A contratação é contextual à Box. Percentual, etiqueta, estado e versão
+   chegam prontos no DTO V2; não existem faixas, cores condicionais, fallback
+   nem cálculo desta decisão no navegador. */
+function _escContratacao(v){return String(v===null||v===undefined?'':v)
+ .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+ .replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function pctTopo(c){
+ var xs=(c&&c.__cn&&Array.isArray(c.__cn.contratacoesPorBox))
+  ?c.__cn.contratacoesPorBox:[];
+ return xs.map(function(x){
+  return '<span class=pcttopo title="'+_escContratacao(x.boxNome)+' · '
+   +_escContratacao(x.estadoBox)+' · '+_escContratacao(x.reguaVersao)+'">'
+   +Number(x.percentualTopo).toFixed(2)+'% · '+_escContratacao(x.etiquetaRotulo)
+   +'</span>';
+ }).join(' ');
 }
 function lista(){
  const q=nz(window._rkBusca||''),vm=+document.getElementById('vm').value||0;
@@ -1312,7 +1305,7 @@ function lista(){
  const nv=(document.getElementById('nova')||{}).value||'';
  const GER=isGeral(S.tipo)||!!GRP;
  const chaveCalculo=(typeof CMODE!=='undefined'?CMODE:0)+'|'+(typeof PISO_ON!=='undefined'?PISO_ON:0)+'|'+W.join(',');
- if(window._rkChaveCalculo!==chaveCalculo){window._rkChaveCalculo=chaveCalculo;_TOPO={};D.forEach(c=>{if(c&&c.id!=='MOLDE')delete c._n;});}
+ if(window._rkChaveCalculo!==chaveCalculo){window._rkChaveCalculo=chaveCalculo;D.forEach(c=>{if(c&&c.id!=='MOLDE')delete c._n;});}
  let L=D.filter(c=>c.id!=='MOLDE'&&(GER?(GRP?GRP[1].includes(c.tipo):true):c.tipo===S.tipo)&&c.votos>=vm&&(!q||nz(c.nome).includes(q)));
  /* Ranking Geral: antes de desenhar, compara todas as funções disponíveis.
     A aba "por card" conserva a melhor função de cada carta; a aba "por
@@ -1340,7 +1333,6 @@ function lista(){
    c._n=window.t6NotaDoMotor(c);
   }else if(c._n===undefined)c._n=nota(c);
  });
- L.forEach(c=>{c._pct=(c.__cn&&typeof c.percentual_topo==='number'&&isFinite(c.percentual_topo))?c.percentual_topo:0;});
  L.forEach(c=>{c._org = c.MIG ? 3 : (c.sec!==null && c.sec!==undefined ? 2 : 1);});
  /* ARQUITETURA DO GERAL
     1. A Mix é a lista-base: todas as linhas, ordenadas pela nota.
@@ -1464,19 +1456,19 @@ function render(){
     return `<div class="cd${cls(c)}" data-k="${c.id}|${c.tipo}" data-rknome="${nz(c.nome)}"><div class=rk>${i+1}º</div>   <img src="${_fotoCN(c)}" loading=lazy onerror="this.outerHTML='<div style=&quot;width:66px;height:88px;margin:4px auto;display:flex;align-items:center;justify-content:center;font-size:26px;background:#151d29;border-radius:8px;color:#3a4350&quot;>👤</div>'">
    <div class=nm>${nomeRanking(c.nome)}${c.velha?' <span class="tg vl" title="o motor está recalculando esta linha — esta é a pontuação anterior">↻ refazendo</span>':''}</div>
    <div class=mi><b style="color:${c.tipo!==S.tipo?'#f0a531':'#8fd694'}">${nomeFuncaoRanking(c.tipo)}</b> <span style="color:#4f8cff;font-weight:700">${(typeof SIGJ!=='undefined'&&SIGJ[c.np])||c.np||''}</span><span class=admonly> · ${c.tier} · ${c.votos} votos</span>${estiloRanking(c)}</div>
-   <div class=nt style="color:${cor(c._n,ref)}">${_nd(c._n)}<span class=ntsub><b style="color:${c._pct>=99.5?'#8fd694':(c._pct>=90?'#f0a531':'var(--txt3)')}">${(c._pct||0).toFixed(2)}%</b> do topo</span></div><div class=rktag>${etiquetaRanking(c)}</div>
+   <div class=nt style="color:${cor(c._n,ref)}">${_nd(c._n)}<span class=ntsub>${pctTopo(c)}</span></div><div class=rktag>${etiquetaRanking(c)}</div>
    <div class=mb>${segs}</div>
    <div class=tags></div>
    </div>`;}).join('')+'</div>';
  }else{
-  out.innerHTML='<table><tr><th>#</th><th data-s=nome>Card</th><th data-s=nota>Pontuação</th><th data-s=_pct title="percentual da nota do 1o colocado desta funcao">% topo</th>'+
+  out.innerHTML='<table><tr><th>#</th><th data-s=nome>Card</th><th data-s=nota>Pontuação</th><th title="percentual e etiqueta oficiais por Box">Contratação</th>'+
    BKV.map(([b])=>`<th data-s=${b[0]} style="color:${b[2]}">${b[1]}</th>`).join('')+
    '<th data-s=sisOvr>MÁX</th><th data-s=votos>Votos</th><th data-s=h>Alt</th></tr>'+
    L.slice(0,VIS).map((c,i)=>{const m=mk&&isM(c);
     return `<tr class="r${cls(c)}${c.NOVO?' nova':''}" data-k="${c.id}|${c.tipo}"><td class=mini>${i+1}</td>
     <td><span class=nm2>${c.nome}</span>${c.NOVO?' <span class="tg nv">NOVA</span>':''}${c.MIG?' <span class="tg mg">MIG</span>':''}${estiloAtiva(c)?'':' <span class="tg se" title="o estilo de jogo dele não liga nesta posição — aqui ele joga como BÁSICO">BÁSICO</span>'}${m?' <span class="tg m">meta</span>':''}${c.sec?' <span class="tg s2">2ª</span>':''}${c.raras.length?` <span class="tg r">${c.raras.length}★</span>`:''}<br><span class=mini>${c.tier} · ${c.foot} · ${c.h}cm/${c.w}kg${c.temMax?'':' · sem MÁX'}</span></td>
     <td style="font-weight:800;font-size:14px;color:${cor(c._n,ref)}">${c._n.toFixed(1)}</td>
-    <td style="font-weight:800;font-size:13px;color:${c._pct>=99.5?'#8fd694':(c._pct>=90?'#f0a531':'var(--txt3)')}">${(c._pct||0).toFixed(2)}%</td>`+
+    <td style="font-weight:800;font-size:13px">${pctTopo(c)}</td>`+
     BKV.map(([b])=>`<td style="color:${b[2]}">${c[b[0]].toFixed(0)}</td>`).join('')+
     `<td>${c.sisOvr.toFixed(1)}</td><td class=mini>${c.votos}</td><td class=mini>${c.h}</td></tr>`;}).join('')+'</table>';
   out.querySelectorAll('th[data-s]').forEach(th=>th.onclick=()=>{const s=th.dataset.s;if(S.sort===s)S.dir*=-1;else{S.sort=s;S.dir=-1;}render();});
@@ -1622,14 +1614,13 @@ function abrir(key){
  :(FH+c.frows.slice().map(r=>`<div class="fzr fzru"><span>${r[0].replace(/ p\d+$/,'')}</span><b>${r[3]}</b></div>`).join(''));
  const bar=(c.sisBar||[]).map(b=>`${b[0]} <b>+${b[1]}</b>`).join(' · ');
   const notaPublicada=(c.__cn&&typeof c.pontuacao_final==='number'&&isFinite(c.pontuacao_final))?c.pontuacao_final:nota(c);
-  const pctPublicado=(c.__cn&&typeof c.percentual_topo==='number'&&isFinite(c.percentual_topo))?c.percentual_topo:0;
   document.getElementById('box').innerHTML=`
  <span class=close onclick="fechar()">×</span>
  <div class=fhd>
   <div class=fhdcol><div class=fhdnome><div style="font-size:21px;font-weight:800">${c.nome}</div></div><img class=fhdimg src="${_fotoCN(c)}" onerror="this.style.display='none'">
  <div class="mini fhdnat"><span class=pslb>POSIÇÃO NATIVA</span><div class=fhdsig>${(typeof SIGJ!=='undefined'&&SIGJ[npFixo(c)])||npFixo(c)||'—'}</div><div class=fhdpos>${(POSN[npFixo(c)]||npFixo(c)||'—')}</div>${c.dt?`<div class=fhddt>${c.dt.split('-').reverse().join('/')}</div>`:''}</div>
  <div class=mini>${c.ovr?`<div class=fhdovr>Base Konami: <b>${c.ovr}</b></div><div class=fhdovr>Máximo Konami: <b>${(c.maxOvr||c.sisOvr||0)}</b></div>`:'card de referência — os valores SÃO os alvos do tipo'}${c.temMax?'':(c.capdesc?' <b style=color:#f0a531>(progressão ainda não publicada pelo efHub — MÁX desconhecido, a pontuação sai só com o que já é certo)</b>':' <b style=color:#f0a531>(card sem progressão — MÁX = base)</b>')}</div>
-  </div><div class=fhdmeio><div class=fhdestbox>${(c.modelo||c.tipo||'')}${estiloAtiva(c)?'':'<div class=fhdbasico title="o estilo de jogo dele não liga nesta posição">BÁSICO — este estilo não liga nesta posição</div>'}</div><div class=fhdbts><div class=fhdbtstt>FUNÇÕES QUE ELE PODE EXERCER EM CAMPO<span>clique para ver o build</span></div>${cbFuncoes(c)}</div></div><div class=fhdcampo>${cbCampo(c)}</div><div class=fhdnota><span class=fhdn style="color:${cor(notaPublicada,ref)}">${_nd(notaPublicada)}</span><span class=fhdl>pontuação final publicada</span><span class=fhdtopo><b style="color:${pctPublicado>=99.5?'#22c58b':(pctPublicado>=90?'#c98a1f':'inherit')}">${pctPublicado.toFixed(2)}% top</b></span>${(function(){if(c._notaMot===undefined)return '';const na=nota(c);const p=na>0?(c._notaMot-na)/na*100:0;return '<span class=fhdmel>pode melhorar <b>'+(p>0.05?'+'+p.toFixed(1):'0')+'%</b></span>';})()}</div></div>
+  </div><div class=fhdmeio><div class=fhdestbox>${(c.modelo||c.tipo||'')}${estiloAtiva(c)?'':'<div class=fhdbasico title="o estilo de jogo dele não liga nesta posição">BÁSICO — este estilo não liga nesta posição</div>'}</div><div class=fhdbts><div class=fhdbtstt>FUNÇÕES QUE ELE PODE EXERCER EM CAMPO<span>clique para ver o build</span></div>${cbFuncoes(c)}</div></div><div class=fhdcampo>${cbCampo(c)}</div><div class=fhdnota><span class=fhdn style="color:${cor(notaPublicada,ref)}">${_nd(notaPublicada)}</span><span class=fhdl>pontuação final publicada</span><span class=fhdtopo>${pctTopo(c)}</span>${(function(){if(c._notaMot===undefined)return '';const na=nota(c);const p=na>0?(c._notaMot-na)/na*100:0;return '<span class=fhdmel>pode melhorar <b>'+(p>0.05?'+'+p.toFixed(1):'0')+'%</b></span>';})()}</div></div>
  <div class=duo>
 
 </div>

@@ -201,7 +201,10 @@ class FilaProducaoV3Test(unittest.TestCase):
         self.assertIn("limite_cards_solicitado", migracao)
         self.assertIn("select p_lote_id,s_card.card_id", migracao)
         self.assertNotIn("select s_card.lote_id", migracao)
-        self.assertIn(fila.FORMULA_APROVADA, migracao)
+        # Esta é uma migração histórica do piloto V3. Ela deve preservar a
+        # fórmula que selou aquele piloto, sem ser reescrita pela regra V8.
+        self.assertIn("7aaa3cccb536ae8fbe77a3fd91a447738132d6f1b89706bc375314e8028a80ad", migracao)
+        self.assertNotIn(fila.FORMULA_APROVADA, migracao)
         self.assertIn("p_limite_cards integer default 0", rollback)
         self.assertNotIn("clube.fila", migracao.lower())
         self.assertNotIn("clube.build", migracao.lower())

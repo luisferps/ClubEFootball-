@@ -7,7 +7,6 @@
     "pg": "8.16.3"
   },
   "scripts": {
-    "start": "node interface-local-server.mjs",
-    "test": "node --test"
+    "verify": "node --check photo-batch-worker.mjs && node --check card-image-extractor.mjs && node --check photo-manifest.mjs"
   }
 }

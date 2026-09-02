@@ -122,7 +122,7 @@ _W = {}
 #  ⚠️ MUDOU A LOGICA DO CODIGO (nao um arquivo)? Suba o VERSAO_REGRAS. E o unico
 #     jeito de o sistema saber que a conta de ontem nao vale mais.
 # ============================================================================
-VERSAO_REGRAS = 7      # 7 = IDs puros + uma linha para cada nível físico do ímpeto
+VERSAO_REGRAS = 8      # 8 = catálogo selado de Ímpeto adicional e vaga nunca vazia
 
 def _carimbo_das_regras():
     b = _W.get('INSUMOS_BASE') or {}
@@ -150,6 +150,7 @@ def _fingerprint_insumos(b):
         'tecnicos': tecnicos, 'parametro': b.get('parametro') or {},
         'barra': b.get('barra') or {}, 'custo_nivel': b.get('custo_nivel') or {},
         'multiplicador': b.get('multiplicador') or {},
+        'impetos_adicionais': b.get('impetos_adicionais') or [],
     }
     bruto = json.dumps(calculo, sort_keys=True, separators=(',', ':'),
                        ensure_ascii=True).encode('utf-8')

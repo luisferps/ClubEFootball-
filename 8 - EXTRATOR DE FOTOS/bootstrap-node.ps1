@@ -1,4 +1,4 @@
-function Obter-Node {
+﻿function Obter-Node {
   param([Parameter(Mandatory = $true)][string]$PastaFerramenta)
 
   $nodeCodex = 'C:\Users\Luis Fernando\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe'

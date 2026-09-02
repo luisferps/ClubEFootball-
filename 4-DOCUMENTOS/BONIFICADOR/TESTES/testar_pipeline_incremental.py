@@ -65,7 +65,7 @@ def executar(sequencia_contexto: list[list[dict]], apta: bool):
         corpo = json.loads(req.data.decode("utf-8"))
         chamadas.append(nome)
         if nome == "bonificador_regua_v2": return Resposta(regua())
-        if nome == "bonificador_contexto_fila_v4":
+        if nome == "bonificador_contexto_fila_v5":
             return Resposta(sequencia_contexto.pop(0) if sequencia_contexto else [])
         if nome == "bonificador_carta_v2": return Resposta(carta(apta))
         if nome == "gravar_build_bonificador_v4":
@@ -100,12 +100,12 @@ def executar(sequencia_contexto: list[list[dict]], apta: bool):
 
 def main():
     chamadas, esperas, escritas = executar([[], [contexto()], []], apta=True)
-    assert chamadas.count("bonificador_contexto_fila_v4") == 3, chamadas
+    assert chamadas.count("bonificador_contexto_fila_v5") == 3, chamadas
     assert chamadas.count("bonificador_regua_v2") == 3, chamadas
     assert len(escritas) == 1 and escritas[0]["build_linha_card_id"] == 99
 
     chamadas, esperas, escritas = executar([[contexto()], []], apta=False)
-    assert chamadas.count("bonificador_contexto_fila_v4") == 2, chamadas
+    assert chamadas.count("bonificador_contexto_fila_v5") == 2, chamadas
     assert escritas == [], "linha incompleta chamou o writer"
     texto_motor = MOTOR.read_text(encoding="utf-8")
     assert "CLUBEF_BONIFICADOR_STOP_FILE" in texto_motor

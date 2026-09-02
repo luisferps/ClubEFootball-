@@ -27,6 +27,9 @@ Nenhum ID fica solto na tela.
    - so marca a linha como enviada depois da confirmacao do banco;
    - grava o recibo com calculado_em_utc e enviado_em_utc. A segunda hora e a
      hora oficial devolvida pelo banco.
+   - se uma linha ja tinha outro resultado no banco, nao tenta sobrescrever:
+     registra o caso em CONFLITOS-NO-BANCO e arquiva o JSON em
+     ARQUIVADOS-COM-CONFLITO. O proximo resultado continua normalmente.
 
 Pode abrir os dois batches ao mesmo tempo: o segundo espera apenas pelos JSONs
 completos. Para interromper qualquer um, use Ctrl+C na janela dele. Nada que
@@ -59,6 +62,39 @@ uma pasta _internal para copiar. Se aparecer o erro "No module named
 'encodings'" em uma copia antiga, feche a janela e substitua apenas a pasta
 bin do outro computador pela bin desta versao; mantenha PACOTE-FILA-INTEGRAL,
 RESULTADOS-JSON e o config.txt como estao.
+
+Se aparecer "contrato de resultado desconhecido: resultado-XXXXXX.resumo.json",
+feche o batch, substitua somente bin\OperacaoLocalJson.exe pela versao nova e
+abra PROCESSAR-FILA.bat de novo. Esse resumo e um recibo; a versao nova o
+ignora. Nao apague nem mova JSON algum.
+
+CORRECAO DE IMPETOS V8 — 37 LINHAS
+----------------------------------
+
+Existe um pacote separado para a correcao. Ele nao substitui nem mistura os
+pacotes antigos. Para levar somente esta correcao a outro computador, com o
+processamento parado, copie estes quatro itens para a mesma pasta
+OPERACAO-LOCAL-JSON do outro computador:
+
+    1. bin\OperacaoLocalJson.exe              (substitui somente esse arquivo)
+    2. PROCESSAR-FILA.bat                     (substitui somente esse arquivo)
+    3. PROCESSAR-CORRECAO-IMPETOS-V8.bat      (arquivo novo)
+    4. ENVIAR-RESULTADOS.bat                  (substitui somente esse arquivo)
+    5. ENVIAR-CORRECAO-IMPETOS-V8.bat         (arquivo novo)
+    6. PACOTE-FILA-INTEGRAL\5fbe90c8-8e98-4a02-bd41-e8b3272c37f4
+       (pasta nova inteira)
+
+Nao copie nem apague config.txt, RESULTADOS-JSON ou as outras pastas ja
+existentes em PACOTE-FILA-INTEGRAL. Para calcular apenas as 37 linhas da
+correcao, abra PROCESSAR-CORRECAO-IMPETOS-V8.bat. Ele calcula uma por vez e
+grava os resultados em uma pasta separada desse mesmo lote. Nao use o
+PROCESSAR-FILA.bat comum para essa correcao.
+
+Quando a tela do processamento mostrar 37 concluidas e 0 pendentes, feche
+somente aquela janela e abra ENVIAR-CORRECAO-IMPETOS-V8.bat. Esse segundo
+batch envia somente as 37 linhas da correcao, uma por vez, e deixa todos os
+JSONs antigos intocados. Ele exige o config.txt valido, pois esta e a etapa
+que conversa com o banco.
 
 NAO APAGUE
 ----------

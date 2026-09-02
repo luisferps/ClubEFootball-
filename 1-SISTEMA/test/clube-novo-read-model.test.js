@@ -121,6 +121,42 @@ function ficha(cardId, alteracoes) {
   }, alteracoes || {});
 }
 
+function build(cardId, linhaId, alteracoes) {
+  const atributos = Array.from({ length: 26 }, (_, i) => 80 + (i % 5));
+  const normalizada = 100;
+  const bonus = 1.5;
+  return Object.assign({
+    schema_versao: contratos.build,
+    publicacao_v2_fingerprint: 'a'.repeat(64),
+    linha_id: String(linhaId), card_id: String(cardId),
+    carta_nome: 'Carta ' + cardId, carta_tipo: 'Epic', carta_box: 'Epic Club 2026',
+    carta_overall: 99, foto_url_cloudinary: FOTO,
+    funcao_id: '10', funcao_codigo: 'MAT', funcao_nome: 'Meia armador',
+    posicao_id: '9', posicao_codigo: 'CA', posicao_nome: 'Centroavante',
+    build_otimizador_id: '901', build_bonificador_id: '902',
+    tecnico_id: '7', tecnico_nome: 'Técnico Exemplo',
+    barras: { shooting: 8 }, impeto_adicional_codigo: null,
+    habilidades_adicionais: [{ skill_id: '105', nome: 'Finalização acrobática' }],
+    atributos_finais: atributos,
+    arows_snapshot: atributos.map((valor, i) => [i, 1, 80, valor, valor - 80, valor]),
+    pontuacao_otimizador_bruta_evidencia: -580.7,
+    pontuacao_otimizador_normalizada: normalizada,
+    bonus_pe: 0.1, bonus_fisico_total: 0.2, bonus_posicao: 0.3,
+    bonus_playstyle_1: 0.4, bonus_playstyle_2: 0.2, bonus_ia: 0.3,
+    bonus_outros: {}, bonus_total_bonificador: bonus,
+    overall_final: normalizada + bonus, pontuacao_final: normalizada + bonus,
+    topo_funcao: normalizada + bonus, percentual_topo: 100,
+    estado_final: 'publicada', motivo_final: 'PUBLICADA_V2_NORMALIZADA_NO_BANCO',
+    normalizacao_fingerprint: 'b'.repeat(64),
+    publicacao_linha_fingerprint_v2: 'c'.repeat(64), publicada_em: ATUALIZADO,
+    contratacoes_por_box: [],
+    proveniencia: {
+      pontuacao_final_oficial: normalizada + bonus,
+      bonificador: { componentes: { pe: 0.1, fisico: 0.2 } }
+    }
+  }, alteracoes || {});
+}
+
 function criaTransporte(dados, opcoes) {
   dados = dados || {};
   opcoes = opcoes || {};
@@ -132,9 +168,9 @@ function criaTransporte(dados, opcoes) {
   }
 
   function filtra(rows, url) {
-    const card = url.searchParams.get('card_id');
-    if (card && card.startsWith('eq.')) {
-      const id = card.slice(3);
+    const card = url.searchParams.get('card_id') || url.searchParams.get('p_card_id');
+    if (card) {
+      const id = card.startsWith('eq.') ? card.slice(3) : card;
       rows = rows.filter(row => String(row.card_id) === id);
     }
     const secao = url.searchParams.get('secao');
@@ -157,8 +193,8 @@ function criaTransporte(dados, opcoes) {
       };
     }
     const todas = filtra(linhas(recurso), url);
-    const offset = Number(url.searchParams.get('offset') || 0);
-    const solicitado = Number(url.searchParams.get('limit') || 1000);
+    const offset = Number(url.searchParams.get('offset') || url.searchParams.get('p_offset') || 0);
+    const solicitado = Number(url.searchParams.get('limit') || url.searchParams.get('p_limit') || 1000);
     const limite = Math.min(solicitado, limiteServidor);
     const pagina = todas.slice(offset, offset + limite);
     let contentRange;
@@ -236,7 +272,8 @@ function dadosBasicos(alteracoes) {
     [recursos.boxes]: [box('500001', 1, { foto_url_cloudinary: FOTO })],
     [recursos.home]: [destaque('500001', 1, { foto_url_cloudinary: FOTO })],
     [recursos.busca]: [resultadoBusca('500001', { foto_url_cloudinary: FOTO })],
-    [recursos.ficha]: [ficha('500001')]
+    [recursos.ficha]: [ficha('500001')],
+    [recursos.build]: []
   }, alteracoes || {});
 }
 
@@ -257,22 +294,24 @@ function somenteGetApikey(chamadas) {
     assert.match(chamada.headers.apikey, /^sb_publishable_/);
     assert.equal(Object.prototype.hasOwnProperty.call(chamada.headers, 'Authorization'), false);
     assert.match(chamada.url,
-      /^https:\/\/trqqpsnafpbudtvvicch\.supabase\.co\/rest\/v1\/frontend_(?:boxes|home|busca|ficha)_v1\?/);
+      /^https:\/\/trqqpsnafpbudtvvicch\.supabase\.co\/rest\/v1\/(?:frontend_(?:boxes|home|busca|ficha)_v1|rpc\/frontend_build_publicada_v2)\?/);
   });
 }
 
-test('expoe apenas os quatro contratos por tela e nao declara geracao', () => {
+test('expoe contratos por tela e Build V2 sem declarar geracao mutavel', () => {
   assert.deepEqual(recursos, {
     boxes: 'frontend_boxes_v1',
     home: 'frontend_home_v1',
     busca: 'frontend_busca_v1',
-    ficha: 'frontend_ficha_v1'
+    ficha: 'frontend_ficha_v1',
+    build: 'frontend_build_publicada_v2'
   });
   assert.deepEqual(contratos, {
     boxes: 'clube-frontend-boxes-v1',
     home: 'clube-frontend-home-v1',
     busca: 'clube-frontend-busca-v1',
-    ficha: 'clube-frontend-ficha-v1'
+    ficha: 'clube-frontend-ficha-v1',
+    build: 'clube-frontend-build-publicada-v2'
   });
   assert.deepEqual(Object.keys(modulo.api).sort(), [
     'ReadModelError', 'boxes', 'boxesSync', 'busca', 'buscaSync', 'card',
@@ -282,7 +321,8 @@ test('expoe apenas os quatro contratos por tela e nao declara geracao', () => {
   assert.equal(modulo.api.geracao, undefined);
   assert.equal(modulo.api.catalogo, undefined);
   const diagnostico = modulo.api.diagnostico();
-  assert.equal(diagnostico.buildsDisponiveis, false);
+  assert.equal(diagnostico.buildsDisponiveis, true);
+  assert.equal(diagnostico.buildPaginaMaxima, 500);
   assert.equal(diagnostico.geracao, undefined);
   assert.equal(Object.isFrozen(diagnostico), true);
 });
@@ -443,21 +483,64 @@ test('rejeita IDs frouxos e aceita somente Cloudinary image/upload', async () =>
     /^data:image\//);
 });
 
-test('listar e card bloqueiam builds sem fazer qualquer consulta', async () => {
-  const { api, chamadas } = novo(dadosBasicos());
-  assert.throws(() => api.listarSync(),
-    e => e && e.code === 'PUBLICACAO_BUILD_INDISPONIVEL');
-  assert.throws(() => api.cardSync('500001'),
-    e => e && e.code === 'PUBLICACAO_BUILD_INDISPONIVEL');
-  await assert.rejects(api.listar(),
-    e => e && e.code === 'PUBLICACAO_BUILD_INDISPONIVEL');
-  await assert.rejects(api.card('500001'),
-    e => e && e.code === 'PUBLICACAO_BUILD_INDISPONIVEL');
-  assert.equal(chamadas.length, 0);
-  const diagnostico = api.diagnostico();
-  assert.equal(diagnostico.estado.codigo, 'PUBLICACAO_BUILD_INDISPONIVEL');
-  assert.equal(diagnostico.build_indisponivel_codigo,
-    'CONTRATO_PONTUACAO_FINAL_AUSENTE');
+test('listar e card usam a RPC V2, limitam pagina a 500 e nunca usam a bruta como OVR', async () => {
+  const { api, chamadas } = novo(dadosBasicos({
+    [recursos.build]: [build('500001', '7001'), build('500001', '7002', {
+      linha_id: '7002', funcao_id: '11', funcao_nome: 'Meia de arranque',
+      impeto_adicional_codigo: 321,
+      /* O catalogo fisico usa skill_id 0 para "Pedalada simples". */
+      habilidades_adicionais: [{ skill_id: '0', nome: 'Pedalada simples' }],
+      contratacoes_por_box: [{
+        box_id: '37', box_nome: 'Box em andamento', estado_box: 'em_andamento',
+        origem_percentual: 'dinamica', percentual_topo: 96.5,
+        etiqueta_codigo: 'muito_pouco', etiqueta_rotulo: 'PAGAR MUITO POUCO',
+        regua_versao: 'CONTRATACAO_V1_2026_09_02', congelado_em: null
+      }, {
+        box_id: '165', box_nome: 'Box finalizada', estado_box: 'finalizada',
+        origem_percentual: 'snapshot', percentual_topo: 92.2,
+        etiqueta_codigo: 'nao_pagar', etiqueta_rotulo: 'NÃO PAGAR',
+        regua_versao: 'HISTORICO_SEM_REGUA_COMPROVADA', congelado_em: ATUALIZADO
+      }]
+    })]
+  }));
+  const lista = api.listarSync({ limit: 2 });
+  assert.equal(lista.length, 2);
+  assert.equal(lista[0].pontuacao_final, 101.5);
+  assert.equal(lista[0].b1, 101.5);
+  assert.equal(lista[0].pontuacao_otimizador_bruta_evidencia, undefined);
+  assert.equal(lista[0].percentual_topo, undefined);
+  assert.equal(lista[0].__cn.percentual_topo, undefined);
+  assert.deepEqual(lista[0].sisBar, [['Chute', 8]]);
+  assert.deepEqual(lista[0].imps, []);
+  assert.equal(lista[0].imp, '');
+  assert.equal(lista[0].__cn.impetoAdicionalCodigo, null);
+  assert.equal(lista[1].habilidades_adicionais[0].skill_id, '0');
+  assert.equal(lista[1].__cn.impetoAdicionalCodigo, 321);
+  assert.deepEqual(lista[1].__cn.contratacoesPorBox.map(x => [
+    x.estadoBox, x.origemPercentual, x.percentualTopo, x.etiquetaRotulo
+  ]), [
+    ['em_andamento', 'dinamica', 96.5, 'PAGAR MUITO POUCO'],
+    ['finalizada', 'snapshot', 92.2, 'NÃO PAGAR']
+  ]);
+  assert.equal(lista[0].__cn.pontuacaoNormalizada, 100);
+  assert.equal(lista[0].__cn.bonusTotal, 1.5);
+  assert.equal(Object.isFrozen(lista[0]), false);
+  assert.throws(() => api.listarSync({ limit: 501 }),
+    e => e && e.code === 'PAGINACAO_INVALIDA');
+
+  const card = await api.card('500001');
+  assert.equal(card.length, 2);
+  assert.ok(chamadas.every(c => c.url.includes('/rpc/' + recursos.build + '?')));
+  chamadas.forEach(c => {
+    const url = new URL(c.url);
+    assert.equal(url.searchParams.has('select'), false);
+    assert.ok(Number(url.searchParams.get('p_limit')) <= 500);
+  });
+  somenteGetApikey(chamadas);
+
+  const vazio = novo(dadosBasicos());
+  assert.throws(() => vazio.api.listarSync(), e => e && e.code === 'SEM_BUILD_PUBLICADA');
+  assert.deepEqual(vazio.api.cardSync('500001'), []);
 });
 
 test('Content-Range ausente e view inexistente atualizam diagnóstico', async () => {

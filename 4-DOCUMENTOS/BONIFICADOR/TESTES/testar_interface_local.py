@@ -20,6 +20,16 @@ ESPEC.loader.exec_module(MODULO)
 
 
 class GatewayFalso:
+    def __init__(self):
+        self.lote = {
+            "existe": True, "lote_id": "11111111-1111-4111-8111-111111111111",
+            "estado": "preparado", "publicacao_liberada": False,
+            "elegiveis": 1, "pendentes": 1, "em_processamento": 0,
+            "concluidas": 0, "sem_bonus": 0, "falhas": 0, "interrompidas": 0,
+            "itens_snapshot": 0, "linha_atual": None,
+            "pode_iniciar": True, "pode_pausar": False, "pode_parar": True,
+        }
+
     def rpc(self, nome, corpo=None):
         if nome == "bonificador_regua_v2":
             return {
@@ -64,6 +74,31 @@ class GatewayFalso:
                 "funcao_id": 19, "funcao_codigo": "GO", "funcao_nome": "Goleiro ofensivo", "posicao_id": 0, "posicao_codigo": "GO", "posicao_nome": "Goleiro",
                 "estado": "confirmado", "b_corpo": 0.75, "b_pe_ruim": 0.5, "b_estilo": 1.5, "b_ia": 0.25, "b_total": 3.0, "faltou": [],
             }]
+        if nome == "bonificador_lote_status_v1":
+            return self.lote
+        if nome == "bonificador_lote_listar_v1":
+            assert corpo == {"p_limit": 100, "p_offset": 0}
+            return [{
+                "build_linha_card_id": 77, "card_id": "casillas-teste", "carta_nome": "Iker Casillas", "carta_tipo": "Épica", "carta_overall": 99, "funcao_id": 19,
+                "funcao_codigo": "GO", "funcao_nome": "Goleiro ofensivo", "posicao_id": 0, "posicao_codigo": "GO", "posicao_nome": "Goleiro",
+                "carta_versao": "v-teste", "carta_fingerprint": "a" * 64, "estado": "pendente", "motivo": None,
+                "b_corpo": None, "b_pe_ruim": None, "b_estilo": None, "b_ia": None, "b_total": None,
+            }]
+        if nome == "bonificador_lote_controlar_v1":
+            acao = corpo["p_acao"]
+            if acao == "iniciar":
+                self.lote.update(estado="rodando", itens_snapshot=1, pode_iniciar=False, pode_pausar=True, pode_parar=True)
+            elif acao == "pausar":
+                self.lote.update(estado="pausando", pode_pausar=False)
+            elif acao == "parar":
+                self.lote.update(estado="encerrando", pode_pausar=False)
+            else:
+                raise AssertionError(acao)
+            return self.lote
+        if nome == "bonificador_lote_assentar_parada_v1":
+            assert corpo["p_lote_id"] == self.lote["lote_id"]
+            self.lote.update(estado="pausado" if corpo["p_modo"] == "pausar" else "encerrado")
+            return self.lote
         raise AssertionError(f"RPC inesperada: {nome} {corpo}")
 
 
@@ -148,23 +183,24 @@ def main():
         status, saude = obter(base + "/api/saude")
         assert status == 200 and saude["ok"]
         assert saude["aplicativo"] == "bonificador_clubefootball"
-        status, fila = obter(base + "/api/fila/status")
+        status, fila = obter(base + "/api/fila/status?limite=100&offset=0")
         assert status == 200 and fila["fila"]["total"] == 1
         assert fila["fila"]["itens"][0]["funcao_nome"] == "Goleiro ofensivo"
+        assert fila["fila"]["lote"]["estado"] == "preparado"
         status, resultados = obter(base + "/api/resultados")
         assert status == 200 and resultados["resultados"]["itens"][0]["carta_nome"] == "Iker Casillas"
         status, simulado = obter(base + "/api/simular?card_id=casillas-teste&funcao_id=19")
         assert status == 200 and simulado["bonus"]["estilo"] == 1.5
-        status, iniciado = obter(base + "/api/pipeline/iniciar", b"{}")
+        status, iniciado = obter(base + "/api/lote/iniciar", b"{}")
         assert status == 200 and iniciado["pipeline"]["ativo"] is True
         esperar(lambda: bool(pipeline.estado().get("resultados")))
-        status, fila_com_resultado = obter(base + "/api/fila/status")
+        status, fila_com_resultado = obter(base + "/api/fila/status?limite=100&offset=0")
         item = fila_com_resultado["fila"]["itens"][0]
         assert item["estado"] == "apta" and item["b_total"] == 3.25
         status, estado = obter(base + "/api/pipeline/estado")
         assert status == 200 and estado["pipeline"]["ativo"] is True
         assert processos and processos[0].poll() is None
-        status, parada = obter(base + "/api/pipeline/parar", b"{}")
+        status, parada = obter(base + "/api/lote/pausar", b"{}")
         assert status == 200 and parada["pipeline"]["estado"] in {"parando", "parado"}
         esperar(lambda: pipeline.estado()["ativo"] is False)
         try:
@@ -176,7 +212,8 @@ def main():
         httpd.shutdown(); httpd.server_close(); thread.join(timeout=2)
 
     servidor = SERVIDOR.read_text(encoding="utf-8")
-    assert "bonificador_contexto_fila_v5" in servidor
+    assert "bonificador_lote_listar_v1" in servidor
+    assert "bonificador_lote_controlar_v1" in servidor
     assert "bonificador_resultados_v1" in servidor
     assert '"clube_novo"' not in servidor
     assert "responder_arquivo" not in servidor
@@ -184,9 +221,12 @@ def main():
     assert not (SERVIDOR.parent / "app.js").exists()
     assert not (SERVIDOR.parent / "style.css").exists()
     lancador = LANCADOR.read_text(encoding="utf-8")
+    assert "INICIAR / RETOMAR" in lancador
+    assert "PAUSAR" in lancador
+    assert "PARAR LOTE" in lancador
     assert "c.Encoding = Encoding.UTF8" in lancador
     assert "using System.Text;" in lancador
-    print("INTERFACE_LOCAL_OK simulacao=casillas fila_canonica=1 utf8=sim pipeline_inicio_parada_assincronos=sim post=405 sem_web=sim")
+    print("INTERFACE_LOCAL_OK simulacao=casillas lote_preparado=1 paginacao=sim inicio_pausa_assincronos=sim post=405 sem_web=sim")
 
 
 if __name__ == "__main__":

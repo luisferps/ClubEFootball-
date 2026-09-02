@@ -1,0 +1,14 @@
+{
+  "contrato": "clube-novo-overall-normalizado-v2",
+  "linhas": 613,
+  "cards": 50,
+  "fingerprints_cartas_distintos": 50,
+  "formula_fingerprint": "7aaa3cccb536ae8fbe77a3fd91a447738132d6f1b89706bc375314e8028a80ad",
+  "contrato_fingerprint": "07a79d1a28baa112010f66ed339d684a3536680078e6786d8229650f5b8c7bfd",
+  "divergencias_brutas": 0,
+  "exemplos_divergentes": [],
+  "normalizada_min": "83.881928222552558929709067742620513909534933106817",
+  "normalizada_max": "108.95488551348900476082520970301518929947857628656",
+  "overall_final_min": "85.960028222552558929709067742620513909534933106817",
+  "overall_final_max": "110.88608551348900476082520970301518929947857628656"
+}

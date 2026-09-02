@@ -1,0 +1,4 @@
+# Crie localmente uma cópia deste arquivo com o nome config.txt.
+# Não transfira, publique ou envie esse config.txt a outra pessoa.
+SUPABASE_URL=COLE_A_URL_DO_PROJETO_AQUI
+SUPABASE_KEY=COLE_A_CHAVE_DE_SERVICO_RESTRITA_AQUI

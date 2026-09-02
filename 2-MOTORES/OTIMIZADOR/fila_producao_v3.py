@@ -20,8 +20,8 @@ from pathlib import Path
 PASTA = Path(__file__).resolve().parent
 CONTRATO = "otimizador_fila_producao_v3"
 CONTRATO_ENTRADA_V7 = "otimizador_entrada_linha_v1"
-MOTOR_VERSAO = "otimizador-fila-producao-v3-local-20260831"
-FORMULA_APROVADA = "7aaa3cccb536ae8fbe77a3fd91a447738132d6f1b89706bc375314e8028a80ad"
+MOTOR_VERSAO = "otimizador-fila-producao-v3-local-20260902-impeto-adicional-v8"
+FORMULA_APROVADA = "bf6040b6fdbbb4a6b8cf97fe66cb441507ee637ec7edb300cf2ebabb5814f070"
 
 
 class FalhaFilaProducao(RuntimeError):
@@ -29,9 +29,9 @@ class FalhaFilaProducao(RuntimeError):
 
 
 def formula_fingerprint() -> str:
-    """Assina as três peças matemáticas aprovadas, sem inferir nada da UI."""
+    """Assina cálculo, tradução canônica e adaptador de saída aprovados."""
     h = hashlib.sha256()
-    for nome in ("equacao.py", "motor.py", "regua.py"):
+    for nome in ("equacao.py", "motor.py", "regua.py", "fonte_unica.py", "roda_lote_v6.py"):
         h.update(nome.encode("utf-8"))
         h.update((PASTA / nome).read_bytes())
     return h.hexdigest()

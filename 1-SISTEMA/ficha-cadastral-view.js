@@ -84,7 +84,7 @@
   var corpoHtml='<div class="t6fc-grid">'+corpo.map(function(c){return item(c.nome||c.codigo,inteiro(c.valor));}).join('')+'</div>';
   var peHtml='<div class="t6fc-grid">'+pes.map(function(p){return item(p.nome||p.campo,inteiro(p.valor));}).join('')+'</div>';
   var impHtml='<div class="t6fc-tags">'+impetos.map(function(i){var estado=i.vaga?'vaga':(i.condicional?'condicional':'nativo');return tag(i.nome||('Ímpeto '+i.codigo),estado);}).join('')+'</div>';
-  var aviso='<div class="t6fc-alert"><b>Build e pontuação ainda não entram nesta Ficha.</b> O banco ainda não publicou um campo canônico de pontuação final que resolva a composição entre o Otimizador e o Bonificador. Esta tela mostra somente o cadastro oficial do card.</div>';
+  var aviso='<div class="t6fc-alert"><b>Esta é a Ficha cadastral.</b> Ela mostra somente o cadastro oficial do card. A pontuação, a distribuição e a contratação dependem da função e aparecem na Build publicada aberta pelo Ranking.</div>';
   if(pendencias.length)aviso+='<div class="t6fc-alert t6fc-warn"><b>Cadastro com pendências explícitas:</b> '+esc(pendencias.join(', '))+'</div>';
   camada.innerHTML='<section class="t6fc-dialog" role="dialog" aria-modal="true" aria-labelledby="t6fc-titulo">'
    +'<div class="t6fc-head">'+cabFoto+'<div><span class="t6fc-k">FICHA CADASTRAL · CLUBE_NOVO</span><div class="t6fc-title" id="t6fc-titulo">'+esc(f.nome||('Card '+cardId))+'</div><p>'+esc(meta||'Dados canônicos do cadastro')+'</p></div><button class="t6fc-close" type="button" aria-label="Fechar">×</button></div>'

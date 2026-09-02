@@ -21,8 +21,10 @@ O QUE MUDOU NESTA VERSAO
 AS PORTAS DO BANCO
     public.bonificador_regua_v2() a receita allowlisted e seus gates
     public.bonificador_carta_v2() somente as entradas usadas pelo Bonificador
-    public.bonificador_contexto_fila_v4() linhas e selos vigentes
+    public.bonificador_contexto_fila_v5() linhas, nomes de apresentação e selos vigentes
     public.gravar_build_bonificador_v4(jsonb) a volta transacional
+    public.bonificador_lote_proxima_linha_v1(uuid) reserva atômica do batch
+    public.bonificador_lote_registrar_v1(...) confirma o estado do item após o writer
 
 A CHAVE sai do config.txt na hora de rodar. Nunca e gravada nem impressa aqui.
 """
@@ -148,6 +150,7 @@ if __name__ == '__main__' and not _os.environ.get(_MARCADOR_RODADA):
 
 MOTOR_BONUS = 'v9-3108-clube-novo-writer-v1'
 WRITER_BONUS = 'gravar_build_bonificador_v4'
+LOTE_OPERACIONAL_ID = _os.environ.get('CLUBEF_BONIFICADOR_LOTE_ID', '').strip()
 LOTE = 200
 NAOSEI = 'NAO-SEI.txt'
 
@@ -198,11 +201,25 @@ def _rpc_banco(nome, corpo):
         if nome == 'bonificador_carta_v2':
             cur.execute('select public.bonificador_carta_v2(%s)', ((corpo or {}).get('p_card_id'),))
             return cur.fetchone()[0]
-        if nome == 'bonificador_contexto_fila_v4':
-            cur.execute('select * from public.bonificador_contexto_fila_v4(%s,%s)', (
+        if nome == 'bonificador_contexto_fila_v5':
+            cur.execute('select * from public.bonificador_contexto_fila_v5(%s,%s)', (
                 (corpo or {}).get('p_limit', 1000), (corpo or {}).get('p_offset', 0)))
             colunas = [d.name for d in cur.description]
             return [dict(zip(colunas, linha)) for linha in cur.fetchall()]
+        if nome == 'bonificador_lote_proxima_linha_v1':
+            cur.execute('select public.bonificador_lote_proxima_linha_v1(%s::uuid)', (
+                (corpo or {}).get('p_lote_id'),))
+            resultado = cur.fetchone()[0]
+            _CONEXAO_BONIFICADOR.commit()
+            return resultado
+        if nome == 'bonificador_lote_registrar_v1':
+            cur.execute('select public.bonificador_lote_registrar_v1(%s::uuid,%s,%s,%s,%s)', (
+                (corpo or {}).get('p_lote_id'), (corpo or {}).get('p_linha_id'),
+                (corpo or {}).get('p_estado'), (corpo or {}).get('p_bonus_total'),
+                (corpo or {}).get('p_motivo')))
+            resultado = cur.fetchone()[0]
+            _CONEXAO_BONIFICADOR.commit()
+            return resultado
         if nome == WRITER_BONUS:
             cur.execute('select public.gravar_build_bonificador_v4(%s::jsonb)',
                         (json.dumps((corpo or {}).get('p_resultado')),))
@@ -475,15 +492,28 @@ def validar_retorno_writer(resposta, payload):
     return resposta
 
 
-def gravar_resultados_canonicos(linhas, rpc_call):
-    """Usa exclusivamente o writer público controlado, uma transação por resultado."""
+def gravar_resultados_canonicos(linhas, rpc_call, lote_operacional_id=''):
+    """Usa o writer canônico e só então confirma o item estável do lote."""
     respostas = []
     for linha in linhas:
         payload = preparar_payload_writer(linha)
         if payload is None:
             continue
         resposta = rpc_call(WRITER_BONUS, {'p_resultado': payload})
-        respostas.append(validar_retorno_writer(resposta, payload))
+        resposta = validar_retorno_writer(resposta, payload)
+        if lote_operacional_id:
+            total = payload['bonus_total']
+            estado_lote = 'sem_bonus' if total == 0 else 'concluida'
+            item = rpc_call('bonificador_lote_registrar_v1', {
+                'p_lote_id': lote_operacional_id,
+                'p_linha_id': payload['build_linha_card_id'],
+                'p_estado': estado_lote,
+                'p_bonus_total': total,
+                'p_motivo': None,
+            })
+            if not isinstance(item, dict) or not item.get('ok'):
+                raise RuntimeError('lote não confirmou o resultado já gravado')
+        respostas.append(resposta)
         print('FILA_CONFIRMADA: linha=%d' % payload['build_linha_card_id'])
     return respostas
 
@@ -531,18 +561,30 @@ print('   estilo_ativo %.2f · secundario %.2f · teto %.2f'
 print('')
 print('[2/4] baixando as linhas pendentes e os selos vigentes')
 pares, passo, de = [], 1000, 0
-while True:
-    try:
-        lote = rpc('bonificador_contexto_fila_v4',
-                   {'p_limit': passo, 'p_offset': de})
-    except urllib.error.HTTPError as e:
-        detalhe = e.read().decode('utf-8')[:300]
-        print('')
-        print('  PAREI: contrato canônico da fila V4 indisponível: %s' % detalhe)
-        print('  Nao existe fallback para qualquer tabela ou contrato legado.')
-        pausa(); sys.exit(1)
-    if not lote:
-        break
+try:
+    if LOTE_OPERACIONAL_ID:
+        reservada = rpc('bonificador_lote_proxima_linha_v1', {
+            'p_lote_id': LOTE_OPERACIONAL_ID,
+        })
+        paginas = [[reservada]] if reservada else []
+    else:
+        paginas = []
+        while True:
+            pagina = rpc('bonificador_contexto_fila_v5', {'p_limit': passo, 'p_offset': de})
+            if not pagina:
+                break
+            paginas.append(pagina)
+            de += len(pagina)
+            if len(pagina) < passo:
+                break
+except urllib.error.HTTPError as e:
+    detalhe = e.read().decode('utf-8')[:300]
+    print('')
+    print('  PAREI: contrato canônico do lote indisponível: %s' % detalhe)
+    print('  Nao existe fallback para qualquer tabela ou contrato legado.')
+    pausa(); sys.exit(1)
+
+for lote in paginas:
     for x in lote:
         exigidos = ('build_linha_card_id', 'card_id', 'funcao_id',
                     'funcao_codigo', 'posicao_id', 'carta_versao',
@@ -566,10 +608,7 @@ while True:
             'contrato_fingerprint': str(x['contrato_fingerprint']),
             'formula_fingerprint': str(x['formula_fingerprint']),
         })
-    de += passo
     print('   %d pares...' % len(pares), end='\r')
-    if len(lote) < passo:
-        break
 print('   pares card x funcao ................ %d      ' % len(pares))
 print('FILA_TOTAL: %d' % len(pares))
 
@@ -757,7 +796,18 @@ bloqueados = len(saida) - len(gravaveis)
 print('   pares aptos ........................ %d' % len(gravaveis))
 print('   pares bloqueados (sem fallback) .... %d' % bloqueados)
 try:
-    respostas = gravar_resultados_canonicos(gravaveis, rpc)
+    if LOTE_OPERACIONAL_ID:
+        for bloqueada in (x for x in saida if x.get('faltou') or not isinstance(x.get('b_total'), (int, float))):
+            item = rpc('bonificador_lote_registrar_v1', {
+                'p_lote_id': LOTE_OPERACIONAL_ID,
+                'p_linha_id': bloqueada['build_linha_card_id'],
+                'p_estado': 'falha',
+                'p_bonus_total': None,
+                'p_motivo': '; '.join(str(f) for f in bloqueada.get('faltou') or [])[:1000],
+            })
+            if not isinstance(item, dict) or not item.get('ok'):
+                raise RuntimeError('lote não confirmou a falha da linha bloqueada')
+    respostas = gravar_resultados_canonicos(gravaveis, rpc, LOTE_OPERACIONAL_ID)
     enviados = len(respostas)
 except urllib.error.HTTPError as e:
     print('')

@@ -123,6 +123,25 @@ class GatewayBonificador:
                             (corpo or {}).get("p_limit", 1000), (corpo or {}).get("p_offset", 0)))
                         colunas = [d.name for d in cursor.description]
                         return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
+                    if nome == "bonificador_lote_status_v1":
+                        cursor.execute("select public.bonificador_lote_status_v1()")
+                        return cursor.fetchone()[0]
+                    if nome == "bonificador_lote_listar_v1":
+                        cursor.execute("select * from public.bonificador_lote_listar_v1(%s,%s)", (
+                            (corpo or {}).get("p_limit", 100), (corpo or {}).get("p_offset", 0)))
+                        colunas = [d.name for d in cursor.description]
+                        return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
+                    if nome == "bonificador_lote_controlar_v1":
+                        cursor.execute("select public.bonificador_lote_controlar_v1(%s)", ((corpo or {}).get("p_acao"),))
+                        resultado = cursor.fetchone()[0]
+                        conexao.commit()
+                        return resultado
+                    if nome == "bonificador_lote_assentar_parada_v1":
+                        cursor.execute("select public.bonificador_lote_assentar_parada_v1(%s::uuid,%s)", (
+                            (corpo or {}).get("p_lote_id"), (corpo or {}).get("p_modo")))
+                        resultado = cursor.fetchone()[0]
+                        conexao.commit()
+                        return resultado
                     if nome == "bonificador_resultados_v1":
                         cursor.execute("select * from public.bonificador_resultados_v1(%s,%s)", (
                             (corpo or {}).get("p_limit", 1000), (corpo or {}).get("p_offset", 0)))
@@ -138,12 +157,30 @@ class GatewayBonificador:
             "bonificador_regua_v2",
             "bonificador_carta_v2",
             "bonificador_contexto_fila_v5",
+            "bonificador_lote_status_v1",
+            "bonificador_lote_listar_v1",
+            "bonificador_lote_controlar_v1",
+            "bonificador_lote_assentar_parada_v1",
             "bonificador_resultados_v1",
             "gravar_build_bonificador_v4",
         }:
             raise ErroDaInterface("contrato não permitido", 403)
         if self.banco:
-            return self._rpc_banco(nome, corpo)
+            # A instalação local pode não ter o driver opcional psycopg. Nesse
+            # caso a mesma allowlist segue pelo RPC HTTPS autenticado, sem abrir
+            # acesso a tabela e sem fazer a janela depender de uma instalação
+            # específica de Python.
+            try:
+                import psycopg  # noqa: F401
+            except ImportError:
+                pass
+            else:
+                return self._rpc_banco(nome, corpo)
+        if not self.url or not self.chave:
+            raise ErroDaInterface(
+                "Python sem psycopg e config.txt sem SUPABASE_URL/SUPABASE_KEY para a rota RPC segura",
+                503,
+            )
         pedido = urllib.request.Request(
             f"{self.url}/rest/v1/rpc/{nome}",
             data=json.dumps(corpo or {}).encode("utf-8"),
@@ -161,7 +198,15 @@ class GatewayBonificador:
             detalhe = erro.read().decode("utf-8", errors="replace").strip()
             detalhe = re.sub(r"\s+", " ", detalhe)[:300]
             sufixo = f": {detalhe}" if detalhe else ""
+            if erro.code in {401, 403}:
+                raise ErroDaInterface(
+                    f"credencial ou permissão do contrato recusada ({erro.code}){sufixo}", 503
+                ) from erro
             raise ErroDaInterface(f"contrato recusou a consulta ({erro.code}){sufixo}", 503) from erro
+        except urllib.error.URLError as erro:
+            raise ErroDaInterface(
+                f"não foi possível conectar ao contrato do Bonificador ({erro.reason})", 503
+            ) from erro
         except Exception as erro:
             raise ErroDaInterface(
                 f"não foi possível consultar o contrato ({type(erro).__name__})", 503
@@ -198,11 +243,12 @@ class ServicoBonificador:
                 })
         return sorted(itens, key=lambda x: (x["nome"], x["id"]))
 
-    def fila_pendente(self, limite: int = 5000) -> dict:
+    def fila_pendente(self, limite: int = 5000, offset: int = 0) -> dict:
         """Lê a fila operacional do contrato, sem tabela direta nem escrita."""
         limite = max(1, min(int(limite), 5000))
+        offset = max(0, int(offset))
         bruto = self.gateway.rpc("bonificador_contexto_fila_v5", {
-            "p_limit": limite, "p_offset": 0,
+            "p_limit": limite, "p_offset": offset,
         }) or []
         if not isinstance(bruto, list):
             raise ErroDaInterface("contrato da fila do Bonificador devolveu formato inesperado", 503)
@@ -236,7 +282,50 @@ class ServicoBonificador:
             "total": len(itens),
             "total_exato": len(itens) < limite,
             "limite": limite,
+            "offset": offset,
         }
+
+    def lote_status(self) -> dict:
+        """Lê somente o resumo persistente do lote atual; não inicia nada."""
+        lote = self.gateway.rpc("bonificador_lote_status_v1") or {}
+        if not isinstance(lote, dict) or not lote.get("existe"):
+            raise ErroDaInterface("lote operacional do Bonificador indisponível", 503)
+        return lote
+
+    def fila_do_lote(self, limite: int = 100, offset: int = 0) -> dict:
+        """Mostra página estável do lote, usando nomes canônicos apenas para exibição."""
+        limite = max(1, min(int(limite), 500))
+        offset = max(0, int(offset))
+        bruto = self.gateway.rpc("bonificador_lote_listar_v1", {
+            "p_limit": limite, "p_offset": offset,
+        }) or []
+        if not isinstance(bruto, list):
+            raise ErroDaInterface("contrato de itens do lote devolveu formato inesperado", 503)
+        return {
+            "contrato": "bonificador_lote_operacional_v1",
+            "itens": bruto,
+            "total": len(bruto),
+            "limite": limite,
+            "offset": offset,
+        }
+
+    def controlar_lote(self, acao: str) -> dict:
+        if acao not in {"iniciar", "pausar", "parar"}:
+            raise ErroDaInterface("ação de lote inválida")
+        lote = self.gateway.rpc("bonificador_lote_controlar_v1", {"p_acao": acao}) or {}
+        if not isinstance(lote, dict) or not lote.get("existe"):
+            raise ErroDaInterface("controle do lote não devolveu estado válido", 503)
+        return lote
+
+    def assentar_lote(self, lote_id: str, modo: str) -> dict:
+        if modo not in {"pausar", "parar"}:
+            raise ErroDaInterface("modo de assentamento inválido")
+        lote = self.gateway.rpc("bonificador_lote_assentar_parada_v1", {
+            "p_lote_id": lote_id, "p_modo": modo,
+        }) or {}
+        if not isinstance(lote, dict):
+            raise ErroDaInterface("assentamento do lote não devolveu estado válido", 503)
+        return lote
 
     def resultados_persistidos(self, limite: int = 5000) -> dict:
         """Lê resultados já confirmados por contrato próprio, sem depender da fila pendente."""
@@ -397,16 +486,21 @@ class PipelineBonificador:
             eventos.append(texto)
             self._estado["eventos"] = eventos[-30:]
 
-    def iniciar(self) -> dict:
+    def iniciar(self, lote_id: str) -> dict:
         with self._lock:
             if self._processo is not None and self._processo.poll() is None:
                 return self.estado()
+            try:
+                uuid.UUID(str(lote_id))
+            except (ValueError, TypeError, AttributeError) as erro:
+                raise ErroDaInterface("lote operacional inválido", 503) from erro
             opcoes = {"cwd": str(MOTOR.parent), "stdin": subprocess.DEVNULL,
                        "stdout": subprocess.PIPE, "stderr": subprocess.STDOUT,
                        "text": True, "encoding": "utf-8", "errors": "replace", "bufsize": 1,
                        "env": {**os.environ, "PYTHONUTF8": "1"}}
             arquivo_parada = Path(tempfile.gettempdir()) / ("clubef-bonificador-parar-" + uuid.uuid4().hex + ".flag")
             opcoes["env"]["CLUBEF_BONIFICADOR_STOP_FILE"] = str(arquivo_parada)
+            opcoes["env"]["CLUBEF_BONIFICADOR_LOTE_ID"] = str(lote_id)
             if ler_config()[2]:
                 opcoes["env"]["CLUBEF_BONIFICADOR_USAR_BANCO_DIRETO"] = "1"
             if os.name == "nt":
@@ -416,10 +510,10 @@ class PipelineBonificador:
             self._processo = self._popen(comando, **opcoes)
             self._parada_solicitada = False
             self._arquivo_parada = arquivo_parada
-            self._estado = {"estado": "iniciando", "mensagem": "Iniciando o pipeline canônico...",
+            self._estado = {"estado": "iniciando", "mensagem": "Iniciando o lote canônico...",
                             "aguardando": False, "confirmados": 0, "calculados": 0,
                             "total_rodada": 0, "linha_atual": None, "eventos": [],
-                            "resultados": {}, "codigo_saida": None}
+                            "resultados": {}, "codigo_saida": None, "lote_id": str(lote_id)}
             processo = self._processo
         threading.Thread(target=self._ler_saida, args=(processo,), daemon=True).start()
         threading.Thread(target=self._aguardar_saida, args=(processo,), daemon=True).start()
@@ -515,6 +609,15 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
     servico = servico or ServicoBonificador()
     pipeline = pipeline or PipelineBonificador()
 
+    def estado_do_lote() -> tuple[dict, dict]:
+        """Assenta pausa/parada somente depois que o processo terminou a linha atual."""
+        lote = servico.lote_status()
+        estado = pipeline.estado()
+        if not estado.get("ativo") and lote.get("estado") in {"pausando", "encerrando"}:
+            modo = "pausar" if lote.get("estado") == "pausando" else "parar"
+            lote = servico.assentar_lote(str(lote.get("lote_id") or ""), modo)
+        return lote, estado
+
     class Manipulador(BaseHTTPRequestHandler):
         def log_message(self, formato, *args):
             return
@@ -536,10 +639,28 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
                     raise ErroDaInterface("pedido local muito grande", 413)
                 if tamanho:
                     self.rfile.read(tamanho)
-                if caminho.path == "/api/pipeline/iniciar":
-                    return self.responder_json(200, {"ok": True, "pipeline": pipeline.iniciar()})
-                if caminho.path == "/api/pipeline/parar":
-                    return self.responder_json(200, {"ok": True, "pipeline": pipeline.parar()})
+                if caminho.path == "/api/lote/iniciar":
+                    lote = servico.controlar_lote("iniciar")
+                    try:
+                        estado = pipeline.iniciar(str(lote.get("lote_id") or ""))
+                    except Exception:
+                        # Nenhuma linha foi iniciada se o processo local não abriu.
+                        servico.controlar_lote("pausar")
+                        servico.assentar_lote(str(lote.get("lote_id") or ""), "pausar")
+                        raise
+                    return self.responder_json(200, {"ok": True, "lote": lote, "pipeline": estado})
+                if caminho.path == "/api/lote/pausar":
+                    lote = servico.controlar_lote("pausar")
+                    estado = pipeline.parar()
+                    if not estado.get("ativo"):
+                        lote = servico.assentar_lote(str(lote.get("lote_id") or ""), "pausar")
+                    return self.responder_json(200, {"ok": True, "lote": lote, "pipeline": estado})
+                if caminho.path == "/api/lote/parar":
+                    lote = servico.controlar_lote("parar")
+                    estado = pipeline.parar()
+                    if not estado.get("ativo"):
+                        lote = servico.assentar_lote(str(lote.get("lote_id") or ""), "parar")
+                    return self.responder_json(200, {"ok": True, "lote": lote, "pipeline": estado})
                 return self.responder_json(HTTPStatus.METHOD_NOT_ALLOWED, {"ok": False, "erro": "ação local não permitida"})
             except ErroDaInterface as erro:
                 return self.responder_json(erro.status, {"ok": False, "erro": str(erro)})
@@ -551,10 +672,10 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
             parametros = urllib.parse.parse_qs(caminho.query)
             try:
                 if caminho.path == "/api/ping":
-                    return self.responder_json(200, {"ok": True, "aplicativo": "bonificador_clubefootball", "versao_interface": "20260831-v2-native"})
+                    return self.responder_json(200, {"ok": True, "aplicativo": "bonificador_clubefootball", "versao_interface": "20260902-lote-v1"})
                 if caminho.path == "/api/saude":
                     regua = servico.regua()
-                    return self.responder_json(200, {"ok": True, "aplicativo": "bonificador_clubefootball", "versao_interface": "20260831-v2-native", "contrato": regua.get("contrato"), "pode_rodar": regua.get("pode_rodar"), "falta_o_que": regua.get("falta_o_que") or []})
+                    return self.responder_json(200, {"ok": True, "aplicativo": "bonificador_clubefootball", "versao_interface": "20260902-lote-v1", "contrato": regua.get("contrato"), "pode_rodar": regua.get("pode_rodar"), "falta_o_que": regua.get("falta_o_que") or []})
                 if caminho.path == "/api/funcoes":
                     return self.responder_json(200, {"ok": True, "funcoes": servico.catalogo_funcoes(servico.regua())})
                 if caminho.path == "/api/simular":
@@ -569,12 +690,18 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
                 if caminho.path == "/api/resultados":
                     return self.responder_json(200, {"ok": True, "resultados": servico.resultados_persistidos()})
                 if caminho.path == "/api/fila/status":
-                    fila = servico.fila_pendente()
-                    estado = pipeline.estado()
-                    atual = estado.get("linha_atual") or {}
+                    try:
+                        limite = int((parametros.get("limite") or ["100"])[0])
+                        offset = int((parametros.get("offset") or ["0"])[0])
+                    except ValueError as erro:
+                        raise ErroDaInterface("paginação inválida") from erro
+                    lote, estado = estado_do_lote()
+                    fila = servico.fila_do_lote(limite, offset)
+                    atual = lote.get("linha_atual") or estado.get("linha_atual") or {}
                     resultados = estado.get("resultados") or {}
                     for item in fila["itens"]:
-                        resultado = resultados.get(str(item["linha_id"]))
+                        linha_id = str(item.get("build_linha_card_id") or item.get("linha_id") or "")
+                        resultado = resultados.get(linha_id)
                         if resultado:
                             item.update({
                                 "estado": resultado.get("estado") or "calculada",
@@ -585,10 +712,14 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
                                 "b_total": resultado.get("b_total"),
                                 "faltou": resultado.get("faltou") or [],
                             })
-                        else:
-                            item["estado"] = "calculando" if str(item["linha_id"]) == str(atual.get("linha_id")) else "pendente"
+                        elif str(item.get("build_linha_card_id") or item.get("linha_id")) == str(atual.get("linha_id")):
+                            item["estado"] = "processando"
                     fila["pipeline"] = estado
+                    fila["lote"] = lote
                     return self.responder_json(200, {"ok": True, "fila": fila})
+                if caminho.path == "/api/lote/status":
+                    lote, estado = estado_do_lote()
+                    return self.responder_json(200, {"ok": True, "lote": lote, "pipeline": estado})
                 if caminho.path == "/api/pipeline/estado":
                     return self.responder_json(200, {"ok": True, "pipeline": pipeline.estado()})
                 return self.responder_json(404, {"ok": False, "erro": "rota local não encontrada"})

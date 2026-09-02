@@ -1,7 +1,7 @@
 /* Adaptador publico por tela do ClubeEfootball.
    Cada metodo consulta exclusivamente a view da tela correspondente.
    Nao existe leitura de tabela privada, ponteiro de geracao ou resultado de
-   build enquanto o contrato oficial de pontuacao final estiver ausente. */
+   build fora do contrato proprio e seletivo de pontuacao final publicada. */
 (function (root, criarAdaptador) {
   'use strict';
 
@@ -23,6 +23,7 @@
   var BASE_URL = 'https://trqqpsnafpbudtvvicch.supabase.co/rest/v1/';
   var PUBLISHABLE_KEY = 'sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj';
   var PAGE_SIZE = 1000;
+  var BUILD_PAGE_SIZE = 500;
   var MAX_SCREEN_ROWS = 5000;
   var MAX_TOTAL_ROWS = 100000;
   var MAX_SEARCH_ROWS = 100;
@@ -34,14 +35,20 @@
     boxes: 'clube-frontend-boxes-v1',
     home: 'clube-frontend-home-v1',
     busca: 'clube-frontend-busca-v1',
-    ficha: 'clube-frontend-ficha-v1'
+    ficha: 'clube-frontend-ficha-v1',
+    build: 'clube-frontend-build-publicada-v2'
   });
 
   var RECURSOS = Object.freeze({
     boxes: 'frontend_boxes_v1',
     home: 'frontend_home_v1',
     busca: 'frontend_busca_v1',
-    ficha: 'frontend_ficha_v1'
+    ficha: 'frontend_ficha_v1',
+    build: 'frontend_build_publicada_v2'
+  });
+
+  var RPCS = Object.freeze({
+    build: 'frontend_build_publicada_v2'
   });
 
   var BOXES_FIELDS = Object.freeze([
@@ -84,6 +91,41 @@
     'playstyles_quantidade', 'impetos_quantidade', 'integridade_ficha',
     'pendencias', 'build_publicada', 'build_indisponivel_codigo',
     'catalogo_atualizado_em'
+  ]);
+
+  /* O contrato de Build e deliberadamente independente da Ficha fisica:
+     a lista nao carrega o agregado pesado de um card para cada linha. */
+  var BUILD_FIELDS = Object.freeze([
+    'schema_versao', 'publicacao_v2_fingerprint', 'linha_id', 'card_id',
+    'carta_nome', 'carta_tipo', 'carta_box', 'carta_overall',
+    'foto_url_cloudinary', 'funcao_id', 'funcao_codigo', 'funcao_nome',
+    'posicao_id', 'posicao_codigo', 'posicao_nome', 'build_otimizador_id',
+    'build_bonificador_id', 'tecnico_id', 'tecnico_nome', 'barras',
+    'impeto_adicional_codigo', 'habilidades_adicionais', 'atributos_finais',
+    'arows_snapshot', 'pontuacao_otimizador_bruta_evidencia',
+    'pontuacao_otimizador_normalizada', 'bonus_pe', 'bonus_fisico_total',
+    'bonus_posicao', 'bonus_playstyle_1', 'bonus_playstyle_2', 'bonus_ia',
+    'bonus_outros', 'bonus_total_bonificador', 'overall_final',
+    'pontuacao_final', 'topo_funcao', 'percentual_topo', 'estado_final',
+    'motivo_final', 'normalizacao_fingerprint',
+    'publicacao_linha_fingerprint_v2', 'publicada_em', 'proveniencia',
+    'contratacoes_por_box'
+  ]);
+
+  /* O contrato V2 usa chaves estáveis do motor; a Ficha legada identifica
+     cada barra pelo rótulo exibido. Esta ponte é só de formato: não recalcula
+     nível, orçamento ou nota. */
+  var BARRAS_V2_PARA_SISBAR = Object.freeze([
+    ['shooting', 'Chute'],
+    ['passing', 'Passe'],
+    ['dribbling', 'Drible'],
+    ['dexterity', 'Destreza'],
+    ['lowerBodyStrength', 'Força pernas'],
+    ['aerialStrength', 'Força aérea'],
+    ['defending', 'Defesa'],
+    ['gk1', 'GO reflexo/salto'],
+    ['gk2', 'GO defesa/alcance'],
+    ['gk3', 'GO encaixe/reflexos']
   ]);
 
   var SELECTS = Object.freeze({
@@ -171,6 +213,19 @@
       partes.push(encodeURIComponent(chave) + '=' + encodeURIComponent(String(valor)));
     });
     return BASE_URL + RECURSOS[recurso] + (partes.length ? '?' + partes.join('&') : '');
+  }
+
+  function enderecoRpc(recurso, parametros) {
+    if (!own.call(RPCS, recurso)) {
+      falha('RECURSO_DESCONHECIDO', 'RPC de leitura desconhecida.', { recurso: recurso });
+    }
+    var partes = [];
+    Object.keys(parametros || {}).forEach(function (chave) {
+      var valor = parametros[chave];
+      if (valor === undefined || valor === null || valor === '') return;
+      partes.push(encodeURIComponent(chave) + '=' + encodeURIComponent(String(valor)));
+    });
+    return BASE_URL + 'rpc/' + RPCS[recurso] + (partes.length ? '?' + partes.join('&') : '');
   }
 
   function decodifica(corpo, recurso) {
@@ -267,6 +322,35 @@
         var faixa = validaContentRange(
           valorHeader(r.headers, 'Content-Range'), offset, rows.length, limite, recurso);
         return { rows: rows, total: faixa.total };
+      });
+    });
+  }
+
+  /* As RPCs V2 sao STABLE e devolvem uma pagina fechada; PostgREST nao envia
+     Content-Range para elas. A pagina e limitada no banco a 500 linhas. */
+  function lerRpcSync(recurso, parametros) {
+    if (typeof env.XMLHttpRequest !== 'function') {
+      falha('XHR_INDISPONIVEL', 'Leitura sincrona indisponivel neste navegador.');
+    }
+    var x = new env.XMLHttpRequest();
+    x.open('GET', enderecoRpc(recurso, parametros), false);
+    x.setRequestHeader('apikey', PUBLISHABLE_KEY);
+    x.send(null);
+    if (x.status < 200 || x.status >= 300) throw erroHTTP(x.status, x.responseText, recurso);
+    return decodifica(x.responseText, recurso);
+  }
+
+  function lerRpc(recurso, parametros) {
+    if (typeof env.fetch !== 'function') {
+      return Promise.reject(new ReadModelError(
+        'FETCH_INDISPONIVEL', 'Leitura assincrona indisponivel neste navegador.'));
+    }
+    return env.fetch(enderecoRpc(recurso, parametros), {
+      method: 'GET', headers: { apikey: PUBLISHABLE_KEY }, cache: 'no-store'
+    }).then(function (r) {
+      return r.text().then(function (corpo) {
+        if (!r.ok) throw erroHTTP(r.status, corpo, recurso);
+        return decodifica(corpo, recurso);
       });
     });
   }
@@ -567,13 +651,273 @@
     dto.slot_defensivo_id = idDecimal(dto.slot_defensivo_id, 'slot_defensivo_id', true, true);
     ['atributos', 'corpo', 'posicoes', 'habilidades', 'estilos_ia', 'pes',
       'playstyles', 'impetos'].forEach(function (grupo) { validaGrupoFicha(dto, grupo); });
+    /* A Ficha V1 e deliberadamente cadastral. A Build V2 chega pelo contrato
+       separado, nunca embutida aqui; o consumidor faz o overlay pelo card_id. */
     if (dto.build_publicada !== false ||
         dto.build_indisponivel_codigo !== 'CONTRATO_PONTUACAO_FINAL_AUSENTE') {
-      falha('PUBLICACAO_BUILD_INDISPONIVEL',
-        'A ficha nao pode declarar build sem o contrato oficial de pontuacao final.',
+      falha('FICHA_INVALIDA',
+        'A ficha fisica nao pode embutir uma Build fora do contrato V2.',
         { card_id: dto.card_id });
     }
     return dto;
+  }
+
+  function numeroObrigatorio(valor, campo) {
+    if (typeof valor !== 'number' || !Number.isFinite(valor)) {
+      falha('BUILD_INVALIDA', 'Numero obrigatorio invalido na Build publicada.', { campo: campo });
+    }
+    return valor;
+  }
+
+  function objetoJson(valor, campo) {
+    if (!valor || typeof valor !== 'object' || Array.isArray(valor)) {
+      falha('BUILD_INVALIDA', 'Objeto JSON invalido na Build publicada.', { campo: campo });
+    }
+    return valor;
+  }
+
+  function seloHex(valor, campo) {
+    if (typeof valor !== 'string' || !/^[a-f0-9]{64}$/.test(valor)) {
+      falha('BUILD_INVALIDA', 'Selo SHA-256 invalido na Build publicada.', { campo: campo });
+    }
+    return valor;
+  }
+
+  function normalizaArowsSnapshot(dto) {
+    if (!Array.isArray(dto.atributos_finais) || dto.atributos_finais.length !== 26 ||
+        !Array.isArray(dto.arows_snapshot) || dto.arows_snapshot.length !== 26) {
+      falha('BUILD_INVALIDA', 'A Build deve declarar os 26 atributos e as 26 linhas de peso.', {
+        card_id: dto.card_id
+      });
+    }
+    dto.atributos_finais.forEach(function (valor, indice) {
+      numeroObrigatorio(valor, 'atributos_finais[' + indice + ']');
+    });
+    dto.arows_snapshot.forEach(function (linha, indice) {
+      if (!Array.isArray(linha) || linha.length !== 6 || linha[0] !== indice) {
+        falha('BUILD_INVALIDA', 'Linha de atributo fora do formato canonicamente selado.', {
+          card_id: dto.card_id, indice: indice
+        });
+      }
+      for (var coluna = 0; coluna < linha.length; coluna++) {
+        numeroObrigatorio(linha[coluna], 'arows_snapshot[' + indice + '][' + coluna + ']');
+      }
+      if (linha[1] < 0 || Math.abs(linha[3] - dto.atributos_finais[indice]) > 0.000000001) {
+        falha('BUILD_INVALIDA', 'A Build tem peso negativo ou atributo final divergente.', {
+          card_id: dto.card_id, indice: indice
+        });
+      }
+    });
+  }
+
+  function barrasV2ParaSisBar(barras) {
+    var resultado = [];
+    BARRAS_V2_PARA_SISBAR.forEach(function (ponte) {
+      var chave = ponte[0];
+      if (!own.call(barras, chave)) return;
+      resultado.push([ponte[1], inteiro(barras[chave], 'barras.' + chave, 0)]);
+    });
+    return resultado;
+  }
+
+  /* Percentual e etiqueta de contratação pertencem ao contexto da Box. O
+     adaptador apenas valida e transporta o retrato vindo do banco: não contém
+     faixas, thresholds, fallback ou escolha local de etiqueta. */
+  function normalizaContratacoesPorBox(dto) {
+    if (!Array.isArray(dto.contratacoes_por_box)) {
+      falha('BUILD_INVALIDA', 'A Build deve declarar os contextos de contratação por Box.', {
+        card_id: dto.card_id
+      });
+    }
+    var vistos = Object.create(null);
+    dto.contratacoes_por_box = dto.contratacoes_por_box.map(function (contexto, indice) {
+      var prefixo = 'contratacoes_por_box[' + indice + ']';
+      objetoJson(contexto, prefixo);
+      var boxId = idDecimal(contexto.box_id, prefixo + '.box_id', false, false);
+      var boxNome = textoObrigatorio(contexto.box_nome, prefixo + '.box_nome');
+      var estado = textoObrigatorio(contexto.estado_box, prefixo + '.estado_box');
+      var origem = textoObrigatorio(contexto.origem_percentual, prefixo + '.origem_percentual');
+      var percentual = numeroObrigatorio(contexto.percentual_topo, prefixo + '.percentual_topo');
+      var codigo = textoObrigatorio(contexto.etiqueta_codigo, prefixo + '.etiqueta_codigo');
+      var rotulo = textoObrigatorio(contexto.etiqueta_rotulo, prefixo + '.etiqueta_rotulo');
+      var reguaVersao = textoObrigatorio(contexto.regua_versao, prefixo + '.regua_versao');
+      var congeladoEm = dataIso(contexto.congelado_em, prefixo + '.congelado_em');
+      if ((estado !== 'em_andamento' && estado !== 'finalizada') ||
+          (origem !== 'dinamica' && origem !== 'snapshot') ||
+          (estado === 'em_andamento' && (origem !== 'dinamica' || congeladoEm !== null)) ||
+          (estado === 'finalizada' && (origem !== 'snapshot' || congeladoEm === null)) ||
+          percentual < 0 || percentual > 100 || !/^[a-z0-9_]+$/.test(codigo) ||
+          !/^[A-Z0-9_]+$/.test(reguaVersao)) {
+        falha('BUILD_INVALIDA', 'Contexto de contratação fora do contrato V2.', {
+          card_id: dto.card_id, campo: prefixo
+        });
+      }
+      var chave = boxId + '|' + estado;
+      if (vistos[chave]) {
+        falha('BUILD_INVALIDA', 'A Build repetiu o mesmo contexto de contratação.', {
+          card_id: dto.card_id, box_id: boxId
+        });
+      }
+      vistos[chave] = true;
+      return {
+        boxId: boxId,
+        boxNome: boxNome,
+        estadoBox: estado,
+        origemPercentual: origem,
+        percentualTopo: percentual,
+        etiquetaCodigo: codigo,
+        etiquetaRotulo: rotulo,
+        reguaVersao: reguaVersao,
+        congeladoEm: congeladoEm
+      };
+    });
+  }
+
+  function normalizaBuildRow(row) {
+    var dto = selecionaCampos(row, BUILD_FIELDS, 'build');
+    validaContrato(dto, 'build');
+    dto.publicacao_v2_fingerprint = seloHex(dto.publicacao_v2_fingerprint,
+      'publicacao_v2_fingerprint');
+    dto.publicacao_linha_fingerprint_v2 = seloHex(dto.publicacao_linha_fingerprint_v2,
+      'publicacao_linha_fingerprint_v2');
+    dto.normalizacao_fingerprint = seloHex(dto.normalizacao_fingerprint,
+      'normalizacao_fingerprint');
+    dto.linha_id = idDecimal(dto.linha_id, 'linha_id', false, false);
+    dto.card_id = idDecimal(dto.card_id, 'card_id', false, false);
+    dto.funcao_id = idDecimal(dto.funcao_id, 'funcao_id', false, false);
+    dto.posicao_id = idDecimal(dto.posicao_id, 'posicao_id', true, false);
+    dto.build_otimizador_id = idDecimal(dto.build_otimizador_id, 'build_otimizador_id', false, false);
+    dto.build_bonificador_id = idDecimal(dto.build_bonificador_id, 'build_bonificador_id', false, false);
+    dto.tecnico_id = idDecimal(dto.tecnico_id, 'tecnico_id', false, false);
+    dto.carta_nome = textoObrigatorio(dto.carta_nome, 'carta_nome');
+    dto.carta_tipo = textoOpcional(dto.carta_tipo, 'carta_tipo');
+    dto.carta_box = textoOpcional(dto.carta_box, 'carta_box');
+    dto.carta_overall = numeroOpcional(dto.carta_overall, 'carta_overall');
+    dto.foto_url_cloudinary = fotoCloudinary(dto.foto_url_cloudinary);
+    dto.funcao_codigo = textoOpcional(dto.funcao_codigo, 'funcao_codigo') || '';
+    dto.funcao_nome = textoObrigatorio(dto.funcao_nome, 'funcao_nome');
+    dto.posicao_codigo = textoOpcional(dto.posicao_codigo, 'posicao_codigo') || '';
+    dto.posicao_nome = textoObrigatorio(dto.posicao_nome, 'posicao_nome');
+    dto.tecnico_nome = textoObrigatorio(dto.tecnico_nome, 'tecnico_nome');
+    objetoJson(dto.barras, 'barras');
+    if (dto.impeto_adicional_codigo !== null) {
+      inteiro(dto.impeto_adicional_codigo, 'impeto_adicional_codigo', 0);
+    }
+    if (!Array.isArray(dto.habilidades_adicionais)) {
+      falha('BUILD_INVALIDA', 'habilidades_adicionais deve ser array.', { card_id: dto.card_id });
+    }
+    dto.habilidades_adicionais.forEach(function (habilidade, indice) {
+      objetoJson(habilidade, 'habilidades_adicionais[' + indice + ']');
+      /* O catalogo fisico reserva `0` para a habilidade-base "Pedalada
+         simples"; e um identificador valido do contrato, nao uma ausencia. */
+      idDecimal(habilidade.skill_id, 'habilidades_adicionais[' + indice + '].skill_id', true, false);
+      textoObrigatorio(habilidade.nome, 'habilidades_adicionais[' + indice + '].nome');
+    });
+    normalizaArowsSnapshot(dto);
+    [
+      'pontuacao_otimizador_bruta_evidencia', 'pontuacao_otimizador_normalizada',
+      'bonus_pe', 'bonus_fisico_total', 'bonus_posicao', 'bonus_playstyle_1',
+      'bonus_playstyle_2', 'bonus_ia', 'bonus_total_bonificador', 'overall_final',
+      'pontuacao_final', 'topo_funcao', 'percentual_topo'
+    ].forEach(function (campo) { numeroObrigatorio(dto[campo], campo); });
+    objetoJson(dto.bonus_outros, 'bonus_outros');
+    objetoJson(dto.proveniencia, 'proveniencia');
+    normalizaContratacoesPorBox(dto);
+    dto.publicada_em = dataIso(dto.publicada_em, 'publicada_em');
+    if (!dto.publicada_em || dto.estado_final !== 'publicada' ||
+        dto.motivo_final !== 'PUBLICADA_V2_NORMALIZADA_NO_BANCO') {
+      falha('BUILD_INVALIDA', 'A linha nao esta publicada pelo contrato V2.', {
+        card_id: dto.card_id, linha_id: dto.linha_id
+      });
+    }
+    if (Math.abs(dto.pontuacao_final - dto.overall_final) > 0.000000001 ||
+        Math.abs(dto.overall_final -
+          (dto.pontuacao_otimizador_normalizada + dto.bonus_total_bonificador)) > 0.000000001 ||
+        Math.abs(dto.bonus_total_bonificador - (dto.bonus_pe + dto.bonus_fisico_total +
+          dto.bonus_posicao + dto.bonus_playstyle_1 + dto.bonus_playstyle_2 + dto.bonus_ia)) > 0.0001) {
+      falha('BUILD_INVALIDA', 'A composicao da nota oficial diverge da evidencia V2.', {
+        card_id: dto.card_id, linha_id: dto.linha_id
+      });
+    }
+    if (dto.proveniencia.pontuacao_final_oficial !== dto.overall_final ||
+        !dto.proveniencia.bonificador || !dto.proveniencia.bonificador.componentes) {
+      falha('BUILD_INVALIDA', 'A proveniencia V2 nao confirma os componentes da nota.', {
+        card_id: dto.card_id, linha_id: dto.linha_id
+      });
+    }
+    if (dto.foto_url_cloudinary) fotosPorCard[dto.card_id] = dto.foto_url_cloudinary;
+
+    /* Adaptadores de compatibilidade: nenhum deles recalcula ou apresenta a
+       nota. `nota()` recebe prioridade para pontuacao_final abaixo. */
+    dto.id = dto.card_id;
+    dto.nome = dto.carta_nome;
+    dto.box = dto.carta_box;
+    dto.fotoUrl = dto.foto_url_cloudinary;
+    dto.tipo = dto.funcao_nome;
+    dto.modelo = dto.funcao_nome;
+    dto.np = dto.posicao_codigo;
+    dto.sp = [];
+    dto.ovr = dto.carta_overall;
+    dto.sis = dto.atributos_finais.slice();
+    dto.arows = dto.arows_snapshot.map(function (linha) { return linha.slice(); });
+    dto.falta = [];
+    dto.b1 = dto.pontuacao_final;
+    dto.b1n = dto.pontuacao_final;
+    dto.b2 = 0; dto.b3 = 0; dto.b4 = 0; dto.b5 = 0;
+    dto.HAB = dto.habilidades_adicionais.map(function (habilidade) { return habilidade.nome; });
+    dto.TEC = dto.tecnico_nome;
+    dto.TECB = [];
+    /* O adicional não possui nome/efeito público neste contrato. Nunca se
+       deduz um ímpeto por código, nem se cria um valor quando ele vem nulo. */
+    dto.imp = '';
+    dto.imps = [];
+    dto.fab = []; dto.raras = []; dto.adds = []; dto.NEU = []; dto.com = [];
+    dto.frows = []; dto.sisBar = barrasV2ParaSisBar(dto.barras);
+    dto.base = null; dto.nm = []; dto.nx = [];
+    dto.h = null; dto.w = null; dto.age = null; dto.foot = null; dto.inj = null;
+    dto.orc = 0; dto.temMax = false; dto.sec = null; dto.MIG = false; dto.votos = 0;
+    dto.__cn = {
+      contrato: dto.schema_versao,
+      generationId: dto.publicacao_v2_fingerprint,
+      publicationLineFingerprint: dto.publicacao_linha_fingerprint_v2,
+      lineId: dto.linha_id,
+      cardId: dto.card_id,
+      functionId: dto.funcao_id,
+      positionId: dto.posicao_id,
+      normalizacaoFingerprint: dto.normalizacao_fingerprint,
+      pontuacaoNormalizada: dto.pontuacao_otimizador_normalizada,
+      bonusTotal: dto.bonus_total_bonificador,
+      bonusComponentes: {
+        pe: dto.bonus_pe, fisico: dto.bonus_fisico_total, posicao: dto.bonus_posicao,
+        playstyle1: dto.bonus_playstyle_1, playstyle2: dto.bonus_playstyle_2,
+        ia: dto.bonus_ia, outros: dto.bonus_outros
+      },
+      pontuacao_final: dto.pontuacao_final,
+      barras: dto.barras,
+      impetoAdicionalCodigo: dto.impeto_adicional_codigo,
+      contratacoesPorBox: dto.contratacoes_por_box,
+      publicadaEm: dto.publicada_em
+    };
+    /* A bruta e o percentual global permanecem como evidência no banco. A UI
+       recebe apenas a contratação contextual já resolvida por Box. */
+    delete dto.pontuacao_otimizador_bruta_evidencia;
+    delete dto.topo_funcao;
+    delete dto.percentual_topo;
+    return dto;
+  }
+
+  function normalizaBuildRows(rows) {
+    var vistos = Object.create(null);
+    return rows.map(function (row) {
+      var dto = normalizaBuildRow(row);
+      if (vistos[dto.linha_id]) {
+        falha('BUILD_INVALIDA', 'A RPC devolveu a mesma linha de Build duas vezes.', {
+          linha_id: dto.linha_id
+        });
+      }
+      vistos[dto.linha_id] = true;
+      return dto;
+    });
   }
 
   function normalizaRows(rows, recurso) {
@@ -770,18 +1114,85 @@
     }).catch(function (e) { registraErro(e); throw e; });
   }
 
-  function erroBuild() {
-    return new ReadModelError('PUBLICACAO_BUILD_INDISPONIVEL',
-      'Builds permanecem bloqueadas: falta o contrato oficial de pontuacao final.',
-      { build_indisponivel_codigo: 'CONTRATO_PONTUACAO_FINAL_AUSENTE' });
+  function opcoesPaginaBuild(opcoes) {
+    opcoes = opcoes || {};
+    if (!opcoes || typeof opcoes !== 'object' || Array.isArray(opcoes)) {
+      falha('PAGINACAO_INVALIDA', 'As opcoes da Build sao invalidas.');
+    }
+    var offset = own.call(opcoes, 'offset') ? opcoes.offset : 0;
+    var limite = own.call(opcoes, 'limit') ? opcoes.limit : 100;
+    if (!Number.isSafeInteger(offset) || offset < 0 || offset > MAX_TOTAL_ROWS ||
+        !Number.isSafeInteger(limite) || limite < 1 || limite > BUILD_PAGE_SIZE) {
+      falha('PAGINACAO_INVALIDA', 'A RPC V2 aceita paginas de 1 a 500 linhas.', {
+        offset: offset, limit: limite
+      });
+    }
+    return { offset: offset, limit: limite };
   }
 
-  function buildSyncBloqueada() {
-    var e = erroBuild(); registraErro(e); throw e;
+  function parametrosBuild(pagina, cardId) {
+    var parametros = { p_limit: pagina.limit, p_offset: pagina.offset };
+    if (cardId !== undefined && cardId !== null) parametros.p_card_id = cardId;
+    return parametros;
   }
 
-  function buildBloqueada() {
-    var e = erroBuild(); registraErro(e); return Promise.reject(e);
+  function falhaSemBuild() {
+    falha('SEM_BUILD_PUBLICADA',
+      'Ainda nao ha Build completa e publicada no contrato V2.',
+      { build_indisponivel_codigo: 'SEM_BUILD_PUBLICADA' });
+  }
+
+  function listarSync(opcoes) {
+    try {
+      var pagina = opcoesPaginaBuild(opcoes);
+      var rows = lerRpcSync('build', parametrosBuild(pagina));
+      var resultado = normalizaBuildRows(rows);
+      if (!resultado.length && pagina.offset === 0) falhaSemBuild();
+      mudaEstado('BUILDS_PRONTAS', 'A pagina de Builds V2 foi carregada.', {
+        offset: pagina.offset, quantidade: resultado.length, limite: pagina.limit
+      });
+      return resultado;
+    } catch (e) { registraErro(e); throw e; }
+  }
+
+  function listar(opcoes) {
+    var pagina;
+    try { pagina = opcoesPaginaBuild(opcoes); }
+    catch (e) { registraErro(e); return Promise.reject(e); }
+    return lerRpc('build', parametrosBuild(pagina)).then(function (rows) {
+      var resultado = normalizaBuildRows(rows);
+      if (!resultado.length && pagina.offset === 0) falhaSemBuild();
+      mudaEstado('BUILDS_PRONTAS', 'A pagina de Builds V2 foi carregada.', {
+        offset: pagina.offset, quantidade: resultado.length, limite: pagina.limit
+      });
+      return resultado;
+    }).catch(function (e) { registraErro(e); throw e; });
+  }
+
+  function cardSync(cardId) {
+    try {
+      var id = idDecimal(cardId, 'card_id', false, false);
+      var rows = lerRpcSync('build', parametrosBuild({ offset: 0, limit: BUILD_PAGE_SIZE }, id));
+      var resultado = normalizaBuildRows(rows);
+      mudaEstado('BUILD_CARD_PRONTA', 'As Builds V2 do card foram carregadas.', {
+        card_id: id, quantidade: resultado.length
+      });
+      return resultado;
+    } catch (e) { registraErro(e); throw e; }
+  }
+
+  function card(cardId) {
+    var id;
+    try { id = idDecimal(cardId, 'card_id', false, false); }
+    catch (e) { registraErro(e); return Promise.reject(e); }
+    return lerRpc('build', parametrosBuild({ offset: 0, limit: BUILD_PAGE_SIZE }, id))
+      .then(function (rows) {
+        var resultado = normalizaBuildRows(rows);
+        mudaEstado('BUILD_CARD_PRONTA', 'As Builds V2 do card foram carregadas.', {
+          card_id: id, quantidade: resultado.length
+        });
+        return resultado;
+      }).catch(function (e) { registraErro(e); throw e; });
   }
 
   function foto(cardOuId) {
@@ -808,15 +1219,16 @@
       },
       contratos: {
         boxes: CONTRATOS.boxes, home: CONTRATOS.home,
-        busca: CONTRATOS.busca, ficha: CONTRATOS.ficha
+        busca: CONTRATOS.busca, ficha: CONTRATOS.ficha, build: CONTRATOS.build
       },
       recursos: {
         boxes: RECURSOS.boxes, home: RECURSOS.home,
-        busca: RECURSOS.busca, ficha: RECURSOS.ficha
+        busca: RECURSOS.busca, ficha: RECURSOS.ficha, build: RECURSOS.build
       },
       fotosIndexadas: Object.keys(fotosPorCard).length,
-      transporte: 'GET + apikey', buildsDisponiveis: false,
-      build_indisponivel_codigo: 'CONTRATO_PONTUACAO_FINAL_AUSENTE'
+      transporte: 'GET + apikey', buildsDisponiveis: true,
+      build_indisponivel_codigo: null,
+      buildPaginaMaxima: BUILD_PAGE_SIZE
     });
   }
 
@@ -826,8 +1238,8 @@
     buscaSync: buscaSync, busca: busca,
     fichaSync: fichaSync, ficha: ficha,
     cartaSync: fichaSync, carta: ficha,
-    listarSync: buildSyncBloqueada, listar: buildBloqueada,
-    cardSync: buildSyncBloqueada, card: buildBloqueada,
+    listarSync: listarSync, listar: listar,
+    cardSync: cardSync, card: card,
     foto: foto, diagnostico: diagnostico,
     contratos: CONTRATOS, recursos: RECURSOS,
     ReadModelError: ReadModelError

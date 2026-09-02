@@ -12,7 +12,7 @@ echo.
 echo PROCESSAMENTO LOCAL: uma linha por vez. Nao envia nada ao banco.
 echo Para parar com seguranca, pressione Ctrl+C. O que ja foi gravado fica salvo.
 echo.
-"bin\OperacaoLocalJson.exe" processar
+"bin\OperacaoLocalJson.exe" processar %*
 set "codigo=%ERRORLEVEL%"
 echo.
 if not "%codigo%"=="0" echo O processamento terminou com codigo %codigo%. Leia a mensagem acima; os JSONs ja gravados foram preservados.

@@ -92,10 +92,11 @@ CORTE8 = True                       # False desliga a dedup por efeito (so para 
 # e um 'a' com til) — da UnicodeDecodeError e o motor NAO RODA. Mesmo defeito que
 # derrubou o import do equacao.py e escondeu a conta do motor da tela por dias.
 # ⛔ NAO MUDA A CONTA: o dado lido e byte por byte o mesmo.
-# 27/08 — o CAT_dom.json nao existe mais: os 58 impetos fabricaveis moram em
-# clube.impeto_fabricavel. Mesmo formato de sempre: [nome, 0|1, [[attr, valor]]].
+# 02/09 — o catálogo adicional chega exclusivamente no pacote selado de
+# clube_novo. Formato: [codigo_impeto, 0|1 para o slot, [[atributo, delta]]].
+# Os Ímpetos nativos/equipados na carta NÃO entram neste catálogo.
 import fonte_unica as _FU
-CAT = _FU.catalogo_fabricaveis()   # catalogo de impetos fabricaveis
+CAT = _FU.catalogo_fabricaveis()   # catálogo oficial de Ímpetos adicionais
 
 
 def expand(pairs):
@@ -121,8 +122,12 @@ class Card:
         self.tab = {i: _tb(a, p) for i, (a, p) in self.R.items()}
         self.pes = set(self.R)
         sl = c.get('sl') or [0, 0]
-        self.L  = [x for x in CAT if x[1] == 0 and any(i in self.pes for i, _ in x[2])] if sl[0] else []
-        self.Rr = [x for x in CAT if x[1] == 1 and any(i in self.pes for i, _ in x[2])] if sl[1] else []
+        # Vaga física é suficiente para o candidato entrar. Filtrar antes por
+        # atributos com peso deixava uma vaga vazia quando nenhum efeito
+        # coincidia com a função, contrariando a regra operacional: se há vaga
+        # e catálogo válido, o resultado precisa trazer um Ímpeto adicional.
+        self.L  = [x for x in CAT if x[1] == 0] if sl[0] else []
+        self.Rr = [x for x in CAT if x[1] == 1] if sl[1] else []
         self.nm = expand(c.get('nm'))
         # CONSERTO DA BUSSOLA (04/08): a escada de BASE+BARRAS por nivel. E dela
         # que sai a % da habilidade (Equacao 2), nao do valor final.
@@ -273,13 +278,7 @@ class Card:
 
     def build(self, extra_add=None):
         best = None
-        cands = [(None, None)]
-        for x in self.L: cands.append((expand(x[2]), x[0]))
-        for x in self.Rr: cands.append((expand(x[2]), x[0]))
-        for a in self.L:
-            va = expand(a[2])
-            for b2 in self.Rr:
-                vb = expand(b2[2]); cands.append(([va[i] + vb[i] for i in range(26)], a[0] + " + " + b2[0]))
+        cands = _cands_impeto(self)
         for ex, nome in cands:
             impeto_add = [self.nm[i] + (ex[i] if ex else 0) for i in range(26)]
             boost_add = list(extra_add) if extra_add else [0] * 26
@@ -331,14 +330,19 @@ def fila_incidencia(path_html, tipo):
 
 # ============ BUSCA CONJUNTA IMPETO x TECNICO — poda exata ============
 def _cands_impeto(card):
-    c = [(None, None)]
-    for x in card.L: c.append((expand(x[2]), x[0]))
-    for x in card.Rr: c.append((expand(x[2]), x[0]))
-    for a in card.L:
-        va = expand(a[2])
-        for b in card.Rr:
-            vb = expand(b[2]); c.append(([va[i] + vb[i] for i in range(26)], a[0] + " + " + b[0]))
-    return c
+    """Uma vaga livre exige exatamente um candidato adicional oficial.
+
+    A saída persistida possui um único ``impeto_adicional_codigo``. Por isso o
+    motor escolhe um candidato para o primeiro slot livre disponível; se os
+    dois estiverem livres, a ordem canônica do catálogo torna o slot 1 o
+    desempate estável. Sem vaga, a única opção legítima é nenhuma adição.
+    """
+    c = []
+    for x in card.L:
+        c.append((expand(x[2]), x[0]))
+    for x in card.Rr:
+        c.append((expand(x[2]), x[0]))
+    return c or [(None, None)]
 
 def _por_m(TECS):
     from collections import defaultdict
@@ -730,7 +734,7 @@ def tecnicos_uteis(card, TECS):
     return out
 
 def impetos_uteis(card):
-    """deduplica impetos pelo efeito nos atributos COM PESO."""
+    """Deduplica candidatos sem permitir que uma vaga volte a ficar vazia."""
     pes = set(card.R); vis = {}; out = []
     for ex, nome in _cands_impeto(card):
         k = tuple((i, ex[i]) for i in range(26) if ex and ex[i] and i in pes)

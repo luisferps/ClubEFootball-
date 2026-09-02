@@ -1,9 +1,88 @@
 # Manual do Bonificador — ClubEfootball
 
-**Versão 1.11 · 01/09/2026**
+**Versão 1.15 · 02/09/2026**
 
-Há um único ícone para o operador:
-`2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe`.
+Há uma tarefa física principal para operar o lote:
+`2-MOTORES/BONIFICADOR/RODAR-LOTE-BONIFICADOR.bat`.
+
+Ela chama o processador equivalente que fica em
+`2-MOTORES/BONIFICADOR/OPERACAO-LOCAL-LOTE/PROCESSAR-FILA-BONIFICADOR.bat`.
+O aplicativo `.exe` continua preservado para consulta visual, mas não é o caminho
+de execução do lote.
+
+## Processar Fila do Bonificador — batch físico
+
+O batch é uma tarefa de console, no mesmo padrão físico de **Processar Fila** do
+Otimizador. Ao dar dois cliques, ele pede confirmação explícita **S/N**. Digitar
+`N`, fechar a tarefa, ou executar `status` não reserva linha, não calcula e não
+grava resultado. Para processar, confirme `S` ou execute:
+
+```bat
+RODAR-LOTE-BONIFICADOR.bat processar
+```
+
+Enquanto está em execução, a própria janela de console mostra o progresso real do
+motor. Um único `Ctrl+C` pede **pausa cooperativa**: a linha que já estiver em curso
+termina de forma atômica, nenhuma próxima linha é reservada e o estado é relido do
+banco. Os comandos `status`, `pausar` e `parar` também passam somente pelos contratos
+versionados do lote. `status` é estritamente leitura.
+
+O batch não depende de Excel, navegador, UI ou de uma instalação específica de
+`psycopg`: se o driver local estiver disponível, usa o canal transacional local; se
+não estiver, usa a mesma allowlist de RPC HTTPS autenticada. Em ambos os casos não há
+acesso direto a tabela, schema exposto ou fallback legado.
+
+Se aparecer **“a tarefa terminou com código 1”**, execute uma única vez:
+
+```bat
+RODAR-LOTE-BONIFICADOR.bat diagnostico
+```
+
+Esse modo não inicia o lote. Ele mostra, sem expor chave ou URL, a versão do Python,
+presença de `config.txt`, presença do motor, disponibilidade do driver e o resultado
+da leitura do contrato do lote. Os erros de instalação, Python incompatível,
+configuração ausente e contrato/conexão recusado ficam descritos antes da pausa da
+janela.
+
+## Batch operacional V1 — fila, resultados e controles
+
+O aplicativo único está na versão **V2.0.26**. Ele mostra um **lote identificado**
+antes de executar qualquer cálculo. Em 02/09/2026 o lote preparado é
+`a69a67b0-7443-45b3-a859-334ab90919af`: ele tem **10.585 elegíveis e 10.585
+pendentes**, mas **zero itens reservados, zero processando, zero concluídos, zero sem
+bônus e zero falhas**. Preparar ou apenas abrir a tela não chama o writer nem altera
+uma carta.
+
+A descoberta é direta, contínua e exclusiva do modelo novo: uma linha só aparece se
+`build_otimizador_id` existe, `estado_otimizador='concluido'` e
+`build_bonificador_id` ainda está vazio. O lote não usa marcador, lote do Otimizador,
+fila manual ou tabela legada. Quando o operador iniciar, novas linhas que chegarem a
+esse mesmo estado entram na sincronização do lote; um vínculo Bonificador existente,
+inclusive com total **0**, é resultado final e jamais volta à fila.
+
+Na aba **Lote do Bonificador**, a tela mostra o ID do lote, publicação desligada,
+contadores de elegíveis, pendentes, em processamento, concluídas, sem bônus e falhas,
+além da linha atual por nome humano. A lista é paginada em 100 linhas e usa carta,
+função e posição por extenso. A aba **Fila de resultados** mostra as parcelas reais e
+o total já confirmado; ela não recalcula nada na janela.
+
+Os botões têm papéis distintos:
+
+- **Iniciar / Retomar** cria o snapshot estável das linhas elegíveis ou continua um
+  lote pausado e só então abre o motor local.
+- **Pausar** pede a parada cooperativa e espera terminar a linha atômica atual; os
+  pendentes permanecem preservados para retomar.
+- **Parar lote** encerra o lote após a linha atômica, preserva os resultados já
+  gravados e marca os pendentes interrompidos; não apaga nenhuma linha.
+
+Publicação permanece bloqueada no próprio lote (`publicacao_liberada=false`). A tela
+fala com o componente local em loopback, que chama apenas RPCs versionadas; o
+navegador não recebe credencial, schema nem acesso direto a `clube_novo`.
+
+O ensaio de controle foi executado integralmente em rollback: reservou 10.585 itens,
+selecionou a linha canônica 3091, fez a transição iniciar → pausar → pausado e reverteu
+tudo. O readback final voltou a lote preparado, 0 itens persistidos e 0 resultados
+novos. Portanto, esta preparação não iniciou o batch real.
 
 ## Pontuação final canônica para Ranking, Elenco e Ficha
 
@@ -23,8 +102,17 @@ continuam bloqueados.
 Para a interface existe somente a RPC de leitura
 `public.frontend_build_publicada_v1(card_id, funcao_id, limit, offset)`. Ela devolve
 apenas Builds já publicadas e seladas; não devolve candidatas, não grava nada e não
-expõe as tabelas de `clube_novo`. A rodada de 613 linhas existente é de teste e segue
-bloqueada de propósito: **0 linhas foram publicadas por esta implantação**.
+expõe as tabelas de `clube_novo`. Em 02/09/2026, as 613 linhas que concluíram a
+paridade foram promovidas de forma transacional para publicação: **613 publicadas,
+0 excluídas e 0 divergências entre snapshot, projeção e RPC**. A promoção não
+recalculou fórmula, pesos, ordem, Otimizador nem bônus; apenas retirou o selo de
+teste após conferir os dois resultados e seus selos.
+
+Cada promoção fica ligada ao lote privado de proveniência
+`clube_novo.bonificador_lote_publicacao_v1`. O lote registra contrato, fingerprint,
+estado e evidência; a cópia integral anterior de cada linha fica em
+`clube_novo.bonificador_promocao_publicacao_snapshot_v1`. O rollback documentado
+restaura somente esses campos de promoção e não apaga resultados já calculados.
 
 ## Ciclo operacional: Extrator → Bonificador
 
@@ -35,10 +123,17 @@ linhas recebeu seu resultado em `clube_novo.build_bonificador` e deixou a fila.
 
 Por isso, abrir o **Extrator** depois de uma rodada concluída não repete nem
 altera esses 613 resultados. O propósito dele é trazer cartas novas ou suas
-atualizações. Quando o fluxo canônico gerar para uma delas uma
-`build_linha_card` pronta, com o marcador `bonificador_nao_executado`, ela passa
-a aparecer na **Fila do Bonificador**. Se o Bonificador estiver iniciado, ele
-consulta a fila periodicamente e calcula somente essas novas linhas.
+atualizações. Uma linha aparece na **Fila do Bonificador** quando possui resultado
+concluído do Otimizador (`build_otimizador_id` presente e
+`estado_otimizador='concluido'`) e ainda não possui resultado do Bonificador
+(`build_bonificador_id` vazio). A identidade é a própria `build_linha_card.id`; não
+há marcador, recorte de lote ou fila manual. Se o Bonificador estiver iniciado, ele
+consulta a fila a cada 5 segundos e capta linhas novas sem recriar batch.
+
+Um resultado Bonificador ligado à linha, inclusive quando o bônus total é `0`,
+significa que ela já foi processada e fica fora da fila. A ausência de vínculo é o
+único estado pendente; o writer trava a linha e devolve readback idempotente se outra
+instância já a confirmou. A publicação continua sendo um gate separado.
 
 Em resumo: **Extrator prepara dados novos; Bonificador calcula os bônus das
 linhas novas prontas; linhas confirmadas ficam gravadas e não voltam para a
@@ -60,17 +155,16 @@ janela WinForms leem a resposta do contrato em UTF-8. Portanto, acentos e as 613
 navegador ou conversão manual. O botão **Parar normalmente** termina a rodada atual e
 impede a próxima, sem travar a janela.
 
-## Fila canônica V4
+## Fila canônica V5
 
-O Bonificador usa `public.bonificador_contexto_fila_v4`, contrato privado que
-lista diretamente as linhas canônicas marcadas com `bonificador_nao_executado`
-em `clube_novo.build_linha_card`. A identidade permanece em
-`build_linha_card.id`; não há recorte de teste nem dependência de `bonificador_par`.
-Para entrar na lista, a própria linha também precisa estar `concluido/pendente/concluido`
-nos seus três estados canônicos de prontidão. Isso não consulta uma fila externa.
+O Bonificador usa `public.bonificador_contexto_fila_v5`, contrato privado que
+lista diretamente as linhas canônicas em `clube_novo.build_linha_card` cujo Otimizador
+já concluiu e cujo Bonificador ainda não existe. A identidade permanece em
+`build_linha_card.id`; não há marcador, recorte de teste, lote do Otimizador ou
+dependência de `bonificador_par`. Isso não consulta uma fila externa.
 
 Motor e aplicativo local leem `bonificador_regua_v2`, `bonificador_carta_v2`
-e a fila V4. O escritor `gravar_build_bonificador_v4` é transacional, aceita
+e a fila V5. O escritor `gravar_build_bonificador_v4` é transacional, aceita
 somente linha que ainda tenha a marca canônica e confere identidade, gates,
 versões, fingerprints e a soma das parcelas. Ele não publica nem cria lote.
 
@@ -137,9 +231,10 @@ Assim a janela continua sem credencial de administrador e sem acesso a tabela; e
 somente com o componente local e este chama contratos versionados.
 
 O motor de lote permanece em `2-MOTORES/BONIFICADOR/motor_bonus.py`. O ponto normal de
-uso é o aplicativo local `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe`: seus
-botões iniciam, acompanham e param o processo local do motor sem expor a chave ou o
-schema à janela. Testes, SQL e recuperação permanecem em
+uso é o batch físico `RODAR-LOTE-BONIFICADOR.bat`, que chama
+`OPERACAO-LOCAL-LOTE/PROCESSAR-FILA-BONIFICADOR.bat` e mantém o console aberto com o
+progresso. O aplicativo `Bonificador ClubEfootball.exe` é somente uma consulta visual
+separada; não substitui a tarefa em lote. Testes, SQL e recuperação permanecem em
 `4-DOCUMENTOS/BONIFICADOR`, fora do runtime.
 
 ### Auditoria, paridade e recuperação
@@ -201,7 +296,7 @@ gravada nem impressa. O lote produtivo não foi executado nesta migração.
 | playstyle do slot 2 | `slot_defensivo_id` + `clube.estilo_defensivo` | estilo físico gravado no segundo slot | `clube_novo.carta_playstyle_jogo` + `playstyle` | (`card_id`,`slot_fisico=2`); `playstyle_id=id_jogo`; catálogo apto |
 | regra de estilo | `clube.estilo_regra` + `posicao_slot` | regra ClubEfootball de casa/ativação e slot dominante | `clube_novo.bonificador_regra_playstyle` + `bonificador_posicao_slot` | `playstyle.id_jogo`, `posicao_jogo.id`, `funcao_sistema.id`; 90 regras, incluindo 291 físico |
 | estilos de IA | JSON `clube.carta_jogo.estilos_ia` | quantidade de bits de IA ligados na carta | `clube_novo.carta_estilo_ia_jogo` + `estilo_ia` | (`card_id`,`bit_estilo_ia`); catálogo pelo bit físico e `pode_rodar` |
-| pares card × função | `clube.build` | universo histórico já calculado | `clube_novo.build_linha_card` filtrado por `pendencias @> {'bonificador_nao_executado'}` | `build_linha_card.id`, `card_id`, `funcao_id`; fonte operacional V4, sem `clube.build` nem `bonificador_par` |
+| pares card × função | `clube.build` | universo histórico já calculado | `clube_novo.build_linha_card` filtrado por `pendencias @> {'bonificador_nao_executado'}` | `build_linha_card.id`, `card_id`, `funcao_id`; fonte operacional V5, sem `clube.build` nem `bonificador_par` |
 | parâmetros não físicos | `clube.bonus_parametro` | tetos e pesos da regra ClubEfootball | `clube_novo.bonificador_parametro` | 14 valores preservados, sem semântica por texto legado |
 | saída | `clube.build.b_*` via writer legado | fotografia histórica | `clube_novo.build_bonificador` via `gravar_build_bonificador_v4` | writer canônico; nenhuma execução produtiva autorizada |
 
@@ -383,12 +478,12 @@ não fazem parte do pacote operacional.
 ### O que a tela mostra
 
 - **Fila do Bonificador:** estado, progresso, linha atual, pendentes, calculadas,
-  confirmadas, eventos e pares retornados pela fila V4.
+  confirmadas, eventos e pares retornados pela fila V5.
 - **Testar uma carta:** consulta somente leitura de corpo, pé ruim, posição principal,
   slots 1 e 2 de playstyle, IA, molde, régua, parcelas e gates.
 - **Auditoria e paridade:** contrato, proveniência, cardinalidades e fingerprints.
 
-As consultas rodam em segundo plano. A fila V4 e a régua são verificadas
+As consultas rodam em segundo plano. A fila V5 e a régua são verificadas
 separadamente: a fila não consulta a régua apenas para montar rótulos. Se a régua
 falhar, a tela continua mostrando a fila já lida como **Fila disponível; régua
 indisponível** e mantém o início bloqueado. Se a fila falhar, a tela mostra **Fila

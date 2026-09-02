@@ -1,6 +1,6 @@
 # Manual do Otimizador — ClubEfootball
 
-**Versão 2.3 · 02/09/2026**
+**Versão 2.7 · 02/09/2026**
 
 ## 1. Finalidade e nome
 
@@ -1720,6 +1720,12 @@ linha. Eles fazem apenas `GET` em loopback. Para carregar a revisão em uma
 janela já aberta, feche somente a janela do painel e abra novamente
 **Otimizador ClubEfootball.exe**; isso reabre a tela e não altera a fila.
 
+Se **Fila** ou **Resultados** entrar em reconexão, aguarde a tentativa
+automática. As duas leituras são independentes e uma falha visual não prova
+que o worker parou. Não clique novamente em **Retomar**, **Pausar** ou
+**Parar** para forçar a atualização: os comandos só devem ser usados quando o
+estado resumido de `clube_novo` habilitar a ação correspondente.
+
 Prova realizada com o serviço local ativo: `GET /api/fila/linhas` devolveu 100
 linhas de uma fila de 184.827, `GET /api/resultados` devolveu 100 resultados de
 521 e ambos incluíram a linha atual. O teste de interface passou com 29 casos,
@@ -1782,8 +1788,23 @@ pendentes, zero em processamento e `SEM PUBLICAÇÃO`.
 Abra somente **Otimizador ClubEfootball.exe**. O painel abre já em estado
 seguro; abrir o ícone não calcula uma carta por acidente. Quando a tela disser
 **Pausado** e o botão verde disser **Retomar**, clique **uma vez**. O próprio
-aplicativo liga o worker correto e a tela deve passar a mostrar uma linha em
-processamento. Não é necessário abrir `.bat`, terminal ou uma segunda cópia.
+aplicativo liga obrigatoriamente o worker da esteira para o lote integral,
+mesmo quando a preparação já estiver 100% concluída. Aguarde a mudança de
+estado; não repita o clique, não abra `.bat`, terminal ou uma segunda cópia.
+
+Se aparecer **Recuperar fila**, use-o uma única vez e confirme somente depois
+de conferir que a tela informa reserva sem worker local. A recuperação segura
+devolve apenas a linha presa para **pendente**, preserva as concluídas e deixa o
+lote **Pausado**; ela não retoma o cálculo sozinha. Depois disso, use
+**Retomar** uma única vez.
+
+Para uma interrupção temporária, clique **Pausar** uma vez e espere
+**Pausado**, com zero linha em processamento, antes de fechar ou trocar de
+computador. **Parar** não é pausa: use somente para encerrar a rodada e confirme
+conscientemente; as concluídas ficam preservadas e as pendentes ficam
+interrompidas. Nenhum desses comandos publica resultado ou inicia o
+Bonificador automaticamente. A fila e os resultados operacionais continuam
+exclusivamente em `clube_novo`, sem fonte ou fallback legado.
 
 ### Provas V46
 
@@ -2046,7 +2067,7 @@ copiada ao lado da pasta antiga: ao abrir o ícone novo, ele troca sozinho o
 serviço anterior apenas se a fila estiver pausada/ociosa. A configuração local
 continua fora da cópia e não é apagada.
 
-## 30. Operação local em JSON — V65 (02/09/2026)
+## 30. Operação local em JSON — V65 + V66 (02/09/2026)
 
 Esta é a operação vigente. Ela substitui o uso do painel para processar a fila
 integral, mas não apaga seu código: o executável, runtime e lançadores antigos
@@ -2090,8 +2111,10 @@ Posição: Ponta direita
 ```
 
 Também mostra cartas preparadas, linhas no pacote local, concluídas localmente,
-JSONs prontos, enviadas/confirmadas, item em andamento, pendentes e problemas.
-O ID continua visível para conferência, mas sempre ao lado do nome da carta.
+**resultados únicos** prontos para envio, enviadas/confirmadas, item em andamento,
+pendentes e problemas. Se houver cópia local repetida, a tela informa quantas
+repetições foram ignoradas. O ID continua visível para conferência, mas sempre
+ao lado do nome da carta.
 
 ### Fluxo de trabalho
 
@@ -2128,6 +2151,21 @@ uma linha já concluída, só há confirmação idempotente se o fingerprint for
 exatamente o mesmo; uma divergência para e registra a falha, sem duplicar Build.
 Nenhum resultado é publicado por esse fluxo (`pode_publicar=false`).
 
+Se a divergência informar que a linha já foi concluída com outro resultado, o
+enviador não tenta substituir o dado do banco nem para a fila inteira. Ele grava
+um arquivo de auditoria em `CONFLITOS-NO-BANCO/`, registra a decisão local e
+move o JSON misto para `ARQUIVADOS-COM-CONFLITO/` quando todas as suas linhas já
+receberam uma decisão. As demais linhas do mesmo JSON continuam sendo enviadas
+uma por vez. Um erro diferente continua parando o envio sem apagar o JSON.
+
+### Correção V66 — recibo de importação local
+
+V66 inclui `linha_importada_json_local` entre os eventos permitidos na tabela
+de auditoria. Sem essa permissão, o banco recusava a confirmação com o erro
+`otimizador_evento_producao_v3_evento_check` e desfazia a transação inteira.
+Depois de aplicar V66, o mesmo JSON permanece em `PENDENTES/` e pode ser enviado
+novamente: a linha que havia sido recusada não foi gravada, nem apagada.
+
 ### Levar para outro computador
 
 Copie a pasta `OPERACAO-LOCAL-JSON` inteira, incluindo `bin/`,
@@ -2150,6 +2188,12 @@ Se o outro computador já recebeu uma cópia antiga e ela apresentou
 `OPERACAO-LOCAL-JSON/bin/` pela `bin/` desta versão. Não apague nem substitua
 `PACOTE-FILA-INTEGRAL/`, `RESULTADOS-JSON/` ou o `config.txt` local: eles são a
 fila levada, o trabalho já salvo e a chave privada daquele computador.
+
+Se aparecer `contrato de resultado desconhecido: resultado-XXXXXX.resumo.json`,
+o executável anterior confundiu um recibo de resumo com um resultado. Feche a
+janela, substitua somente `bin/OperacaoLocalJson.exe` pela versão nova e abra
+`PROCESSAR-FILA.bat` novamente. Não apague nem mova nenhum JSON; a versão nova
+ignora os resumos e retoma a próxima linha ainda pendente.
 
 No computador de destino, não abra `Otimizador ClubEfootball.exe`, não clique
 em **Retomar** no painel antigo e não copie somente o `.exe`. Use exclusivamente

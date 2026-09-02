@@ -1,11 +1,13 @@
 @echo off
 setlocal
-title Extrator de fotos dos cards - interface local
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0abrir-interface.ps1"
-if errorlevel 1 (
+chcp 65001 >nul
+title Extrator de Fotos - Controle Operacional
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0controle-operacional.ps1"
+set "CODIGO=%ERRORLEVEL%"
+if not "%CODIGO%"=="0" (
   echo.
-  echo A interface local parou com erro. Leia a mensagem acima.
+  echo O controle operacional terminou com erro. Leia a mensagem acima.
+  echo.
+  pause
 )
-echo.
-pause
-endlocal
+endlocal & exit /b %CODIGO%

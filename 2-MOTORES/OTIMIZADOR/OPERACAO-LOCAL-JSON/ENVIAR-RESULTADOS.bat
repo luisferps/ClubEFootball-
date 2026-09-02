@@ -13,7 +13,7 @@ echo ENVIO: cada linha e confirmada separadamente pelo banco.
 echo A data e hora confirmada ficam no recibo local e na linha do banco.
 echo Para parar com seguranca, pressione Ctrl+C. Nada confirmado sera enviado de novo.
 echo.
-"bin\OperacaoLocalJson.exe" enviar
+"bin\OperacaoLocalJson.exe" enviar %*
 set "codigo=%ERRORLEVEL%"
 echo.
 if not "%codigo%"=="0" echo O envio parou com codigo %codigo%. Nenhum JSON foi apagado.
