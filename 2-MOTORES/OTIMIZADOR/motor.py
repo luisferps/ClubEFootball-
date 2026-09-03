@@ -105,6 +105,33 @@ def expand(pairs):
     return v
 
 
+# ⛔ REGRA DO JOGO (Luis, 03/09, conferida por ele no proprio jogo):
+#     jogador de linha NUNCA recebe Impeto de goleiro
+#     goleiro recebe QUALQUER Impeto, inclusive os de linha
+#
+# Os cinco atributos de goleiro sao os indices 21 a 25 do vetor canonico:
+# Talento, Firmeza, Defesa, Reflexos e Alcance do GO. Um candidato e "de
+# goleiro" quando TODOS os seus atributos estao nessa faixa — medido no
+# catalogo, nunca por lista de nome: dos 29 adicionais, 2 sao so de goleiro
+# (Goalkeeping, Defesaca), 27 sao so de linha, nenhum e misto. Impeto novo
+# que a Konami publique ja entra classificado certo, sem manutencao.
+#
+# Ate hoje isso funcionava por CONSEQUENCIA, nao por regra: esses atributos
+# tem peso zero nas funcoes de linha, e o motor pontua por peso x valor, entao
+# um candidato so de goleiro soma zero e perde para qualquer outro. Mas se numa
+# funcao de linha todos os candidatos empatassem em zero, o desempate seria a
+# ordem do catalogo e um Impeto de goleiro entraria. Passa a nao poder.
+IDX_GOLEIRO = frozenset((21, 22, 23, 24, 25))
+
+
+def so_de_goleiro(efeitos):
+    """True quando todos os atributos do candidato sao dos indices 21..25.
+
+    Sem atributo nenhum devolve False: falta de dado nunca vira acusacao."""
+    indices = {int(i) for i, _ in (efeitos or [])}
+    return bool(indices) and indices <= IDX_GOLEIRO
+
+
 class Card:
     """pre-computa tudo que nao depende do impeto/tecnico.
     m = multiplicador tatico do tecnico. A cadeia:
@@ -126,8 +153,13 @@ class Card:
         # atributos com peso deixava uma vaga vazia quando nenhum efeito
         # coincidia com a função, contrariando a regra operacional: se há vaga
         # e catálogo válido, o resultado precisa trazer um Ímpeto adicional.
-        self.L  = [x for x in CAT if x[1] == 0] if sl[0] else []
-        self.Rr = [x for x in CAT if x[1] == 1] if sl[1] else []
+        # A funcao e de goleiro quando tem peso em algum dos cinco atributos
+        # de GO. `self.pes` sao os indices com peso, vindos do molde da funcao.
+        _funcao_de_goleiro = bool(self.pes & IDX_GOLEIRO)
+        def _cabe(x):
+            return _funcao_de_goleiro or not so_de_goleiro(x[2])
+        self.L  = [x for x in CAT if x[1] == 0 and _cabe(x)] if sl[0] else []
+        self.Rr = [x for x in CAT if x[1] == 1 and _cabe(x)] if sl[1] else []
         self.nm = expand(c.get('nm'))
         # CONSERTO DA BUSSOLA (04/08): a escada de BASE+BARRAS por nivel. E dela
         # que sai a % da habilidade (Equacao 2), nao do valor final.

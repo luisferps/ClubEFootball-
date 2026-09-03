@@ -215,7 +215,14 @@ class PacoteLocalV1:
             raise FalhaPacoteLocal("manifesto recebido pertence a outro lote")
         if resposta.get("pode_publicar") is not False:
             raise FalhaPacoteLocal("manifesto tentou habilitar publicação")
-        if resposta.get("impetos_condicionais") != "desligados":
+# 03/09 — o manifesto passou a dizer COMO o condicional entra, em vez de
+        # jurar que ele esta desligado. Os valores validos sao os tres abaixo;
+        # qualquer outro continua sendo recusa, para que um contrato estranho
+        # nao ligue nada por acaso.
+        #   "desligados"      contrato antigo, nenhuma linha condicional
+        #   "nenhum_no_lote"  o lote simplesmente nao tem carta condicional
+        #   "por_degrau"      tem, e cada linha traz o par codigo+nivel
+        if resposta.get("impetos_condicionais") not in ("desligados", "nenhum_no_lote", "por_degrau"):
             raise FalhaPacoteLocal("manifesto tentou habilitar Ímpetos condicionais")
         if resposta.get("formula_fingerprint") != FORMULA_APROVADA:
             raise FalhaPacoteLocal("manifesto não usa a fórmula aprovada")
@@ -367,7 +374,8 @@ class PacoteLocalV1:
             raise FalhaPacoteLocal("selo de lote/fórmula inválido no pacote local")
         if m.get("motor_versao") != MOTOR_VERSAO:
             raise FalhaPacoteLocal("pacote local exige outra versão do motor")
-        if m.get("pode_publicar") is not False or m.get("impetos_condicionais") != "desligados":
+        if (m.get("pode_publicar") is not False
+                or m.get("impetos_condicionais") not in ("desligados", "nenhum_no_lote", "por_degrau")):
             raise FalhaPacoteLocal("pacote local não preserva os gates obrigatórios")
         regua = m.get("regua")
         if not isinstance(regua, dict) or (regua.get("gate") or {}).get("pode_rodar") is not True:
@@ -814,13 +822,21 @@ class WorkerFilaLocalV1:
         if not isinstance(carta.get("carta"), dict):
             raise FalhaPacoteLocal("fotografia local da carta está ausente")
         self._runner.carrega_carta_snapshot_producao_v3(carta["carta"])
+        # 03/09 — o degrau do Ímpeto condicional vem DA LINHA, não mais fixo em
+        # None. O pacote local sempre trouxe os dois campos; eles eram jogados
+        # fora aqui. Cada combinação função+posição tem três linhas, uma por
+        # degrau, e é este par que diz qual delas está sendo calculada.
+        _cond_codigo = linha.get("impeto_condicional_codigo")
+        _cond_nivel = linha.get("impeto_condicional_nivel")
         saida = self._runner.trabalha({
             "n": int(linha["linha_id"]),
             "card_id": str(linha["card_id"]),
             "funcao_id": int(linha["funcao_id"]),
             "posicao_id": int(linha["posicao_id"]),
-            "impeto_condicional_codigo": None,
-            "impeto_condicional_nivel": None,
+            "impeto_condicional_codigo": (
+                None if _cond_codigo is None else int(_cond_codigo)),
+            "impeto_condicional_nivel": (
+                None if _cond_nivel is None else int(_cond_nivel)),
             "origem": "fila_local_v1",
         })
         if not isinstance(saida, dict) or saida.get("ERRO"):
@@ -834,8 +850,12 @@ class WorkerFilaLocalV1:
             "motor_versao": self.pacote.manifesto["motor_versao"],
             "lote_fingerprint": self.pacote.manifesto["lote_fingerprint"],
             "carta_entrada_fingerprint": linha["carta_entrada_fingerprint"],
-            "impeto_condicional_codigo": None,
-            "impeto_condicional_nivel": None,
+            # O resultado carimba o degrau que foi calculado. A porta do banco
+            # confere este par contra a linha antes de gravar.
+            "impeto_condicional_codigo": (
+                None if _cond_codigo is None else int(_cond_codigo)),
+            "impeto_condicional_nivel": (
+                None if _cond_nivel is None else int(_cond_nivel)),
         })
         tecnico_id = saida.get("tecnico_id")
         try:

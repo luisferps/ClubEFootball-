@@ -280,8 +280,26 @@ def prepara_lote_producao_v3(regua_snapshot):
 def carrega_carta_snapshot_producao_v3(pacote):
     """Coloca uma única carta V3 selada na base do executor local.
 
-    A reserva da linha já recusa Ímpetos condicionais. Repetir a conferência
-    aqui evita que um contrato errado consiga ligar esse consumidor por acaso.
+    ⛔ 03/09 — O ÍMPETO CONDICIONAL VOLTOU A RODAR.
+
+    Até aqui esta função recusava qualquer carta com Ímpeto condicional, para
+    que "um contrato errado não conseguisse ligar esse consumidor por acaso".
+    O efeito colateral foi grande: 1.170 cartas ficaram fora de toda fila — nem
+    calculadas, nem pendentes — e as 210 linhas condicionais que existiam
+    saíram todas sem Ímpeto adicional.
+
+    A regra do jogo (Luis, medida no videogame em 31/07 e reafirmada em 03/09):
+    cada combinação função+posição roda TRÊS linhas, uma por degrau.
+
+        1 a 7 jogadores da condição  -> +1
+        8 a 10                       -> +2
+        11 a 23                      -> +3
+
+    Quem confere agora é `fonte_unica.vetor_impetos_da_linha`, e ele confere
+    melhor do que esta recusa: exige código E nível quando a carta tem
+    condicional, exige que o código pertença à carta, e exige que o nível caiba
+    no `nivel_maximo` físico dela. Uma carta com dois condicionais também é
+    recusada lá. A conferência não sumiu — mudou para onde há dado para fazê-la.
     """
     if not _W:
         raise RuntimeError('executor V3 ainda não recebeu a régua selada')
@@ -289,8 +307,6 @@ def carrega_carta_snapshot_producao_v3(pacote):
     carta = fonte_unica._traduz(pacote)
     if not carta or not (carta.get('gate') or {}).get('pode_rodar'):
         raise RuntimeError('snapshot da carta V3 recusado pelo gate')
-    if any(bool(x.get('condicional')) for x in (carta.get('impetos') or [])):
-        raise RuntimeError('Ímpeto condicional permanece desligado na fila produtiva V3')
     card_id = str(carta['id']).split('@')[0]
     _W.setdefault('BASE', {})[card_id] = carta
     return carta

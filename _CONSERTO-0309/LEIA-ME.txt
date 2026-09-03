@@ -1,0 +1,43 @@
+PASTA DE CONSERTO - 03/09/2026
+==============================
+
+Tudo aqui e conserto pontual. Quando as tres etapas terminarem e o
+COMPLETAR-NUMEROS tiver rodado, esta pasta inteira pode ser apagada.
+Nada do sistema depende dela.
+
+A CORRECAO DAS 80 LINHAS
+------------------------
+80 linhas de 13 cartas que tem vaga fisica de Impeto e cujo Build saiu
+sem Impeto adicional. Sao as que a correcao V8 nao alcancou, porque ela
+varreu so o lote principal e essas estavam fora de lote, vindas do teste
+legado de 50 cards.
+
+Lote: eb4d4208-391c-41d6-a43e-38ac25a9c296
+
+Clique em ordem:
+
+   1-GERAR-PACOTE.bat    baixa a fotografia selada do lote
+   2-PROCESSAR.bat       calcula as 80 linhas, uma por vez
+   3-ENVIAR.bat          manda ao banco
+
+Se alguma tela mostrar erro, mande ela para o Claude antes de seguir.
+
+OS 26 ATRIBUTOS FINAIS
+----------------------
+   COMPLETAR-NUMEROS.bat
+
+Ate 02/09 a porta do banco lia seis campos do resultado e ignorava o
+resto. O motor SEMPRE mandou tambem os 26 atributos finais (vals_tela) e
+a cadeia com peso e alvo de cada um. Esses dois sao insumo obrigatorio da
+tela, e ficaram de fora de todos os Builds gravados antes da correcao.
+
+Este botao rele os JSON ja enviados e completa o que falta, sem refazer
+nenhum calculo. Pode rodar a qualquer momento.
+
+O QUE NAO ESTA AQUI
+-------------------
+ENVIAR-RESULTADOS.bat foi para
+2-MOTORES\OTIMIZADOR\OPERACAO-LOCAL-JSON e FICA la. Ele nao e conserto
+pontual: e um arquivo que os botoes antigos sempre chamaram e que nunca
+tinha subido ao repositorio. Numa copia recem-baixada do GitHub aquele
+botao morria com "o sistema nao pode encontrar o arquivo".

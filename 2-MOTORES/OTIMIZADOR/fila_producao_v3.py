@@ -20,8 +20,8 @@ from pathlib import Path
 PASTA = Path(__file__).resolve().parent
 CONTRATO = "otimizador_fila_producao_v3"
 CONTRATO_ENTRADA_V7 = "otimizador_entrada_linha_v1"
-MOTOR_VERSAO = "otimizador-fila-producao-v3-local-20260902-impeto-adicional-v8"
-FORMULA_APROVADA = "bf6040b6fdbbb4a6b8cf97fe66cb441507ee637ec7edb300cf2ebabb5814f070"
+MOTOR_VERSAO = "otimizador-fila-producao-v3-local-20260903-goleiro-e-condicional-v11"
+FORMULA_APROVADA = "5a7446b3dfa7b6b45ece1f611b1751fc1221f06e76c53cbd0827a83962c76e89"
 
 
 class FalhaFilaProducao(RuntimeError):
@@ -105,7 +105,7 @@ class WorkerFilaProducaoV3:
             raise FalhaFilaProducao("a fórmula local mudou depois do selo do lote")
         if contexto.get("motor_versao") != MOTOR_VERSAO:
             raise FalhaFilaProducao("a versão local do worker diverge do lote")
-        if (contexto.get("impetos_condicionais") != "desligados"
+        if (contexto.get("impetos_condicionais") not in ("desligados", "nenhum_no_lote", "por_degrau")
                 or contexto.get("pode_publicar") is not False):
             raise FalhaFilaProducao("o contexto V3 tentou habilitar uma saída não autorizada")
         regua = contexto.get("regua")
@@ -152,7 +152,7 @@ class WorkerFilaProducaoV3:
             raise FalhaFilaProducao("a fórmula local mudou depois do selo do lote")
         if entrada.get("motor_versao") != MOTOR_VERSAO:
             raise FalhaFilaProducao("a versão local do worker diverge da fotografia V7")
-        if (entrada.get("impetos_condicionais") != "desligados"
+        if (entrada.get("impetos_condicionais") not in ("desligados", "nenhum_no_lote", "por_degrau")
                 or entrada.get("pode_publicar") is True):
             raise FalhaFilaProducao("a fotografia V7 tentou habilitar uma saída não autorizada")
         regua = entrada.get("regua")
@@ -206,8 +206,11 @@ class WorkerFilaProducaoV3:
                 time.sleep(espera)
 
     def _calcular(self, item: dict) -> dict:
-        if item.get("impeto_condicional_codigo") is not None or item.get("impeto_condicional_nivel") is not None:
-            raise FalhaFilaProducao("Ímpeto condicional chegou em uma linha V3")
+        # 03/09 — o Ímpeto condicional voltou a rodar. O par código+nível vem
+        # da linha e diz qual dos três degraus está sendo calculado. Quem
+        # confere é `fonte_unica.vetor_impetos_da_linha`: exige os dois quando
+        # a carta tem condicional, exige que o código seja o da carta e que o
+        # nível caiba no `nivel_maximo` físico dela.
         if self._runner is None:
             raise FalhaFilaProducao("executor V3 não foi preparado")
         carta = item.get("carta")
@@ -217,7 +220,8 @@ class WorkerFilaProducaoV3:
         saida = self._runner.trabalha({
             "n": item["linha_id"], "card_id": item["card_id"],
             "funcao_id": item["funcao_id"], "posicao_id": item["posicao_id"],
-            "impeto_condicional_codigo": None, "impeto_condicional_nivel": None,
+            "impeto_condicional_codigo": item.get("impeto_condicional_codigo"),
+            "impeto_condicional_nivel": item.get("impeto_condicional_nivel"),
             "origem": "fila_producao_v3",
         })
         if not isinstance(saida, dict):
@@ -232,8 +236,8 @@ class WorkerFilaProducaoV3:
             "motor_versao": item["motor_versao"],
             "lote_fingerprint": item["lote_fingerprint"],
             "carta_entrada_fingerprint": item["carta_entrada_fingerprint"],
-            "impeto_condicional_codigo": None,
-            "impeto_condicional_nivel": None,
+            "impeto_condicional_codigo": item.get("impeto_condicional_codigo"),
+            "impeto_condicional_nivel": item.get("impeto_condicional_nivel"),
         })
         self._validar_resultado_persistivel(saida)
         return saida

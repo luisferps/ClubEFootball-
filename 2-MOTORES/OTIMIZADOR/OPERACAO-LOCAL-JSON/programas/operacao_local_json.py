@@ -523,17 +523,38 @@ def finalizar_jornal(estrutura: dict[str, Path], pacote, sequencia: int, jornal:
 
 
 def calcular_linha(pacote, runner: Any, linha: dict[str, Any]) -> dict[str, Any]:
+    """Calcula UMA linha do pacote local.
+
+    ⚠️ Este caminho e uma copia do `fila_local_v1._calcular`. Sao dois codigos
+    fazendo a mesma coisa, e e este aqui que o OperacaoLocalJson.exe usa —
+    consertar so o outro nao muda nada no que voce clica.
+
+    03/09 — o degrau do Impeto condicional vem DA LINHA. O par codigo+nivel
+    estava fixo em None nas duas pontas desta funcao, e o pacote local sempre
+    trouxe os dois campos: eram lidos do disco e jogados fora aqui. Cada
+    combinacao funcao+posicao tem tres linhas, uma por degrau, e e este par que
+    diz qual delas esta sendo calculada — sem ele as tres virariam a mesma
+    conta tres vezes.
+    """
     carta = pacote.carta_da_linha(linha)
     if not isinstance(carta.get("carta"), dict):
         raise FalhaOperacao("a fotografia local da carta está ausente")
     runner.carrega_carta_snapshot_producao_v3(carta["carta"])
+    cond_codigo = linha.get("impeto_condicional_codigo")
+    cond_nivel = linha.get("impeto_condicional_nivel")
+    cond_codigo = None if cond_codigo is None else int(cond_codigo)
+    cond_nivel = None if cond_nivel is None else int(cond_nivel)
+    if (cond_codigo is None) != (cond_nivel is None):
+        raise FalhaOperacao(
+            "linha %s trouxe Ímpeto condicional pela metade: código %r, nível %r"
+            % (linha.get("linha_id"), cond_codigo, cond_nivel))
     resultado = runner.trabalha({
         "n": int(linha["linha_id"]),
         "card_id": str(linha["card_id"]),
         "funcao_id": int(linha["funcao_id"]),
         "posicao_id": int(linha["posicao_id"]),
-        "impeto_condicional_codigo": None,
-        "impeto_condicional_nivel": None,
+        "impeto_condicional_codigo": cond_codigo,
+        "impeto_condicional_nivel": cond_nivel,
         "origem": "operacao_local_json_v1",
     })
     if not isinstance(resultado, dict) or resultado.get("ERRO"):
@@ -547,8 +568,10 @@ def calcular_linha(pacote, runner: Any, linha: dict[str, Any]) -> dict[str, Any]
         "motor_versao": pacote.manifesto["motor_versao"],
         "lote_fingerprint": pacote.manifesto["lote_fingerprint"],
         "carta_entrada_fingerprint": linha["carta_entrada_fingerprint"],
-        "impeto_condicional_codigo": None,
-        "impeto_condicional_nivel": None,
+        # O resultado carimba o degrau calculado. A porta do banco confere
+        # este par contra o da linha antes de gravar.
+        "impeto_condicional_codigo": cond_codigo,
+        "impeto_condicional_nivel": cond_nivel,
     })
     try:
         resultado["tecnico_id"] = int(resultado.get("tecnico_id"))
