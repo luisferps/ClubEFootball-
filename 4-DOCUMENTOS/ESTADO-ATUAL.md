@@ -5,6 +5,12 @@ A documentação foi consolidada; a rodada de produção continua em andamento.
 
 ## Implementado
 
+- Boxes: prazo de 10 segundos configurado nas duas RPCs públicas, além das internas.
+  Corrige o cancelamento aos 3 segundos na primeira abertura. Validado no site,
+  por navegação sem recarregar, e nas consultas públicas Últimas/Melhores.
+  A latência varia com a carga do banco; a alteração não torna a consulta instantânea.
+
+
 - Extrator corrigido e atualização do jogo extraída, aplicada e relida no banco.
 - Correções manuais protegidas por campo em `valor_do_dono`, com histórico.
 - Técnicos corrigidos e Mourinho ASTROS incluído no contrato do Otimizador.

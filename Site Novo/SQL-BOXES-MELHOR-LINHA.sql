@@ -388,3 +388,8 @@ select jsonb_build_object('posicao_nome',(select nome_pt from pos limit 1),
 $function$;
 ALTER FUNCTION clube_novo.site_novo_boxes_melhores_linhas_v1(text[],integer) SET jit TO 'off'; ALTER FUNCTION clube_novo.site_novo_boxes_melhores_linhas_v1(text[],integer) SET plan_cache_mode TO 'force_custom_plan'; ALTER FUNCTION clube_novo.site_novo_boxes_melhores_linhas_v1(text[],integer) SET work_mem TO '32MB';
 ALTER FUNCTION public.site_novo_boxes_em_andamento_v1(text,text,integer,integer,integer) SET jit TO 'off'; ALTER FUNCTION public.site_novo_boxes_em_andamento_v1(text,text,integer,integer,integer) SET plan_cache_mode TO 'force_custom_plan'; ALTER FUNCTION public.site_novo_boxes_v1(text,text,integer,integer,text,integer) SET jit TO 'off'; ALTER FUNCTION public.site_novo_boxes_v1(text,text,integer,integer,text,integer) SET plan_cache_mode TO 'force_custom_plan'; NOTIFY pgrst,'reload schema';
+-- O prazo deve estar na entrada publica: o PostgREST aplica o limite do papel
+-- antes de entrar nas funcoes internas. Mantem o limite restrito a estas RPCs.
+ALTER FUNCTION public.site_novo_boxes_v1(text,text,integer,integer,text,integer) SET statement_timeout TO '10s';
+ALTER FUNCTION public.site_novo_boxes_em_andamento_v1(text,text,integer,integer,integer) SET statement_timeout TO '10s';
+NOTIFY pgrst,'reload schema';
