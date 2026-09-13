@@ -121,3 +121,5 @@ O interior das boxes usa cards verticais nas duas abas: classificação no canto
 Nas duas listagens, cada box tem borda externa reforçada e cabeçalho contrastante; divisórias entre jogadores permanecem discretas para destacar o agrupamento da coleção.
 
 Nas duas abas, a análise principal é a linha publicada de maior nota no grau selecionado, com desempate pelo ID da linha. Nota, estrelas e link da ficha correspondem a ela. A tela mostra posição nativa e estilo cadastral, sem especialidade/build. Os cards são ordenados por estrelas e depois pela nota dessa linha. Snapshots históricos permanecem armazenados, mas não são usados para escolher a linha exibida. Contrato: SQL-BOXES-MELHOR-LINHA.sql.
+
+Regra visual: blocos equivalentes em cada visualização devem ter as mesmas dimensões. Ausência de nota, análise ou foto não reduz o bloco; reservar o espaço correspondente. Nas boxes, alturas uniformes na grade, avaliação e botão alinhados, inclusive entre fileiras.

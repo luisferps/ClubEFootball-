@@ -73,3 +73,5 @@ Atualizar a seção vigente, sem empilhar diários contraditórios. Histórico c
 fica no Git; manter provas/mapeamentos/SQLs necessários nas pastas técnicas.
 O estado de produção fica em ESTADO-ATUAL, com data e limites, sem contagem antiga
 apresentada como atual. Não declarar rodada encerrada porque a documentação terminou.
+
+Regra visual: blocos equivalentes em cada visualização devem ter as mesmas dimensões. Ausência de nota, análise ou foto não reduz o bloco; reservar o espaço correspondente. Nas boxes, alturas uniformes na grade, avaliação e botão alinhados, inclusive entre fileiras.
