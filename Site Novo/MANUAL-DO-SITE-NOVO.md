@@ -22,6 +22,22 @@ O filtro de estilo exige vínculo à carta e ativação na posição da linha. N
 posição nativa ou nome semelhante como substituto. Cartas de estilos defensivos
 seguem os contratos específicos de seleção, não uma exclusão inventada na tela.
 
+## Grau global
+
+O grau 1, 2 ou 3 do cabeçalho controla todas as visualizações e valores derivados:
+Ranking, Boxes nas duas abas, Ficha, notas, referências de estrelas, ordenações e
+consulta de builds pessoais. Consultas e caches são separados por grau; respostas
+atrasadas não podem substituir a seleção atual, inclusive em trocas rápidas.
+
+Links de Ficha não alteram o grau global. A consulta recebe o grau explicitamente.
+Se não houver publicação elegível, mostrar os dados nativos e **Análise Ainda Não
+Publicada**, sem nota ou estrelas de outro grau. Linhas não condicionais seguem a
+elegibilidade do contrato, sem inventar equivalência entre linhas condicionais.
+
+Builds pessoais são reavaliadas para consulta no grau global sem alterar o registro
+salvo. Somente o editor pessoal permite mudar o grau local do rascunho; ao mudar o
+cabeçalho, o editor acompanha a nova seleção e invalida o resultado anterior.
+
 ## Boxes: leitura pronta e atualização automática
 
 As duas abas consultam `clube_novo.boxes_leitura_pronta_v1`, que mantém as ordens
@@ -81,7 +97,7 @@ parcelas e nota: barras, habilidades, técnico, ímpetos, degraus, estilos, corp
 pé, IA, normalização e arredondamento. Conferir criar/editar/avaliar/salvar/reabrir e
 apresentação pública. Corrigir um único exemplo não encerra divergência de contrato.
 
-“Pode melhorar” compara a maior nota pública da mesma carta/especialidade com a nota
+“Pode melhorar” compara a maior nota pública da mesma carta/especialidade e do mesmo grau com a nota
 avaliada corrente. Até 0,05% mostra 0%; acima, uma casa decimal. Não comparar outra função.
 
 ## Banco, publicação e desempenho
@@ -108,69 +124,53 @@ as antigas curvas molde 100/teto 110 não são a regra atual.
 
 O selo de régua do Ranking é calculado na página selecionada, não para todo o universo
 antes de paginar. [SQL da correção](SQL-RANKING-SELO-PAGINA.sql).
-Boxes exibem a melhor linha publicada disponível no grau selecionado. Não inventar avaliação para carta sem publicação elegível.
+## Identidade e apresentação das Boxes
 
-Nas duas abas de Boxes, cards seguem estrelas de contratação decrescentes e,
-no empate, a pontuação exibida decrescente. Sem análise fica depois das categorias
-avaliadas. A prévia contém os três primeiros cards da mesma ordem do detalhe;
-ordenação ocorre no banco antes de limitar/paginar, inclusive após buscas.
-Contrato: `SQL-BOXES-ORDEM-CONTRATACAO.sql`. Regressão:
-`tests/boxes-hiring-order.test.cjs` compara prévia e detalhe nos três degraus.
+Nas duas abas, prévia e detalhe mostram foto ampla, nome e número destacados,
+posição nativa somente pela sigla e Estilo de Jogo cadastral em bloco discreto.
+Especialidade/build não aparece. Nota, estrelas e clique na Ficha usam a mesma
+linha publicada de maior nota elegível no grau selecionado; empate pelo ID da linha.
+Fotografias históricas permanecem como prova, sem escolher a análise atual.
 
-Categorias de contratação: cinco estrelas verde forte sem brilho, quatro verde suave,
-três amarelo, duas laranja e uma vermelho. Estrelas vazias têm contorno na cor da categoria; zero mostra cinco contornos vermelhos discretos, sem preenchimento, e legenda apagada. Tema claro adapta o contraste.
-A legenda de contratação é texto discreto, sem fundo, borda ou aparência de botão.
+Cards seguem estrelas decrescentes, depois nota decrescente e identidade estável.
+Sem análise fica depois dos avaliados. A prévia contém os três primeiros cards
+nessa mesma ordem; seleção e ordenação precedem a paginação.
 
-Prévias e detalhes compartilham o padrão: foto ampla, nome e número destacados;
-posição nativa apenas pela sigla (VOL, MAT), sem etiqueta; estilo cadastral em bloco discreto. Especialidade/build não aparece. Nota, estrelas e clique correspondem à linha de maior pontuação publicada. Contrato vigente: SQL-BOXES-MELHOR-LINHA.sql.
+Cinco estrelas usam verde forte sem brilho; quatro, verde suave; três, amarelo;
+duas, laranja; uma, vermelho. Contornos seguem a cor da categoria. Zero mostra
+cinco contornos vermelhos discretos, sem preenchimento, com legenda apagada.
+A legenda é texto discreto, sem aparência de botão. Não exibir “Veja o Significado
+das Estrelas” nem a informação redundante “Maior Pontuação” no cabeçalho da box.
+
+Blocos equivalentes têm dimensões iguais, mesmo sem análise ou foto. Reservar o
+espaço necessário e alinhar avaliação e botão. O interior usa grade compacta de
+cinco cards no desktop, responsiva, preservando a foto. Bordas externas reforçadas
+e cabeçalhos contrastantes distinguem as boxes; divisórias internas são discretas.
 
 Capitalização em todas as telas: inicial maiúscula nas palavras, artigos e
 preposições minúsculos no meio das expressões (Estilo de Jogo). Siglas preservadas.
 O apresentador compartilhado formata textos novos incrementalmente, sem alterar
 valores de formulários nem dados persistidos.
 
-Boxes em andamento e ordenação por pontuação agregam a fonte materializada para
-evitar varreduras ordenadas caras. O selo é consultado nas linhas necessárias.
-As consultas corrigidas preservam o resultado público e os critérios de avaliação.
+## Manutenção e validação
 
-Antes de declarar deploy concluído, conferir arquivos publicados, resposta do contrato
-público e interface real. Em 13/09 os arquivos do site foram comparados com a pasta
-oficial e a consulta do Ranking foi corrigida no banco. Isso não encerra a auditoria
-dos novos resultados que ainda estão sendo processados.
+A classificação é centralizada em `site_novo_boxes_classificacao_v1`.
+[Seleção da melhor linha](SQL-BOXES-MELHOR-LINHA.sql) e
+[leitura pronta](SQL-BOXES-LEITURA-PRONTA.sql) são os contratos atuais.
+`pontuacao` permanece apenas como identificador compatível da opção Melhores na API.
+O desempate entre boxes considera maior nota e nome após as quantidades de estrelas;
+contam todos os cards distintos, não somente os três da prévia.
+
+O Ranking calcula o selo e agrupa posições nas linhas da página. O índice de
+cobertura e a consulta otimizada estão em `SQL-DESEMPENHO-RANKING-BOXES.sql`.
+O prazo das RPCs de Boxes é de dez segundos; aumentar timeout não substitui a
+leitura pronta e a paginação. Latência depende da carga e não é garantida.
+
+Antes de concluir publicação, conferir arquivos servidos, contrato público e tela.
+Testes de referência: `tests/grau-global-regressao.test.cjs`,
+`tests/boxes-hiring-order.test.cjs` e `tests/boxes-prefetch.test.cjs`.
+[Conferências realizadas](CONFERENCIA-SITE-1309.md).
 
 [Pendências atuais](../4-DOCUMENTOS/ESTADO-ATUAL.md) ·
 [Integração](../4-DOCUMENTOS/MANUAL-DE-INTERLIGACAO-DE-SISTEMAS.md) ·
 [Orçamento](../4-DOCUMENTOS/ORCAMENTO-REGRA-DIARIA.md).
-
-O interior das boxes usa cards verticais nas duas abas: classificação no canto sem reservar uma linha, foto grande, nome, sigla, blocos de identidade e avaliação centralizada abaixo. A grade compacta acomoda cinco cards no desktop, ajustando a quantidade à largura disponível, sem reduzir as fotos.
-
-Nas duas listagens, cada box tem borda externa reforçada e cabeçalho contrastante; divisórias entre jogadores permanecem discretas para destacar o agrupamento da coleção.
-
-Nas duas abas, a análise principal é a linha publicada de maior nota no grau selecionado, com desempate pelo ID da linha. Nota, estrelas e link da ficha correspondem a ela. A tela mostra posição nativa e estilo cadastral, sem especialidade/build. Os cards são ordenados por estrelas e depois pela nota dessa linha. Snapshots históricos permanecem armazenados, mas não são usados para escolher a linha exibida. Contrato: SQL-BOXES-MELHOR-LINHA.sql.
-
-Regra visual: blocos equivalentes em cada visualização devem ter as mesmas dimensões. Ausência de nota, análise ou foto não reduz o bloco; reservar o espaço correspondente. Nas boxes, alturas uniformes na grade, avaliação e botão alinhados, inclusive entre fileiras.
-
-## Desempenho das Consultas
-
-Ranking e Boxes leem a publicação pelo índice de cobertura
-`build_publicacao_linha_ativa_card_v1_idx`, incluindo os campos usados na seleção.
-O Ranking agrupa as posições apenas para as linhas da página, em uma única passagem,
-e usa 16 MB de work_mem nessa função. Não ampliar o timeout para substituir essa
-otimização. Fonte SQL: `SQL-DESEMPENHO-RANKING-BOXES.sql`.
-
-Verificação em 13/09: respostas idênticas antes/depois em seis cenários de modos,
-filtros e paginação. Leitura pública nos três graus: Ranking 351–509 ms; Boxes
-por pontuação 623–630 ms. São medidas desta conferência, não garantia de latência.
-
-## Ordem das Boxes por Melhor Contratação
-
-Nas Boxes em Andamento e na opção Melhores das Boxes Cadastradas,
-comparar a quantidade de cards com 5, 4, 3, 2 e 1 estrela, nessa sequência,
-sempre decrescente. Contar todos os cards distintos da box, não apenas a prévia.
-Empate completo: maior pontuação e nome da box. Cards sem análise não ganham
-estrelas. A nota e a categoria continuam vindo da melhor linha publicada do card.
-A opção Últimas continua ordenando por data. `pontuacao` permanece apenas
-como identificador compatível da opção na API. A seleção e classificação estão
-centralizadas em `site_novo_boxes_classificacao_v1`; os detalhes do motor só são
-lidos para os cards exibidos. Testados os três graus nas duas abas, comparando
-as contagens da primeira box com sua lista completa.

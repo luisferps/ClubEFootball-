@@ -10,6 +10,7 @@ consomem contratos canônicos; o site lê a publicação validada por portas pú
 | Otimizador | Evolução, técnico, ímpetos, habilidades, atributos e nota do motor | Resultado aceito no banco |
 | Bonificador | Reaproveitar bônus conformes e calcular exceções | Bônus compatível persistido |
 | Composição | Validar identidade/selos e combinar os dois resultados | Publicação ativa confirmada |
+| Leitura de Boxes | Preparar classificação por grau e atualizar após mudanças | Revisão aplicada após atualização bem-sucedida |
 | Site | Exibir dados públicos e estados | Leitura pública e tela coerentes |
 
 Otimizador e Bonificador são independentes durante o cálculo. O enviador pode
@@ -25,6 +26,12 @@ todo resultado oculto como falha. Cartas excluídas ficam fora do universo opera
 Novas extrações não modificam o pacote selado já em execução. Nova prova de orçamento
 retira a espera e devolve elegibilidade; preparação/revisão da fila é etapa própria.
 Correção manual registrada prevalece sobre a fonte automática.
+
+As Boxes usam leitura pronta, paginada e separada por grau. Mudanças nas fontes
+invalidam a revisão; um job verifica a cada minuto e atualiza quando necessário.
+Uma nova nota máxima pode alterar as estrelas de outras cartas. A visita não
+recalcula todo o universo. Até o próximo ciclo, permanece a versão anterior
+coerente. Ver o [Manual do Site](../Site%20Novo/MANUAL-DO-SITE-NOVO.md).
 
 A rotina é operada pelos aplicativos. O Coordenador automático descrito em planos
 antigos não foi implementado por esta rodada; não há promessa de iniciar os aplicativos

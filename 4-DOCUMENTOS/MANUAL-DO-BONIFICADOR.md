@@ -28,6 +28,10 @@ Bonificador e Otimizador podem rodar em paralelo. Bônus pronto pode aguardar o
 Otimizador; resultado do Otimizador recebido pode aguardar bônus. Nenhuma dessas
 esperas, isoladamente, prova falha ou publicação concluída.
 
+O lote conferido em 13/09/2026 está concluído no Bonificador. Não repetir o cálculo
+por instruções antigas de espera: os totais e o alcance da verificação estão no
+[Estado Atual](ESTADO-ATUAL.md). A operação acima continua válida para novas entradas.
+
 ## Regras essenciais
 
 - Estilo principal é definido pela função; ativação é definida pela posição da build.
@@ -53,7 +57,7 @@ Filtre cartas disponíveis antes de contar pendências. Carta excluída não rep
 falta de bônus. Carta sem orçamento divulgado aguarda a fonte; não deve receber
 orçamento zero artificial para entrar no motor.
 
-Concluir a rodada exige conferir a população elegível, as exceções, os erros e os
+Concluir o Bonificador exige conferir a população elegível, as exceções, os erros e os
 resultados persistidos. Concluir publicação exige ainda a leitura pública da linha
 composta. [Estado único da implantação](ESTADO-ATUAL.md).
 

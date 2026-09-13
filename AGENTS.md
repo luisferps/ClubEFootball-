@@ -65,7 +65,7 @@ IA e arredondamento. Um exemplo isolado não encerra divergência geral.
 Preservar a publicação anterior válida até substituição confirmada, identificando a
 régua antiga. Resultado local, envio confirmado, publicação e exposição são estados
 distintos. Só declarar conclusão com readback apropriado ao escopo.
-Boxes usam fotografias de avaliação; não revisar essas fotografias sem escopo próprio.
+Boxes exibem a melhor linha publicada elegível no grau selecionado; notas, estrelas e clique usam essa mesma linha. A leitura pronta é atualizada automaticamente quando as fontes mudam. Fotografias históricas são provas preservadas, não a autoridade da exibição atual.
 
 ## Manutenção dos manuais
 

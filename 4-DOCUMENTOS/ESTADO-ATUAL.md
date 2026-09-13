@@ -16,12 +16,6 @@ A documentação foi consolidada; a rodada de produção continua em andamento.
   consulta sem alterar o registro salvo. Só o editor permite variar o grau local.
 
 
-- Boxes: prazo de 10 segundos configurado nas duas RPCs públicas, além das internas.
-  Corrige o cancelamento aos 3 segundos na primeira abertura. Validado no site,
-  por navegação sem recarregar, e nas consultas públicas Últimas/Melhores.
-  A latência varia com a carga do banco; a alteração não torna a consulta instantânea.
-
-
 - Extrator corrigido e atualização do jogo extraída, aplicada e relida no banco.
 - Correções manuais protegidas por campo em `valor_do_dono`, com histórico.
 - Técnicos corrigidos e Mourinho ASTROS incluído no contrato do Otimizador.
@@ -34,7 +28,7 @@ A documentação foi consolidada; a rodada de produção continua em andamento.
 - Pasta oficial consolidada e manuais atuais separados das referências técnicas.
 - Frontend: busca sem acentos, cancelamento de respostas ultrapassadas, carregamento
   independente de seções e remoção dos trechos mortos identificados. Consultas de
-  Boxes em andamento e ordenação por pontuação corrigidas contra timeout.
+  Boxes usam leitura pronta e paginada, substituindo o cálculo integral a cada consulta.
 
 ## O que continua esperando
 
@@ -44,16 +38,27 @@ sem diferença na pontuação; extensão ainda não medida. Corrigir a composiç
 preparar atualização compatível da Máquina 2. Ver
 [prova](../Site%20Novo/PARIDADE-EDITOR-MOLDE-V6.md).
 
-1. Bonificador terminar a conferência/reaproveitamento. Depois executar **CALCULAR
-   EXCEÇÕES** para cartas novas e entradas sem bônus compatível; não recalcular todos.
-2. Máquina 2 terminar o Otimizador. O operador confirmou processamento em andamento.
-3. Enviador entregar os resultados; pode acompanhar o processamento em paralelo.
-4. Conferir composição/publicação e leitura pública das linhas que completarem os
-   dois motores. Encerrar a auditoria integral somente depois da rodada completa.
+1. Máquina 2 terminar o Otimizador e o enviador entregar seus resultados.
+2. Conferir composição e exposição pública do restante da rodada; o fechamento
+   integral depende do término dos motores e da auditoria dos resultados.
+3. Concluir a aba Elenco e as alterações de interface ainda não implementadas.
 
-Os primeiros envios foram confirmados no banco em 13/09: 13 linhas recebidas sem
-divergência de contrato/régua naquela conferência. Isso não comprova publicação final.
-Nenhuma contagem histórica abaixo substitui uma consulta atual de progresso.
+## Bonificador e publicações: conferência de 13/09/2026
+
+No lote abaixo, o contrato oficial confirmou 193.543 linhas com bônus vinculados:
+192.266 reaproveitadas e 1.277 exceções calculadas. Restavam zero exceções,
+zero linhas sem conferência e zero impedimentos. O Bonificador está concluído
+para essa população; cartas novas posteriores exigem nova conferência.
+
+A consulta de publicação confirmou 2.900 resultados recebidos e 2.900 publicações
+ativas, abrangendo 340 cards: nenhum recebido sem publicação, sem bônus, sem
+Otimizador ou sem selo; todos os 2.900 com régua vigente. A última publicação dessa
+consulta foi às 05:34:40 BRT. Isso confirma persistência e publicação ativa, não
+recalcula todas as fórmulas nem garante exposição de toda linha pela fonte exibível.
+
+A associação corrente do lote retornou 193.630 linhas; esse universo é diferente
+das 193.543 linhas da fotografia conferida. Não usar um total como substituto do
+outro. Estas contagens são evidência datada, não acompanhamento em tempo real.
 
 ## Fotografia da rodada
 
