@@ -146,3 +146,8 @@ de preencher vagas sem ganho: primeiro busca original, depois incidencia nativa
 >=10%, depois excecoes 69/48 por atributos de peso 7 ou 12. GEMEAS NAO EXCLUEM
 candidatas no complemento; somente o mesmo ID ja presente e duplicidade.
 Nao confundir decisao aprovada com implantacao: consultar progresso no documento.
+
+
+## Cartas excluídas não são pendências — 13/09/2026
+
+Todo levantamento operacional deve usar carta_operacional_v1 ou excluir explicitamente jogador_indisponivel=true e tipo_carta_id=player_delete_list antes das contagens. Não apresentar cartas excluídas como defeito, falta de bônus ou falta de nível. As dez cartas em carta_orcamento_aguardando_v1 aguardam divulgação do orçamento; Luis confirmou essa condição. Não investigar novamente sem nova evidência. Ver 4-DOCUMENTOS/CARTAS-EXCLUIDAS-E-ORCAMENTO-PENDENTE.md.
