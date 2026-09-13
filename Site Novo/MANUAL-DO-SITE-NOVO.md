@@ -125,3 +125,5 @@ dos novos resultados que ainda estão sendo processados.
 O interior das boxes usa cards verticais nas duas abas: classificação no canto sem reservar uma linha, foto grande, nome, sigla, blocos de identidade e avaliação centralizada abaixo. A grade compacta acomoda cinco cards no desktop, ajustando a quantidade à largura disponível, sem reduzir as fotos.
 
 Nas duas listagens, cada box tem borda externa reforçada e cabeçalho contrastante; divisórias entre jogadores permanecem discretas para destacar o agrupamento da coleção.
+
+A análise principal é selecionada por estrelas decrescentes e, no empate, nota decrescente. Especialidade, posição, nota e estrelas do card vêm integralmente dessa análise; pontuacao_maxima cadastral nunca substitui sua nota. Históricas preservam a avaliação registrada; atuais usam a avaliação de contratação vigente da oferta. O desempate entre cards usa essa mesma nota.

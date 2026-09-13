@@ -3,7 +3,7 @@ const window={};require('./common-harness.cjs').run(fs.readFileSync(path.join(__
 let ongoing=true,order='recentes';
 const read=(box,degrau,offset=0)=>window.SiteNovoBoxesAPI.read({p_box:box,p_busca:'',p_limite:24,p_offset:offset,p_degrau:degrau,p_ordem:order},undefined,ongoing);
 const rating=c=>c.analises?.[0]?.estrelas??-1;
-const score=c=>c.pontuacao_maxima??c.analises?.[0]?.pontuacao??-Infinity;
+const score=c=>c.analises?.[0]?.pontuacao??-Infinity;
 function ordered(cards){for(let i=1;i<cards.length;i++){const a=cards[i-1],b=cards[i];assert.ok(rating(a)>rating(b)||rating(a)===rating(b)&&score(a)>=score(b),'estrelas e desempate por pontuação: '+a.nome+' / '+b.nome);}}
 (async()=>{
  let checked=0;
