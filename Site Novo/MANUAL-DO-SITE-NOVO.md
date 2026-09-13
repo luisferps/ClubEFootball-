@@ -121,3 +121,5 @@ dos novos resultados que ainda estão sendo processados.
 [Pendências atuais](../4-DOCUMENTOS/ESTADO-ATUAL.md) ·
 [Integração](../4-DOCUMENTOS/MANUAL-DE-INTERLIGACAO-DE-SISTEMAS.md) ·
 [Orçamento](../4-DOCUMENTOS/ORCAMENTO-REGRA-DIARIA.md).
+
+O interior das boxes usa cards verticais nas duas abas: classificação no alto, foto grande, nome, sigla, blocos de identidade e avaliação centralizada abaixo. A grade passa de três para duas e uma coluna conforme a largura.
