@@ -1,34 +1,6 @@
-## Encerramento conferido no banco — 10/09/2026
+# Complemento V14 — regra vigente
 
-O operador confirmou instalacao e execucao na maquina 2. Fotografia: 751
-linhas; 560 corrigidas e 191 sem candidata elegivel. O enviador confirmou as
-oito paginas. Readback em clube_novo: 560 recibos, 560 vinculadas ao resultado
-novo, 560 selos e vetores de atributos corretos, 560 cadeias/arows, notas e
-listas de adicionais corretas, 560 publicacoes ativas.
-
-524 aparecem no contrato exibivel. As outras 36 sao goleiros na funcao de
-estilo oposto: 20 recuados e 16 avancados, todos sem o playstyle requerido
-pela respectiva funcao. O filtro ja aprovado de nao misturar goleiros oculta
-essas builds. Nao e falha de envio ou finalizacao; nao remover o filtro.
-
-Universo conferido de linhas validas concluidas que aceitam adicionais: 7.754.
-Antes do complemento, 7.003 ja tinham cinco adicionais e 751 tinham vagas.
-Nao confundir esta operacao de preenchimento com auditoria/troca de vagas
-ocupadas. Varane36564 devolve Carrinho e Passe aereo baixo como complementares.
-
-Rodada encerrada. Pode fechar os dois programas de complemento e retomar os
-botoes habituais do otimizador/enviador. O reparo posterior de busca de config
-ficou preparado nos arquivos oficiais; sua instalacao na maquina2 nao foi
-confirmada e nao foi necessaria para esta rodada, que terminou com sucesso.
-
----
-
-Registro anterior preservado como historico:
-
-# Complemento de habilidades — aprovado em 10/09/2026
-
-Estado: codigo oficial e contratos no banco implementados; frontend publicado.
-Instalacao na maquina 2 e execucao em massa dependem do operador; nao estao concluidas.
+Integrado à busca atual. O executor separado atende correções de resultados prontos. [Operação](../../MANUAL-DO-OTIMIZADOR.md). A correção histórica de 560 linhas foi encerrada; ela não mede o progresso da rodada v6.
 
 Esta decisao substitui a proibicao absoluta de preencher vagas sem ganho da V12.
 A busca e seu enxugamento continuam preservados; o complemento acontece depois.
@@ -47,7 +19,7 @@ A busca e seu enxugamento continuam preservados; o complemento acontece depois.
    indispensaveis (peso 12) ou desejaveis (peso 7) na funcao. Bloqueios por funcao permanecem.
    Super substituto exige talento ofensivo e finalizacao; Especialista exige
    finalizacao (criterio de utilidade, sem alterar seu efeito em cobranca de bola
-   parada). No molde V5 atual, 69 atende funcoes 1/2/3; 48 atende 1/2/3/9/14.
+   parada). As funções elegíveis são derivadas dos pesos do molde vigente; não congelar a lista da versão 5.
 5. Recompor todos os atributos, etapas, metadados e nota usando o caminho oficial.
    Nao forcar nota igual: as excecoes podem alterar a pontuacao. Nao refazer busca
    de barras/tecnico/impetos para complementar uma solucao ja valida.
@@ -58,9 +30,7 @@ A busca e seu enxugamento continuam preservados; o complemento acontece depois.
 7. Mesmo algoritmo no otimizador e no executor separado de resultados prontos.
    Executor usa fila local, JSONs em lotes, enviador simultaneo e recibos,
    retomada idempotente e comparacao da versao anterior antes de substituir.
-8. Ordem antiga da fila, historicos e recibos preservados. Arquivos oficiais
-   atualizados na maquina 1; pacote com backup para maquina 2. Nao iniciar
-   processos da maquina 2 nem assumir pausa sem confirmacao.
+8. Preservar históricos e recibos. A entrega atual já incorpora o complemento; não repetir instaladores de rodadas encerradas.
 
 ## Implementacao e operacao
 
@@ -71,23 +41,3 @@ A busca e seu enxugamento continuam preservados; o complemento acontece depois.
 - Resultado anterior e preservado; grava nova build, recibo e tenta finalizacao/publicacao pelos contratos vigentes. Nao inventa bonus nem dispensa seus selos. Reenvio do mesmo resultado e idempotente.
 - Tela consulta origem persistida, verde discretamente mais claro, title exatamente Complementar. O editor pessoal continua manual; calculo no banco, sem preenchimento automatico. Ao abrir builds locais, reavalia com o servidor; preservadas as correcoes de altura/IA/normalizacao da tarefa de design.
 - Netlify publicado: 6aa262c0f0efb9f3b5bd0576. Quatro arquivos alterados conferidos byte a byte na URL publica; demais arquivos do deploy anterior preservados.
-
-### Maquina 2 — ordem obrigatoria
-
-1. Processador/enviador parados: copiar ATUALIZACAO-COMPLEMENTO-V14 para OTIMIZADOR e executar APLICAR.bat. Instalador verifica hashes e salva backup, sem mexer em filas/config/resultados/recibos.
-2. COMPLEMENTO-LOCAL-V14/0-ENVIAR-JSONS-ANTIGOS.bat, com processador parado. Terminar sem erro ANTES de baixar a fila corretiva: JSONs antigos prontos precisam entrar no banco para serem incluidos na fotografia.
-3. Abrir 1-CALCULAR-COMPLEMENTOS.bat e 2-ENVIAR-COMPLEMENTOS.bat simultaneamente. Download com cursor, calculo local, paginas ate 100, recibos e retomada.
-4. Somente depois de concluir ambos, retomar PROCESSAR-FILA-PRINCIPAL.bat e ENVIAR-FILA-PRINCIPAL.bat na pasta habitual. Novas buscas ja aplicam o complemento.
-
-Nao apagar marcadores/paginas para fingir uma fila nova. Uma nova rodada posterior exige novo diretorio operacional e nova fotografia. Em erro, preservar pasta e mensagem. Nao iniciar nova busca concorrente com esta correcao.
-
-## Validacao
-
-- Nove testes da selecao: corte inclusivo, gêmeas permitidas, nativa duplicada, bloqueios, excecoes por atributos e carta inelegivel.
-- Varane, linha 36564: [67] -> [67,60,43], Carrinho e Passe aereo baixo; bruto350.8, editor350.8, nota110.99349512002111. Todos os26 atributos fisicos/internos e cadeia conferidos.
-- Centroavante linha34628: [22,19,20] -> [22,19,20,31,27], bruto338.8; importador em lote com paridade do editor aprovado em transacao revertida.
-- Carta tipo4 rejeitada pelo writer; runtime restringe complemento aos tipos0/1/5/6 com orcamento positivo.
-- Varane: teste transacional de gravacao, segunda chamada idempotente e flags da ficha aprovado, com rollback. Nenhuma build de teste ficou publicada.
-- EXE complementar calculou fotografia isolada e retomou sem duplicar resultados. Instalador isolado conferiu hashes e preservou arquivos sentinelas de configuracao/fila/resultados.
-
-A execucao em massa NAO foi feita nesta tarefa: o pacote e para a maquina dedicada. Nao afirmar que todas as builds ja possuem complementares.

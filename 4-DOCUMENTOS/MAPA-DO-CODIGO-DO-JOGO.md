@@ -1,3 +1,5 @@
+> Referência física por versão. Contagens e endereços de memória datados são provas da coleta indicada, não inventário atual. Sobreposição foi corrigida para bit 192/largura 7; ver [prova](EXTRATOR/SOBREPOSICAO-192-1209.md).
+
 # MAPA — Onde fica cada coisa dentro do código do jogo (eFootball)
 _Build do Steam do Luis · medido em 25/08/2026 abrindo o CPK._
 
@@ -114,7 +116,7 @@ registro/card-versão, pelo ID físico `u64`; o nome não é chave.
 | Contra-ataque rápido | `Coach.bin` | bit 224, largura 7 | proficiência 0–99 |
 | Passe longo | `Coach.bin` | bit 199, largura 7 | proficiência 0–99 |
 | Por fora | `Coach.bin` | bit 213, largura 7 | proficiência 0–99 |
-| Sobreposição | `Coach.bin` | bit 135, largura 7 | zero = ausência legítima; no arquivo atual, somente Antônio Conte tem 96 |
+| Sobreposição | `Coach.bin` | bit 192, largura 7 | proficiência; Conte 69, correção comprovada em 12/09/2026 |
 | código da nacionalidade | `Country.bin` | registro de 1.488 bytes; bit 10, largura 9 | inteiro sem sinal |
 | sigla | `Country.bin` | offset 708, largura máxima 10 | ASCII/UTF-8 terminado por NUL |
 | nome pt-BR | `Country.bin` | offset 788, largura máxima 70 | UTF-8 terminado por NUL |

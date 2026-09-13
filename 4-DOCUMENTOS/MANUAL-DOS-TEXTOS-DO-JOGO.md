@@ -65,7 +65,7 @@ Quando a chave histórica exata existe na fonte física atual, ela tem prioridad
 
 ## Catálogos ligados ao dicionário
 
-Os catálogos `atributo_jogo`, `estilo_ia`, `habilidade_jogo`, `impeto_jogo`, `pe` e `playstyle` possuem uma referência `(secao_texto,id_texto)`. `posicao_jogo` possui duas referências explícitas: uma para a sigla e outra para o nome. A migração prepara FKs compostas diretas para `texto_do_jogo(secao,id_texto)`; não cria tabela auxiliar.
+Os catálogos `atributo_jogo`, `estilo_ia`, `habilidade_jogo`, `impeto_jogo`, `pe` e `playstyle` possuem uma referência `(secao_texto,id_texto)`. `posicao_jogo` possui duas referências explícitas: uma para a sigla e outra para o nome. O modelo usa FKs compostas diretas para `texto_do_jogo(secao,id_texto)`; não cria tabela auxiliar.
 
 As FKs foram instaladas primeiro de forma protegida e, depois da carga integral e do
 readback com zero referência ausente, as oito foram validadas. Cada uma possui um
@@ -110,32 +110,10 @@ Um duplo clique reutiliza ou rejeita o mesmo `request_id`; não reaplica o lote.
 
 Antes do commit, qualquer divergência encerra a transação sem alteração. Depois de um commit, o manifesto conserva o estado anterior das linhas substituídas, as seções antigas reconciliadas e os hashes do pacote. O rollback preparado remove as constraints e colunas desta migração sem tocar no schema legado; a reversão de dados só deve ser executada com o manifesto específico da aplicação.
 
-## Estado desta entrega
+## Limites e identidade
 
-- extração física: concluída e validada;
-- integração automática no aplicativo: instalada e validada;
-- migração estrutural: aplicada exclusivamente em `clube_novo`;
-- carga no banco: 11.679 textos oficiais aplicados manualmente;
-- readback: 11.679 chaves únicas, zero duplicidade e 11.679 procedências confirmadas;
-- referências: 166 resolvidas, zero sem texto e oito FKs validadas;
-- fingerprint do readback: `56a205221af16addfe96f8452baffa8a`;
-- `clube` e `public`: intocados por esta frente.
-
-Em 28 de agosto de 2026, a validação local foi tornada autocontida: o teste físico passou a usar o manifesto selado guardado nesta própria frente, sem depender de outra pasta de tarefa. Foram acrescentados 17 testes do executor e das migrações, incluindo contrato estrutural ausente, chave histórica alterada, linha original desaparecida, mudança legítima de contagem, prioridade da chave física exata, conflito de seção compartilhada, identidade adulterada, pacote com duas versões físicas, referência de catálogo não resolvida, idempotência sem `UPSERT` redundante, readback/rollback simulados e restrição integral dos SQLs ao schema `clube_novo`. Todos passaram sem escrita no banco.
-
-O executor operacional lê `clube_novo.texto_do_jogo` em transação somente leitura e
-confirmou 11.679 registros, 11.679 chaves únicas e zero duplicidade após a instalação.
-
-## Lacunas explícitas
-
-- A semântica completa de todas as 188 seções não foi inferida. Isso não impede a carga do dicionário, mas impede atribuir função a uma seção sem prova.
-- Catálogos futuros de técnicos e Link-up não foram modelados nesta frente.
-- Consumidores de tela ainda precisam migrar suas consultas para as FKs centrais; nenhum nome embutido foi removido fora do Extrator nesta tarefa.
-
-## Regra de envelope do Extrator — 29/08/2026
-
-No pedido tipado, a identidade da entrada de texto continua exclusivamente
-`(secao,id_texto)`. `texto` é conteúdo de apresentação, nunca chave de união ou
-sobrescrita. O envelope preserva essa chave, o conteúdo, o tipo, a procedência
-física e os fingerprints; rótulos resolvidos em outros catálogos permanecem
-derivações de leitura sem substituir a chave oficial.
+A semântica de todas as seções não foi inferida. Não atribuir função a uma seção
+sem prova. No pedido tipado, a identidade continua `(secao,id_texto)`; `texto` é
+conteúdo de apresentação. O envelope conserva chave, tipo, origem e fingerprints.
+As contagens e hashes citados acima documentam a fonte de agosto de 2026; uma nova
+versão deve ser comparada e relida, sem exigir a mesma cardinalidade histórica.

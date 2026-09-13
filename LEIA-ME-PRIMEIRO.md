@@ -1,39 +1,33 @@
-# Pasta de trabalho — 12/09/2026
+# ClubEfootball — pasta oficial
 
-Raiz operacional: `C:\Users\Luis Fernando\Downloads\ClubEFootball--main\ClubEFootball--main`.
+Pasta de trabalho: `C:\Users\Luis Fernando\Downloads\ClubEfootball-Maquina-2`.
+GitHub: https://github.com/luisferps/ClubEFootball- — branch `main`.
+Atualização dos manuais: 13/09/2026.
 
-## Aplicativos mantidos
+## Onde começar
 
-| Componente | Entrada operacional |
-|---|---|
-| Site e editor de builds | `Site Novo\ABRIR-SITE-NOVO.cmd` / `Site Novo\index.html` |
-| Otimizador e enviador | `2-MOTORES\OTIMIZADOR\OPERACAO-LOCAL-JSON\bin\OperacaoLocalJson.exe`, pelos BATs de baixar, processar e enviar |
-| Bonificador | `2-MOTORES\BONIFICADOR\Bonificador ClubEfootball.exe` e `RODAR-LOTE-BONIFICADOR.bat` |
-| Complemento local V14 | `2-MOTORES\OTIMIZADOR\COMPLEMENTO-LOCAL-V14\ComplementoLocalV14.exe` |
-| Extrator físico | `7-VARREDURA-DO-JOGO\ABRIR-EXTRATOR.cmd` / `Extrator eFootball.exe` |
-| Extrator de níveis eFHUB | `7-VARREDURA-DO-JOGO\ABRIR-EXTRATOR-NIVEIS-EFHUB.cmd` / `Extrator Niveis eFHUB.exe` |
-| Extrator de fotos | `8 - EXTRATOR DE FOTOS\INICIAR-EXTRATOR-DE-FOTOS.cmd` |
-| Serviço Railway — uso atual a confirmar | `6-AVALIADOR-NO-RAILWAY\Procfile`; fontes preservados por ter papel próprio e não haver prova de aposentadoria |
+| Sistema | Entrada | Manual |
+|---|---|---|
+| Extrator físico e níveis eFHUB | `7-VARREDURA-DO-JOGO/ABRIR-EXTRATOR.cmd` e `ABRIR-EXTRATOR-NIVEIS-EFHUB.cmd` | [Extrator](7-VARREDURA-DO-JOGO/DOCUMENTACAO/MANUAL-DO-EXTRATOR.md) |
+| Otimizador | BATs de baixar, processar e enviar em `2-MOTORES/OTIMIZADOR/OPERACAO-LOCAL-JSON` | [Otimizador](4-DOCUMENTOS/MANUAL-DO-OTIMIZADOR.md) |
+| Bonificador | `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe` | [Bonificador](4-DOCUMENTOS/MANUAL-DO-BONIFICADOR.md) |
+| Fotos | `8 - EXTRATOR DE FOTOS/INICIAR-EXTRATOR-DE-FOTOS.cmd` | [Fotos](8%20-%20EXTRATOR%20DE%20FOTOS/MANUAL-DO-EXTRATOR-DE-FOTOS.md) |
+| Site e editor | https://imaginative-granita-ace1ca.netlify.app/ | [Site](Site%20Novo/MANUAL-DO-SITE-NOVO.md) |
 
-Os BATs são entradas para os aplicativos, não versões extras. Fontes, dependências, compiladores, testes, configurações e manuais continuam necessários. Resultados, pacotes de fila e recibos atuais não são lixo.
+[Instalação na Máquina 2](COMO-USAR-MAQUINA-2.md) ·
+[Integração](4-DOCUMENTOS/MANUAL-DE-INTERLIGACAO-DE-SISTEMAS.md) ·
+[Estado da implantação](4-DOCUMENTOS/ESTADO-ATUAL.md) ·
+[Referência técnica](4-DOCUMENTOS/MANUAL-TECNICO.md).
 
-## Rodada atual v6 — 13/09/2026
+Use uma instância de processamento e uma de envio. Os quatro processos de cálculo
+são internos ao Otimizador. Preserve filas, JSONs e recibos ao atualizar a pasta.
+O GitHub não contém credenciais nem os resultados locais da Máquina 2.
 
-Molde v6 aplicado com as cinco mudanças aprovadas. O lote 1209 foi aposentado.
-A fila atual é `39da8ff4-7a4a-4ec7-8641-e81b5677ad4c`: 193.543 linhas
-elegíveis, seladas e pausadas. Ordem: novas cartas, demais com orçamento,
-demais sem orçamento; overall decrescente em cada grupo.
+Fontes, dependências, testes e SQLs são necessários à manutenção, não versões extras
+dos aplicativos. O complemento V14 separado atende correções de resultados prontos;
+as buscas novas já incluem o complemento. Não iniciar outra rodada corretiva por rotina.
+O serviço Railway permanece preservado; seu uso atual não foi comprovado nesta revisão.
 
-Use `2-MOTORES/OTIMIZADOR/OPERACAO-LOCAL-JSON/BAIXAR-FILA-PRINCIPAL.bat`.
-O processamento usa quatro processos na Máquina 2 e grava JSONs em ordem.
-O Bonificador confere/reaproveita componentes vigentes e calcula somente
-exceções. Consulte `4-DOCUMENTOS/OTIMIZADOR/FILA-V6-MAQUINA-2.md` para
-etapas concluídas e pendências; fila preparada não significa recálculo concluído.
-
-## Recuperação
-
-Material retirado: `C:\Users\Luis Fernando\Downloads\ClubEFootball-BACKUP-LIMPEZA-20260912`.
-
-O backup preserva os caminhos relativos originais. O manifesto `MANIFESTO.csv` contém caminhos, tamanhos e hashes dos arquivos arquivados. Não executar aplicativos pelo backup. A restituição deve ser pontual, conferindo antes se o destino já existe.
-
-Documentos históricos podem mencionar caminhos arquivados. Isso não os torna aplicativos operacionais atuais.
+Manuais descrevem o funcionamento atual. SQLs, mapeamentos e provas específicas ficam
+nas pastas técnicas. Versões anteriores dos documentos são recuperáveis pelo histórico
+do Git; não executar planos antigos como se fossem pendências atuais.
