@@ -1,6 +1,7 @@
+const runWithCommon=require('./common-harness.cjs').run;
 const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),assert=require('node:assert/strict');
 const base=path.resolve(__dirname,'..'),storage=new Map();
-function boot(){const buttons=[1,2,3].map(n=>({dataset:{snDegrau:String(n)},setAttribute(k,v){this[k]=v;},addEventListener(k,fn){this[k]=fn;}}));const handlers={};const window={localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},addEventListener:(k,fn)=>handlers[k]=fn};vm.runInNewContext(fs.readFileSync(path.join(base,'degrau.js'),'utf8'),{window,document:{querySelectorAll:()=>buttons}});return {window,buttons,handlers};}
+function boot(){const buttons=[1,2,3].map(n=>({dataset:{snDegrau:String(n)},setAttribute(k,v){this[k]=v;},addEventListener(k,fn){this[k]=fn;}}));const handlers={};const window={localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},addEventListener:(k,fn)=>handlers[k]=fn};runWithCommon(fs.readFileSync(path.join(base,'degrau.js'),'utf8'),{window,document:{querySelectorAll:()=>buttons}});return {window,buttons,handlers};}
 const first=boot();assert.equal(first.window.SiteNovoDegrau.get(),3);const events=[];const stop=first.window.SiteNovoDegrau.subscribe(n=>events.push(n));
 first.window.SiteNovoDegrau.set(2);first.window.SiteNovoDegrau.set(2);assert.deepEqual(events,[2]);assert.equal(first.buttons[1]['aria-pressed'],'true');
 first.window.SiteNovoDegrau.sync(1);assert.deepEqual(events,[2]);assert.equal(first.window.SiteNovoDegrau.get(),1);assert.equal(storage.get('clubefootball.degrau-condicional'),'1');

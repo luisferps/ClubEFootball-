@@ -1,8 +1,7 @@
 /* Porta publica do Ranking. Nao importa adaptadores ou motores legados. */
 (() => {
  'use strict';
- const endpoint = 'https://trqqpsnafpbudtvvicch.supabase.co/rest/v1/rpc/site_novo_ranking_v1';
- const key = 'sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj';
+ const endpoint = '/rest/v1/rpc/site_novo_ranking_v1';
  const id = value => typeof value === 'string' && /^[1-9][0-9]*$/.test(value);
  const text = value => typeof value === 'string' && value.trim().length > 0;
  const integer = value => Number.isSafeInteger(value) && value >= 0;
@@ -32,9 +31,8 @@
   for (const name of ['p_modo','p_setor','p_funcao_id','p_busca','p_posicao_nativa_id','p_estilo_id','p_offset','p_limite','p_degrau']) {
    if (Object.prototype.hasOwnProperty.call(request,name)) parameters[name] = request[name];
   }
-  const response = await fetch(endpoint, { method:'POST', headers:{ 'Content-Type':'application/json', apikey:key }, body:JSON.stringify(parameters), signal, cache:'no-store' });
-  if (!response.ok) throw new Error(response.status === 400 ? 'Confira os filtros informados.' : 'Não foi possível consultar o Ranking. Tente novamente.');
-  const data=validate(await response.json(), request);if(data.degrau!==(request.p_degrau??3))throw new Error('Degrau do Ranking incompatível.');return data;
+  const payload = await window.SiteNovoCommon.request(endpoint,parameters,{signal,errorMessage:'Não foi possível consultar o Ranking. Tente novamente.'});
+  const data=validate(payload,request);if(data.degrau!==(request.p_degrau??3))throw new Error('Degrau do Ranking incompatível.');return data;
  }
  window.SiteNovoRankingAPI = Object.freeze({ read, validate });
 })();

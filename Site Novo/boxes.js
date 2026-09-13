@@ -18,7 +18,7 @@ function saveState(){
  const saved={state:{...state},catalog:catalogState?{...catalogState}:null};savedPages.set(active,saved);
  try{window.sessionStorage.setItem(storageKey+(active?'andamento':'cadastradas'),JSON.stringify(saved));}catch{}
 }
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc=window.SiteNovoCommon.escapeHTML;
 const cardCount=n=>n+' '+(n===1?'card':'cards');
 const registeredCards=n=>cardCount(n)+' '+(n===1?'cadastrado':'cadastrados');
 const boxCount=n=>n+' '+(n===1?'box':'boxes');

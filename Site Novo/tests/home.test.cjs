@@ -1,3 +1,4 @@
+const runWithCommon=require('./common-harness.cjs').run;
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -34,9 +35,9 @@ function makeWindow(rankResult, boxResult) {
 }
 
 function run(rankResult, boxResult) {
-  const node = { innerHTML: '' };
+  const node = require('./common-harness.cjs').homeNode();
   const made = makeWindow(rankResult, boxResult);
-  vm.runInNewContext(source, { window: made.window, AbortController, URL, Promise, Number, String, encodeURIComponent });
+  runWithCommon(source, { window: made.window, AbortController, URL, Promise, Number, String, encodeURIComponent });
   const promise = made.window.SiteNovoHome.mount(node);
   return { node, promise, calls: made.calls, api: made.window.SiteNovoHome };
 }

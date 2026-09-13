@@ -1,8 +1,7 @@
 /* Leitura publica cadastral, independente do legado. */
 (() => {
 'use strict';
-const endpoint='https://trqqpsnafpbudtvvicch.supabase.co/rest/v1/rpc/site_novo_boxes_v1';
-const key='sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj';
+const endpoint = '/rest/v1/rpc/site_novo_boxes_v1';
 function validate(d,r){
  const fail=()=>{throw new Error('Resposta de Boxes incompatível.');};
  const text=v=>typeof v==='string'&&v.trim().length>0;
@@ -24,17 +23,8 @@ function validate(d,r){
 async function read(r,signal,active=false){
  const request={...r};if(active)delete request.p_ordem;else request.p_ordem=r.p_ordem||'recentes';
  const url=active?endpoint.replace('site_novo_boxes_v1','site_novo_boxes_em_andamento_v1'):endpoint;
- let res;
- for(let attempt=0;attempt<2;attempt++){
-  if(signal)signal.throwIfAborted();
-  try{
-   res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',apikey:key},body:JSON.stringify(request),signal,cache:'no-store'});
-   if(attempt||![408,500,502,503,504].includes(res.status))break;
-  }catch(e){if(attempt||signal?.aborted||e.name==='AbortError'||e.name!=='TypeError')throw e;}
-  await new Promise(resolve=>setTimeout(resolve,400));
- }
- if(!res.ok)throw new Error('Não foi possível consultar as boxes.');
- const d=validate(await res.json(),r);if(d.degrau!==(r.p_degrau??3))throw new Error('Degrau de Boxes incompatível.');
+ const payload=await window.SiteNovoCommon.request(url,request,{signal,retries:1,errorMessage:'Não foi possível consultar as boxes.'});
+ const d=validate(payload,r);if(d.degrau!==(r.p_degrau??3))throw new Error('Degrau de Boxes incompatível.');
  if(!active&&d.ordem!==request.p_ordem)throw new Error('Ordenação de boxes incompatível.');
  if(!active&&d.modo==='boxes')for(const b of d.itens)if(typeof b.data_rotulo!=='string'||(b.data_oferta!==null&&!/^\d{4}-\d{2}-\d{2}$/.test(b.data_oferta))||(b.melhor_pontuacao!==null&&(typeof b.melhor_pontuacao!=='number'||!Number.isFinite(b.melhor_pontuacao))))throw new Error('Dados de organização das boxes incompatíveis.');
  return d;

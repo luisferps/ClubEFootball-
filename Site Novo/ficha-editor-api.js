@@ -1,8 +1,6 @@
 (function () {
   "use strict";
   // Só transporte e autenticação. Nenhuma fórmula ou régua é enviada ao cliente.
-  var url = "https://trqqpsnafpbudtvvicch.supabase.co";
-  var key = "sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj";
   var storageKey = "clubefut.editor.session.v1";
   var session = null, refreshing = null;
   try { session = JSON.parse(sessionStorage.getItem(storageKey) || "null"); } catch (_) {}
@@ -12,28 +10,8 @@
     try { if (value) sessionStorage.setItem(storageKey, JSON.stringify(value)); else sessionStorage.removeItem(storageKey); } catch (_) {}
     if(previousUser!==(value&&value.user&&value.user.id))window.dispatchEvent(new CustomEvent("ficha-account-changed"));
   }
-  async function request(path, body, token, signal) {
-    var controller = new AbortController();
-    var timer = setTimeout(function () { controller.abort(); }, 15000);
-    function abort() { controller.abort(); }
-    if (signal) { if (signal.aborted) abort(); else signal.addEventListener("abort", abort, { once: true }); }
-    try {
-      var headers = { apikey: key, "Content-Type": "application/json" };
-      if (token) headers.Authorization = "Bearer " + token;
-      var response = await fetch(url + path, { method: "POST", headers: headers, body: JSON.stringify(body), signal: controller.signal });
-      var data;
-      if (response.ok && response.status === 204) return null;
-      try { data = await response.json(); } catch (_) { throw new Error("O servidor não respondeu corretamente. Tente novamente; seu rascunho foi mantido."); }
-      if (!response.ok) {
-        var error = new Error(data.msg || data.message || data.error_description || "Não foi possível concluir a solicitação.");
-        error.status = response.status; error.code = data.code;
-        throw error;
-      }
-      return data;
-    } finally {
-      clearTimeout(timer);
-      if (signal) signal.removeEventListener("abort", abort);
-    }
+  function request(path,body,token,signal) {
+    return window.SiteNovoCommon.request(path,body,{token,signal,timeout:15000});
   }
   async function access() {
     if (!session || !session.access_token) throw new Error("Entre na sua conta para continuar. O rascunho será mantido.");
@@ -87,15 +65,23 @@
     var local=localData().records.filter(function(r){return r.card_id===card&&!r.excluida;});
     // Reavaliar escolhas antigas no servidor para apresentar a régua vigente.
     // O registro salvo e o histórico continuam preservados até o usuário salvar.
-    for(var i=0;i<local.length;i++){
-      var record=local[i];
-      // Sempre consultar a regra vigente ao abrir a pagina; versoes fixas no
-      // JavaScript nao podem manter uma build presa a uma regra antiga.
-      var cacheKey=record.id+':'+record.revisao, result=refreshedPersonal.get(cacheKey);
-      if(!result){result=await calculation("site_novo_editor_avaliar_v1",{p_entrada:record.entrada});refreshedPersonal.set(cacheKey,result);}
-      local[i]=Object.assign({},record,{resultado:result,build:Object.assign({},result.ficha,{pessoal_id:record.id})});
+    var next=0;
+    async function worker(){
+      while(next<local.length){
+        var i=next++,record=local[i],cacheKey=record.id+':'+record.revisao;
+        var result=refreshedPersonal.get(cacheKey);
+        if(!result){
+          result=calculation("site_novo_editor_avaliar_v1",{p_entrada:record.entrada});
+          refreshedPersonal.set(cacheKey,result);
+          result.catch(function(){});
+        }
+        try{result=await result;}catch(error){refreshedPersonal.delete(cacheKey);throw error;}
+        local[i]=Object.assign({},record,{resultado:result,build:Object.assign({},result.ficha,{pessoal_id:record.id})});
+      }
     }
-    var remote=session?await rpc("site_novo_editor_listar_v1",{p_card_id:card}):[];
+    var remotePromise=session?rpc("site_novo_editor_listar_v1",{p_card_id:card}):Promise.resolve([]);
+    var results=await Promise.all([remotePromise,Promise.all(Array.from({length:Math.min(3,local.length)},worker))]);
+    var remote=results[0];
     return remote.map(function(r){r.origem="conta";return r;}).concat(local).sort(function(a,b){return a.funcao_base_id-b.funcao_base_id||a.numero-b.numero||a.id.localeCompare(b.id);});
   }
   async function removeBuild(id,revision){
@@ -127,6 +113,6 @@
     catalog: function (card, position, signal) { return calculation("site_novo_editor_catalogo_v1", { p_card_id: card, p_posicao_id: position }, signal); },
     evaluate: function (input, signal) { return calculation("site_novo_editor_avaliar_v1", { p_entrada: input }, signal); },
     save:saveBuild, list:listBuilds, remove:removeBuild,
-    twin: function (input, from, to) { return calculation("site_novo_editor_gemea_v1", { p_entrada: input, p_sai: from, p_entra: to }); }
+    twin: function (input, from, to, signal) { return calculation("site_novo_editor_gemea_v1", { p_entrada: input, p_sai: from, p_entra: to }, signal); }
   });
 }());

@@ -32,7 +32,7 @@
   function showAccountForm(open){id("editor-auth").hidden=!open;account();if(open)id("editor-email").focus();else if(!api.signedIn())id("editor-login-show").focus();}
   function ask(text,label,fn){pendingAction=fn;id("editor-confirm-message").textContent=text;id("editor-discard").textContent=label;id("editor-confirm").hidden=false;id("editor-keep").focus();}
   function close(){
-    var s=session;if(!s)return;clearTimeout(s.timer);if(s.request)s.request.abort();session=null;pendingAction=null;
+    var s=session;if(!s)return;clearTimeout(s.timer);if(s.request)s.request.abort();if(s.catalogRequest)s.catalogRequest.abort();session=null;pendingAction=null;
     dialog.close();content.replaceChildren();var score=dialog.querySelector(".editor-score");if(score)score.remove();id("editor-confirm").hidden=true;document.body.style.overflow=s.overflow;
     if(s.opener)s.opener.focus({preventScroll:true});window.scrollTo({left:s.x,top:s.y,behavior:"instant"});
   }
@@ -160,9 +160,11 @@
     if(!map.size)suggestions.append(el("span","empty","Nenhuma gêmea disponível para estas habilidades."));
   }
   async function replaceTwin(from,to){
-    var s=session,serial=s.serial,previous=s.result;if(s.saving)return;
+    var s=session;if(!s||s.saving)return;
+    var previous=s.result;clearTimeout(s.timer);if(s.request)s.request.abort();
+    var serial=++s.serial;s.request=new AbortController();
     s.result=null;id("editor-save").disabled=true;id("editor-save-copy").disabled=true;status("Conferindo troca equivalente…");
-    try{var r=await api.twin(clone(s.input),from,to);if(session!==s||serial!==s.serial)return;s.input=r.entrada;s.dirty=true;s.serial++;s.saveRequest=null;renderSkills();applyResult(r.resultado);}
+    try{var r=await api.twin(clone(s.input),from,to,s.request.signal);if(session!==s||serial!==s.serial)return;s.input=r.entrada;s.dirty=true;s.serial++;s.saveRequest=null;renderSkills();applyResult(r.resultado);}
     catch(e){if(session===s&&serial===s.serial){if(previous)applyResult(previous);status(errorText(e));}}
   }
   function renderImpulses(){
@@ -225,11 +227,11 @@
     renderBars();renderSkills();renderImpulses();
   }
   async function loadCatalog(){
-    var s=session;if(!s)return;var pos=s.input.posicao_id;status("Carregando opções permitidas…");
-    try{var cat=await api.catalog(s.input.card_id,pos);if(session!==s||pos!==s.input.posicao_id)return;
+    var s=session;if(!s)return;var pos=s.input.posicao_id,version=(s.catalogVersion||0)+1;s.catalogVersion=version;if(s.catalogRequest)s.catalogRequest.abort();s.catalogRequest=new AbortController();status("Carregando opções permitidas…");
+    try{var cat=await api.catalog(s.input.card_id,pos,s.catalogRequest.signal);if(session!==s||version!==s.catalogVersion||pos!==s.input.posicao_id)return;
       s.catalog=cat;if(!s.input.funcao_id&&cat.funcoes.length){s.input.funcao_id=cat.funcoes[0].id;s.input.posicao_id=cat.funcoes[0].posicao;}
       renderControls();schedule();
-    }catch(e){if(session===s){status(errorText(e));account();}}
+    }catch(e){if(session===s&&version===s.catalogVersion&&e.name!=="AbortError"){status(errorText(e));account();}}
   }
   function renderTechnicianDetails(){
     var chosen=session.catalog.tecnicos.find(function(t){return t.id===session.input.tecnico_id;});

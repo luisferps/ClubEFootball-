@@ -15,6 +15,9 @@ A documentação foi consolidada; a rodada de produção continua em andamento.
 - Cartas excluídas fora da operação; orçamento não divulgado tratado por regra geral,
   com aviso na Ficha e nova consulta em uma próxima execução diária do Extrator.
 - Pasta oficial consolidada e manuais atuais separados das referências técnicas.
+- Frontend: busca sem acentos, cancelamento de respostas ultrapassadas, carregamento
+  independente de seções e remoção dos trechos mortos identificados. Consultas de
+  Boxes em andamento e ordenação por pontuação corrigidas contra timeout.
 
 ## O que continua esperando
 

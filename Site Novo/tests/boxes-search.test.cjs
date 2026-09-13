@@ -1,5 +1,6 @@
+const runWithCommon=require('./common-harness.cjs').run;
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
-const window={};vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../boxes-api.js'),'utf8'),{window,fetch,URL,Number,Set,setTimeout});
+const window={};runWithCommon(fs.readFileSync(path.join(__dirname,'../boxes-api.js'),'utf8'),{window,fetch,URL,Number,Set,setTimeout});
 const request={p_box:null,p_busca:'',p_limite:24,p_offset:0};
 const read=(changes,active)=>window.SiteNovoBoxesAPI.read({...request,...changes},undefined,active);
 (async()=>{

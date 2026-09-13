@@ -5,12 +5,12 @@
   const input = header?.elements.busca;
   const popup = header?.querySelector('[data-sn-search-popup]');
   let timer = 0, request = 0, controller = null, resultsRoot = null, pageController = null, pageRequest = 0;
-  const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
-  const safePhoto = value => { try { const url = new URL(value); return url.protocol === 'https:' ? url.href : null; } catch { return null; } };
+  const esc = window.SiteNovoCommon.escapeHTML;
+  const safePhoto = window.SiteNovoCommon.photo;
   const meta = item => [item.posicao, item.box].filter(Boolean).join(' · ');
   const degrau = () => window.SiteNovoDegrau?.get() ?? 3;
   const score = item => item.pontuacao_total === null ? 'Sem pontuação publicada' : `Pontuação total · ${item.pontuacao_total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  function close() { if (!popup) return; popup.hidden = true; input?.setAttribute('aria-expanded', 'false'); }
+  function close() { clearTimeout(timer); ++request; controller?.abort(); controller=null; if (!popup) return; popup.hidden = true; input?.setAttribute('aria-expanded', 'false'); }
   function show(html) { if (!popup) return; popup.innerHTML = html; popup.hidden = false; input?.setAttribute('aria-expanded', 'true'); }
   function resultLink(item, compact = false) {
     const photo = safePhoto(item.foto_url);
@@ -19,7 +19,7 @@
   }
   async function suggestions() {
     const term = input.value.trim();
-    clearTimeout(timer); controller?.abort();
+    close();
     if (!term) { close(); return; }
     if (term.length < 3) { show('<p class="sn-search-message">Digite pelo menos 3 letras.</p>'); return; }
     const ticket = ++request;
@@ -33,7 +33,7 @@
       if (error.name !== 'AbortError' && ticket === request) show(`<p class="sn-search-message">${esc(error.message)}</p>`);
     }
   }
-  function schedule() { clearTimeout(timer); timer = setTimeout(suggestions, 220); }
+  function schedule() { close(); timer = setTimeout(suggestions, 220); }
   function go(term = input?.value.trim()) {
     if (!term || term.length < 3) { input?.focus(); suggestions(); return; }
     close();
@@ -59,6 +59,7 @@
     if (!resultsRoot) return;
     const ticket = ++pageRequest;
     pageController?.abort(); pageController = new AbortController();
+    resultsRoot.dataset.term = term; resultsRoot.dataset.offset = String(offset);
     resultsRoot.innerHTML = pageMarkup(null, true, '', term, offset);
     try {
       const data = await window.SiteNovoSearchAPI.read({ p_busca: term, p_limite: 48, p_offset: offset, p_degrau: degrau() }, pageController.signal);
@@ -76,7 +77,7 @@
     else if (button.hasAttribute('data-sn-search-prev')) loadPage(term, Math.max(0, offset - 48));
     else if (button.hasAttribute('data-sn-search-next')) loadPage(term, offset + 48);
   }
-  function unmount() { ++pageRequest; pageController?.abort(); if (resultsRoot) resultsRoot.removeEventListener('click', pageClick); resultsRoot = null; }
+  function unmount() { close(); ++pageRequest; pageController?.abort(); if (resultsRoot) resultsRoot.removeEventListener('click', pageClick); resultsRoot = null; }
   function sync(term = '') { if (input && document.activeElement !== input) input.value = term; }
   window.SiteNovoSearch = Object.freeze({
     mount(node, term) { unmount(); resultsRoot = node; resultsRoot.addEventListener('click', pageClick); sync(term); return loadPage(term, 0); },

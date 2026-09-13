@@ -3,8 +3,8 @@
   'use strict';
   let root = null, seq = 0, rankController = null, boxController = null;
 
-  const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
-  const photo = value => { try { const url = new URL(value); return url.protocol === 'https:' ? url.href : null; } catch { return null; } };
+  const esc = window.SiteNovoCommon.escapeHTML;
+  const photo = window.SiteNovoCommon.photo;
   const score = value => Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const count = value => Number(value).toLocaleString('pt-BR');
   const degrau = () => window.SiteNovoDegrau?.get() ?? 3;
@@ -58,8 +58,8 @@
       + '<a class="sn-button" href="#elenco">Organizar elenco</a></div>'
       + '<div class="sn-pitches"><div class="sn-pitch"><span>ELENCO</span><small>Não conectado</small></div><div class="sn-pitch"><span>ENCAIXE</span><small>Não conectado</small></div></div></article>'
       + '<div class="sn-home-lower">'
-      + '<section class="sn-home-panel"><div class="sn-panel-title"><h2>Quem tá no topo?</h2><a href="#ranking">Ver ranking →</a></div>' + topList(rank.state, rank.items) + '</section>'
-      + '<section class="sn-home-panel"><div class="sn-panel-title"><h2>Boxes cadastradas</h2><a href="#boxes">Ver todas →</a></div>' + boxList(boxes.state, boxes.items) + '</section>'
+      + '<section class="sn-home-panel"><div class="sn-panel-title"><h2>Quem tá no topo?</h2><a href="#ranking">Ver ranking →</a></div>' + '<div data-home-ranking>' + topList(rank.state, rank.items) + '</div></section>'
+      + '<section class="sn-home-panel"><div class="sn-panel-title"><h2>Boxes cadastradas</h2><a href="#boxes">Ver todas →</a></div>' + '<div data-home-boxes>' + boxList(boxes.state, boxes.items) + '</div></section>'
       + '</div></div>';
   }
 
@@ -76,17 +76,21 @@
     const rankRequest = { p_modo: 'card', p_setor: 'geral', p_funcao_id: null, p_busca: '', p_posicao_nativa_id: null, p_estilo_id: null, p_offset: 0, p_limite: 5, p_degrau: degrau() };
     const boxRequest = { p_box: null, p_busca: '', p_limite: 5, p_offset: 0, p_ordem: 'recentes', p_degrau: degrau() };
 
-    const [rankResult, boxResult] = await Promise.allSettled([
-      window.SiteNovoRankingAPI.read(rankRequest, rankController.signal),
-      window.SiteNovoBoxesAPI.read(boxRequest, boxController.signal, false)
+    const update = (selector, html) => {
+      if(ticket!==seq||!root)return;
+      const node=root.querySelector(selector);if(node)node.innerHTML=html;
+    };
+    await Promise.allSettled([
+      window.SiteNovoRankingAPI.read(rankRequest,rankController.signal).then(data=>{
+        rank.state='pronto';rank.items=data.itens;rank.total=data.total;
+      },()=>{rank.state='erro';}).then(()=>{
+        update('.sn-build-preview',heroCard(rank.items[0])+heroBoard(rank.state,rank.total));
+        update('[data-home-ranking]',topList(rank.state,rank.items));
+      }),
+      window.SiteNovoBoxesAPI.read(boxRequest,boxController.signal,false).then(data=>{
+        boxes.state='pronto';boxes.items=data.itens;
+      },()=>{boxes.state='erro';}).then(()=>update('[data-home-boxes]',boxList(boxes.state,boxes.items)))
     ]);
-    if (ticket !== seq || !root) return;
-
-    if (rankResult.status === 'fulfilled') { rank.state = 'pronto'; rank.items = rankResult.value.itens; rank.total = rankResult.value.total; }
-    else rank.state = 'erro';
-    if (boxResult.status === 'fulfilled') { boxes.state = 'pronto'; boxes.items = boxResult.value.itens; }
-    else boxes.state = 'erro';
-    paint(rank, boxes);
   }
 
   let unsubscribe = null;

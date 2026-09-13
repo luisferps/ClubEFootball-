@@ -56,6 +56,17 @@ avaliada corrente. Até 0,05% mostra 0%; acima, uma casa decimal. Não comparar 
 
 ## Banco, publicação e desempenho
 
+A busca normaliza os nomes e o texto digitado, sem exigir acentos, inclusive no
+Ranking. Fechar a busca ou digitar novamente invalida respostas anteriores.
+
+`site-common.js` concentra transporte HTTP e utilidades comuns. Consultas têm prazo
+limite e cancelamento; gravações não são repetidas automaticamente. O Início exibe
+cada seção assim que chega. A Ficha não espera a foto nem as builds pessoais para
+mostrar a publicação disponível; avaliações pessoais usam até três consultas juntas.
+
+No editor, somente a resposta da escolha mais recente pode alterar a tela, inclusive
+na troca equivalente de habilidade e no catálogo dependente da posição.
+
 Somente portas públicas dedicadas: por exemplo `site_novo_ficha_v2`,
 `site_novo_ranking_v1` e avaliador do editor. Não consultar tabelas administrativas
 diretamente nem buscar fallback em `clube`. Chave publicável pode estar no cliente;
@@ -69,6 +80,10 @@ O selo de régua do Ranking é calculado na página selecionada, não para todo 
 antes de paginar. [SQL da correção](SQL-RANKING-SELO-PAGINA.sql).
 Boxes podem usar fotografias de avaliação: não prometer atualização contínua nem
 inventar avaliação para carta sem publicação elegível.
+
+Boxes em andamento e ordenação por pontuação agregam a fonte materializada para
+evitar varreduras ordenadas caras. O selo é consultado nas linhas necessárias.
+As consultas corrigidas preservam o resultado público e os critérios de avaliação.
 
 Antes de declarar deploy concluído, conferir arquivos publicados, resposta do contrato
 público e interface real. Em 13/09 os arquivos do site foram comparados com a pasta

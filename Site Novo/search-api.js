@@ -1,8 +1,7 @@
 /* Porta pública da busca do Site Novo. Não importa consultas ou adaptadores aposentados. */
 (() => {
   'use strict';
-  const endpoint = 'https://trqqpsnafpbudtvvicch.supabase.co/rest/v1/rpc/site_novo_busca_v1';
-  const key = 'sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj';
+  const endpoint = '/rest/v1/rpc/site_novo_busca_v1';
   const hasText = value => typeof value === 'string' && value.trim().length > 0;
   const integer = value => Number.isSafeInteger(value) && value >= 0;
   function validate(data, request) {
@@ -22,19 +21,8 @@
     return data;
   }
   async function read(request, signal) {
-    let response;
-    for (let attempt = 0; attempt < 2; attempt++) {
-      if (signal) signal.throwIfAborted();
-      try {
-        response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: key }, body: JSON.stringify(request), signal, cache: 'no-store' });
-        if (attempt || ![408, 500, 502, 503, 504].includes(response.status)) break;
-      } catch (error) {
-        if (attempt || signal?.aborted || error.name === 'AbortError' || error.name !== 'TypeError') throw error;
-      }
-      await new Promise(resolve => setTimeout(resolve, 300));
-    }
-    if (!response.ok) throw new Error(response.status === 400 ? 'Digite entre 3 e 120 caracteres.' : 'Não foi possível fazer a busca.');
-    return validate(await response.json(), request);
+    const data = await window.SiteNovoCommon.request(endpoint,request,{signal,retries:1,errorMessage:'Não foi possível fazer a busca. Tente novamente.'});
+    return validate(data,request);
   }
   window.SiteNovoSearchAPI = Object.freeze({ read, validate });
 })();

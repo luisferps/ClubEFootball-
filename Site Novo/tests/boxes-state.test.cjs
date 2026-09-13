@@ -1,3 +1,4 @@
+const runWithCommon=require('./common-harness.cjs').run;
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const source=fs.readFileSync(path.join(__dirname,'../boxes.js'),'utf8');
 const css=fs.readFileSync(path.join(__dirname,'../boxes.css'),'utf8');
@@ -7,7 +8,7 @@ function app(blocked=false){
  const handlers=new Map(),requests=[];
  const window={sessionStorage:{getItem:k=>{if(blocked)throw Error('blocked');return storage.get(k)||null;},setItem:(k,v)=>{if(blocked)throw Error('blocked');storage.set(k,v);}},SiteNovoBoxesAPI:{read:async(r,s,active)=>{requests.push({...r,active});return {status:'vazio',total:120,total_cards:120,itens:[],tem_mais:true,regua:[]};}}};
  const root={innerHTML:'',contains:()=>true,scrollIntoView(){},addEventListener:(k,f)=>handlers.set(k,f),removeEventListener:k=>handlers.delete(k)};
- vm.runInNewContext(source,{window,URL,AbortController,setTimeout,clearTimeout,document:{}});
+ runWithCommon(source,{window,URL,AbortController,setTimeout,clearTimeout,document:{}});
  return {mount:(active,box)=>window.SiteNovoBoxes.mount(root,active,box),request:()=>requests.at(-1),click(attr,value=''){const key=attr.replace(/^data-/,'').replace(/-([a-z])/g,(_,c)=>c.toUpperCase());const t={dataset:{[key]:value},closest(){return this;},hasAttribute:k=>k===attr};handlers.get('click')({target:t});},search(value){handlers.get('submit')({preventDefault(){},target:{matches:()=>true,elements:{busca:{value}}}});},sort(value){handlers.get('change')({target:{matches:()=>true,value}});}};
 }
 const tick=()=>new Promise(r=>setImmediate(r));

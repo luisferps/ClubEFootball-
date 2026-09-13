@@ -69,8 +69,6 @@ html[data-theme=claro] .nr-sector,html[data-theme=claro] .nr-function {backgroun
 .nr-position {display:inline-block;padding:3px 6px;border-radius:5px;background:var(--sn-soft);border:1px solid var(--sn-line);color:var(--sn-green);font-size:12px;font-weight:800}
 .nr-active-filters {display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0 16px;font-size:13px;color:var(--sn-muted)}
 .nr-active-filters>span {padding:5px 9px;border:1px solid var(--sn-line);border-radius:7px;background:var(--sn-soft);color:var(--sn-ink);overflow-wrap:anywhere;max-width:100%}
-.nr-pager-top {margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--sn-line)}
-.nr-pager-top .nr-pagination {margin-top:8px}
 .nr-ranking a:focus-visible,.nr-ranking button:focus-visible {outline:2px solid var(--sn-green);outline-offset:3px}
 @media(max-width:1000px){.nr-compact .nr-scoreline {grid-column:2;grid-row:1;justify-content:center;margin:0}.nr-compact .nr-role {align-items:flex-start;justify-content:flex-start}.nr-scoreline .nr-score {font-size:26px}}
 /* Todas as fileiras comuns acompanham a altura do maior card, sem cortar texto. */

@@ -1,3 +1,4 @@
+const runWithCommon=require('./common-harness.cjs').run;
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const base=path.resolve(__dirname,'..');
 const fixturePath=process.argv[2] || path.join(__dirname,'fixtures','ranking-publico-33-20260906.json');
@@ -7,8 +8,10 @@ assert.match(rankingSql,/from clube_novo\.build_publicacao_linha_ativa_v1 a/,'Ra
 assert.doesNotMatch(rankingSql,/join clube_novo\.build_linha_card\b/,'Ranking nao deve reabrir linhas operacionais publicadas');
 assert.match(rankingSql,/a\.impeto_condicional_codigo is null or a\.impeto_condicional_nivel=p_degrau/,'degrau deve vir da publicacao ativa');
 const live=JSON.parse(fs.readFileSync(fixturePath,'utf8').replace(/^\uFEFF/,''));
+// A fotografia de 06/09 antecede os estilos por linha; atualizar somente a forma do fixture.
+for(const item of live.itens) item.estilos ??= [];
 const events=[]; const window={dispatchEvent:event=>events.push(event)};
-vm.runInNewContext(fs.readFileSync(path.join(base,'ranking-api.js'),'utf8'),{window,fetch,URL,AbortController,Date,Number,Set});
+runWithCommon(fs.readFileSync(path.join(base,'ranking-api.js'),'utf8'),{window,fetch,URL,AbortController,Date,Number,Set});
 const request={p_modo:'card',p_setor:'geral',p_offset:0,p_limite:33};
 assert.equal(window.SiteNovoRankingAPI.validate(live,request),live);
 for(const mutate of [d=>d.versao=2,d=>d.itens[0].nota_final=null,d=>d.itens[0].linha_id=123,d=>d.itens[0].publicada_em=null,d=>d.itens[0].classificacao=2,d=>d.itens.push(d.itens[0]),d=>d.total=0]){
@@ -17,7 +20,7 @@ for(const mutate of [d=>d.versao=2,d=>d.itens[0].nota_final=null,d=>d.itens[0].l
 const handlers=new Map(),pending=[];
 const root={innerHTML:'',focused:null,contains:()=>true,scrollIntoView(){},querySelector:s=>({focus(){root.focused=s;}}),addEventListener(k,fn){assert.ok(!handlers.has(k),'evento duplicado');handlers.set(k,fn);},removeEventListener(k,fn){if(handlers.get(k)===fn)handlers.delete(k);}};
 window.SiteNovoRankingAPI={read:(r,signal)=>new Promise((resolve,reject)=>pending.push({request:r,signal,resolve,reject}))};
-vm.runInNewContext(fs.readFileSync(path.join(base,'ranking.js'),'utf8'),{window,URL,Intl,AbortController,setTimeout,clearTimeout,CustomEvent:class {constructor(type,options){this.type=type;this.detail=options.detail;}},document:{createElement:()=>({})}});
+runWithCommon(fs.readFileSync(path.join(base,'ranking.js'),'utf8'),{window,URL,Intl,AbortController,setTimeout,clearTimeout,CustomEvent:class {constructor(type,options){this.type=type;this.detail=options.detail;}},document:{createElement:()=>({})}});
 function click(attr,value=''){
  const key=attr.replace(/^data-/,'').replace(/-([a-z])/g,(_,c)=>c.toUpperCase());
  const target={dataset:{[key]:value},closest(){return this;},hasAttribute:k=>k===attr};handlers.get('click')({target});
@@ -78,5 +81,4 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
  window.SiteNovoRanking.unmount();assert.equal(handlers.size,0);
  console.log('OK: contrato real, rejeicoes, cards e links, filtros, cancelamento, resposta fora de ordem, escape HTML e erros sem notas antigas.');
 })().catch(e=>{console.error(e);process.exitCode=1;});
-
 

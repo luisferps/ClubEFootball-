@@ -9,8 +9,6 @@
   });
 
   var CONFIG = Object.freeze({
-    endpoint: "https://trqqpsnafpbudtvvicch.supabase.co/rest/v1/rpc/site_novo_ficha_v2",
-    publishableKey: "sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj",
     contract: "site-novo-ficha-v2",
     version: 2
   });
@@ -465,19 +463,8 @@
   }
 
   async function fetchFicha(params, signal) {
-    var response = await fetch(CONFIG.endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "apikey": CONFIG.publishableKey
-      },
-      body: JSON.stringify(params),
-      signal: signal
-    });
-    if (!response.ok) {
-      throw new Error("Falha na consulta pública (" + response.status + ").");
-    }
-    return validateEnvelope(await response.json());
+    var payload = await window.SiteNovoCommon.request('/rest/v1/rpc/site_novo_ficha_v2',params,{signal});
+    return validateEnvelope(payload);
   }
 
   function renderMessage(envelope) {
@@ -1137,8 +1124,10 @@
 
       var preparedPhoto = null;
       if (!canUpdateBuildOnly && CARD_STATUSES.has(envelope.status)) {
-        preparedPhoto = await preparePhoto(envelope.dados.card, requestController.signal);
-        if (requestVersion !== viewState.requestVersion) return;
+        // The public content does not wait for the image server.
+        preparePhoto(envelope.dados.card, requestController.signal).then(function(photo){
+          if(requestVersion===viewState.requestVersion && photo)renderPhoto(envelope.dados.card,photo);
+        });
       }
 
       if (canUpdateBuildOnly) {
@@ -1155,7 +1144,7 @@
       viewState.envelope = envelope;
       viewState.successfulUrl = settings.targetUrl || window.location.href;
       synchronizeConditionalDegree(envelope.dados);
-      if(settings.mode==="initial")await refreshPersonalBuilds();else refreshPersonalBuilds();
+      refreshPersonalBuilds();
       if(requestVersion!==viewState.requestVersion)return;
       revealPopulatedFicha(envelope);
     } catch (error) {

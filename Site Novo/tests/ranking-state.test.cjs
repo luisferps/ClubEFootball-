@@ -1,3 +1,4 @@
+const runWithCommon=require('./common-harness.cjs').run;
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const source=fs.readFileSync(path.join(__dirname,'../ranking.js'),'utf8');
 const fixture=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/ranking-publico-33-20260906.json'),'utf8'));
@@ -5,7 +6,7 @@ async function mount(saved){
  let request,persisted;
  const window={sessionStorage:{getItem:()=>JSON.stringify(saved),setItem:(k,v)=>persisted=JSON.parse(v)},SiteNovoRankingAPI:{read:async r=>{request=r;return {...fixture,modo:r.p_modo,setor:r.p_setor,offset:r.p_offset,limite:r.p_limite};}}};
  const root={innerHTML:'',addEventListener(){},removeEventListener(){}};
- vm.runInNewContext(source,{window,URL,Intl,AbortController,setTimeout,clearTimeout,document:{}});
+ runWithCommon(source,{window,URL,Intl,AbortController,setTimeout,clearTimeout,document:{}});
  await window.SiteNovoRanking.mount(root);window.SiteNovoRanking.unmount();return {request,persisted,html:root.innerHTML};
 }
 (async()=>{

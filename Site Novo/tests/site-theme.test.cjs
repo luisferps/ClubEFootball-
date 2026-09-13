@@ -1,10 +1,11 @@
+const runWithCommon=require('./common-harness.cjs').run;
 const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..'),storage=new Map(),handlers={};
 const button={handlers:{},addEventListener(k,fn){this.handlers[k]=fn;},setAttribute(k,v){this[k]=v;}};
 const document={documentElement:{dataset:{}},getElementById:id=>id==='sn-theme'?button:null};
 const window={localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},addEventListener:(k,fn)=>handlers[k]=fn};
 const source=fs.readFileSync(path.join(root,'site-theme.js'),'utf8');
-vm.runInNewContext(source,{window,document});
+runWithCommon(source,{window,document});
 assert.equal(document.documentElement.dataset.theme,'escuro');
 button.handlers.click();assert.equal(document.documentElement.dataset.theme,'claro');
 assert.equal(storage.get('clubefootball.tema'),'claro');

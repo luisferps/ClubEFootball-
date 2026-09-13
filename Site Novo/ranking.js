@@ -25,10 +25,10 @@
   }
  }catch{}
  let root = null, response = null, catalog = null, busy = false, error = '', sequence = 0, controller = null;
- const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const esc = window.SiteNovoCommon.escapeHTML;
  const pressed = value => value ? 'true' : 'false';
  const score = new Intl.NumberFormat('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
- function photo(url) { try { const u = new URL(url); return u.protocol === 'https:' ? u.href : null; } catch { return null; } }
+ const photo = window.SiteNovoCommon.photo;
  function card(item) {
   const podium = item.classificacao <= 3;
   const medal = ({1:'nr-ouro',2:'nr-prata',3:'nr-bronze'})[item.classificacao] || '';
@@ -44,16 +44,7 @@
 
   return `<a href="ficha.html?card=${encodeURIComponent(item.card_id)}&amp;linha=${encodeURIComponent(item.linha_id)}" aria-label="Abrir Ficha de ${esc(item.nome)}" class="nr-card ${podium?'nr-podium':'nr-compact'} ${medal} nr-live-card"><span class="nr-place">${item.classificacao}º</span>${picture}${podium?`<div class="nr-card-copy">${content}</div>`:content}</a>`;
  }
- function options(list, current, vazio='Todos') { return `<option value="">${vazio}</option>` + (list || []).map(v => `<option value="${esc(v.id)}" ${String(v.id)===String(current)?'selected':''}>${esc(v.nome)}</option>`).join(''); }
- const setorRotulo = {goleiro:'GOLEIRO',defesa:'DEFESA',meio:'MEIO',ataque:'ATAQUE'};
- function optionsFuncao(list, current) {
-  const grupos = ['goleiro','defesa','meio','ataque'];
-  return '<option value="">Todas</option>' + grupos.map(g => {
-   const doGrupo = (list || []).filter(f => f.setor === g);
-   if (!doGrupo.length) return '';
-   return `<optgroup label="${setorRotulo[g]}">` + doGrupo.map(f => `<option value="${esc(f.id)}" ${String(f.id)===String(current)?'selected':''}>${esc(f.nome)}</option>`).join('') + '</optgroup>';
-  }).join(''); }
- function pagination(location='bottom') {
+ function pagination() {
   if (!response || busy || error) return '';
   const current=pageNumber(state.p_offset);
   const count=pageCount(response.total);
@@ -66,7 +57,7 @@
    previous=page;
    return gap+`<button type="button" data-nr-page="${page}" aria-label="Página ${page}" ${page===current?'aria-current="page"':''}>${page}</button>`;
   }).join('');
-  return `<div class="nr-pager nr-pager-${location}"><nav class="nr-pagination" aria-label="Páginas do Ranking — ${location==='top'?'topo':'rodapé'}"><button type="button" data-nr-prev ${current===1?'disabled':''}>← Anterior</button><div class="nr-page-numbers">${buttons}</div><button type="button" data-nr-next ${response.tem_mais?'':'disabled'}>Próxima →</button></nav><p class="nr-page-summary">${response.total ? `Página ${current} de ${count} · ${state.p_offset+1}–${state.p_offset+response.itens.length} de ${response.total} resultados` : 'Nenhum resultado'}</p></div>`;
+  return `<div class="nr-pager nr-pager-bottom"><nav class="nr-pagination" aria-label="Páginas do Ranking — rodapé"><button type="button" data-nr-prev ${current===1?'disabled':''}>← Anterior</button><div class="nr-page-numbers">${buttons}</div><button type="button" data-nr-next ${response.tem_mais?'':'disabled'}>Próxima →</button></nav><p class="nr-page-summary">${response.total ? `Página ${current} de ${count} · ${state.p_offset+1}–${state.p_offset+response.itens.length} de ${response.total} resultados` : 'Nenhum resultado'}</p></div>`;
  }
  function markup() {
   const abas = eixos.map(([id,rot]) => `<button type="button" class="nr-axis" data-nr-axis="${id}" aria-pressed="${pressed(state.eixo===id)}">${rot}</button>`).join('');
@@ -141,10 +132,9 @@
   else if (target.hasAttribute('data-nr-prev') && state.p_offset>0 && !busy) goToPage(pageNumber(state.p_offset)-1,'[data-nr-prev]');
  }
  function submit(event) { if (!event.target.matches('[data-nr-search]')) return;event.preventDefault();update({p_busca:event.target.elements.busca.value.trim()},'[name="busca"]'); }
- function change(event) { const t=event.target;if(t.matches('[data-nr-style]'))update({p_estilo_id:t.value===''?null:Number(t.value),p_funcao_id:null,p_posicao_nativa_id:null},'[data-nr-style]'); }
  function imageError(event) {if(event.target.matches?.('.nr-real-photo')){const span=document.createElement('div');span.className='nr-photo';span.textContent='Sem imagem';event.target.replaceWith(span);}}
  let unsubscribe=null;
  function degreeChanged(){update({},undefined);}
- function unmount() {unsubscribe?.();unsubscribe=null;++sequence;controller?.abort();if(!root)return;for(const [type,fn] of [['click',click],['submit',submit],['change',change]])root.removeEventListener(type,fn);root.removeEventListener('error',imageError,true);root=null;}
- window.SiteNovoRanking=Object.freeze({mount(node){unmount();root=node;unsubscribe=window.SiteNovoDegrau?.subscribe(degreeChanged);for(const [type,fn] of [['click',click],['submit',submit],['change',change]])root.addEventListener(type,fn);root.addEventListener('error',imageError,true);return load();},unmount});
+ function unmount() {unsubscribe?.();unsubscribe=null;++sequence;controller?.abort();if(!root)return;for(const [type,fn] of [['click',click],['submit',submit]])root.removeEventListener(type,fn);root.removeEventListener('error',imageError,true);root=null;}
+ window.SiteNovoRanking=Object.freeze({mount(node){unmount();root=node;unsubscribe=window.SiteNovoDegrau?.subscribe(degreeChanged);for(const [type,fn] of [['click',click],['submit',submit]])root.addEventListener(type,fn);root.addEventListener('error',imageError,true);return load();},unmount});
 })();

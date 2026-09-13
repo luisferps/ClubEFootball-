@@ -32,6 +32,10 @@ devolve elegibilidade, sem alterar pacotes selados já em uso.
 
 ## Motores e apresentação
 
+Frontend: não manter código morto nem implementações concorrentes da mesma
+responsabilidade. Centralizar utilidades comuns e invalidar respostas antigas após
+nova escolha ou fechamento. A busca deve funcionar sem exigir acentos.
+
 Molde vigente v6: mudanças em Meia ofensivo e Meia armador, descritas no
 [manual](4-DOCUMENTOS/MANUAL-DO-OTIMIZADOR.md). Técnicos pertencem ao Otimizador.
 Bonificador reaproveita entradas/regras compatíveis, independentemente do nome da

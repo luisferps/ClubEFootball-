@@ -1,3 +1,4 @@
+const runWithCommon=require('./common-harness.cjs').run;
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
 const base=path.resolve(__dirname,'..'),window={};
 const css=fs.readFileSync(path.join(base,'boxes.css'),'utf8');
@@ -8,7 +9,7 @@ assert.match(css,/\.nb-preview \.nb-rated-player img[^\{]*\{width:90px;height:12
 assert.match(css,/\.nb-active\.nb-firstpage \.nb-box:nth-child\(-n\+2\) \.nb-rated-player img[^\{]*\{width:120px;height:169px\}/,'artes ampliadas nas duas boxes em destaque');
 assert.match(css,/\.nb-card-grid img[^\{]*\{width:110px;height:155px\}/,'artes maiores na grade interna das boxes cadastradas');
 assert.match(css,/\.nb-card-grid \.nb-rated-player img[^\{]*\{width:110px;height:155px\}/,'artes maiores na grade interna das boxes');
-vm.runInNewContext(fs.readFileSync(path.join(base,'boxes-api.js'),'utf8'),{window,fetch,URL,Number,Set});
+runWithCommon(fs.readFileSync(path.join(base,'boxes-api.js'),'utf8'),{window,fetch,URL,Number,Set});
 (async()=>{
 const req={p_box:null,p_busca:'',p_limite:24,p_offset:0};
 const first=await window.SiteNovoBoxesAPI.read(req),second=await window.SiteNovoBoxesAPI.read({...req,p_offset:24});
@@ -46,7 +47,7 @@ for(const mutate of [d=>d.itens[0].cards[0].card_id=123,d=>d.total=null,d=>d.ite
 const handlers=new Map(),pending=[];
 const root={innerHTML:'',contains:()=>true,scrollIntoView(){},addEventListener(k,f){handlers.set(k,f);},removeEventListener(k){handlers.delete(k);}};
 window.SiteNovoBoxesAPI={read:(r,signal,active)=>new Promise((resolve,reject)=>pending.push({r,signal,active,resolve,reject}))};
-vm.runInNewContext(fs.readFileSync(path.join(base,'boxes.js'),'utf8'),{window,URL,AbortController,setTimeout,clearTimeout,document:{createElement:()=>({})}});
+runWithCommon(fs.readFileSync(path.join(base,'boxes.js'),'utf8'),{window,URL,AbortController,setTimeout,clearTimeout,document:{createElement:()=>({})}});
 const tick=()=>new Promise(r=>setImmediate(r));
 function click(attr,value=''){const key=attr.replace(/^data-/,'').replace(/-([a-z])/g,(_,c)=>c.toUpperCase());const t={dataset:{[key]:value},closest(){return this;},hasAttribute:k=>k===attr};handlers.get('click')({target:t});}
 const start=window.SiteNovoBoxes.mount(root);pending.at(-1).resolve(first);await start;assert.match(root.innerHTML,/nb-box/);

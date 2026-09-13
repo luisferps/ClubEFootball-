@@ -1,3 +1,4 @@
+const runWithCommon=require('./common-harness.cjs').run;
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -21,7 +22,7 @@ const document = { title: '', documentElement: { dataset: { theme: 'escuro' } },
   getElementById: id => id === 'conteudo' ? main : id === 'sn-theme' ? theme : null,
   querySelectorAll: () => links, querySelector: () => search
 };
-vm.runInNewContext(source, {
+runWithCommon(source, {
   document,
   location,
   URLSearchParams,
@@ -43,7 +44,7 @@ vm.runInNewContext(source, {
   },
   setTimeout: fn => pending.push(fn)
 });
-assert.match(main.innerHTML, /Descubra até onde seu card chega/);
+assert.match(main.innerHTML, /Falha de carregamento/);
 location.hash='#ranking';handlers.hashchange();
 assert.match(main.innerHTML,/Falha de carregamento/);
 assert.doesNotMatch(main.innerHTML,/ainda não está conectado|Área reservada/);
