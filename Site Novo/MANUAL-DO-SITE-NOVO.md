@@ -97,10 +97,15 @@ quatro a uma em cinzas progressivos e zero apagado. Tema claro adapta o contrast
 A legenda de contratação é texto discreto, sem fundo, borda ou aparência de botão.
 
 Prévias e detalhes compartilham o padrão: foto ampla, nome e número destacados;
-posição por extenso e sigla (Volante — VOL), sem etiqueta. Estilo de jogo e
+posição apenas pela sigla (VOL, MAT), sem etiqueta. Estilo de Jogo e
 Especialidade mantêm etiquetas discretas. Estilos correspondem à posição avaliada.
 O contrato de identidade está em SQL-BOXES-IDENTIDADE.sql; ordenação das cadastradas
 em SQL-BOXES-CADASTRADAS-ORDEM-CONTRATACAO.sql. Não altera notas nem categorias.
+
+Capitalização em todas as telas: inicial maiúscula nas palavras, artigos e
+preposições minúsculos no meio das expressões (Estilo de Jogo). Siglas preservadas.
+O apresentador compartilhado formata textos novos incrementalmente, sem alterar
+valores de formulários nem dados persistidos.
 
 Boxes em andamento e ordenação por pontuação agregam a fonte materializada para
 evitar varreduras ordenadas caras. O selo é consultado nas linhas necessárias.

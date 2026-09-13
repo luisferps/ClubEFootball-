@@ -35,6 +35,9 @@ devolve elegibilidade, sem alterar pacotes selados já em uso.
 Frontend: não manter código morto nem implementações concorrentes da mesma
 responsabilidade. Centralizar utilidades comuns e invalidar respostas antigas após
 nova escolha ou fechamento. A busca deve funcionar sem exigir acentos.
+Textos de todas as telas: inicial maiúscula nas palavras, preservando siglas e
+mantendo artigos/preposições/conjunção “e” em minúsculas no meio da expressão.
+Exemplo: Estilo de Jogo. Nas boxes, mostrar apenas a sigla da posição (VOL, MAT).
 
 Molde vigente v6: mudanças em Meia ofensivo e Meia armador, descritas no
 [manual](4-DOCUMENTOS/MANUAL-DO-OTIMIZADOR.md). Técnicos pertencem ao Otimizador.
