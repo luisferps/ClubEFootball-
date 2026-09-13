@@ -92,13 +92,15 @@ ordenação ocorre no banco antes de limitar/paginar, inclusive após buscas.
 Contrato: `SQL-BOXES-ORDEM-CONTRATACAO.sql`. Regressão:
 `tests/boxes-hiring-order.test.cjs` compara prévia e detalhe nos três degraus.
 
-Categorias de contratação usam escala neutra: cinco estrelas brancas com brilho,
-quatro a uma em cinzas progressivos e zero apagado. Tema claro adapta o contraste.
+Categorias de contratação: cinco estrelas azul-claro com brilho, quatro azul médio,
+três azul, duas laranja, uma vermelho e zero cinza apagado. Tema claro adapta o contraste.
 A legenda de contratação é texto discreto, sem fundo, borda ou aparência de botão.
 
 Prévias e detalhes compartilham o padrão: foto ampla, nome e número destacados;
 posição apenas pela sigla (VOL, MAT), sem etiqueta. Estilo de Jogo e
 Especialidade mantêm etiquetas discretas. Estilos correspondem à posição avaliada.
+Estilo de Jogo e Especialidade ocupam blocos iguais, com fundo sutil e borda fina,
+sem ação própria de botão nem cores diferentes entre os dois blocos.
 O contrato de identidade está em SQL-BOXES-IDENTIDADE.sql; ordenação das cadastradas
 em SQL-BOXES-CADASTRADAS-ORDEM-CONTRATACAO.sql. Não altera notas nem categorias.
 
