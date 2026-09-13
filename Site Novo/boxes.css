@@ -13,6 +13,10 @@ html[data-theme=claro] .nb-boxes{--nb-card:#edf1ee;--nb-card-header:#e5ebe7;--nb
 .nb-no-photo{width:42px;height:56px;object-fit:contain;border-radius:6px;background:var(--sn-soft)}
 .nb-no-photo{display:flex;align-items:center;text-align:center;font-size:9px;color:var(--sn-muted)}
 .nb-player-info{min-width:0;display:flex;flex-direction:column;gap:4px}.nb-player-info strong{font-size:13px;overflow-wrap:anywhere}.nb-player-info small{font-size:11px;color:var(--sn-muted)}
+.nb-identity{display:flex;flex-direction:column;gap:5px;width:100%;margin-top:3px}
+.nb-identity-row{display:flex;flex-direction:column;gap:1px;min-width:0}
+.nb-identity-label{font-size:9px;font-weight:400;color:var(--sn-muted);line-height:1.3}
+.nb-identity-value{font-size:11px;font-weight:600;color:var(--sn-ink);line-height:1.35;white-space:normal;overflow-wrap:anywhere}
 .nb-box .nb-open{margin:auto 13px 12px;color:var(--sn-green)}
 .nb-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;grid-auto-rows:1fr}
 .nb-card-grid img,.nb-card-grid .nb-no-photo{width:110px;height:155px}

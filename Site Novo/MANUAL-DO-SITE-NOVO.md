@@ -97,6 +97,12 @@ Categorias de contratação: 5 estrelas douradas com brilho, 4 verdes, 3 azuis,
 lido da régua pública. Estrelas vazias discretas; paleta adaptada aos temas claro
 e escuro. Esta apresentação não muda notas, estrelas ou ordem dos cards.
 
+Nas prévias e detalhes das duas telas de Boxes, cada carta apresenta Posição,
+Estilo de jogo e Especialidade com etiquetas pequenas e valores legíveis sem
+truncamento. Posição e especialidade correspondem à análise exibida; estilos vêm
+da carta e precisam estar ativos nessa posição. Sem estilo ativo recebe aviso
+explícito. O enriquecimento compartilhado está em `SQL-BOXES-IDENTIDADE.sql`.
+
 Boxes em andamento e ordenação por pontuação agregam a fonte materializada para
 evitar varreduras ordenadas caras. O selo é consultado nas linhas necessárias.
 As consultas corrigidas preservam o resultado público e os critérios de avaliação.
