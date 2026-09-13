@@ -36,7 +36,7 @@ function stars(value){
 }
 function legend(){
  return data&&!busy&&!error?'<section class="nb-legend" aria-label="Legenda das estrelas de contratação">'
-  +'<div class="nb-legend-heading"><strong>Vale a pena contratar?</strong><span>Veja o significado das estrelas</span></div>'
+  +'<div class="nb-legend-heading"><strong>Vale a pena contratar?</strong></div>'
   +'<div class="nb-legend-levels">'+data.regua.map(f=>'<div class="nb-legend-level" data-stars="'+f.estrelas+'">'+stars(f.estrelas)+'<span>'+esc(f.rotulo)+'</span></div>').join('')+'</div></section>':'';
 }
 function card(c,index){
