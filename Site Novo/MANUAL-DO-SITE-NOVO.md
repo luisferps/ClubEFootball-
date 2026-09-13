@@ -122,4 +122,4 @@ dos novos resultados que ainda estão sendo processados.
 [Integração](../4-DOCUMENTOS/MANUAL-DE-INTERLIGACAO-DE-SISTEMAS.md) ·
 [Orçamento](../4-DOCUMENTOS/ORCAMENTO-REGRA-DIARIA.md).
 
-O interior das boxes usa cards verticais nas duas abas: classificação no alto, foto grande, nome, sigla, blocos de identidade e avaliação centralizada abaixo. A grade passa de três para duas e uma coluna conforme a largura.
+O interior das boxes usa cards verticais nas duas abas: classificação no canto sem reservar uma linha, foto grande, nome, sigla, blocos de identidade e avaliação centralizada abaixo. A grade compacta passa de quatro para duas e uma coluna conforme a largura, sem reduzir as fotos.
