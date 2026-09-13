@@ -33,6 +33,11 @@ if getattr(sys, "frozen", False):
     MOTOR = Path(sys._MEIPASS) / "motor_bonus.py"
 else:
     MOTOR = PASTA.parent / "motor_bonus.py"
+if "--verificar-dependencias" in sys.argv:
+    import psycopg
+    import psycopg_binary
+    print("Dependências operacionais verificadas.")
+    raise SystemExit(0)
 if getattr(sys, "frozen", False) and "--pipeline" in sys.argv:
     import runpy
     runpy.run_path(str(MOTOR), run_name="__main__")

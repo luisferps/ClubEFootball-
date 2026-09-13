@@ -16,8 +16,8 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Fila, conferência e auditoria local do Bonificador")]
 [assembly: AssemblyProduct("Bonificador ClubEfootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("2.0.31.0")]
-[assembly: AssemblyFileVersion("2.0.31.0")]
+[assembly: AssemblyVersion("2.0.32.0")]
+[assembly: AssemblyFileVersion("2.0.32.0")]
 
 namespace ClubEfootballBonificador
 {
@@ -155,13 +155,13 @@ namespace ClubEfootballBonificador
         private readonly RichTextBox log = new RichTextBox(), resultado = new RichTextBox(); private readonly TextBox cardId = new TextBox(); private readonly ComboBox funcao = new ComboBox();
         private readonly Button iniciar = new Button(), pausar = new Button(), parar = new Button(), atualizar = new Button(), anterior = new Button(), proxima = new Button(), simular = new Button(), auditoria = new Button();
         private readonly System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer(); private bool consultando; private int offsetFila = 0; private const int TamanhoPagina = 100;
-        private readonly Label integralResumo = new Label();
+        private readonly Label integralResumo = new Label(), integralExecucao = new Label();
         private readonly Button integralReusar = new Button(), integralCalcular = new Button(), integralParar = new Button();
         private string integralLote = ""; private bool integralConsultando; private volatile bool integralReusando, integralParada;
 
         internal BonificadorForm()
         {
-            Text = "Bonificador ClubEfootball V2.0.31 — regras vigentes"; MinimumSize = new Size(980, 680); Size = new Size(1320, 820); StartPosition = FormStartPosition.CenterScreen; Font = new Font("Segoe UI", 9F);
+            Text = "Bonificador ClubEfootball V2.0.32 — regras vigentes"; MinimumSize = new Size(980, 680); Size = new Size(1320, 820); StartPosition = FormStartPosition.CenterScreen; Font = new Font("Segoe UI", 9F);
             BuildLayout(); timer.Interval = 15000; timer.Tick += delegate { RefreshIntegral(); }; Shown += delegate { RefreshIntegral(); timer.Start(); }; FormClosing += delegate { integralParada = true; timer.Stop(); };
         }
         private void BuildLayout()
@@ -183,6 +183,7 @@ namespace ClubEfootballBonificador
             foreach (Button b in new[] { integralReusar, integralCalcular, integralParar }) { b.AutoSize = true; b.Enabled = false; actions.Controls.Add(b); }
             actions.Controls.Add(refresh); box.Controls.Add(actions);
             integralResumo.AutoSize = true; integralResumo.MaximumSize = new Size(1150, 0); integralResumo.Padding = new Padding(0, 18, 0, 0); integralResumo.Text = "Consultando o lote..."; box.Controls.Add(integralResumo);
+            integralExecucao.AutoSize = true; integralExecucao.MaximumSize = new Size(1150, 0); box.Controls.Add(integralExecucao);
             refresh.Click += delegate { RefreshIntegral(); };
             integralReusar.Click += delegate { ReuseIntegral(); };
             integralCalcular.Click += delegate { IntegralCommand("calcular"); };
@@ -195,6 +196,8 @@ namespace ClubEfootballBonificador
             integralConsultando = true;
             ThreadPool.QueueUserWorkItem(delegate {
                 try {
+                    Dictionary<string, object> worker = Map(Map(Program.Get("/api/pipeline/estado"))["pipeline"]);
+                    OnUi(delegate { integralExecucao.Text = Value(worker, "mensagem"); });
                     string body = Program.Get("/api/integral/status");
                     OnUi(delegate {
                         try {
@@ -219,6 +222,7 @@ namespace ClubEfootballBonificador
         {
             string id = integralLote; if (String.IsNullOrEmpty(id)) return;
             integralReusar.Enabled = integralCalcular.Enabled = false;
+            integralResumo.Text = "Solicitando " + action + "...";
             ThreadPool.QueueUserWorkItem(delegate {
                 try { Program.Post("/api/integral/" + action + "?lote_id=" + Uri.EscapeDataString(id)); OnUi(delegate { RefreshIntegral(); }); }
                 catch (Exception e) { OnUi(delegate { integralResumo.Text = "Ação não concluída: " + e.Message; }); }

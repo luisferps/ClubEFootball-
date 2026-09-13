@@ -16,9 +16,11 @@ foreach ($arquivo in @($Python,$servidor,$motor,$altura)) {
     throw "Arquivo obrigatório ausente: $arquivo"
   }
 }
+& $Python -c "import psycopg, psycopg_binary"
+if ($LASTEXITCODE -ne 0) { throw 'Instale psycopg[binary] no Python de compilação.' }
 New-Item -ItemType Directory -Force -Path $PastaTrabalho,$dist,$build,$spec | Out-Null
 & $Python -m PyInstaller --noconfirm --clean --onefile --console `
-  --name BonificadorComponente `
+  --name BonificadorComponente --collect-all psycopg --collect-all psycopg_binary `
   --distpath $dist --workpath $build --specpath $spec `
   --add-data "${motor}:." --add-data "${altura}:." $servidor
 if ($LASTEXITCODE -ne 0) { throw 'PyInstaller não concluiu o componente.' }
@@ -26,6 +28,8 @@ $gerado = Join-Path $dist 'BonificadorComponente.exe'
 if (-not (Test-Path -LiteralPath $gerado -PathType Leaf)) {
   throw 'Componente gerado não foi encontrado.'
 }
+& $gerado --verificar-dependencias
+if ($LASTEXITCODE -ne 0) { throw 'Componente compilado sem dependências operacionais.' }
 Copy-Item -LiteralPath $gerado -Destination $destino -Force
 Get-FileHash -Algorithm SHA256 -LiteralPath $destino
 

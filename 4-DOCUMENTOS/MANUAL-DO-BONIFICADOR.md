@@ -6,6 +6,10 @@ Mudar técnico ou molde não obriga, por si só, a recalcular bônus compatívei
 
 ## Operação atual
 
+Versão local 2.0.32: inclui o driver de banco no executável; a compilação verifica
+as dependências no pacote pronto. O estado do cálculo é consultado antes do resumo
+do banco, para mostrar falhas mesmo quando a consulta do lote demora.
+
 Abra `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe`.
 Na aba **Lote integral atual**:
 
