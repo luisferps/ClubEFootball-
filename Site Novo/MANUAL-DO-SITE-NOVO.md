@@ -123,3 +123,15 @@ Nas duas listagens, cada box tem borda externa reforçada e cabeçalho contrasta
 Nas duas abas, a análise principal é a linha publicada de maior nota no grau selecionado, com desempate pelo ID da linha. Nota, estrelas e link da ficha correspondem a ela. A tela mostra posição nativa e estilo cadastral, sem especialidade/build. Os cards são ordenados por estrelas e depois pela nota dessa linha. Snapshots históricos permanecem armazenados, mas não são usados para escolher a linha exibida. Contrato: SQL-BOXES-MELHOR-LINHA.sql.
 
 Regra visual: blocos equivalentes em cada visualização devem ter as mesmas dimensões. Ausência de nota, análise ou foto não reduz o bloco; reservar o espaço correspondente. Nas boxes, alturas uniformes na grade, avaliação e botão alinhados, inclusive entre fileiras.
+
+## Desempenho das Consultas
+
+Ranking e Boxes leem a publicação pelo índice de cobertura
+`build_publicacao_linha_ativa_card_v1_idx`, incluindo os campos usados na seleção.
+O Ranking agrupa as posições apenas para as linhas da página, em uma única passagem,
+e usa 16 MB de work_mem nessa função. Não ampliar o timeout para substituir essa
+otimização. Fonte SQL: `SQL-DESEMPENHO-RANKING-BOXES.sql`.
+
+Verificação em 13/09: respostas idênticas antes/depois em seis cenários de modos,
+filtros e paginação. Leitura pública nos três graus: Ranking 351–509 ms; Boxes
+por pontuação 623–630 ms. São medidas desta conferência, não garantia de latência.
