@@ -85,6 +85,13 @@ antes de paginar. [SQL da correção](SQL-RANKING-SELO-PAGINA.sql).
 Boxes podem usar fotografias de avaliação: não prometer atualização contínua nem
 inventar avaliação para carta sem publicação elegível.
 
+Nas Boxes em andamento, cards seguem estrelas de contratação decrescentes e,
+no empate, a pontuação exibida decrescente. Sem análise fica depois das categorias
+avaliadas. A prévia contém os três primeiros cards da mesma ordem do detalhe;
+ordenação ocorre no banco antes de limitar/paginar, inclusive após buscas.
+Contrato: `SQL-BOXES-ORDEM-CONTRATACAO.sql`. Regressão:
+`tests/boxes-hiring-order.test.cjs` compara prévia e detalhe nos três degraus.
+
 Boxes em andamento e ordenação por pontuação agregam a fonte materializada para
 evitar varreduras ordenadas caras. O selo é consultado nas linhas necessárias.
 As consultas corrigidas preservam o resultado público e os critérios de avaliação.
