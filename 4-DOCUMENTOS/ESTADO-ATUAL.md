@@ -30,6 +30,15 @@ A documentação foi consolidada; a rodada de produção continua em andamento.
   independente de seções e remoção dos trechos mortos identificados. Consultas de
   Boxes usam leitura pronta e paginada, substituindo o cálculo integral a cada consulta.
 
+Datas das boxes corrigidas em todo o acervo legado: 727 com data completa no título,
+296 sem data comprovada; as 1.023 datas de observação foram preservadas separadamente.
+Captura de boxes passa a atualizar contextos reconhecidos; vencimentos comprovados
+encerram automaticamente sem apagar participantes. A leitura V2 dos detalhes foi validada na Summer Transfer vol.3: 150 IDs físicos
+persistidos como prova, 11 especiais vinculados para exibição. Página parcial ou
+agente ambíguo não publica. Oito ofertas da sessão ainda precisam ter os detalhes
+capturados; a cobertura automática de todas as ofertas não está concluída.
+
+
 ## O que continua esperando
 
 Pendência técnica descoberta na conferência do editor: o Otimizador omite boost

@@ -2553,6 +2553,24 @@ def finalize_review_application(connection: Any, sql: Any, planned: list, applic
     return readback
 
 
+def sync_boxes_after_application(args: argparse.Namespace) -> dict[str, Any]:
+    if args.skip_boxes_sync:
+        return {"state": "not_requested", "database_write": False,
+                "reason": "Atualização de boxes desativada nesta execução."}
+    run_dir = Path(args.run_dir).resolve()
+    try:
+        result = boxes_runtime.collect_and_apply(
+            run_dir / "cartas-fisicas-canonicas.json", run_dir, runtime, emit,
+            lambda: cancelled(Path(args.cancel)),
+        )
+    except Exception:
+        result = {"state": "failed", "database_write": False,
+                  "reason": "Atualização de boxes pendente; use Atualizar Boxes Novas com Contratos aberto no jogo."}
+        emit("family", family="Boxes do jogo", state="error", message=result["reason"], database_write=False)
+    write_json(run_dir / "boxes-resultado.json", result)
+    return result
+
+
 def apply_review(args: argparse.Namespace) -> int:
     """Aplica exclusivamente um pacote aprovado em lotes retomáveis.
 
@@ -2643,13 +2661,9 @@ def apply_review(args: argparse.Namespace) -> int:
                 pass
     with psycopg.connect(dsn, connect_timeout=20) as verify_connection:
         postcommit_readback = finalize_review_application(verify_connection, sql, planned, application[0], supplied_sha)
-    # Aplicar cartas não altera boxes. O histórico vem do legado e novas boxes
-    # usam a atualização dedicada na tela principal do extrator.
-    box_result = {
-        "state": "not_requested",
-        "database_write": False,
-        "reason": "O histórico vem do legado; boxes novas usam a atualização dedicada.",
-    }
+    # A carga aprovada também atualiza ofertas pela fonte comercial do jogo.
+    # Falta de sessão fica explícita e não desfaz cartas já confirmadas.
+    box_result = sync_boxes_after_application(args)
     emit(
         "complete",
         state="applied",

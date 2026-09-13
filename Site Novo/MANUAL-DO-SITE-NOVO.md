@@ -64,6 +64,18 @@ Mudança de código SQL que altere regras de seleção/classificação também d
 `boxes_leitura_revisao_v1.solicitada` e executar `boxes_leitura_atualizar_v1()` após
 implantar. Essa é uma tarefa de migração, nunca do operador diário.
 
+## Origem das ofertas e datas
+
+Novas boxes e seus participantes vêm da captura comercial do jogo; publicação de
+um card no Ranking não identifica sua box. O Extrator tenta essa captura após aplicar
+cartas, e permite atualização dedicada. É necessário Contratos carregado no jogo.
+Datas finais comprovadas encerram ofertas automaticamente, preservando o histórico.
+Sem captura atual ou fim conhecido, não adivinhar quais ofertas saíram.
+
+No acervo legado, a antiga data `visto` é apenas observação. A Data da Oferta usa a
+data completa explícita no título; sem comprovação, informa ausência. Nas ofertas
+capturadas do jogo, usa o início oficial. A ordenação Últimas segue essa data correta.
+
 ## Ficha
 
 Preservar os quatro blocos aprovados, seu chassi e a proporção integral da foto,
@@ -174,3 +186,8 @@ Testes de referência: `tests/grau-global-regressao.test.cjs`,
 [Pendências atuais](../4-DOCUMENTOS/ESTADO-ATUAL.md) ·
 [Integração](../4-DOCUMENTOS/MANUAL-DE-INTERLIGACAO-DE-SISTEMAS.md) ·
 [Orçamento](../4-DOCUMENTOS/ORCAMENTO-REGRA-DIARIA.md).
+
+Limite identificado em 13/09: `pickup_list` e banners são destaques, não a composição
+completa. A publicação dessa captura parcial foi bloqueada. O leitor V2 captura a composição completa da box carregada e exibe os especiais.
+A cobertura das demais ofertas ainda depende dos detalhes carregados; não declarar
+a sincronização automática de todas as boxes concluída.

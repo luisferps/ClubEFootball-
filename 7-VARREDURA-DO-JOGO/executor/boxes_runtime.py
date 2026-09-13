@@ -7,7 +7,6 @@ descreve a variação individual da carta, não o agrupamento comercial da box.
 from __future__ import annotations
 
 import hashlib
-import csv
 import json
 import re
 import struct
@@ -19,7 +18,7 @@ import uuid
 import card_levels_runtime
 
 SCHEMA = "clubef-boxes-jogo-runtime-v1"
-READER_VERSION = "boxes-cmd-get-myclub-agentlist-v1"
+READER_VERSION = "boxes-cmd-get-myclub-agentlist-detalhes-v2"
 SOURCE = "jogo:CmdGetMyclubAgentlist"
 AGENT_STRIDE = 0x238
 AGENT_ID_OFFSET = 0x08
@@ -142,6 +141,33 @@ def read_loaded_boxes(reader: Any, physical_ids: set[str], *, capture_id: str,
         if reader.read(address + TITLE_OFFSET, 32, "releitura_titulo_box") != title_object:
             raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "O título de uma box mudou durante a leitura.")
 
+    # O vetor de recrutamento contém a resposta de detalhes, não os banners.
+    # Só vinculamos quando a lista inteira contém todos os destaques de um único agente.
+    detail_header = reader.read(owner + 0x380, 24, "cabecalho_participantes_completos")
+    detail_begin, _, _, detail_count = card_levels_runtime.vector_bounds(detail_header, 0xF0, 20000)
+    counters = reader.read(owner + 0x398, 0x40, "contadores_participantes_completos")
+    declared_total = struct.unpack_from("<I", counters, 0)[0]
+    first_index = struct.unpack_from("<I", counters, 0x3D4 - 0x398)[0]
+    complete_ids = []
+    if detail_count and detail_count == declared_total and first_index == 0:
+        detail_raw = reader.read(detail_begin, detail_count * 0xF0, "participantes_completos")
+        complete_ids = [str(struct.unpack_from("<Q", detail_raw, i * 0xF0 + 8)[0])
+                        for i in range(detail_count)]
+        if len(set(complete_ids)) != detail_count or any(cid not in physical_ids for cid in complete_ids):
+            raise ValueError("Participantes completos duplicados ou ausentes da referência física.")
+        if reader.read(detail_begin, len(detail_raw), "releitura_participantes_completos") != detail_raw:
+            raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "Os participantes mudaram durante a captura.")
+    candidates = [box for box in boxes if complete_ids and
+                  {card["card_id"] for card in box["cartas"]}.issubset(set(complete_ids))]
+    for box in boxes:
+        box["participantes_completos"] = len(candidates) == 1 and box is candidates[0]
+        if box["participantes_completos"]:
+            box["destaques"] = box["cartas"]
+            box["cartas"] = [{"card_id": cid} for cid in complete_ids]
+            box["total_jogo"] = declared_total
+    if reader.read(owner + 0x380, 24, "releitura_cabecalho_participantes") != detail_header or reader.read(owner + 0x398, 0x40, "releitura_contadores_participantes") != counters:
+        raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "A lista de participantes mudou durante a captura.")
+
     if reader.read(owner, 24, "releitura_lista_agentes") != outer:
         raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "A lista de boxes mudou durante a leitura.")
     for at, raw, purpose in ((base + card_levels_runtime.ROOT_RVA, g_raw, "raiz_cartas_boxes"),
@@ -157,7 +183,7 @@ def read_loaded_boxes(reader: Any, physical_ids: set[str], *, capture_id: str,
         "fonte": SOURCE,
         "captura_id": capture_id,
         "capturado_em": captured_at,
-        "cobertura": "lista_completa_retornada_por_CmdGetMyclubAgentlist",
+        "cobertura": "participantes_completos_do_agente_carregado",
         "agentes_retornados": count,
         "boxes": boxes,
         "agentes_ignorados": ignored,
@@ -187,11 +213,13 @@ def _public_payload(capture_result: dict[str, Any]) -> dict[str, Any]:
         "capturado_em": capture_result["capturado_em"],
         "cobertura": capture_result["cobertura"],
         "executavel_sha256": capture_result["jogo"]["executavel_sha256"],
+        "participantes_completos": True,
         "boxes": [{
+            "total_jogo": box["total_jogo"],
             "agente_id": box["agente_id"], "titulo": box["titulo"],
             "inicio_epoch": box["inicio_epoch"], "fim_epoch": box["fim_epoch"],
             "cartas": [card["card_id"] for card in box["cartas"]],
-        } for box in capture_result["boxes"]],
+        } for box in capture_result["boxes"] if box.get("participantes_completos")],
     }
 
 
@@ -209,6 +237,8 @@ def collect_and_apply(canonical_cards_path: Path, run_dir: Path, runtime: Any,
         capture_path = run_dir / "boxes-jogo-captura.json"
         capture_path.write_text(json.dumps(captured, ensure_ascii=False, indent=2), encoding="utf-8")
         payload = _public_payload(captured)
+        if not payload["boxes"]:
+            raise card_levels_runtime.LevelsUnavailable("detalhes_box_pendentes", "Abra os jogadores disponíveis de uma box para capturar os participantes completos.")
         payload_path = run_dir / "boxes-jogo-envio.json"
         payload_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
         psycopg, _, _ = runtime.import_psycopg()
@@ -235,14 +265,15 @@ def collect_and_apply(canonical_cards_path: Path, run_dir: Path, runtime: Any,
         ))
         if read_total != len(payload["boxes"]) or classified_total != read_total:
             raise RuntimeError("O banco não classificou todas as boxes lidas pelo jogo.")
-        outcome = {**result, "state": "published", "database_write": True,
+        outcome = {**result, "boxes_com_detalhes_pendentes": len(captured["boxes"])-len(payload["boxes"]), "state": "published", "database_write": True,
                    "independent_readback": True, "capture_path": str(capture_path),
                    "payload_path": str(payload_path)}
         emit("family", family="Boxes do jogo", state="ready",
              message=(f"{read_total} boxes lidas: {result.get('boxes_novas', 0)} novas, "
                       f"{result.get('boxes_reconhecidas', 0)} já cadastradas e "
                       f"{result.get('boxes_atualizadas', 0)} atualizadas; "
-                      f"{len(expected)} vínculos conferidos."),
+                      f"{len(expected)} vínculos conferidos; "
+                      f"{len(captured['boxes'])-len(payload['boxes'])} ofertas aguardam detalhes completos."),
              database_write=True)
         return outcome
     except card_levels_runtime.LevelsUnavailable as error:
@@ -255,21 +286,18 @@ def collect_and_apply(canonical_cards_path: Path, run_dir: Path, runtime: Any,
         return outcome
 
 
-def _physical_ids_from_reference(root: Path) -> set[str]:
-    pointer_path = root / "artefatos" / "referencias-cartas" / "referencia-vigente.json"
-    pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
-    reference_id = str(pointer.get("reference_id") or "")
-    if not re.fullmatch(r"ref-[a-f0-9]{12}-[a-f0-9]{12}", reference_id):
-        raise RuntimeError("A referência física vigente das cartas é inválida.")
-    csv_path = root / "artefatos" / "referencias-cartas" / "versoes" / reference_id / "carta_jogo.csv"
-    ids: set[str] = set()
-    with csv_path.open("r", encoding="utf-8-sig", newline="") as stream:
-        for row in csv.DictReader(stream):
-            card_id = str(row.get("card_id") or "")
-            if re.fullmatch(r"[1-9][0-9]*", card_id):
-                ids.add(card_id)
+def _physical_ids_from_database(runtime: Any) -> set[str]:
+    """A referência local pode anteceder a última carga; usar IDs físicos persistidos."""
+    psycopg, _, _ = runtime.import_psycopg()
+    dsn = runtime.connection_string()
+    if not dsn:
+        raise RuntimeError("Conexão segura indisponível para conferir identidades físicas das boxes.")
+    with psycopg.connect(dsn, connect_timeout=20) as connection:
+        connection.execute("set transaction read only")
+        rows = connection.execute("select card_id from clube_novo.carta_jogo where codigo_tipo_carta_fisico is not null").fetchall()
+    ids = {str(row[0]) for row in rows if re.fullmatch(r"[1-9][0-9]*",str(row[0]))}
     if not ids:
-        raise RuntimeError("A referência física vigente não contém cartas.")
+        raise RuntimeError("O cadastro físico vigente não contém cartas para conferir as boxes.")
     return ids
 
 
@@ -277,7 +305,7 @@ def extract_only(root: Path, run_dir: Path, runtime: Any, emit: Callable[..., No
                  cancel: Callable[[], None]) -> dict[str, Any]:
     """Operação dedicada: lê e publica somente as boxes, sem varrer outras famílias."""
     run_dir.mkdir(parents=True, exist_ok=True)
-    ids = _physical_ids_from_reference(root)
+    ids = _physical_ids_from_database(runtime)
     # collect_and_apply recebe o mesmo formato canônico produzido pelo worker.
     reference = run_dir / "cartas-referencia-boxes.json"
     reference.write_text(json.dumps({"records": [{"card_id": value} for value in sorted(ids, key=int)]}), encoding="utf-8")
