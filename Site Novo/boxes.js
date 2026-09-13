@@ -37,13 +37,14 @@ function stars(value){
 function legend(){
  return data&&!busy&&!error?'<section class="nb-legend" aria-label="Legenda das estrelas de contratação">'
   +'<div class="nb-legend-heading"><strong>Vale a pena contratar?</strong><span>Veja o significado das estrelas</span></div>'
-  +'<div class="nb-legend-levels">'+data.regua.map(f=>'<div class="nb-legend-level">'+stars(f.estrelas)+'<span>'+esc(f.rotulo)+'</span></div>').join('')+'</div></section>':'';
+  +'<div class="nb-legend-levels">'+data.regua.map(f=>'<div class="nb-legend-level" data-stars="'+f.estrelas+'">'+stars(f.estrelas)+'<span>'+esc(f.rotulo)+'</span></div>').join('')+'</div></section>':'';
 }
 function card(c,index){
  const analyses=c.analises||[];
  const best=analyses[0];
  const href='ficha.html?card='+encodeURIComponent(c.card_id)+(best?.linha_id?'&amp;linha='+encodeURIComponent(best.linha_id):'');
- const score=best?'<b title="Pontuação da análise">'+number(c.pontuacao_maxima??best.pontuacao)+'</b>'+'<span class="nb-hiring"><span class="nb-hiring-label">Contratação</span>'+stars(best.estrelas)+'</span>':'<small class="nb-pending">Análise ainda não publicada</small>';
+ const hiringLabel=best?data.regua.find(f=>f.estrelas===best.estrelas)?.rotulo||best.etiqueta:'';
+ const score=best?'<b title="Pontuação da análise">'+number(c.pontuacao_maxima??best.pontuacao)+'</b>'+'<span class="nb-hiring" data-stars="'+best.estrelas+'"><span class="nb-hiring-label">Contratação</span>'+stars(best.estrelas)+'<span class="nb-hiring-verdict">'+esc(hiringLabel)+'</span></span>':'<small class="nb-pending">Análise ainda não publicada</small>';
  const main='<a class="nb-rated-player" href="'+href+'" target="_blank" rel="noopener"><span class="nb-rank">'+(index+1+(state.p_box?state.p_offset:0))+'</span>'+picture(c)+'<span class="nb-player-info"><strong>'+esc(c.nome)+'</strong><small>'+esc(best?best.funcao+' · '+best.posicao:c.posicao||'')+'</small>'+(c.regua_vigente===false?'<span class="nb-regua-antiga" title="Nota da regua anterior: esta linha ainda nao passou pelo Otimizador novo">Regua antiga</span>':'')+'</span><span class="nb-rating">'+score+'</span></a>';
  return '<article class="nb-entry">'+main+'</article>';
 }

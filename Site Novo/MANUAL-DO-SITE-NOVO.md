@@ -92,6 +92,11 @@ ordenação ocorre no banco antes de limitar/paginar, inclusive após buscas.
 Contrato: `SQL-BOXES-ORDEM-CONTRATACAO.sql`. Regressão:
 `tests/boxes-hiring-order.test.cjs` compara prévia e detalhe nos três degraus.
 
+Categorias de contratação: 5 estrelas douradas com brilho, 4 verdes, 3 azuis,
+2 âmbar, 1 laranja e 0 cinza. Cada carta mostra também o significado da categoria,
+lido da régua pública. Estrelas vazias discretas; paleta adaptada aos temas claro
+e escuro. Esta apresentação não muda notas, estrelas ou ordem dos cards.
+
 Boxes em andamento e ordenação por pontuação agregam a fonte materializada para
 evitar varreduras ordenadas caras. O selo é consultado nas linhas necessárias.
 As consultas corrigidas preservam o resultado público e os critérios de avaliação.
