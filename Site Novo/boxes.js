@@ -50,7 +50,7 @@ function card(c,index){
  return '<article class="nb-entry">'+main+'</article>';
 }
 function sortControl(){return !active&&!state.p_box?'<div class="nb-sort"><label>Ordenar por <select data-nb-sort aria-label="Ordenar boxes"><option value="recentes" '+(state.p_ordem==='recentes'?'selected':'')+'>Últimas</option><option value="pontuacao" '+(state.p_ordem==='pontuacao'?'selected':'')+'>Melhores</option></select></label><small>Esta lista não inclui as boxes em andamento.</small></div>':'';}
-function boxMeta(b){return active?'':'<div class="nb-meta"><span>'+(b.data_oferta?'Data da oferta: ':'')+esc(b.data_rotulo)+'</span><span>'+(b.melhor_pontuacao===null?'Sem pontuação publicada':'Maior pontuação: '+number(b.melhor_pontuacao))+'</span></div>';}
+function boxMeta(b){return active?'':'<div class="nb-meta"><span>'+(b.data_oferta?'Data da oferta: ':'')+esc(b.data_rotulo)+'</span></div>';}
 function change(e){if(e.target.matches?.('[data-nb-sort]')&&['recentes','pontuacao'].includes(e.target.value)){state.p_ordem=e.target.value;state.p_offset=0;load();}}
 function pages(){
  if(!data||busy||error||!data.total)return '';
