@@ -42,6 +42,9 @@ As habilidades complementares usam verde discretamente mais claro e hover
 
 ## Editor pessoal
 
+O avaliador consulta o molde mais recente no banco; v6 confirmado em 13/09.
+[Conferência e divergência de atributos identificada](PARIDADE-EDITOR-MOLDE-V6.md).
+
 Editar não altera a build canônica. Escolhas pessoais continuam livres dos vetos
 estratégicos de sugestão automática. Avaliação usa o servidor; salvar localmente é
 possível sem conta, e nuvem usa autenticação. Builds pessoais azuis e canônicas verdes

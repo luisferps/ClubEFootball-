@@ -21,6 +21,12 @@ A documentação foi consolidada; a rodada de produção continua em andamento.
 
 ## O que continua esperando
 
+Pendência técnica descoberta na conferência do editor: o Otimizador omite boost
+do técnico em atributos de peso zero em alguns resultados. Duas linhas comprovadas,
+sem diferença na pontuação; extensão ainda não medida. Corrigir a composição e
+preparar atualização compatível da Máquina 2. Ver
+[prova](../Site%20Novo/PARIDADE-EDITOR-MOLDE-V6.md).
+
 1. Bonificador terminar a conferência/reaproveitamento. Depois executar **CALCULAR
    EXCEÇÕES** para cartas novas e entradas sem bônus compatível; não recalcular todos.
 2. Máquina 2 terminar o Otimizador. O operador confirmou processamento em andamento.
