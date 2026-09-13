@@ -93,7 +93,7 @@ Contrato: `SQL-BOXES-ORDEM-CONTRATACAO.sql`. Regressão:
 `tests/boxes-hiring-order.test.cjs` compara prévia e detalhe nos três degraus.
 
 Categorias de contratação: cinco estrelas verde forte sem brilho, quatro verde suave,
-três amarelo, duas laranja, uma vermelho e zero cinza apagado. Tema claro adapta o contraste.
+três amarelo, duas laranja e uma vermelho. Estrelas vazias têm contorno na cor da categoria; zero mostra cinco contornos vermelhos discretos, sem preenchimento, e legenda apagada. Tema claro adapta o contraste.
 A legenda de contratação é texto discreto, sem fundo, borda ou aparência de botão.
 
 Prévias e detalhes compartilham o padrão: foto ampla, nome e número destacados;
