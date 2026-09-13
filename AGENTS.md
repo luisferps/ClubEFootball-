@@ -151,3 +151,8 @@ Nao confundir decisao aprovada com implantacao: consultar progresso no documento
 ## Cartas excluídas não são pendências — 13/09/2026
 
 Todo levantamento operacional deve usar carta_operacional_v1 ou excluir explicitamente jogador_indisponivel=true e tipo_carta_id=player_delete_list antes das contagens. Não apresentar cartas excluídas como defeito, falta de bônus ou falta de nível. As dez cartas em carta_orcamento_aguardando_v1 aguardam divulgação do orçamento; Luis confirmou essa condição. Não investigar novamente sem nova evidência. Ver 4-DOCUMENTOS/CARTAS-EXCLUIDAS-E-ORCAMENTO-PENDENTE.md.
+
+
+## Orçamento: regra geral diária — substitui lista fixa
+
+Aguardar divulgação é estado normal, não erro. Usar carta_orcamento_pendente_automatico_v1; não cadastrar IDs manualmente para o aviso. A coleta normal reconsulta esperas no dia seguinte e a comprovação válida retira o aviso e devolve elegibilidade. Não inventar orçamento zero. Preservar decisões manuais e pacotes selados. Ver 4-DOCUMENTOS/ORCAMENTO-REGRA-DIARIA.md.

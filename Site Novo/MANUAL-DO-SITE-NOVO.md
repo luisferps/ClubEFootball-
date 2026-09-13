@@ -1916,3 +1916,8 @@ Site oficial: https://imaginative-granita-ace1ca.netlify.app/. Os 19 arquivos
 publicados coincidem com a pasta oficial. Timeout do Ranking corrigido no banco,
 calculando o selo de régua após a paginação. Ver CONFERENCIA-SITE-1309.md.
 O recálculo em andamento não impede a utilização e conferência do site.
+
+
+## Orçamento não divulgado: regra automática
+
+A mensagem da Ficha é determinada pelo contrato público a partir de carta_orcamento_pendente_automatico_v1. Não depende dos dez IDs iniciais. Desaparece após comprovação válida. Ver ../4-DOCUMENTOS/ORCAMENTO-REGRA-DIARIA.md.

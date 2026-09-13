@@ -39,6 +39,18 @@ def normalize_player_response(card_id: str, payload: dict, raw: bytes, fetched_a
     if response_id != expected or player_id != expected:
         raise ValueError(f"identidade divergente: esperado {expected}; id={response_id}; playerId={player_id}")
     level = payload.get("levelCap")
+    if type(level) is int and level == 0:
+        name = payload.get("name")
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError("nome do jogador ausente")
+        return {"card_id": expected, "id": response_id, "player_id": player_id,
+                "name": name.strip(), "estado": "aguardando_orcamento", "level_cap": None,
+                "orcamento_real": None, "http_status": 200,
+                "source_url": PLAYER_URL.format(card_id=expected),
+                "response_sha256": hashlib.sha256(raw).hexdigest(),
+                "prova_json": {"levelCap": 0, "id": response_id, "playerId": player_id,
+                               "fetched_at": fetched_at},
+                "erro": None}
     if isinstance(level, bool) or not isinstance(level, int) or not 1 <= level <= 99:
         raise ValueError("levelCap ausente ou fora do intervalo 1..99")
     name = payload.get("name")
@@ -157,7 +169,7 @@ def _write_report_html(path: Path, result: dict, items: list[dict]) -> None:
         klass="ok" if result.get("state") == "aplicado" else "warn",
         cards="".join(f"<div class=k><div>{html.escape(label)}</div><div class=n>{int(value or 0)}</div></div>" for label, value in (
             ("Planejadas", result.get("planejadas")), ("Alteradas", comparison.get("cartas_alteradas")),
-            ("Inalteradas", comparison.get("cartas_inalteradas")), ("Falhas", comparison.get("falhas")),
+            ("Inalteradas", comparison.get("cartas_inalteradas")), ("Falhas", comparison.get("falhas")), ("Orçamento ainda não divulgado", comparison.get("aguardando_orcamento")),
             ("Conflitos físicos", comparison.get("conflitos_fisicos")), ("Linhas repostas", repair.get("novas")),
             ("Publicações retiradas", repair.get("publicacoes_retiradas")),
         )), rows="".join(rows),
@@ -282,6 +294,7 @@ def _write_many_report_html(path: Path, result: dict) -> None:
             ("Solicitadas", result.get("solicitadas")), ("Processadas", result.get("processadas")),
             ("Coletadas", result.get("coletadas")), ("Alteradas", result.get("cartas_alteradas")),
             ("Linhas repostas", result.get("linhas_repostas")), ("Falhas", result.get("falhas_coleta")),
+            ("Orçamento ainda não divulgado", result.get("aguardando_orcamento")),
         )), rows="".join(rows),
     )
     path.write_text(document, encoding="utf-8")
@@ -316,7 +329,8 @@ def run_batch(run_dir: Path, runtime, emit, limit: int = 100, cancel=lambda: Fal
         card_id = str(planned["card_id"])
         try:
             item = session.player(card_id)
-            item.update({"estado": "coletado", "ordem": int(planned["ordem"]), "tentativas": 1})
+            item.setdefault("estado", "coletado")
+            item.update({"ordem": int(planned["ordem"]), "tentativas": 1})
         except Exception as error:
             item = {"estado": "falhou", "ordem": int(planned["ordem"]), "card_id": card_id,
                     "tentativas": 3, "http_status": None, "erro": str(error)[:1000]}
@@ -380,7 +394,7 @@ def run_batch(run_dir: Path, runtime, emit, limit: int = 100, cancel=lambda: Fal
     emit("complete", state="efhub_levels_batch_" + str(finalized.get("estado")), lote_id=batch_id,
          planejadas=len(items), coletadas=comparison.get("coletadas"), cartas_alteradas=comparison.get("cartas_alteradas"),
          cartas_inalteradas=comparison.get("cartas_inalteradas"), conflitos_fisicos=comparison.get("conflitos_fisicos"),
-         falhas_coleta=comparison.get("falhas"), linhas_repostas=repair.get("novas"), publicacoes_retiradas=repair.get("publicacoes_retiradas"),
+         falhas_coleta=comparison.get("falhas"), aguardando_orcamento=comparison.get("aguardando_orcamento"), linhas_repostas=repair.get("novas"), publicacoes_retiradas=repair.get("publicacoes_retiradas"),
          falhas_reparo=repair.get("falhas"), restantes_antes_do_lote=plan.get("restantes"), independent_readback=True,
          database_write=True, report_path=str(run_dir / "efhub-resultado.json"))
     return result
@@ -446,6 +460,7 @@ def _run_sequence(run_dir: Path, runtime, emit, total, cancel=lambda: False, del
             "inalteradas": int(comparison.get("cartas_inalteradas") or 0),
             "conflitos_fisicos": int(comparison.get("conflitos_fisicos") or 0),
             "falhas_coleta": int(comparison.get("falhas") or 0),
+            "aguardando_orcamento": int(comparison.get("aguardando_orcamento") or 0),
             "linhas_repostas": int(repair.get("novas") or 0),
             "publicacoes_retiradas": int(repair.get("publicacoes_retiradas") or 0),
             "falhas_reparo": int(repair.get("falhas") or 0),
@@ -466,6 +481,7 @@ def _run_sequence(run_dir: Path, runtime, emit, total, cancel=lambda: False, del
 
     totals = {
         "coletadas": sum(row["coletadas"] for row in batches),
+        "aguardando_orcamento": sum(row["aguardando_orcamento"] for row in batches),
         "cartas_alteradas": sum(row["alteradas"] for row in batches),
         "cartas_inalteradas": sum(row["inalteradas"] for row in batches),
         "conflitos_fisicos": sum(row["conflitos_fisicos"] for row in batches),
