@@ -92,8 +92,8 @@ ordenação ocorre no banco antes de limitar/paginar, inclusive após buscas.
 Contrato: `SQL-BOXES-ORDEM-CONTRATACAO.sql`. Regressão:
 `tests/boxes-hiring-order.test.cjs` compara prévia e detalhe nos três degraus.
 
-Categorias de contratação: cinco estrelas azul-claro com brilho, quatro azul médio,
-três azul, duas laranja, uma vermelho e zero cinza apagado. Tema claro adapta o contraste.
+Categorias de contratação: cinco estrelas dourado forte sem brilho, quatro amarelo-ouro,
+três âmbar, duas laranja, uma vermelho e zero cinza apagado. Tema claro adapta o contraste.
 A legenda de contratação é texto discreto, sem fundo, borda ou aparência de botão.
 
 Prévias e detalhes compartilham o padrão: foto ampla, nome e número destacados;
