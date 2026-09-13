@@ -135,3 +135,16 @@ otimização. Fonte SQL: `SQL-DESEMPENHO-RANKING-BOXES.sql`.
 Verificação em 13/09: respostas idênticas antes/depois em seis cenários de modos,
 filtros e paginação. Leitura pública nos três graus: Ranking 351–509 ms; Boxes
 por pontuação 623–630 ms. São medidas desta conferência, não garantia de latência.
+
+## Ordem das Boxes por Melhor Contratação
+
+Nas Boxes em Andamento e na opção Melhor Contratação das Boxes Cadastradas,
+comparar a quantidade de cards com 5, 4, 3, 2 e 1 estrela, nessa sequência,
+sempre decrescente. Contar todos os cards distintos da box, não apenas a prévia.
+Empate completo: maior pontuação e nome da box. Cards sem análise não ganham
+estrelas. A nota e a categoria continuam vindo da melhor linha publicada do card.
+A opção Mais Recentes continua ordenando por data. `pontuacao` permanece apenas
+como identificador compatível da opção na API. A seleção e classificação estão
+centralizadas em `site_novo_boxes_classificacao_v1`; os detalhes do motor só são
+lidos para os cards exibidos. Testados os três graus nas duas abas, comparando
+as contagens da primeira box com sua lista completa.

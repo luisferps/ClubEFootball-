@@ -1,30 +1,40 @@
-CREATE OR REPLACE FUNCTION clube_novo.site_novo_boxes_melhores_linhas_v1(p_cards text[],p_degrau integer)
-RETURNS TABLE(card_id text,analises jsonb) LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' AS $$
-with fonte as not materialized (
+CREATE OR REPLACE FUNCTION clube_novo.site_novo_boxes_classificacao_v1(p_cards text[],p_degrau integer)
+RETURNS TABLE(card_id text,analises jsonb) LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' SET jit TO 'off' SET work_mem TO '32MB' SET plan_cache_mode TO 'force_custom_plan' AS $$
+with fonte as materialized (
  select a.card_id,a.linha_id,a.funcao_id,a.posicao_id,a.build_otimizador_id,a.nota_final,a.impeto_condicional_codigo,a.impeto_condicional_nivel
- from clube_novo.build_publicacao_exibivel_v3 a where a.nota_final::text not in ('NaN','Infinity','-Infinity')
+ from clube_novo.build_publicacao_exibivel_v3 a join (select distinct unnest(p_cards) card_id) ids on ids.card_id=a.card_id where a.nota_final::text not in ('NaN','Infinity','-Infinity')
 ), topos as materialized (
  select f.id funcao_id,t.nota_final topo from clube_novo.funcao_sistema f
  cross join lateral (select a.nota_final from clube_novo.build_publicacao_exibivel_v3 a
  where a.funcao_id=f.id and a.nota_final::text not in ('NaN','Infinity','-Infinity')
  order by a.nota_final desc,a.linha_id limit 1) t
 ),
-melhores as (
- select distinct on (a.card_id) a.* from fonte a where a.card_id=any(p_cards)
- and (a.impeto_condicional_codigo is null or a.impeto_condicional_nivel=p_degrau)
+melhores as materialized (
+ select distinct on (a.card_id) a.* from fonte a where (a.impeto_condicional_codigo is null or a.impeto_condicional_nivel=p_degrau)
  order by a.card_id,a.nota_final desc,a.linha_id
 )
 select a.card_id,jsonb_build_array(jsonb_build_object('linha_id',a.linha_id::text,'funcao',f.rotulo,'posicao',p.codigo_pt,
-'pontuacao',a.nota_final,'regua_vigente',(bo.contrato_fingerprint=rv.contrato_fingerprint),'percentual_topo',100*a.nota_final/t.topo,
+'pontuacao',a.nota_final,'percentual_topo',100*a.nota_final/t.topo,
 'codigo',r.codigo,'etiqueta',r.rotulo,'regua_versao',r.regua_versao))
-from melhores a left join clube_novo.build_otimizador bo on bo.id=a.build_otimizador_id cross join clube_novo.regua_vigente_v1 rv join topos t on t.funcao_id=a.funcao_id and t.topo>0
+from melhores a join topos t on t.funcao_id=a.funcao_id and t.topo>0
 join clube_novo.funcao_sistema f on f.id=a.funcao_id join clube_novo.posicao_jogo p on p.id=a.posicao_id
 cross join lateral (
  select r.* from clube_novo.regua_contratacao_faixa_v1 r join clube_novo.regua_contratacao_versao_v1 v on v.versao=r.regua_versao and v.estado='vigente'
  where 100*a.nota_final/t.topo>=r.percentual_minimo order by r.percentual_minimo desc limit 1
 ) r;
 $$;
+REVOKE ALL ON FUNCTION clube_novo.site_novo_boxes_classificacao_v1(text[],integer) FROM PUBLIC;
+CREATE OR REPLACE FUNCTION clube_novo.site_novo_boxes_melhores_linhas_v1(p_cards text[],p_degrau integer)
+RETURNS TABLE(card_id text,analises jsonb) LANGUAGE sql STABLE SECURITY DEFINER SET search_path TO '' SET jit TO 'off' SET work_mem TO '32MB' SET plan_cache_mode TO 'force_custom_plan' AS $$
+select m.card_id,jsonb_build_array((m.analises->0)||jsonb_build_object('regua_vigente',bo.contrato_fingerprint=rv.contrato_fingerprint))
+from clube_novo.site_novo_boxes_classificacao_v1(p_cards,p_degrau) m
+join clube_novo.build_publicacao_linha_ativa_v1 a on a.linha_id=(m.analises#>>'{0,linha_id}')::bigint
+left join clube_novo.build_otimizador bo on bo.id=a.build_otimizador_id cross join clube_novo.regua_vigente_v1 rv;
+$$;
 REVOKE ALL ON FUNCTION clube_novo.site_novo_boxes_melhores_linhas_v1(text[],integer) FROM PUBLIC;
+ALTER FUNCTION clube_novo.site_novo_boxes_classificacao_v1(text[],integer) SET jit='off';
+ALTER FUNCTION clube_novo.site_novo_boxes_classificacao_v1(text[],integer) SET work_mem='32MB';
+ALTER FUNCTION clube_novo.site_novo_boxes_classificacao_v1(text[],integer) SET plan_cache_mode='force_custom_plan';
 CREATE OR REPLACE FUNCTION clube_novo.site_novo_boxes_calculo_v1(p_box text DEFAULT NULL::text, p_busca text DEFAULT ''::text, p_limite integer DEFAULT 24, p_offset integer DEFAULT 0, p_ordem text DEFAULT 'recentes'::text, p_degrau integer DEFAULT 3)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -162,13 +172,12 @@ begin
     ) into resultado;
 
   else
-    -- Ordenar todas as boxes por pontuacao exige ler as notas de todo o catalogo.
-    with notas_fonte as materialized (
- select a.card_id,a.nota_final,a.impeto_condicional_codigo,a.impeto_condicional_nivel from clube_novo.build_publicacao_exibivel_v3 a
-), notas as materialized (
- select a.card_id,max(a.nota_final) pontuacao_maxima from notas_fonte a
- where (a.impeto_condicional_codigo is null or a.impeto_condicional_nivel=p_degrau)
- and a.nota_final::text not in ('NaN','Infinity','-Infinity') group by a.card_id
+    -- Melhor contratação: contar todos os cards por categoria, de cinco a uma estrela.
+    with notas as materialized (
+ select m.card_id,m.analises,(m.analises#>>'{0,pontuacao}')::numeric pontuacao_maxima,
+ clube_novo.contratacao_estrelas_v1(m.analises#>>'{0,codigo}') estrelas
+ from clube_novo.site_novo_boxes_classificacao_v1(
+ (select array_agg(distinct card_id) from clube_novo.carta_box_oferta_v1 where estado_box in ('finalizada','cadastrada')),p_degrau) m
     ),
     base as materialized (
       select distinct on (x.box_nome,c.card_id)
@@ -177,7 +186,7 @@ begin
          from clube_novo.carta_posicao_principal_jogo cp
          join clube_novo.posicao_jogo pj on pj.id=cp.posicao_id
          where cp.card_id=c.card_id order by cp.posicao_id limit 1) as posicao,
-        c.foto_url_cloudinary as foto_url,n.pontuacao_maxima,x.data_oferta
+        c.foto_url_cloudinary as foto_url,n.pontuacao_maxima,n.estrelas,x.data_oferta
       from clube_novo.carta_box_oferta_v1 x
       join clube_novo.carta_jogo c using(card_id)
       left join notas n using(card_id)
@@ -189,14 +198,14 @@ begin
       order by x.box_nome,c.card_id,x.box_id desc
     ),
     catalogo as materialized (
-      select box,count(*)::integer total_cards,max(pontuacao_maxima) melhor_pontuacao,max(data_oferta) data_oferta
+      select box,count(*)::integer total_cards,max(pontuacao_maxima) melhor_pontuacao,max(data_oferta) data_oferta,count(*) filter(where estrelas=5) e5,count(*) filter(where estrelas=4) e4,count(*) filter(where estrelas=3) e3,count(*) filter(where estrelas=2) e2,count(*) filter(where estrelas=1) e1
       from base
       group by box
       having clube_novo.site_novo_texto_corresponde_v1(box,p_busca)
         or bool_or(clube_novo.site_novo_texto_corresponde_v1(nome,p_busca))
     ),
     ordenadas as (
-      select *,row_number() over(order by melhor_pontuacao desc nulls last,data_oferta desc nulls last,box collate "C") ordem
+      select *,row_number() over(order by e5 desc,e4 desc,e3 desc,e2 desc,e1 desc,melhor_pontuacao desc nulls last,box collate "C") ordem
       from catalogo
     ),
     pagina_boxes as materialized (
@@ -207,7 +216,7 @@ begin
  (select array_agg(distinct b.card_id) from base b join pagina_boxes p on p.box=b.box),p_degrau)
     ),
     itens_boxes as (
-      select p.box,p.total_cards,p.melhor_pontuacao,p.data_oferta,
+      select p.box,p.total_cards,p.melhor_pontuacao,p.data_oferta,p.e5,p.e4,p.e3,p.e2,p.e1,
         coalesce(to_char(p.data_oferta,'DD/MM/YYYY'),'Data não informada') data_rotulo,p.ordem,
         (select jsonb_agg(to_jsonb(t)-'ordem_card'-'box_id' order by t.ordem_card)
          from (
@@ -281,7 +290,7 @@ begin
 ),
     grupos as (
       select box,count(*)::integer total_cards,
-        max((analises#>>'{0,percentual_topo}')::numeric) melhor_percentual
+        max((analises#>>'{0,percentual_topo}')::numeric) melhor_percentual,max(pontuacao_maxima) melhor_pontuacao,count(*) filter(where clube_novo.contratacao_estrelas_v1(analises#>>'{0,codigo}')=5) e5,count(*) filter(where clube_novo.contratacao_estrelas_v1(analises#>>'{0,codigo}')=4) e4,count(*) filter(where clube_novo.contratacao_estrelas_v1(analises#>>'{0,codigo}')=3) e3,count(*) filter(where clube_novo.contratacao_estrelas_v1(analises#>>'{0,codigo}')=2) e2,count(*) filter(where clube_novo.contratacao_estrelas_v1(analises#>>'{0,codigo}')=1) e1
       from base
       group by box
       having strpos(lower(extensions.unaccent(box)),lower(extensions.unaccent(btrim(p_busca))))>0
@@ -289,11 +298,11 @@ begin
     ),
     pagina as (
       select * from grupos
-      order by melhor_percentual desc nulls last,box collate "C"
+      order by e5 desc,e4 desc,e3 desc,e2 desc,e1 desc,melhor_pontuacao desc nulls last,box collate "C"
       limit p_limite offset p_offset
     ),
     itens as (
-      select p.box,p.total_cards,p.melhor_percentual,
+      select p.box,p.total_cards,p.melhor_percentual,p.e5,p.e4,p.e3,p.e2,p.e1,p.melhor_pontuacao,
         coalesce((select jsonb_agg(to_jsonb(t)-'ordem_preview' order by t.ordem_preview)
           from (
             select b.card_id,b.nome,b.posicao,b.overall,b.foto_url_cloudinary as foto_url,
@@ -311,7 +320,7 @@ begin
       'box',null,'busca',p_busca,'total',(select count(*) from grupos),
       'total_cards',(select coalesce(sum(total_cards),0) from grupos),
       'limite',p_limite,'offset',p_offset,
-      'itens',coalesce((select jsonb_agg(to_jsonb(i) order by i.melhor_percentual desc nulls last,i.box collate "C") from itens i),'[]'::jsonb)
+      'itens',coalesce((select jsonb_agg(to_jsonb(i) order by i.e5 desc,i.e4 desc,i.e3 desc,i.e2 desc,i.e1 desc,i.melhor_pontuacao desc nulls last,i.box collate "C") from itens i),'[]'::jsonb)
     ) into resultado;
   else
     with ofertas as materialized (
