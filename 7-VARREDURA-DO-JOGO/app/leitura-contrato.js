@@ -84,8 +84,15 @@
       default: throw new Error(`tipo de leitura não implementado: ${field.tipo_leitura}`);
     }
   }
+  function coachBoostIndex(raw, mapping) {
+    if (raw === 0) return null;
+    const value = mapping && mapping[String(raw)];
+    if (!Number.isInteger(value) || value < 0 || value > 25) throw new Error(`código físico de boost de técnico sem correspondência comprovada: ${raw}`);
+    return value;
+  }
   function transformed(raw, field) {
     const transform = field.transformacao || {};
+    if (transform.indice_atributo === 'mapa_codigo_para_indice') return coachBoostIndex(Number(raw), transform.mapa_codigo_para_indice);
     if (Object.prototype.hasOwnProperty.call(transform, 'base')) return Number(raw) + Number(transform.base);
     if (transform.operacao === 'raw+100') return Number(raw) + 100;
     if (transform.operacao === 'raw+30') return Number(raw) + 30;
@@ -147,5 +154,5 @@
     return { selo: Object.fromEntries(SEAL_KEYS.map((key) => [key, plan[key]])), arquivo: fileName, sha256_arquivo: actualHash, tamanho_registro: file.tamanho_registro, records };
   }
 
-  global.CLUBEF_CONTRACT_READER = Object.freeze({ SEAL_KEYS, requirePlan, readBitsLE, readByteLE, readFixedUtf8, verifyFile, decodeFile, sha256 });
+  global.CLUBEF_CONTRACT_READER = Object.freeze({ SEAL_KEYS, requirePlan, readBitsLE, readByteLE, readFixedUtf8, verifyFile, decodeFile, sha256, coachBoostIndex });
 })(globalThis);

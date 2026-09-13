@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Prova local de que as pontes de chave não alteraram a matemática Python."""
+"""Trava V10: a correção autorizada mudou a matemática e tem casos ouro próprios."""
 
 from __future__ import annotations
 
 import ast
-import copy
 import hashlib
+import runpy
 from pathlib import Path
 
 
@@ -35,12 +35,7 @@ def funcoes(texto: str):
     for no in arvore.body:
         if not isinstance(no, ast.FunctionDef) or no.name not in FUNCOES_MATEMATICAS:
             continue
-        copia = copy.deepcopy(no)
-        if copia.name == "bonus_do_corpo":
-            # Após a docstring, a primeira atribuição mudou só a chave externa: rótulo -> ID.
-            # O restante é a matemática aprovada do molde corporal.
-            copia.body = [copia.body[0], *copia.body[2:]]
-        saida[copia.name] = ast.dump(copia, annotate_fields=True, include_attributes=False)
+        saida[no.name] = ast.dump(no, annotate_fields=True, include_attributes=False)
     return saida
 
 
@@ -50,12 +45,19 @@ def main():
     antes = antes_bytes.decode("utf-8")
     depois = depois_bytes.decode("utf-8")
 
-    assert funcoes(antes) == funcoes(depois), "AST matemático divergiu"
+    assert funcoes(antes)["bonus_do_corpo"] != funcoes(depois)["bonus_do_corpo"], (
+        "a trava antiga ainda está congelando o defeito físico"
+    )
     assert set(funcoes(depois)) == set(FUNCOES_MATEMATICAS)
+    assert "v11-0709-estilo-posicao-oficial-v1" in depois
+    assert "2e80a07d51f2bc8f456f9710c82717d38e3142cb3d52fd325b7b587c58ed2879" in depois
+
+    teste_formula = Path(__file__).with_name("testar_formula_fisica_v10.py")
+    runpy.run_path(str(teste_formula), run_name="__main__")
 
     formula = "\n".join(funcoes(depois)[nome] for nome in FUNCOES_MATEMATICAS)
     print(
-        "FORMULA_LOCK_OK runtime_sha256="
+        "FORMULA_LOCK_V10_OK runtime_sha256="
         + hashlib.sha256(depois_bytes).hexdigest()
         + " ast_sha256="
         + hashlib.sha256(formula.encode("utf-8")).hexdigest()

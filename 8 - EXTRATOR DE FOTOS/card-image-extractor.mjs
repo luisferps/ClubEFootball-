@@ -319,7 +319,11 @@ async function waitForCloudinaryReadback(settings, cardId) {
 async function downloadSource(settings, cardId) {
   const url = sourceUrl(cardId);
   const response = await fetchWithRetry(url, { headers: { Accept: "image/png" } }, settings);
-  if (!response.ok) throw new Error(`fonte eFHub respondeu HTTP ${response.status}`);
+  if (!response.ok) {
+    const erroFonte = new Error(`fonte eFHub respondeu HTTP ${response.status}`);
+    if (response.status === 404) erroFonte.fonteSemImagem = true;
+    throw erroFonte;
+  }
   const contentType = response.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase() || null;
   const buffer = Buffer.from(await response.arrayBuffer());
   const audit = auditImageContent(buffer);
@@ -695,7 +699,7 @@ async function createPostgresAdapter(settings) {
           `SELECT COUNT(*)::bigint AS total_cards, COUNT(*) FILTER (WHERE ${SUPABASE_URL_COLUMN} IS NULL)::bigint AS missing_cards FROM ${SUPABASE_SCHEMA}.${SUPABASE_TABLE}`
         );
         const result = await client.query(
-          `SELECT card_id::text AS card_id, ${SUPABASE_URL_COLUMN} FROM ${SUPABASE_SCHEMA}.${SUPABASE_TABLE} WHERE ${SUPABASE_URL_COLUMN} IS NULL ORDER BY card_id`
+          `SELECT card_id::text AS card_id, ${SUPABASE_URL_COLUMN} FROM ${SUPABASE_SCHEMA}.${SUPABASE_TABLE} WHERE ${SUPABASE_URL_COLUMN} IS NULL ORDER BY roda_motor DESC NULLS LAST, overall DESC NULLS LAST, card_id`
         );
         const rows = new Map();
         for (const row of result.rows) {
@@ -972,10 +976,11 @@ async function runPrepare(settings) {
             downloaded_artifact: { local_file: localPath, byte_size: image.byteSize, sha256: image.sha256, mime_type: image.contentType, width: image.width, height: image.height }
           };
         } catch (error) {
+          const semImagemNaFonte = error?.fonteSemImagem === true;
           item = {
             ...base,
-            outcome: "failed",
-            failure_or_skip_state: "network_or_validation_failure",
+            outcome: semImagemNaFonte ? "fonte_sem_imagem" : "failed",
+            failure_or_skip_state: semImagemNaFonte ? "fonte_sem_imagem" : "network_or_validation_failure",
             cloudinary_verification: { precheck_status: 404, final_status: null, checked_at_utc: new Date().toISOString(), content_type: null, content_length: null },
             error: error.message
           };
@@ -993,6 +998,32 @@ async function runPrepare(settings) {
   });
   await ledgerQueue;
 
+  const itensDoManifesto = items.filter((item) => item.outcome !== "fonte_sem_imagem");
+  const semImagemNaFonte = items.length - itensDoManifesto.length;
+
+  if (itensDoManifesto.length === 0) {
+    const summaryVazio = {
+      format: "clubefutebol-photo-prepare-run-v1",
+      run_id: runId,
+      mode: settings.upload ? "prepare_and_upload" : "dry_run",
+      input_total: allIds.length,
+      offset: settings.offset,
+      selected: selectedIds.length,
+      next_offset: settings.offset + selectedIds.length,
+      counts: countStatuses(items.map((item) => ({ status: item.outcome }))),
+      events_file: eventsPath,
+      manifest_file: null,
+      manifest_sha256: null,
+      nothing_to_apply: true,
+      source_missing_images: semImagemNaFonte,
+      database_modified: false,
+      completed_at_utc: new Date().toISOString()
+    };
+    await writeFile(summaryPath, `${JSON.stringify(summaryVazio, null, 2)}\n`, "utf8");
+    console.log(JSON.stringify(summaryVazio));
+    return { summary: summaryVazio, events: items, manifest: null, runDirectory };
+  }
+
   const manifest = sealManifest({
     format: PHOTO_MANIFEST_FORMAT,
     manifest_id: runId,
@@ -1002,9 +1033,9 @@ async function runPrepare(settings) {
     database_target: DATABASE_TARGET,
     overwrite_allowed: false,
     automatic_apply: false,
-    input: { ...provenance, offset: settings.offset, selected: selectedIds.length },
+    input: { ...provenance, offset: settings.offset, selected: itensDoManifesto.length },
     safeguards: { concurrency: settings.concurrency, delay_ms_between_card_starts: settings.delayMs, retries: settings.retries, timeout_ms: settings.timeoutMs },
-    items
+    items: itensDoManifesto
   });
   validateManifestDocument(manifest);
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
@@ -1021,6 +1052,7 @@ async function runPrepare(settings) {
     events_file: eventsPath,
     manifest_file: manifestPath,
     manifest_sha256: manifest.integrity.sha256,
+    source_missing_images: semImagemNaFonte,
     database_modified: false,
     completed_at_utc: new Date().toISOString()
   };

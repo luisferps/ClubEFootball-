@@ -20,6 +20,11 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $temporario = Join-Path $operacao '_empacotamento'
+$temporarioAbsoluto = [System.IO.Path]::GetFullPath($temporario)
+$operacaoAbsoluta = [System.IO.Path]::GetFullPath($operacao).TrimEnd('\') + '\'
+if (-not $temporarioAbsoluto.StartsWith($operacaoAbsoluta, [System.StringComparison]::OrdinalIgnoreCase)) {
+    throw 'Diretorio temporario fora da operacao local.'
+}
 if (Test-Path -LiteralPath $temporario) { Remove-Item -LiteralPath $temporario -Recurse -Force }
 New-Item -ItemType Directory -Path $temporario -Force | Out-Null
 try {
@@ -35,8 +40,13 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Falha ao empacotar a operacao local.' }
     $gerado = Join-Path $temporario 'dist\OperacaoLocalJson.exe'
     if (-not (Test-Path -LiteralPath $gerado)) { throw 'O empacotamento nao gerou OperacaoLocalJson.exe.' }
-    if (Test-Path -LiteralPath $bin) { Remove-Item -LiteralPath $bin -Recurse -Force }
     New-Item -ItemType Directory -Path $bin -Force | Out-Null
+    if (Test-Path -LiteralPath $output) {
+        $hashAnterior = (Get-FileHash -LiteralPath $output -Algorithm SHA256).Hash.ToLowerInvariant()
+        $anteriores = Join-Path $bin 'anteriores'
+        New-Item -ItemType Directory -Path $anteriores -Force | Out-Null
+        Copy-Item -LiteralPath $output -Destination (Join-Path $anteriores ("OperacaoLocalJson-" + $hashAnterior + ".exe")) -Force
+    }
     Copy-Item -LiteralPath $gerado -Destination $output -Force
 } finally {
     if (Test-Path -LiteralPath $temporario) { Remove-Item -LiteralPath $temporario -Recurse -Force }

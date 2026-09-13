@@ -1,0 +1,1105 @@
+{
+  "modo": "card",
+  "itens": [
+    {
+      "nome": "Lionel Messi",
+      "boxes": [],
+      "setor": "ataque",
+      "funcao": "Atacante criador",
+      "card_id": "89136409091415",
+      "posicao": "PTE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/89136409091415.png",
+      "linha_id": "30014",
+      "funcao_id": "14",
+      "jogador_id": "7511",
+      "nota_final": 113.77155193532582,
+      "posicao_id": 9,
+      "publicada_em": "2026-09-06T15:09:19.010792+00:00",
+      "classificacao": 1,
+      "impeto_condicional": null
+    },
+    {
+      "nome": "Lionel Messi",
+      "boxes": [
+        {
+          "nome": "Living Legends 2026",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Falso nove",
+      "card_id": "89138556575063",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/89138556575063.png",
+      "linha_id": "363893",
+      "funcao_id": "3",
+      "jogador_id": "7511",
+      "nota_final": 113.05168247055009,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T15:09:40.589088+00:00",
+      "classificacao": 2,
+      "impeto_condicional": {
+        "nome": "Física",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Neymar Jr",
+      "boxes": [
+        {
+          "nome": "National Teams Selection 29 Jun '26",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Atacante finalizador",
+      "card_id": "88044145253792",
+      "posicao": "PTE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88044145253792.png",
+      "linha_id": "32304",
+      "funcao_id": "15",
+      "jogador_id": "40352",
+      "nota_final": 112.49281164769461,
+      "posicao_id": 9,
+      "publicada_em": "2026-09-06T16:08:01.729502+00:00",
+      "classificacao": 3,
+      "impeto_condicional": null
+    },
+    {
+      "nome": "Erling Haaland",
+      "boxes": [],
+      "setor": "ataque",
+      "funcao": "Centroavante fixo",
+      "card_id": "89138556701095",
+      "posicao": "CA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/89138556701095.png",
+      "linha_id": "364670",
+      "funcao_id": "1",
+      "jogador_id": "133543",
+      "nota_final": 112.47195945945946,
+      "posicao_id": 12,
+      "publicada_em": "2026-09-06T18:22:03.922482+00:00",
+      "classificacao": 4,
+      "impeto_condicional": {
+        "nome": "Força",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Kylian Mbappé",
+      "boxes": [
+        {
+          "nome": "Victory Drivers 2026",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Centroavante móvel",
+      "card_id": "89138556678270",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/89138556678270.png",
+      "linha_id": "364348",
+      "funcao_id": "2",
+      "jogador_id": "110718",
+      "nota_final": 112.18695157036682,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T17:18:31.821291+00:00",
+      "classificacao": 5,
+      "impeto_condicional": {
+        "nome": "Técnica",
+        "nivel": 2
+      }
+    },
+    {
+      "nome": "Cristiano Ronaldo",
+      "boxes": [
+        {
+          "nome": "Living Legends 2026",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Centroavante fixo",
+      "card_id": "89138556572074",
+      "posicao": "CA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/89138556572074.png",
+      "linha_id": "364310",
+      "funcao_id": "1",
+      "jogador_id": "4522",
+      "nota_final": 111.65832336761541,
+      "posicao_id": 12,
+      "publicada_em": "2026-09-06T17:17:30.987772+00:00",
+      "classificacao": 6,
+      "impeto_condicional": {
+        "nome": "Vigor Físico",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Neymar Jr",
+      "boxes": [
+        {
+          "nome": "Living Legends 2026",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Atacante criador",
+      "card_id": "106788187839904",
+      "posicao": "PTE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106788187839904.png",
+      "linha_id": "365294",
+      "funcao_id": "14",
+      "jogador_id": "40352",
+      "nota_final": 111.61534922968043,
+      "posicao_id": 9,
+      "publicada_em": "2026-09-06T19:07:01.74239+00:00",
+      "classificacao": 7,
+      "impeto_condicional": {
+        "nome": "Chute",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Luka Modrić",
+      "boxes": [
+        {
+          "nome": "Living Legends 2026",
+          "em_andamento": false
+        }
+      ],
+      "setor": "meio",
+      "funcao": "Meia armador",
+      "card_id": "106788187833650",
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106788187833650.png",
+      "linha_id": "364658",
+      "funcao_id": "10",
+      "jogador_id": "34098",
+      "nota_final": 111.57865597370211,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-06T17:43:25.568431+00:00",
+      "classificacao": 8,
+      "impeto_condicional": {
+        "nome": "Regista",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Neymar Jr",
+      "boxes": [
+        {
+          "nome": "Brazilian League Selection 25 Sep '25",
+          "em_andamento": false
+        }
+      ],
+      "setor": "meio",
+      "funcao": "Meia ofensivo",
+      "card_id": "106755438714272",
+      "posicao": "MAT",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106755438714272.png",
+      "linha_id": "365420",
+      "funcao_id": "8",
+      "jogador_id": "40352",
+      "nota_final": 111.47728204168894,
+      "posicao_id": 8,
+      "publicada_em": "2026-09-06T20:39:31.853214+00:00",
+      "classificacao": 9,
+      "impeto_condicional": {
+        "nome": "Pacote total",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Julián Alvarez",
+      "boxes": [
+        {
+          "nome": "International Cup vol.6",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Centroavante móvel",
+      "card_id": "106782819217056",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106782819217056.png",
+      "linha_id": "364115",
+      "funcao_id": "2",
+      "jogador_id": "126624",
+      "nota_final": 111.46839748261807,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T16:44:17.643225+00:00",
+      "classificacao": 10,
+      "impeto_condicional": {
+        "nome": "Precisão",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Kylian Mbappé",
+      "boxes": [
+        {
+          "nome": "International Cup vol.1",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Centroavante móvel",
+      "card_id": "106781477023870",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106781477023870.png",
+      "linha_id": "364727",
+      "funcao_id": "2",
+      "jogador_id": "110718",
+      "nota_final": 111.23993646607528,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T18:50:59.841931+00:00",
+      "classificacao": 11,
+      "impeto_condicional": {
+        "nome": "Força",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Lionel Messi",
+      "boxes": [
+        {
+          "nome": "International Cup vol.1",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Falso nove",
+      "card_id": "106781476920663",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106781476920663.png",
+      "linha_id": "364001",
+      "funcao_id": "3",
+      "jogador_id": "7511",
+      "nota_final": 111.21339894088403,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T16:41:25.144035+00:00",
+      "classificacao": 12,
+      "impeto_condicional": {
+        "nome": "Chute",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Ousmane Dembélé",
+      "boxes": [
+        {
+          "nome": "International Cup vol.3",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Atacante finalizador",
+      "card_id": "106782013894690",
+      "posicao": "PTE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106782013894690.png",
+      "linha_id": "364082",
+      "funcao_id": "15",
+      "jogador_id": "110626",
+      "nota_final": 111.16690056341267,
+      "posicao_id": 9,
+      "publicada_em": "2026-09-06T16:43:27.621684+00:00",
+      "classificacao": 13,
+      "impeto_condicional": {
+        "nome": "Chute",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Ferran Torres",
+      "boxes": [
+        {
+          "nome": "Spain 2026",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Centroavante móvel",
+      "card_id": "106787651045391",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106787651045391.png",
+      "linha_id": "365195",
+      "funcao_id": "2",
+      "jogador_id": "116751",
+      "nota_final": 110.86133646607529,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T19:04:24.693048+00:00",
+      "classificacao": 14,
+      "impeto_condicional": {
+        "nome": "Arrancada",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Orkun Kökçü",
+      "boxes": [],
+      "setor": "meio",
+      "funcao": "Meia de arranque",
+      "card_id": "89138019820385",
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/89138019820385.png",
+      "linha_id": "365927",
+      "funcao_id": "11",
+      "jogador_id": "123745",
+      "nota_final": 110.65163518579057,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-06T21:26:10.885081+00:00",
+      "classificacao": 15,
+      "impeto_condicional": {
+        "nome": "Pacote total",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Erling Haaland",
+      "boxes": [
+        {
+          "nome": "International Cup vol.5",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Centroavante fixo",
+      "card_id": "106782550788519",
+      "posicao": "CA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106782550788519.png",
+      "linha_id": "364502",
+      "funcao_id": "1",
+      "jogador_id": "133543",
+      "nota_final": 110.53521884716575,
+      "posicao_id": 12,
+      "publicada_em": "2026-09-06T17:38:11.927545+00:00",
+      "classificacao": 16,
+      "impeto_condicional": {
+        "nome": "Vigor Físico",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Luis Suárez",
+      "boxes": [
+        {
+          "nome": "National Teams Selection 13 Jul '26",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Centroavante móvel",
+      "card_id": "88044145248321",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88044145248321.png",
+      "linha_id": "27144",
+      "funcao_id": "2",
+      "jogador_id": "34881",
+      "nota_final": 110.48364787820667,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T13:53:02.281957+00:00",
+      "classificacao": 17,
+      "impeto_condicional": null
+    },
+    {
+      "nome": "Pelé",
+      "boxes": [],
+      "setor": "ataque",
+      "funcao": "Centroavante móvel",
+      "card_id": "88040387119495",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88040387119495.png",
+      "linha_id": "32282",
+      "funcao_id": "2",
+      "jogador_id": "2439",
+      "nota_final": 110.46546166386958,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T16:07:28.556993+00:00",
+      "classificacao": 18,
+      "impeto_condicional": null
+    },
+    {
+      "nome": "Jonathan David",
+      "boxes": [
+        {
+          "nome": "International Cup vol.2",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Centroavante móvel",
+      "card_id": "106781745473447",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106781745473447.png",
+      "linha_id": "364853",
+      "funcao_id": "2",
+      "jogador_id": "124839",
+      "nota_final": 110.29809510908655,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T18:54:49.565043+00:00",
+      "classificacao": 19,
+      "impeto_condicional": {
+        "nome": "Chute",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Marc Cucurella",
+      "boxes": [
+        {
+          "nome": "Spain 2026",
+          "em_andamento": false
+        }
+      ],
+      "setor": "defesa",
+      "funcao": "Lateral ofensivo",
+      "card_id": "106787651045215",
+      "posicao": "LE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106787651045215.png",
+      "linha_id": "364157",
+      "funcao_id": "7",
+      "jogador_id": "116575",
+      "nota_final": 110.1308596314173,
+      "posicao_id": 2,
+      "publicada_em": "2026-09-06T16:45:24.869293+00:00",
+      "classificacao": 20,
+      "impeto_condicional": {
+        "nome": "Defesa (Roubo)",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Leandro Trossard",
+      "boxes": [
+        {
+          "nome": "International Cup vol.3",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Centroavante móvel",
+      "card_id": "106782013903764",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106782013903764.png",
+      "linha_id": "364907",
+      "funcao_id": "2",
+      "jogador_id": "119700",
+      "nota_final": 110.10099721889235,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T18:56:11.858161+00:00",
+      "classificacao": 21,
+      "impeto_condicional": {
+        "nome": "Chute",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Marco Asensio",
+      "boxes": [
+        {
+          "nome": "Trendyol Süper Lig 25-26 Season's Best",
+          "em_andamento": false
+        }
+      ],
+      "setor": "meio",
+      "funcao": "Atacante infiltrador",
+      "card_id": "106779597968380",
+      "posicao": "MAT",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106779597968380.png",
+      "linha_id": "366563",
+      "funcao_id": "9",
+      "jogador_id": "103420",
+      "nota_final": 109.43376075731497,
+      "posicao_id": 8,
+      "publicada_em": "2026-09-06T23:09:10.926531+00:00",
+      "classificacao": 22,
+      "impeto_condicional": {
+        "nome": "Pacote total",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Kubo Takefusa",
+      "boxes": [
+        {
+          "nome": "Japan Selection 11 Jul '26",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Atacante criador",
+      "card_id": "106783356083208",
+      "posicao": "PTE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106783356083208.png",
+      "linha_id": "365138",
+      "funcao_id": "14",
+      "jogador_id": "121864",
+      "nota_final": 109.37698023844521,
+      "posicao_id": 9,
+      "publicada_em": "2026-09-06T19:02:14.967872+00:00",
+      "classificacao": 23,
+      "impeto_condicional": {
+        "nome": "Criador de Jogadas",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Moisés Caicedo",
+      "boxes": [
+        {
+          "nome": "International Cup vol.3",
+          "em_andamento": false
+        }
+      ],
+      "setor": "defesa",
+      "funcao": "Lateral ofensivo",
+      "card_id": "106782013927260",
+      "posicao": "LD",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106782013927260.png",
+      "linha_id": "364967",
+      "funcao_id": "7",
+      "jogador_id": "143196",
+      "nota_final": 109.36807345326898,
+      "posicao_id": 3,
+      "publicada_em": "2026-09-06T18:57:43.38739+00:00",
+      "classificacao": 24,
+      "impeto_condicional": {
+        "nome": "Defesa (Roubo)",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Orkun Kökçü",
+      "boxes": [
+        {
+          "nome": "Trendyol Süper Lig Monthly MVPs Feb '26",
+          "em_andamento": false
+        }
+      ],
+      "setor": "meio",
+      "funcao": "Meia ofensivo",
+      "card_id": "106771008054113",
+      "posicao": "MAT",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106771008054113.png",
+      "linha_id": "366353",
+      "funcao_id": "8",
+      "jogador_id": "123745",
+      "nota_final": 109.23072453233564,
+      "posicao_id": 8,
+      "publicada_em": "2026-09-06T23:02:30.497958+00:00",
+      "classificacao": 25,
+      "impeto_condicional": {
+        "nome": "Pacote total",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Kevin De Bruyne",
+      "boxes": [
+        {
+          "nome": "Living Legends 2026",
+          "em_andamento": false
+        }
+      ],
+      "setor": "meio",
+      "funcao": "Meia ofensivo",
+      "card_id": "106788187843931",
+      "posicao": "MAT",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106788187843931.png",
+      "linha_id": "364220",
+      "funcao_id": "8",
+      "jogador_id": "44379",
+      "nota_final": 109.22712453233565,
+      "posicao_id": 8,
+      "publicada_em": "2026-09-06T16:46:58.765334+00:00",
+      "classificacao": 26,
+      "impeto_condicional": {
+        "nome": "Agilidade",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "N'Golo Kanté",
+      "boxes": [
+        {
+          "nome": "Trendyol Süper Lig Monthly MVPs Apr '26",
+          "em_andamento": false
+        }
+      ],
+      "setor": "meio",
+      "funcao": "Meia de arranque",
+      "card_id": "106779061095382",
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106779061095382.png",
+      "linha_id": "366515",
+      "funcao_id": "11",
+      "jogador_id": "101334",
+      "nota_final": 109.22443530565545,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-06T23:07:54.560899+00:00",
+      "classificacao": 27,
+      "impeto_condicional": {
+        "nome": "Pacote total",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Lamine Yamal",
+      "boxes": [
+        {
+          "nome": "Spain 2026",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Atacante criador",
+      "card_id": "106787651090754",
+      "posicao": "PTE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106787651090754.png",
+      "linha_id": "364640",
+      "funcao_id": "14",
+      "jogador_id": "162114",
+      "nota_final": 109.2173076923077,
+      "posicao_id": 9,
+      "publicada_em": "2026-09-06T17:42:57.840148+00:00",
+      "classificacao": 28,
+      "impeto_condicional": {
+        "nome": "Precisão",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Cristiano Ronaldo",
+      "boxes": [
+        {
+          "nome": "International Cup vol.2",
+          "em_andamento": false
+        }
+      ],
+      "setor": "ataque",
+      "funcao": "Centroavante fixo",
+      "card_id": "106781745353130",
+      "posicao": "CA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106781745353130.png",
+      "linha_id": "364796",
+      "funcao_id": "1",
+      "jogador_id": "4522",
+      "nota_final": 109.20675675675676,
+      "posicao_id": 12,
+      "publicada_em": "2026-09-06T18:53:10.675266+00:00",
+      "classificacao": 29,
+      "impeto_condicional": {
+        "nome": "Instinto Artilheiro",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Cristian Romero",
+      "boxes": [
+        {
+          "nome": "Tournament Stars 2026",
+          "em_andamento": false
+        }
+      ],
+      "setor": "defesa",
+      "funcao": "Zagueiro de saída",
+      "card_id": "106787919475376",
+      "posicao": "ZC",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106787919475376.png",
+      "linha_id": "364211",
+      "funcao_id": "19",
+      "jogador_id": "111280",
+      "nota_final": 109.17455482625482,
+      "posicao_id": 1,
+      "publicada_em": "2026-09-06T16:46:45.133386+00:00",
+      "classificacao": 30,
+      "impeto_condicional": {
+        "nome": "Motor do Time",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Lionel Messi",
+      "boxes": [],
+      "setor": "ataque",
+      "funcao": "Atacante criador",
+      "card_id": "17592722922839",
+      "posicao": "PTE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/17592722922839.png",
+      "linha_id": "9122",
+      "funcao_id": "14",
+      "jogador_id": "7511",
+      "nota_final": 109.16356089063096,
+      "posicao_id": 9,
+      "publicada_em": "2026-09-05T18:44:19.795773+00:00",
+      "classificacao": 31,
+      "impeto_condicional": null
+    },
+    {
+      "nome": "Manuel Neuer",
+      "boxes": [
+        {
+          "nome": "Living Legends 2026",
+          "em_andamento": false
+        }
+      ],
+      "setor": "goleiro",
+      "funcao": "Goleiro ofensivo",
+      "card_id": "106788187832737",
+      "posicao": "GO",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106788187832737.png",
+      "linha_id": "363929",
+      "funcao_id": "5",
+      "jogador_id": "33185",
+      "nota_final": 108.906078169881,
+      "posicao_id": 0,
+      "publicada_em": "2026-09-06T15:10:33.684797+00:00",
+      "classificacao": 32,
+      "impeto_condicional": {
+        "nome": "Passe",
+        "nivel": 3
+      }
+    },
+    {
+      "nome": "Rodri",
+      "boxes": [],
+      "setor": "defesa",
+      "funcao": "Volante de contenção",
+      "card_id": "89138556678367",
+      "posicao": "VOL",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/89138556678367.png",
+      "linha_id": "364409",
+      "funcao_id": "17",
+      "jogador_id": "110815",
+      "nota_final": 108.88420577617329,
+      "posicao_id": 4,
+      "publicada_em": "2026-09-06T17:20:04.583329+00:00",
+      "classificacao": 33,
+      "impeto_condicional": {
+        "nome": "Criador de Jogadas",
+        "nivel": 3
+      }
+    }
+  ],
+  "setor": "geral",
+  "total": 3165,
+  "limite": 33,
+  "offset": 0,
+  "status": "pronto",
+  "versao": 1,
+  "catalogo": {
+    "estilos": [
+      {
+        "id": 260,
+        "nome": "Ala Produtivo"
+      },
+      {
+        "id": 270,
+        "nome": "Armador Criativo"
+      },
+      {
+        "id": 257,
+        "nome": "Artilheiro"
+      },
+      {
+        "id": 269,
+        "nome": "Atacante Pivô"
+      },
+      {
+        "id": 266,
+        "nome": "Atacante Surpresa"
+      },
+      {
+        "id": 256,
+        "nome": "Básico"
+      },
+      {
+        "id": 261,
+        "nome": "Clássico Nº 10"
+      },
+      {
+        "id": 349,
+        "nome": "Cobertura"
+      },
+      {
+        "id": 271,
+        "nome": "Defensor Criativo"
+      },
+      {
+        "id": 347,
+        "nome": "Defensor Participativo"
+      },
+      {
+        "id": 96,
+        "nome": "Defensor Recuado"
+      },
+      {
+        "id": 291,
+        "nome": "Goleiro Adiantado"
+      },
+      {
+        "id": 34,
+        "nome": "Goleiro Construtor"
+      },
+      {
+        "id": 337,
+        "nome": "Goleiro Defensivo"
+      },
+      {
+        "id": 336,
+        "nome": "Goleiro Ofensivo"
+      },
+      {
+        "id": 353,
+        "nome": "Goleiro-Líbero"
+      },
+      {
+        "id": 259,
+        "nome": "Homem De Área"
+      },
+      {
+        "id": 348,
+        "nome": "Interceptador De Passe"
+      },
+      {
+        "id": 262,
+        "nome": "Jogador De Infiltração"
+      },
+      {
+        "id": 345,
+        "nome": "Ladrão No Ataque"
+      },
+      {
+        "id": 277,
+        "nome": "Lateral Atacante"
+      },
+      {
+        "id": 268,
+        "nome": "Lateral Defensivo"
+      },
+      {
+        "id": 274,
+        "nome": "Lateral Móvel"
+      },
+      {
+        "id": 267,
+        "nome": "Lateral Ofensivo"
+      },
+      {
+        "id": 95,
+        "nome": "Marcador Forte"
+      },
+      {
+        "id": 391,
+        "nome": "Meia Versátil"
+      },
+      {
+        "id": 350,
+        "nome": "Mestre Da Linha Alta"
+      },
+      {
+        "id": 329,
+        "nome": "O Destruidor"
+      },
+      {
+        "id": 276,
+        "nome": "Orquestrador"
+      },
+      {
+        "id": 275,
+        "nome": "Perito Em Cruzamento"
+      },
+      {
+        "id": 278,
+        "nome": "Pivô"
+      },
+      {
+        "id": 344,
+        "nome": "Pressão No Ataque"
+      },
+      {
+        "id": 87,
+        "nome": "Pressão Recuada"
+      },
+      {
+        "id": 392,
+        "nome": "Primeiro Volante"
+      },
+      {
+        "id": 258,
+        "nome": "Puxa Marcação"
+      },
+      {
+        "id": 346,
+        "nome": "Saída Ofensiva"
+      }
+    ],
+    "funcoes": [
+      {
+        "id": "1",
+        "nome": "Centroavante fixo",
+        "setor": "ataque"
+      },
+      {
+        "id": "2",
+        "nome": "Centroavante móvel",
+        "setor": "ataque"
+      },
+      {
+        "id": "3",
+        "nome": "Falso nove",
+        "setor": "ataque"
+      },
+      {
+        "id": "4",
+        "nome": "Goleiro defensivo",
+        "setor": "goleiro"
+      },
+      {
+        "id": "5",
+        "nome": "Goleiro ofensivo",
+        "setor": "goleiro"
+      },
+      {
+        "id": "6",
+        "nome": "Lateral defensivo",
+        "setor": "defesa"
+      },
+      {
+        "id": "7",
+        "nome": "Lateral ofensivo",
+        "setor": "defesa"
+      },
+      {
+        "id": "8",
+        "nome": "Meia ofensivo",
+        "setor": "meio"
+      },
+      {
+        "id": "9",
+        "nome": "Atacante infiltrador",
+        "setor": "meio"
+      },
+      {
+        "id": "10",
+        "nome": "Meia armador",
+        "setor": "meio"
+      },
+      {
+        "id": "11",
+        "nome": "Meia de arranque",
+        "setor": "meio"
+      },
+      {
+        "id": "12",
+        "nome": "Ala finalizador",
+        "setor": "meio"
+      },
+      {
+        "id": "13",
+        "nome": "Ala cruzador",
+        "setor": "meio"
+      },
+      {
+        "id": "14",
+        "nome": "Atacante criador",
+        "setor": "ataque"
+      },
+      {
+        "id": "15",
+        "nome": "Atacante finalizador",
+        "setor": "ataque"
+      },
+      {
+        "id": "16",
+        "nome": "Volante de construção",
+        "setor": "meio"
+      },
+      {
+        "id": "17",
+        "nome": "Volante de contenção",
+        "setor": "defesa"
+      },
+      {
+        "id": "18",
+        "nome": "Zagueiro de combate",
+        "setor": "defesa"
+      },
+      {
+        "id": "19",
+        "nome": "Zagueiro de saída",
+        "setor": "defesa"
+      }
+    ],
+    "posicoes": [
+      {
+        "id": 0,
+        "nome": "Goleiro",
+        "codigo": "GO"
+      },
+      {
+        "id": 1,
+        "nome": "Zagueiro central",
+        "codigo": "ZC"
+      },
+      {
+        "id": 2,
+        "nome": "Lateral esquerdo",
+        "codigo": "LE"
+      },
+      {
+        "id": 3,
+        "nome": "Lateral direito",
+        "codigo": "LD"
+      },
+      {
+        "id": 4,
+        "nome": "Volante",
+        "codigo": "VOL"
+      },
+      {
+        "id": 5,
+        "nome": "Meia de ligação",
+        "codigo": "MLG"
+      },
+      {
+        "id": 6,
+        "nome": "Meia esquerda",
+        "codigo": "MLE"
+      },
+      {
+        "id": 7,
+        "nome": "Meia direita",
+        "codigo": "MLD"
+      },
+      {
+        "id": 8,
+        "nome": "Meia atacante",
+        "codigo": "MAT"
+      },
+      {
+        "id": 9,
+        "nome": "Ponta esquerda",
+        "codigo": "PTE"
+      },
+      {
+        "id": 10,
+        "nome": "Ponta direita",
+        "codigo": "PTD"
+      },
+      {
+        "id": 11,
+        "nome": "Segundo atacante",
+        "codigo": "SA"
+      },
+      {
+        "id": 12,
+        "nome": "Centroavante",
+        "codigo": "CA"
+      }
+    ]
+  },
+  "contrato": "site-novo-ranking-v1",
+  "tem_mais": true
+}

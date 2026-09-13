@@ -1,5 +1,19 @@
-# ANOTAÇÃO ESPECIAL — OS ESTILOS DE JOGO NOVOS DE 2027
+# ANOTAÇÃO HISTÓRICA — OS ESTILOS DE JOGO NOVOS DE 2027
 **26/08/2026 · vai junto com o BRIEFING-SESSAO-NOVA.md**
+
+> **Atualização de 09/09/2026:** a política aprovada agora é
+> [Regra de estilos aprovada em 09/09](BONIFICADOR/REGRA-ESTILOS-APROVADA-0909.md),
+> registrada no banco como `estilos-funcao-20260909-v1`, com implantação pendente.
+> A função define principal/secundário, a posição define ativação e há somente
+> duas exceções. A promoção genérica descrita na referência V11 abaixo foi
+> superada como decisão; o texto permanece histórico. Não presumir que todo
+> estilo antigo é ofensivo a partir da descrição original desta análise.
+
+ > **DECISÃO FECHADA EM 07/09/2026:** esta análise anterior foi superada pela
+> implementação V11. Os dois slots continuam fora dos moldes. Para o bônus, cada
+> playstyle ativa somente nas posições declaradas pelo jogo: slot dominante vale
+> `1,0`, o outro vale `0,5`, teto `1,5`; Básico no dominante entrega a parcela
+> cheia ao outro slot. A função interna não liga nem desliga o bônus.
 
 Esta é a análise do assistente (recomendação, NÃO decisão — quem decide é o Luis) sobre
 o que fazer com os estilos de jogo que o eFootball 2027 trouxe. O Luis pediu para eu
@@ -24,7 +38,7 @@ O 2º estilo (defensivo) se comporta mais como:
 
 E o Luis já adiantou o lean dele: **não mexer no molde por causa deles.**
 
-## 3 · MINHA ANÁLISE / RECOMENDAÇÃO
+## 3 · ANÁLISE/RECOMENDAÇÃO ORIGINAL — preservada como histórico
 
 **O que um "estilo de jogo" É, por natureza:** uma instrução de comportamento pra IA — diz
 COMO o jogador se posiciona e se move. **Ele NÃO altera os 26 atributos** da carta. Isso é
@@ -52,7 +66,7 @@ Por isso, minha recomendação é o **caminho B, com uma ressalva**:
 mesma família do estilo de IA. Molde (alvos) fica intacto. Ofensivo continua sendo o que
 define o encaixe na função.
 
-## 4 · O QUE PRECISA SER FEITO ANTES DE DECIDIR (ordem)
+## 4 · PENDÊNCIAS QUE EXISTIAM ANTES DA DECISÃO — histórico
 1. **Fechar o decode do slot defensivo.** Hoje só saiu 72% de confiança e a busca pelo
    campo real não fechou — **sem isso a gente nem sabe com certeza qual carta tem qual
    estilo defensivo.** É o primeiro passo, técnico. (As 586 cartas "Novo (2027)" dependem disso.)

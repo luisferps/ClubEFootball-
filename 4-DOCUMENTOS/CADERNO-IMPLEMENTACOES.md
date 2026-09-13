@@ -1,5 +1,77 @@
 # CADERNO DE IMPLEMENTAÇÕES — arquitetura do sistema (aberto 25/08, reordenado 25/08)
 
+## Enviador e critério de encerramento V12 — 09/09/2026
+
+O critério aprovado é terminar com toda linha vigente correta e gravada em `clube_novo`, reaproveitando o que já está correto e refazendo somente o necessário. Não declarar encerramento a partir de instalação, JSON local ou ausência de linhas elegíveis de um lote. Preservar históricos, antecessores e a ordem existente. A normalização permanece inalterada.
+
+O operador confirmou a instalação do reparo anterior `REPARO-MOTORES-V12` (backup `motores-retomada-v12-9866126a7fa84046b2e713e53878ce31`). O **novo REPARO-ENVIADOR-V12** corrige a leitura de fotografias antigas e preserva JSONs de outra fórmula sem enviá-los. Atualiza fonte e EXE com backup; mesmos BATs. 44 testes e instalador/EXE conferidos. A instalação deste novo reparo na Máquina 2 ainda não foi confirmada.
+
+Correção de terminologia dos registros anteriores: `lotes_sem_pendentes` significa **sem linhas elegíveis na fotografia atual**, não necessariamente lote inteiro concluído. Dos 1.220 IDs antigos, 1.138 têm resultado e 82 já estão no prefixo. Os demais seis lotes têm 126.318 elegíveis esperando V12. Os 28 antecessores com bloqueios já têm substitutas V12; as seis exclusões anteriores por falta de evidência são cartas removidas, sem publicação. Não reabrir antecessores nem inventar entradas de cartas removidas.
+
+Detalhes e limites da conferência: `4-DOCUMENTOS/OTIMIZADOR/HABILIDADES-0909/AUDITORIA-ENVIO-E-COBERTURA-V12.md`. Esta auditoria foi somente leitura; não declara que a produção ou o envio terminaram.
+
+
+## Reparo de retomada HTTP 403 e encerramento — 09/09/2026
+
+A execução na Máquina 2 expôs uma permissão ausente na consulta da carta V3, após a preparação já validada. Corrigido o acesso restrito ao catálogo no banco; HTTP e gravação testados. A única falha 488143 foi recuperada, com prioridade preservada. Bonificador agora retorna código 2 em falha e não anuncia conclusão indevida. Novo pacote único `REPARO-MOTORES-V12` inclui também a correção de prioridade do Otimizador; instalar em `2-MOTORES` por `APLICAR.cmd`, preservando os BATs anteriores. Ver `4-DOCUMENTOS/BONIFICADOR/REPARO-RETOMADA-403-V12.md`. Os registros de prontidão anteriores descrevem a conferência parcial daquela etapa.
+
+
+## Reparo de prioridades concluídas — 09/09/2026
+
+O processador aceita lotes prioritários que a fotografia declarou sem pendências, mantendo-os na seleção histórica. A execução filtra somente esses lotes já concluídos; prioridades desconhecidas/repetidas continuam bloqueadas. Fonte e EXE oficiais atualizados, 36 testes aprovados e instalador/EXE conferidos em espelho isolado. Ordem, resultados e recibos preservados. Entrega incremental `REPARO-PRIORIDADE-V12`; copiar para `OPERACAO-LOCAL-JSON` e executar `APLICAR.cmd`. Os BATs principais permanecem iguais. O pacote consolidado REFILA-V12 também incorpora o reparo. A instalação incremental na Máquina 2 ainda depende do operador. Registro: `4-DOCUMENTOS/OTIMIZADOR/HABILIDADES-0909/REPARO-PRIORITARIOS-CONCLUIDOS.md`.
+
+
+## Retomada V12 conferida — 09/09/2026
+
+Pacote do Bonificador completo validado (15 arquivos). Retomada, controle e primeira reserva passaram em transação revertida; lote continua pausado, com 14.107 pendentes. Corrigidos no banco o filtro da auditoria e as restrições de versão do lote, agora compatíveis com os conjuntos coerentes V11/V12. Usar o mesmo `OPERACAO-CORRECAO-FISICA/INICIAR-REPROCESSAMENTO.bat`. Nenhuma nova cópia necessária por esses ajustes. Detalhes em `4-DOCUMENTOS/BONIFICADOR/RETOMADA-CONFERIDA-0909.md`.
+
+
+## Encerramento confirmado em 09/09/2026
+
+A correção seletiva dos bônus de estilo terminou: **67.795 resultados e 7.455 publicações concluídos, zero pendências e erros nessa operação**. O banco e o painel confirmaram o encerramento em 2026-09-09T08:13:50.106412+00:00. As nove publicações finais foram conferidas no contrato da Ficha, preservando a revisão de habilidades do Otimizador e a ordem dos lotes. A falha do UPDATE de encerramento foi corrigida no banco e no SQL oficial.
+
+Evidência e alcance: [Conclusão dos bônus de estilo](BONIFICADOR/CONCLUSAO-BONUS-ESTILOS-0909.md). A produção geral do Bonificador e as execuções do Otimizador têm estados próprios; este encerramento não significa que seus lotes foram executados. Os registros de andamento abaixo são históricos.
+
+## Política vigente de habilidades — 09/09/2026
+
+A política `habilidades-funcao-20260909-v1` está aplicada no `clube_novo` e no runtime oficial da Máquina 1. A matriz vigente tem 325 pares habilidade/função. O motor conserva de zero a cinco adicionais úteis; não preenche vagas sem ganho. Todas as sugestões automáticas, inclusive gêmeas de builds antigas, respeitam os bloqueios atuais da função. A escolha manual do usuário e as habilidades nativas continuam livres desses vetos estratégicos.
+
+Banco, fontes, executável e fotografias locais foram sincronizados; lotes continuam pausados e na mesma ordem. A normalização da nota não mudou. A revisão local identificou 4.509 linhas para análise posterior; nenhum resultado antigo foi regravado ou despublicado nesta etapa. A instalação na Máquina 2 e a publicação do frontend são estados separados.
+
+Regra completa, matriz, migrações, testes e evidências: [Habilidades por função V12](OTIMIZADOR/HABILIDADES-0909/REGRA-APROVADA.md). Os registros anteriores abaixo conservam o contexto da época e não substituem esta revisão.
+
+## Retomada futura na Máquina 2 — arquivos preparados
+
+Os arquivos V12 do Bonificador completo estão preparados para cópia direta.
+O operador usa o mesmo INICIAR-REPROCESSAMENTO.bat após terminar a correção de
+estilos. Antes disso, o comando não inicia nem reserva linhas. A versão do lote
+e a política geral só serão atualizadas no início solicitado pelo operador.
+Detalhes: [Entrega da Máquina 2](BONIFICADOR/ENTREGA-MAQUINA-2-V12.md). Os registros anteriores abaixo são históricos.
+
+## Operação atual — correção seletiva de estilos V12
+
+O executor autônomo foi instalado e iniciado na máquina oficial. Corrige somente
+os estilos de 67.795 resultados e atualiza 7.455 publicações, mantendo as notas
+anteriores disponíveis até cada troca ser confirmada. Não declarar conclusão
+antes do readback final do banco. Apenas o schema clube_novo é operacional.
+A fila geral permanece pausada; a Máquina 2 será atualizada depois.
+Código/EXE V12 estão preparados localmente. A política permanece com implantação
+geral pendente; a execução seletiva já aplica a regra.
+Fonte operacional: [Executor de estilos V12](BONIFICADOR/EXECUTOR-ESTILOS-V12.md).
+Os registros anteriores abaixo descrevem etapas históricas.
+
+## Atualização de 09/09 — bônus de estilo
+
+Decisão fechada por Luis e persistida em `clube_novo.bonificador_politica_estilo`,
+versão `estilos-funcao-20260909-v1`. Regra completa, provas e pendências:
+[Regra de estilos aprovada em 09/09](BONIFICADOR/REGRA-ESTILOS-APROVADA-0909.md).
+O principal é definido pela função; a posição decide a ativação. A promoção
+genérica do secundário foi rejeitada: somente as duas exceções nomeadas valem.
+O registro e a calculadora de conferência estão feitos; a integração da execução
+do Bonificador e a correção das notas continuam pendentes. A descrição de cascata
+nas anotações antigas abaixo não substitui a decisão de 09/09.
+
+
 **O que é isto:** a lista viva das mudanças que o Luis decidiu fazer no sistema.
 **Nada aqui foi executado.** Estados: `ANOTADO` (a discutir) · `DECIDIDO` (Luis cravou,
 falta executar) · `FEITO`. Só o Luis muda estado. Sessão nenhuma executa item `ANOTADO`.
@@ -64,9 +136,11 @@ Consequências que valem para TODOS os itens deste caderno:
 5. **Contexto de fase (Luis, 25/08): o sistema está em PRÉ-LANÇAMENTO.** Ainda não foi
    publicado; a otimização atual é preparação para pôr na internet. Os itens A e B são
    condição de qualidade PRÉ-publicação, não conserto emergencial de produção.
-4. A coleta do efootballdb (ímpetos/boxes) precisa deixar de ser evento único e virar
-   rotina periódica — hoje é script manual no Console (o SOFTWARE-RECOLETA-BOXES já
-   existe na máquina do Luis; avaliar encaixe no vigia). `ANOTADO`.
+4. ~~A coleta do efootballdb (ímpetos/boxes) precisava virar rotina periódica.~~
+   **Substituído em 07/09:** Boxes históricas são o acervo fixo copiado do legado;
+   Boxes novas são atualizadas pelo Extrator a partir de
+   `CmdGetMyclubAgentlist`. O antigo SOFTWARE-RECOLETA-BOXES e a coleta web não
+   fazem parte do contrato operacional atual de Boxes.
 
 ---
 
@@ -280,6 +354,11 @@ nenhuma nossa. Esse é coleta de verdade.
 ## REGISTRO DE DECISÕES DE FONTE
 
 - **Ímpetos e boxes: efootballdb. Todo o resto: efHub.** (Luis, 25/08)
+- **Correção operacional de Boxes (07/09):** a linha anterior fica preservada
+  como decisão histórica, mas não é o contrato atual. O acervo histórico de
+  Boxes foi copiado do legado somente com nome, participantes e data. Boxes
+  novas vêm da resposta do jogo `CmdGetMyclubAgentlist`.
+  `PlayerVariationDetail.bin` identifica a variação da carta e não uma Box.
 - Coletas na máquina do Luis, manifestos conferidos sem falhas (24.744 + 5.063).
 
 ## ⛔ PROTEÇÕES IMEDIATAS (respostas da rodada 2, 25/08)
@@ -338,10 +417,12 @@ nenhuma nossa. Esse é coleta de verdade.
 Auditoria rodada depois: **0 FALHA** (só OK e CONHECIDA).
 SQL guardado em `4-DOCUMENTOS\REGRA-2608-DOIS-ESTILOS.sql`.
 
-## `DECIDIDO` — falta executar (é motor, não banco)
+## `HISTÓRICO SUPERADO PELA V11` — decisão original de 26/08
 
-- O motor ler `clube.estilo_funcao` para o bônus (por **ficha**, não por posição) e
-  somar o segundo slot com o `estilo_ativo_secundario`.
+- A proposta original fazia o motor ler `clube.estilo_funcao` para o bônus por
+  ficha. Ela foi substituída em 07/09 pela ativação oficial por posição; a casa da
+  função não liga nem desliga a parcela. O segundo slot continua usando
+  `estilo_ativo_secundario`.
 - Sincronizar `regra_posicao_estilo` — está sem a linha do Falso nove de 12/08.
 
 ## Efeito medido
@@ -377,3 +458,42 @@ SQL guardado em `4-DOCUMENTOS\REGRA-2608-DOIS-ESTILOS.sql`.
 | Bônus binário só por função (secundário zera) | apaga o segundo estilo do Konaté |
 | Um primário único escolhendo a única ficha | perde a leitura dupla; no volante as duas fichas são legítimas |
 | Travar o 0,5 no estilo repetido | deixaria o cara defasado |
+
+---
+
+# ITEM — CORREÇÃO FÍSICA DO BONIFICADOR V10 · `IMPLEMENTADA LOCALMENTE` / `PRODUÇÃO COM GATES`
+
+**Aberto em 04/09/2026.** A incompatibilidade histórica entre `direcao` numérica
+e o cálculo foi corrigida na nova fórmula selada, sem atualizar resultados V9 e sem
+reprocessar o Otimizador. O caso-ouro obrigatório é Messi `89136409091415` × função
+14 = físico `+0,9750` (`13/20`, altura `+0,75`).
+
+O staging, snapshot integral, corte atômico e rollback ficam em
+`BONIFICADOR/SQL/MIGRAR-CORRECAO-FISICA-BONIFICADOR-V10.sql`. O andamento factual,
+hashes e gates ficam em
+`BONIFICADOR/REGISTRO-OPERACIONAL-CORRECAO-FISICA-V10.md`. Produção só avança depois
+de validar o pacote espelhado na Máquina 2 e confirmar que os demais fronts do banco
+estão parados.
+
+---
+
+# ITEM — CORREÇÃO DO BÔNUS DE ESTILO V11 · `FEITO E VALIDADO`
+
+**Fechado em 07/09/2026.** A parcela de estilo passou a usar a ativação oficial
+do playstyle na posição escolhida. O slot dominante ativo vale `1,0`, o outro
+slot ativo vale `0,5` e o teto continua `1,5`. Se o dominante for Básico, o outro
+assume a parcela cheia. Função interna e molde não participam desse interruptor.
+
+Não foram alterados moldes, corpo, pé ruim, IA, pesos, cortes, Otimizador ou
+Extrator. Os resultados V10 existentes foram reaproveitados e somente as parcelas
+de estilo, totais e selos derivados viraram novos resultados imutáveis V11.
+
+Identidade: motor `v11-0709-estilo-posicao-oficial-v1`, fórmula
+`2e80a07d51f2bc8f456f9710c82717d38e3142cb3d52fd325b7b587c58ed2879`
+e EXE V2.0.28. A publicação corretiva encerrou com zero valor divergente, zero
+prioritário aguardando e zero prioritário com erro. O registro completo está em
+`BONIFICADOR/REGISTRO-OPERACIONAL-CORRECAO-ESTILO-V11.md`.
+
+## 09/09/2026 — correcao pontual completa e refila V12
+
+Refila e correcao pontual V12 documentadas em `OTIMIZADOR/HABILIDADES-0909/CORRECAO-PONTUAL-E-REFILA.md`: 938 saidas completas sem nova busca, 3.537 buscas e 34 registros fora do prefixo por antecessao/orcamento. O pacote consolidado da Maquina 2 preserva a fila anterior e todos os resultados/recibos.

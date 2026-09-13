@@ -4,6 +4,12 @@
 **Escopo:** somente leituras de dados do jogo do Bonificador  
 **Estado inicial:** auditoria e plano criados antes de qualquer troca de runtime ou banco
 
+> **CHECKLIST HISTÓRICO.** Ele prova a migração iniciada em 28/08 e preserva os
+> nomes de contrato daquele momento. O runtime vigente desde 07/09 é a V11,
+> documentada em `REGISTRO-OPERACIONAL-CORRECAO-ESTILO-V11.md` e no
+> `MANUAL-DO-BONIFICADOR.md`. Não use as versões V4/V5 abaixo para validar a
+> instalação atual.
+
 ## Processar Fila do Bonificador — batch físico — 02/09/2026
 
 - [x] Inspecionado o padrão operacional físico do Otimizador:

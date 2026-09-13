@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from "node:child_process";
+import { createHash } from "node:crypto";
 import { appendFile, mkdir, open, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -22,6 +23,13 @@ const PAUSE_PATH = join(CONTROL_ROOT, "pausar.solicitado.json");
 const STOP_PATH = join(CONTROL_ROOT, "parar.solicitado.json");
 
 const sleep = (milliseconds) => new Promise((resolvePromise) => setTimeout(resolvePromise, milliseconds));
+
+export function unattemptedSnapshot(content, expectedHash, expectedCount, attempted) {
+  if (createHash("sha256").update(content).digest("hex") !== expectedHash) throw new Error("A fotografia de fotos mudou após a descoberta.");
+  const ids = content.trim() ? content.trim().split(/\r?\n/) : [];
+  if (ids.length !== expectedCount || new Set(ids).size !== ids.length || ids.some(id => !/^\d+$/.test(id))) throw new Error("A fotografia de fotos contém identidades ou contagem inválidas.");
+  return ids.filter(id => !attempted.has(id));
+}
 
 function parseArguments(argv) {
   const index = argv.indexOf("--run-id");
@@ -192,6 +200,7 @@ async function runWorker({ runId }) {
     updated: 0,
     already_current: 0,
     conflicts: 0,
+    source_missing_images: 0,
     last_manifest_file: null,
     last_prepare_run: null,
     last_apply_run: null,
@@ -295,6 +304,7 @@ async function runWorker({ runId }) {
     await writeState({ status: "running", phase: "discovering" });
 
     let cycle = 0;
+    const attempted = new Set();
     for (;;) {
       if (await controlCheckpoint("before_discovery") === "stop") {
         finalStatus = "stopped_safe";
@@ -305,21 +315,30 @@ async function runWorker({ runId }) {
       await writeState({ status: "running", phase: "discovering", discovery_cycle: cycle, current_card_progress: null, current_card_total: null });
       const discovery = await execute("discover", ["--discover-missing", "--database-method", "postgres"]);
       if (failureCount(discovery.counts) > 0 || discovery.column_verified !== true || !discovery.snapshot_file) throw new Error("A consulta ao Supabase não produziu uma fila válida.");
-      const total = Number(discovery.missing_cards ?? discovery.selected ?? 0);
-      if (!Number.isInteger(total) || total < 0) throw new Error("A fila retornou uma contagem inválida.");
-      await event("queue_discovered", { cycle, total, snapshot_sha256: discovery.snapshot_sha256 ?? null });
+      const missing = Number(discovery.missing_cards ?? discovery.selected ?? 0);
+      if (!Number.isInteger(missing) || missing < 0) throw new Error("A fila retornou uma contagem inválida.");
+      const snapshotContent = await readFile(discovery.snapshot_file, "utf8");
+      const queueIds = unattemptedSnapshot(snapshotContent, discovery.snapshot_sha256, missing, attempted);
+      const total = queueIds.length;
+      const queueFile = join(dirname(discovery.snapshot_file), "fila-nao-tentada.txt");
+      await writeFile(queueFile, total ? queueIds.join("\n") + "\n" : "", "utf8");
+      await event("queue_discovered", { cycle, total, missing, skipped_already_attempted: missing-total, snapshot_sha256: discovery.snapshot_sha256 ?? null });
       await writeState({
         phase: total === 0 ? "final_readback_complete" : "queue_ready",
         queue_total: total,
         queue_completed: 0,
-        final_missing: total,
-        queue_snapshot_file: discovery.snapshot_file,
-        queue_snapshot_sha256: discovery.snapshot_sha256 ?? null,
+        final_missing: missing,
+        queue_snapshot_file: queueFile,
+        queue_snapshot_sha256: createHash("sha256").update(total ? queueIds.join("\n") + "\n" : "").digest("hex"),
+        discovery_snapshot_file: discovery.snapshot_file,
         discovery_run: discovery.run_id
       });
       if (total === 0) {
-        finalStatus = "completed";
-        finalMessage = "Fila concluída e releitura final confirmou zero cartas elegíveis pendentes.";
+        finalStatus = missing === 0 ? "completed" : "waiting_sources";
+        finalMessage = missing === 0
+          ? "Fila concluída e releitura final confirmou zero cartas elegíveis pendentes."
+          : `Rodada encerrada: ${missing} carta(s) continuam sem foto após tentativa nesta execução. Não serão repetidas em ciclo. As ausências de imagem estão no log; uma nova execução pode consultar a fonte novamente.`;
+        await writeState({ phase: missing === 0 ? "final_readback_complete" : "waiting_sources" });
         break;
       }
 
@@ -334,7 +353,7 @@ async function runWorker({ runId }) {
         await writeState({ status: "running", phase: "preparing_batch", queue_completed: offset, current_batch: batchNumber });
         await event("batch_started", { batch: batchNumber, offset, limit: BATCH_SIZE });
         const prepared = await execute("prepare", [
-          "--input", discovery.snapshot_file,
+          "--input", queueFile,
           "--input-kind", "database_null_snapshot",
           "--offset", String(offset),
           "--limit", String(BATCH_SIZE),
@@ -343,7 +362,28 @@ async function runWorker({ runId }) {
           "--upload"
         ]);
         const nextOffset = Number(prepared.next_offset);
-        if (failureCount(prepared.counts) > 0 || !prepared.manifest_file || !Number.isInteger(nextOffset) || nextOffset <= offset || nextOffset > total) throw new Error(`O lote ${batchNumber} não produziu um manifesto integral; nenhum APPLY desse lote foi executado.`);
+        if (failureCount(prepared.counts) > 0 || !Number.isInteger(nextOffset) || nextOffset <= offset || nextOffset > total) throw new Error(`O lote ${batchNumber} não produziu um manifesto integral; nenhum APPLY desse lote foi executado.`);
+
+        // Lote inteiro sem imagem na fonte: nada a aplicar, o banco não é tocado
+        // e a fila avança. Os card_id ficam registrados no log da preparação.
+        if (prepared.nothing_to_apply === true || !prepared.manifest_file) {
+          if (prepared.nothing_to_apply !== true) throw new Error(`O lote ${batchNumber} não produziu um manifesto integral; nenhum APPLY desse lote foi executado.`);
+          for (const id of queueIds.slice(offset, nextOffset)) attempted.add(id);
+          offset = nextOffset;
+          await writeState({
+            status: "running",
+            phase: "batch_sem_imagem_na_fonte",
+            queue_completed: offset,
+            source_missing_images: currentState.source_missing_images + Number(prepared.source_missing_images ?? 0),
+            last_prepare_run: prepared.run_id,
+            pending_apply_batch: null,
+            current_card_progress: null,
+            current_card_total: null
+          });
+          await event("batch_sem_imagem_na_fonte", { batch: batchNumber, queue_completed: offset, source_missing_images: Number(prepared.source_missing_images ?? 0) });
+          await log(`Lote ${batchNumber}: nenhuma carta tinha imagem na fonte; nada foi aplicado e a fila avançou.`);
+          continue;
+        }
         await writeState({
           phase: "manifest_ready",
           last_manifest_file: prepared.manifest_file,
@@ -373,6 +413,7 @@ async function runWorker({ runId }) {
           });
           throw error;
         }
+        for (const id of queueIds.slice(offset, nextOffset)) attempted.add(id);
         offset = nextOffset;
         await writeState({
           status: "running",
@@ -384,7 +425,8 @@ async function runWorker({ runId }) {
           conflicts: currentState.conflicts + appliedCounts.conflicts,
           last_apply_run: applied.run_id,
           pending_apply_batch: null,
-          last_safe_batch: batchNumber
+          last_safe_batch: batchNumber,
+          source_missing_images: currentState.source_missing_images + Number(prepared.source_missing_images ?? 0)
         });
         await event("batch_verified", {
           batch: batchNumber,
@@ -429,9 +471,10 @@ async function runWorker({ runId }) {
       updated: currentState.updated,
       already_current: currentState.already_current,
       conflicts: currentState.conflicts,
+      source_missing_images: currentState.source_missing_images,
       conditional_null_only: true,
       conflicts_preserved: true,
-      independently_read_back: currentState.safe_batches > 0 || currentState.final_missing === 0,
+      independently_read_back: finalStatus === "waiting_sources" || currentState.safe_batches > 0 || currentState.final_missing === 0,
       final_missing: currentState.final_missing,
       last_manifest_file: currentState.last_manifest_file,
       last_prepare_run: currentState.last_prepare_run,

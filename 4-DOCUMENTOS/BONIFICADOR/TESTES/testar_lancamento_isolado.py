@@ -34,13 +34,13 @@ class Resposta:
 def abrir(req, timeout=0):
     nome = req.full_url.rsplit('/', 1)[-1]
     chamadas.append(nome)
-    if nome == 'bonificador_regua_v2':
+    if nome == 'bonificador_regua_v3':
         return Resposta({{
             'pode_rodar': True, 'falta_o_que': [], 'parametro': {{}},
             'molde_corpo': {{}}, 'corpo_ordem': {{}}, 'casa': {{}},
             'liga': {{}}, 'posicao_slot': {{}}
         }})
-    if nome == 'bonificador_contexto_fila_v4':
+    if nome == 'bonificador_contexto_fila_v6':
         return Resposta([])
     raise AssertionError('RPC não permitida no smoke test: ' + nome)
 
@@ -50,8 +50,8 @@ try:
     runpy.run_path({str(MOTOR)!r}, run_name='__main__')
 except SystemExit as erro:
     assert erro.code == 0, erro.code
-assert chamadas == ['bonificador_regua_v2', 'bonificador_contexto_fila_v4'], chamadas
-print('LANCAMENTO_ISOLADO_OK pipeline=max_rodadas_1 regua,contexto_v2 sem_pendencia=sucesso gravacao=nao')
+assert chamadas == ['bonificador_regua_v3', 'bonificador_contexto_fila_v6'], chamadas
+print('LANCAMENTO_ISOLADO_OK pipeline=max_rodadas_1 regua_v3,contexto_v6 sem_pendencia=sucesso gravacao=nao')
 """
     resultado = subprocess.run(
         [sys.executable, "-c", harness],

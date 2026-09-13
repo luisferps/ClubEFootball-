@@ -4,7 +4,7 @@ setlocal
 cd /d "%~dp0"
 
 echo =====================================================
-echo  COMPILACAO DO EXTRATOR DESKTOP V5.3
+echo  COMPILACAO DO EXTRATOR DESKTOP V5.4
 echo =====================================================
 echo.
 echo O uso normal abre o aplicativo por:
@@ -22,7 +22,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo OK: EXE V5.3 reconstruido.
+echo OK: EXE V5.4 reconstruido.
 echo Para usar, abra ABRIR-EXTRATOR.cmd.
 pause
 endlocal

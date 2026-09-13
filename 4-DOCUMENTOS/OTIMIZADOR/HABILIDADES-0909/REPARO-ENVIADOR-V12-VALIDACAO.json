@@ -1,0 +1,33 @@
+{
+  "testes_operacao": 29,
+  "testes_prioridade": 15,
+  "instalador_testado": true,
+  "exe_envio_historico_e_vazios_codigo": 0,
+  "exe_pacote_invalido_codigo": 2,
+  "fila_preservada": true,
+  "json_antigo_preservado": true,
+  "banco_consultado_pelo_teste": false,
+  "instalado_maquina_2": false,
+  "arquivos": [
+    {
+      "caminho": "bin/OperacaoLocalJson.exe",
+      "sha256": "80007a40fd5a611830ea768b6f33bf83f7d5bb82076d392e8b6e7d91238714b5"
+    },
+    {
+      "caminho": "programas/operacao_local_json.py",
+      "sha256": "a05d93bc4e76741dc9e0ddd88737f0f627284dc8a85d25b1a26c5f9ad81b2403"
+    }
+  ],
+  "fontes_calculo": {
+    "equacao.py": "1d4db85f5c625623789234b740985e67c93fe4c84dbfb73406a3797c0d168a6f",
+    "motor.py": "bf85312894225c6974769dc8615d674f88ef6f8cbfdfad0de754615f63d77e60",
+    "regua.py": "26a0a6416c95c9315c5c652f8df32015e128f9d1a7a3fc1515d38ddaba779d85",
+    "fonte_unica.py": "f1c3f26b3b8e6969f8b488d528e104614fb2bb0cb04c71f1e01a6762454fd7d8",
+    "roda_lote_v6.py": "116a2c64c7bededb1f7410948a496d3d1f3fa9cdc3053138ce9453aa11994f74"
+  },
+  "pacotes_sincronizados": [
+    "REPARO-PRIORIDADE-V12",
+    "REPARO-MOTORES-V12",
+    "ATUALIZACAO-OTIMIZADOR-REFILA-V12"
+  ]
+}

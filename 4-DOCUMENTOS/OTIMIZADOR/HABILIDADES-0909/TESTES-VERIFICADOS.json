@@ -1,0 +1,67 @@
+[
+  {
+    "teste": "teste_habilidades_sem_ganho_v12.py",
+    "codigo": 0,
+    "saida": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.004s\n\nOK\n"
+  },
+  {
+    "teste": "teste_formula_aprovada.py",
+    "codigo": 0,
+    "saida": "OK: Messi 99 -> proficiencia 99 -> boost 100 -> Precisao 104; Capello canonico preservado"
+  },
+  {
+    "teste": "teste_impetos_adicionais_v8.py",
+    "codigo": 0,
+    "saida": "test_dois_slots_livres_tem_desempate_estavel_no_slot_1 (__main__.ImpetosAdicionaisV8Test.test_dois_slots_livres_tem_desempate_estavel_no_slot_1) ... ok\ntest_empate_nao_pode_reter_vaga_vazia (__main__.ImpetosAdicionaisV8Test.test_empate_nao_pode_reter_vaga_vazia) ... ok\ntest_migracao_usa_somente_catalogo_canonico (__main__.ImpetosAdicionaisV8Test.test_migracao_usa_somente_catalogo_canonico) ... ok\ntest_pacote_total_e_excecao_explicita (__main__.ImpetosAdicionaisV8Test.test_pacote_total_e_excecao_explicita) ... ok\ntest_sem_slot_livre_mantem_sem_impeto_adicional (__main__.ImpetosAdicionaisV8Test.test_sem_slot_livre_mantem_sem_impeto_adicional) ... ok\ntest_slot_1_livre_nao_permite_opcao_vazia (__main__.ImpetosAdicionaisV8Test.test_slot_1_livre_nao_permite_opcao_vazia) ... ok\ntest_slot_2_livre_nao_permite_opcao_vazia (__main__.ImpetosAdicionaisV8Test.test_slot_2_livre_nao_permite_opcao_vazia) ... ok\ntest_traducao_separa_catalogo_adicional_do_impeto_equipado (__main__.ImpetosAdicionaisV8Test.test_traducao_separa_catalogo_adicional_do_impeto_equipado) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.016s\n\nOK\n"
+  },
+  {
+    "teste": "teste_impetos_linhas_v12.py",
+    "codigo": 0,
+    "saida": "test_banco_identifica_nivel_e_guarda_os_dois_contadores (__main__.ImpetosLinhasV12Test.test_banco_identifica_nivel_e_guarda_os_dois_contadores) ... ok\ntest_codigo_nivel_sao_obrigatorios_e_limitados (__main__.ImpetosLinhasV12Test.test_codigo_nivel_sao_obrigatorios_e_limitados) ... ok\ntest_comparadas_soma_avaliacoes_internas_e_nao_rodadas_grandes (__main__.ImpetosLinhasV12Test.test_comparadas_soma_avaliacoes_internas_e_nao_rodadas_grandes) ... ok\ntest_contagem_do_universo_e_separada_das_comparacoes (__main__.ImpetosLinhasV12Test.test_contagem_do_universo_e_separada_das_comparacoes) ... ok\ntest_entrada_historica_esta_encerrada (__main__.ImpetosLinhasV12Test.test_entrada_historica_esta_encerrada) ... ok\ntest_mesma_receita_materializa_cada_nivel (__main__.ImpetosLinhasV12Test.test_mesma_receita_materializa_cada_nivel) ... ok\ntest_saida_sem_boost_util_persiste_o_tecnico_do_mesmo_multiplicador (__main__.ImpetosLinhasV12Test.test_saida_sem_boost_util_persiste_o_tecnico_do_mesmo_multiplicador) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.031s\n\nOK\n"
+  },
+  {
+    "teste": "teste_operacao_local_json.py",
+    "codigo": 0,
+    "saida": ".....................\n----------------------------------------------------------------------\nRan 21 tests in 0.388s\n\nOK\n"
+  },
+  {
+    "teste": "teste_historico_renovacoes_repetidas.py",
+    "codigo": 0,
+    "saida": "Renovação reconciliada: 1 resultados antigos preservados em passagem-16353597e736447382776ad44c712fef; a fotografia atual continuará normalmente.\nRenovação reconciliada: 1 resultados antigos preservados em passagem-73efdd8562364428a737055a13eececb; a fotografia atual continuará normalmente.\n..\n----------------------------------------------------------------------\nRan 2 tests in 0.108s\n\nOK\n"
+  },
+  {
+    "teste": "teste_prioridade_orcamento_v1.py",
+    "codigo": 0,
+    "saida": "Fila global conferida: 3 linhas em 2 lotes.\n{\"revisao\": \"d721ef613bde414fb2019da11d7dc9f8\", \"lotes\": [\"7581b184-dccb-4a4b-9ad9-c767d4f4947c\"], \"sem_pendentes\": [], \"anteriores\": \"C:\\\\Users\\\\LUISFE~1\\\\AppData\\\\Local\\\\Temp\\\\tmp68j6i4j6\\\\OPERACAO-LOCAL-JSON\\\\RENOVACOES\\\\d721ef613bde414fb2019da11d7dc9f8\\\\ANTERIORES\", \"worker_iniciado\": false}\n{\"revisao\": \"7f6a9f8ac7bd4bd5b15e1970ab78f2cc\", \"lotes\": [\"7581b184-dccb-4a4b-9ad9-c767d4f4947c\", \"1833e4d0-1707-4ea2-8ba3-3733b5101310\"], \"sem_pendentes\": [\"7581b184-dccb-4a4b-9ad9-c767d4f4947c\", \"1833e4d0-1707-4ea2-8ba3-3733b5101310\"], \"anteriores\": \"C:\\\\Users\\\\LUISFE~1\\\\AppData\\\\Local\\\\Temp\\\\tmpwc72jy6a\\\\OPERACAO-LOCAL-JSON\\\\RENOVACOES\\\\7f6a9f8ac7bd4bd5b15e1970ab78f2cc\\\\ANTERIORES\", \"worker_iniciado\": false}\n........\n----------------------------------------------------------------------\nRan 8 tests in 0.171s\n\nOK\n"
+  },
+  {
+    "teste": "teste_prioridade_correcao_volta_v1.py",
+    "codigo": 0,
+    "saida": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.000s\n\nOK\n"
+  },
+  {
+    "teste": "teste_pacote_volta_marcar_v1.py",
+    "codigo": 0,
+    "saida": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.001s\n\nOK\n"
+  },
+  {
+    "teste": "Sintaxe 1-SISTEMA/ficha-ajustes.js",
+    "codigo": 0,
+    "saida": ""
+  },
+  {
+    "teste": "Sintaxe Site Novo/ficha-editor.js",
+    "codigo": 0,
+    "saida": ""
+  },
+  {
+    "teste": "sugestoes por funcao",
+    "codigo": 0,
+    "saida": "9 casos: bloqueios antigos/novos, gêmeas, troca de função, duas exceções de drible e catálogo manual livre: OK.\n"
+  },
+  {
+    "teste": "Sintaxe HTML interativo",
+    "codigo": 0,
+    "saida": ""
+  }
+]

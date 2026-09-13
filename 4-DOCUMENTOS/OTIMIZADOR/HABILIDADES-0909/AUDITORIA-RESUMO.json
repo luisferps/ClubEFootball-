@@ -1,0 +1,39 @@
+{
+  "politica": "habilidades-funcao-20260909-v1",
+  "motor_versao": "otimizador-fila-producao-v3-local-20260909-habilidades-v12",
+  "formula_fingerprint": "a1cc830af3366e2d0c9ac12138d892058b3e57ed216e43d68242d105b33cb9d2",
+  "total_resultados_validos": 57383,
+  "com_adicionais": 10899,
+  "linhas_analisadas_em_detalhe": 12175,
+  "demais_sem_adicionais": 45208,
+  "situacoes": {
+    "Conferir dados incompletos": 110,
+    "Sem ajuste identificado": 7666,
+    "Reotimizar": 3352,
+    "Remover sem perder nota do motor": 934,
+    "Revalidar opções liberadas": 89,
+    "Conferir divergência de origem": 24
+  },
+  "situacoes_publicadas": {
+    "Sem ajuste identificado": 7509,
+    "Reotimizar": 3296,
+    "Remover sem perder nota do motor": 927,
+    "Revalidar opções liberadas": 86,
+    "Conferir divergência de origem": 24
+  },
+  "afetadas_revisao": 4509,
+  "com_bloqueio": 3612,
+  "com_bloqueio_publicadas": 3555,
+  "bloqueios_por_habilidade": {
+    "Cruzamento preciso": 3284,
+    "Arremesso lateral longo": 237,
+    "Toque de calcanhar": 16,
+    "Controle com a sola": 112,
+    "De letra": 73,
+    "Controle da cavadinha": 22,
+    "Marcação individual": 12,
+    "Passe sem olhar": 5
+  },
+  "troca_direta_cruzamento_por_profundidade": 0,
+  "metodo": "Somente leitura. Reconstroi com a entrada selada da carta e os arows historicos. Remocao mantém barras, tecnico, impetos e nativas. Ganho/local zero nao garante mesma normalizacao ou bonus. Opcoes liberadas exigem revalidacao: a prova local nao substitui busca integral. Nenhuma fila ou publicacao alterada."
+}

@@ -1,0 +1,149 @@
+/* Apresentacao do Ranking reescrita a partir da faixa e grade do legado. */
+.nr-ranking {font-family:Calibri,Carlito,'Segoe UI',sans-serif}
+.nr-sr {position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+.nr-band {position:relative;z-index:5;background:var(--sn-bg);display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:'functions' 'classify';gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--sn-line)}
+.nr-band .nr-filters {grid-column:1/-1;max-height:45vh;overflow:auto;margin:0}
+.nr-function[data-nr-mode] {position:relative;text-transform:uppercase}
+.nr-mode-help {position:absolute;top:calc(100% + 8px);left:0;width:230px;max-width:65vw;padding:10px 12px;background:var(--sn-surface);color:var(--sn-ink);border:1px solid var(--sn-line);border-radius:8px;box-shadow:0 4px 14px #0004;text-align:left;font-size:12px;font-weight:400;line-height:1.4;visibility:hidden;opacity:0;z-index:6}
+.nr-function:hover .nr-mode-help,.nr-function:focus-visible .nr-mode-help {visibility:visible;opacity:1}
+.nr-classify {grid-area:classify;min-width:0}
+.nr-tools {display:flex;gap:10px;align-items:center;justify-content:center;margin:0 0 24px;padding:0 0 20px;border-bottom:1px solid var(--sn-line)}
+.nr-functions {grid-area:functions;display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding:4px 0 12px}
+.nr-functions .nr-function {min-width:100px;min-height:40px;padding:10px 18px;font-size:13px}
+.nr-ranking button,.nr-ranking select {font-family:inherit}
+.nr-sector,.nr-function {border:1px solid rgba(255,255,255,.22);border-radius:9px;background:rgba(255,255,255,.04);color:#aab2ad;padding:8px 12px;font-size:12px;font-weight:800;cursor:pointer}
+.nr-function {font-size:11px;padding:5px 8px;border-radius:8px;font-weight:700;line-height:1.15}
+.nr-sector:hover,.nr-function:hover {border-color:var(--sn-muted);color:var(--sn-ink)}
+.nr-sector[aria-pressed=true],.nr-function[aria-pressed=true] {border-color:var(--sn-green);background:rgba(59,203,135,.16);color:#a8ffcb;box-shadow:0 0 14px rgba(70,235,150,.25)}
+.nr-tools input,.nr-filter-button {padding:8px 10px;border-radius:9px;border:1px solid var(--sn-line);background:var(--sn-surface);color:var(--sn-ink);font-size:12px}
+.nr-tools input {width:min(560px,100%);min-width:0;min-height:44px}.nr-tools .nr-filter-button {min-height:44px;padding:10px 20px}.nr-tools input:disabled {opacity:.65;cursor:not-allowed}.nr-filter-button {font-weight:700;cursor:pointer}
+.nr-state {margin:18px 0 24px;font-size:14px;line-height:1.5;color:var(--sn-muted)}.nr-state strong {display:block;color:var(--sn-ink);font-weight:600}.nr-state span {display:block}
+.nr-results {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;align-items:start}
+.nr-card {min-width:0;border:1px solid var(--sn-line);border-radius:14px;background:var(--sn-surface);position:relative;box-shadow:none}
+.nr-podium {grid-column:span 2;height:306px;padding:18px 16px 16px;display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px}
+.nr-photo {color:var(--sn-muted);background:var(--sn-soft);border:1px dashed var(--sn-line);border-radius:8px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:14px;line-height:1.5}
+.nr-podium .nr-photo {width:150px;height:230px}.nr-card-copy {min-width:0;display:flex;flex-direction:column;align-items:start}
+.nr-score {color:var(--sn-gold);font-size:36px;font-weight:800;line-height:1}.nr-card h3 {margin:12px 0 0;font-size:18px;line-height:1.15;font-weight:700;overflow-wrap:anywhere}.nr-card p {font-size:13px;color:var(--sn-muted);margin:7px 0 0}.nr-tag {font-size:10px;padding:4px 8px;border-radius:6px;border:1px solid var(--sn-line);color:var(--sn-muted)}.nr-card-copy .nr-tag {margin-top:auto;margin-bottom:12px}.nr-place {position:absolute;top:12px;left:14px;font-size:17px;font-weight:900;line-height:1;white-space:nowrap}
+.nr-ouro {--nr-medal:#f3c348;--nr-medal-rgb:243,195,72}.nr-prata {--nr-medal:#d4dfed;--nr-medal-rgb:196,210,229}.nr-bronze {--nr-medal:#e79a60;--nr-medal-rgb:231,154,96}
+.nr-card.nr-podium {border:2px solid var(--nr-medal);background:linear-gradient(155deg,rgba(var(--nr-medal-rgb),.34),rgba(var(--nr-medal-rgb),.13) 55%,rgba(var(--nr-medal-rgb),.06)),var(--sn-surface);box-shadow:inset 0 3px 0 rgba(var(--nr-medal-rgb),.5),0 0 18px rgba(var(--nr-medal-rgb),.13)}
+.nr-podium .nr-place {color:var(--nr-medal);font-size:19px}
+.nr-podium:hover {box-shadow:inset 0 3px 0 rgba(var(--nr-medal-rgb),.65),0 0 24px rgba(var(--nr-medal-rgb),.24)}
+.nr-compact {padding:10px;display:flex;flex-direction:column;align-items:center;text-align:center;min-height:340px}.nr-compact .nr-photo {height:190px;width:100%}.nr-compact h3 {font-size:16px;min-height:38px;margin:8px 0 0}.nr-compact p {font-size:11px;margin:4px 0 0}.nr-compact .nr-score {font-size:32px;margin-top:10px}.nr-compact .nr-tag {margin-top:10px}
+.nr-filters {border:1px solid var(--sn-line);border-radius:12px;background:var(--sn-surface);padding:20px;margin-top:14px}.nr-filter-head {display:flex;align-items:center;justify-content:space-between}.nr-filter-head button {color:var(--sn-green);background:transparent;border:1px solid var(--sn-line);padding:6px 12px;border-radius:7px;cursor:pointer}.nr-filters p {font-size:14px;color:var(--sn-muted)}.nr-filter-fields {display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:16px}.nr-filter-fields label {font-size:14px;color:var(--sn-muted)}.nr-filter-fields select {display:block;width:100%;margin-top:6px;border:1px solid var(--sn-line);background:var(--sn-bg);color:var(--sn-muted);border-radius:8px;padding:8px}
+html[data-theme=claro] .nr-sector,html[data-theme=claro] .nr-function {background:#fff;border-color:#b8c8c0;color:#3c4f47}html[data-theme=claro] .nr-sector[aria-pressed=true],html[data-theme=claro] .nr-function[aria-pressed=true] {background:#e1f5e7;border-color:#19834f;color:#12643b;box-shadow:0 0 12px rgba(25,131,79,.24)}html[data-theme=claro] .nr-ouro .nr-place {color:#9a5600}html[data-theme=claro] .nr-prata .nr-place {color:#4d5961}html[data-theme=claro] .nr-bronze .nr-place {color:#994717}
+@media(max-width:1100px) and (min-width:1001px) {.nr-podium {grid-template-columns:120px minmax(0,1fr);gap:10px;padding:16px 12px}.nr-podium .nr-photo {width:120px}}
+@media(max-width:1000px) {.nr-band {grid-template-columns:1fr;grid-template-areas:'functions' 'classify';gap:8px}.nr-tools {justify-content:stretch}.nr-tools input {width:100%;min-width:0}.nr-results {grid-template-columns:repeat(2,minmax(0,1fr))}.nr-podium,.nr-compact {grid-column:span 1;display:grid;grid-template-columns:130px minmax(0,1fr);height:268px;min-height:268px;padding:12px;gap:12px;text-align:left;align-items:start}.nr-podium .nr-photo,.nr-compact .nr-photo {width:130px;height:216px}.nr-compact .nr-photo {grid-column:1;grid-row:1/5}.nr-compact h3,.nr-compact p,.nr-compact .nr-score,.nr-compact .nr-tag {grid-column:2;margin:0;min-height:0}.nr-compact h3 {grid-row:2}.nr-compact .nr-score {grid-row:1}.nr-compact p {grid-row:3}.nr-compact .nr-tag {grid-row:4;align-self:end}.nr-card-copy {height:100%}.nr-score {font-size:28px}.nr-filter-fields {grid-template-columns:1fr}}
+@media(max-width:650px) {.nr-results {grid-template-columns:1fr}.nr-podium,.nr-compact {grid-template-columns:150px minmax(0,1fr)}.nr-podium .nr-photo,.nr-compact .nr-photo {width:150px}}
+@media(max-width:370px) {.nr-podium,.nr-compact {grid-template-columns:115px minmax(0,1fr)}.nr-podium .nr-photo,.nr-compact .nr-photo {width:115px}}
+/* Dados publicados, sem alterar as proporcoes aprovadas. */
+.nr-real-photo {object-fit:contain;border:0;background:transparent}
+.nr-live-card {cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.nr-live-card:not(.nr-podium):hover {border-color:var(--sn-muted);box-shadow:none}
+.nr-box a{position:relative;z-index:2;text-decoration:underline;text-underline-offset:3px}.nr-tag::after{content:"";position:absolute;inset:0;border-radius:14px}.nr-tag:focus-visible::after{outline:2px solid var(--sn-green);outline-offset:2px}
+.nr-box {font-size:11px;color:var(--sn-muted);margin-top:8px;overflow-wrap:anywhere}
+
+.nr-compact {padding-bottom:30px}
+.nr-compact .nr-box a{position:relative;z-index:2;text-decoration:underline;text-underline-offset:3px}.nr-tag::after{content:"";position:absolute;inset:0;border-radius:14px}.nr-tag:focus-visible::after{outline:2px solid var(--sn-green);outline-offset:2px}
+.nr-box {font-size:10px}
+.nr-card-copy {overflow:hidden}.nr-card-copy .nr-tag {margin-top:auto;margin-bottom:18px}
+.nr-message {padding:40px 24px;border:1px solid var(--sn-line);border-radius:14px;color:var(--sn-muted)}
+.nr-message button,.nr-pagination button {padding:9px 14px;border:1px solid var(--sn-line);border-radius:9px;background:var(--sn-surface);color:var(--sn-green);cursor:pointer}
+.nr-pagination {display:flex;gap:20px;justify-content:center;align-items:center;margin-top:25px;font-size:14px}
+.nr-pagination button:disabled {opacity:.45;cursor:default}.nr-filters>[data-nr-clear] {margin-top:16px}
+@media(max-width:1000px){.nr-compact .nr-box{display:none}.nr-live-card .nr-tag{margin-bottom:20px}.nr-card-copy .nr-box{max-height:40px;overflow:auto}}
+.nr-pagination {flex-wrap:wrap;gap:12px}
+.nr-page-numbers {display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center}
+.nr-page-numbers button {min-width:38px;padding:9px 10px}
+.nr-page-numbers button[aria-current=page] {background:var(--sn-green);border-color:var(--sn-green);color:var(--sn-bg);font-weight:800;cursor:default}
+.nr-page-gap {color:var(--sn-muted);padding:0 3px}
+.nr-page-summary {font-size:14px;color:var(--sn-muted);text-align:center;margin:12px 0 0}
+/* Em duas colunas, o terceiro lugar fecha a faixa do podio antes da grade comum. */
+@media(min-width:651px) and (max-width:1000px) {.nr-podium:nth-child(3) {grid-column:1 / -1}}
+.nr-scoreline {display:flex;align-items:center;justify-content:center;width:100%;max-width:100%}
+
+.nr-scoreline .nr-score {margin:0;font-size:32px;white-space:nowrap}
+.nr-compact .nr-scoreline {justify-content:center;margin-top:10px}
+.nr-card .nr-role {display:flex;flex-direction:column;align-items:flex-start;gap:6px;color:var(--sn-ink);font-size:14px;line-height:1.3}
+.nr-card .nr-role strong {display:block;text-transform:capitalize}
+.nr-compact .nr-role {align-items:center;justify-content:flex-start}
+.nr-position {display:inline-block;padding:3px 6px;border-radius:5px;background:var(--sn-soft);border:1px solid var(--sn-line);color:var(--sn-green);font-size:12px;font-weight:800}
+.nr-active-filters {display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0 16px;font-size:13px;color:var(--sn-muted)}
+.nr-active-filters>span {padding:5px 9px;border:1px solid var(--sn-line);border-radius:7px;background:var(--sn-soft);color:var(--sn-ink);overflow-wrap:anywhere;max-width:100%}
+.nr-pager-top {margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--sn-line)}
+.nr-pager-top .nr-pagination {margin-top:8px}
+.nr-ranking a:focus-visible,.nr-ranking button:focus-visible {outline:2px solid var(--sn-green);outline-offset:3px}
+@media(max-width:1000px){.nr-compact .nr-scoreline {grid-column:2;grid-row:1;justify-content:center;margin:0}.nr-compact .nr-role {align-items:flex-start;justify-content:flex-start}.nr-scoreline .nr-score {font-size:26px}}
+/* Todas as fileiras comuns acompanham a altura do maior card, sem cortar texto. */
+@media(min-width:1001px) {
+ .nr-results {align-items:stretch;grid-auto-rows:1fr}
+ .nr-results:has(>.nr-podium) {grid-template-rows:auto}
+ .nr-compact {height:auto}
+ .nr-compact>* {flex-shrink:0}
+ .nr-compact .nr-tag {margin-top:auto;position:relative;top:10px}
+}
+/* Classificacao em faixa propria acima da imagem; nota centralizada sozinha. */
+.nr-ranking .nr-card {padding-top:40px}
+
+
+
+
+/* Uma coluna por assunto no painel de filtros: posicao, funcao e estilo de jogo. */
+.nr-filter-fields {gap:0}
+.nr-filter-fields label {display:flex;flex-direction:column;gap:2px;padding:0 20px;border-left:1px solid var(--sn-line)}
+.nr-filter-fields label:first-child {padding-left:0;border-left:0}
+.nr-filter-fields label:last-child {padding-right:0}
+.nr-filter-fields label b {font-size:11px;letter-spacing:1.3px;font-weight:800;color:var(--sn-green)}
+.nr-filter-fields label small {font-size:11px;color:var(--sn-muted);min-height:14px}
+.nr-filter-fields select {margin-top:8px;color:var(--sn-ink);padding:9px}
+@media(max-width:1000px) {
+ .nr-filter-fields {gap:18px}
+ .nr-filter-fields label {padding:0;border-left:0}
+}
+
+/* Exibir ranking por: cabecalho, abas de criterio e a escolha do item. */
+.nr-classify-head {display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.nr-classify-head strong {font-size:10px;letter-spacing:1.6px;font-weight:800;color:var(--sn-muted)}
+
+.nr-axis-help {font-size:11px;color:var(--sn-muted)}
+.nr-axis-tabs {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:8px}
+.nr-axis {padding:11px 10px;border:1px solid var(--sn-line);border-radius:10px;background:var(--sn-surface);color:var(--sn-muted);cursor:pointer;font:800 12px/1 Calibri,Carlito,'Segoe UI',sans-serif;letter-spacing:.8px}
+.nr-axis:hover {color:var(--sn-ink)}
+.nr-axis[aria-pressed="true"] {color:#08150d;border-color:var(--sn-green);background:var(--sn-green);box-shadow:0 0 14px rgba(125,242,168,.3)}
+.nr-axis-chips {display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.nr-axis-chips .nr-function {flex:0 0 auto;min-height:24px;max-width:100%;padding:4px 7px;font-size:10px}
+.nr-axis-chips-posicao .nr-function {flex:1 1 52px;min-height:42px;padding:10px 8px;font-size:12px}
+.nr-axis-select {display:block;max-width:340px}
+.nr-axis-select select {width:100%;border:1px solid var(--sn-line);background:var(--sn-surface);color:var(--sn-ink);border-radius:9px;padding:9px 10px;font-size:12px}
+.nr-axis-loading {margin:0;font-size:12px;color:var(--sn-muted)}
+@media(max-width:640px) {.nr-axis {padding:12px 5px;font-size:10px;letter-spacing:0;min-height:44px}.nr-classify-head {flex-wrap:wrap}.nr-axis-chips .nr-function {flex-basis:auto}.nr-axis-chips-posicao .nr-function {flex-basis:52px}}
+
+/* Opcao geral destacada nos tres criterios do Ranking. */
+.nr-axis-chips .nr-function:first-child {text-transform:uppercase;font-weight:800;border:1px solid rgba(199,154,94,.45);background:var(--sn-surface);color:#c79a5e;padding-left:12px;padding-right:12px}
+.nr-axis-chips .nr-function:first-child[aria-pressed=true] {border:1px solid #c79a5e;background:#c79a5e;color:#171b13;box-shadow:none}
+html[data-theme=claro] .nr-axis-chips .nr-function:first-child {border-color:#b28a4a;background:#fffaf0;color:#805515}
+html[data-theme=claro] .nr-axis-chips .nr-function:first-child[aria-pressed=true] {border-color:#9b6b25;background:#f2d494;color:#513609}
+
+/* Informacoes complementares ao filtro, sem a box de origem. */
+.nr-detail {display:flex;flex-direction:column;gap:2px;max-width:100%}
+.nr-detail-label {font-size:10px;font-weight:400;color:var(--sn-muted)}
+.nr-card .nr-role strong {font-size:12px;line-height:1.25}
+.nr-compact .nr-role strong {font-size:11px}
+.nr-card-copy {overflow:visible}
+@media(max-width:1000px){.nr-podium,.nr-compact {height:auto;min-height:290px}.nr-card-copy {height:auto}.nr-card-copy .nr-tag {margin-top:16px}}
+
+/* O card inteiro e um link nativo para a ficha. */
+a.nr-live-card {color:var(--sn-ink);text-decoration:none}
+a.nr-live-card:focus-visible {outline:2px solid var(--sn-green);outline-offset:4px}
+
+/* Selo da regua: marca a linha que ainda nao passou pelo Otimizador novo. */
+.nr-selo-antiga{
+  display:inline-flex; align-items:center; gap:.3em;
+  margin-left:.6em; padding:.15em .55em;
+  font-size:.62em; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
+  color:#8a5a00; background:#ffe7a8; border:1px solid #e0b44a; border-radius:999px;
+  white-space:nowrap; vertical-align:middle;
+}
+.nr-selo-antiga::before{ content:"!"; font-weight:900; }
+@media (prefers-color-scheme: dark){
+  .nr-selo-antiga{ color:#ffdf9a; background:#4a3405; border-color:#8a6a1e; }
+}

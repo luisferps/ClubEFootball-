@@ -191,7 +191,6 @@ def validar_contrato_canonico_do_tecnico():
 def validar_servicos_e_encaminhamento_separado():
     servidor = (SERVIDOR / "servidor.py").read_text(encoding="utf-8")
     app = (SERVIDOR / "app.py").read_text(encoding="utf-8")
-    lote = (MOTORES / "roda_lote_v6.py").read_text(encoding="utf-8")
 
     ordem_servidor = [
         "v = [AV._mult(ref[i], d['m']) for i in range(len(ref))]",
@@ -202,7 +201,10 @@ def validar_servicos_e_encaminhamento_separado():
     assert posicoes == sorted(posicoes)
     assert "d['impeto_add'], d['boost_add'], d['buff'], d['m']" in servidor
     assert "impeto_add, boost_add, buff, m" in app
-    assert "vals_finais(b['lvl'], _impeto_add, _boost_add)" in lote
+    # O adaptador nao recalcula a antiga sugestao forcada de vetadas (V12).
+    # As contas reais de tecnico/impeto sao conferidas nos casos manuais acima;
+    # o caminho integrado do motor com adicionais e nativas tambem e coberto em
+    # teste_habilidades_sem_ganho_v12.py. Nao exigir codigo morto no adaptador.
 
 
 if __name__ == "__main__":

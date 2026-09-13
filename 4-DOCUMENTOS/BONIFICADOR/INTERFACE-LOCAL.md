@@ -1,6 +1,80 @@
+## Encerramento do Bonificador — conferência de 10/09/2026
+
+192.635 linhas de cartas disponíveis já possuem bonificação completa. As 12.868 sem bônus são integralmente de cartas com jogador_indisponivel=true, excluídas pela fila oficial; não criar fila de repetição nem retirar esse bloqueio por interpretar a contagem bruta como pendência. Resultados de altura/IA aguardando Otimizador já estão calculados. Ver 4-DOCUMENTOS/BONIFICADOR/ALTURA-0909/AUDITORIA-ENCERRAMENTO-BONIFICADOR.md. Encerramento limitado às cartas disponíveis atuais; novas entradas exigem nova auditoria.
+## Altura e IA V13 — 10/09/2026
+
+Política ativa nos writers e executor seletivo iniciado. [Contrato e operação](ALTURA-0909/EXECUTOR-ALTURA-IA-V13.md). IA 0,1 por estilo até 0,5; altura independente em sete funções; demais parcelas preservadas. Não confundir execução iniciada com concluída.
+
+## Altura independente — etapa estrutural 09/09/2026
+
+Leia [ALTURA-0909/REGRA-APROVADA.md](ALTURA-0909/REGRA-APROVADA.md). Altura separada sem redistribuir pontos das demais medidas. Regra aprovada em sete funções, direção positiva; preparada no banco, ainda sem alterar notas. Não confundir separação neutra com recálculo aplicado. O registro V10 abaixo é a base histórica preservada.
+
 # Aplicativo local do Bonificador
 
-**Versão:** 2.0.25 · **Data:** 02/09/2026 · **Estado:** filas humanas, resultados persistidos e controle local do pipeline
+## Reparo de retomada HTTP 403 e encerramento — 09/09/2026
+
+A execução na Máquina 2 expôs uma permissão ausente na consulta da carta V3, após a preparação já validada. Corrigido o acesso restrito ao catálogo no banco; HTTP e gravação testados. A única falha 488143 foi recuperada, com prioridade preservada. Bonificador agora retorna código 2 em falha e não anuncia conclusão indevida. Novo pacote único `REPARO-MOTORES-V12` inclui também a correção de prioridade do Otimizador; instalar em `2-MOTORES` por `APLICAR.cmd`, preservando os BATs anteriores. Ver `4-DOCUMENTOS/BONIFICADOR/REPARO-RETOMADA-403-V12.md`. Os registros de prontidão anteriores descrevem a conferência parcial daquela etapa.
+
+
+## Retomada V12 conferida — 09/09/2026
+
+Pacote do Bonificador completo validado (15 arquivos). Retomada, controle e primeira reserva passaram em transação revertida; lote continua pausado, com 14.107 pendentes. Corrigidos no banco o filtro da auditoria e as restrições de versão do lote, agora compatíveis com os conjuntos coerentes V11/V12. Usar o mesmo `OPERACAO-CORRECAO-FISICA/INICIAR-REPROCESSAMENTO.bat`. Nenhuma nova cópia necessária por esses ajustes. Detalhes em `4-DOCUMENTOS/BONIFICADOR/RETOMADA-CONFERIDA-0909.md`.
+
+
+## Encerramento confirmado em 09/09/2026
+
+A correção seletiva dos bônus de estilo terminou: **67.795 resultados e 7.455 publicações concluídos, zero pendências e erros nessa operação**. O banco e o painel confirmaram o encerramento em 2026-09-09T08:13:50.106412+00:00. As nove publicações finais foram conferidas no contrato da Ficha, preservando a revisão de habilidades do Otimizador e a ordem dos lotes. A falha do UPDATE de encerramento foi corrigida no banco e no SQL oficial.
+
+Evidência e alcance: [Conclusão dos bônus de estilo](CONCLUSAO-BONUS-ESTILOS-0909.md). A produção geral do Bonificador e as execuções do Otimizador têm estados próprios; este encerramento não significa que seus lotes foram executados. Os registros de andamento abaixo são históricos.
+
+## Retomada futura na Máquina 2 — arquivos preparados
+
+Os arquivos V12 do Bonificador completo estão preparados para cópia direta.
+O operador usa o mesmo INICIAR-REPROCESSAMENTO.bat após terminar a correção de
+estilos. Antes disso, o comando não inicia nem reserva linhas. A versão do lote
+e a política geral só serão atualizadas no início solicitado pelo operador.
+Detalhes: [Entrega da Máquina 2](ENTREGA-MAQUINA-2-V12.md). Os registros anteriores abaixo são históricos.
+
+## Operação atual — correção seletiva de estilos V12
+
+O executor autônomo foi instalado e iniciado na máquina oficial. Corrige somente
+os estilos de 67.795 resultados e atualiza 7.455 publicações, mantendo as notas
+anteriores disponíveis até cada troca ser confirmada. Não declarar conclusão
+antes do readback final do banco. Apenas o schema clube_novo é operacional.
+A fila geral permanece pausada; a Máquina 2 será atualizada depois.
+Código/EXE V12 estão preparados localmente. A política permanece com implantação
+geral pendente; a execução seletiva já aplica a regra.
+Fonte operacional: [Executor de estilos V12](EXECUTOR-ESTILOS-V12.md).
+Os registros anteriores abaixo descrevem etapas históricas.
+
+> **Decisão de 09/09 registrada, implantação pendente:**
+> [Regra de estilos aprovada em 09/09](REGRA-ESTILOS-APROVADA-0909.md).
+> O banco guarda `estilos-funcao-20260909-v1` e a calculadora de conferência;
+> o EXE V2.0.28 abaixo ainda não consome essa política. Não apresentar o teste
+> da calculadora como prova de atualização da Máquina 2 ou das notas publicadas.
+
+**Versão vigente:** 2.0.28 · **Data:** 07/09/2026 · **Estado:** V11 instalada, consulta histórica e teste local
+
+## Revisão V2.0.28 — estilo oficial por posição
+
+O EXE vigente identifica no título `Bonificador ClubEfootball V2.0.28 — estilo
+V11`. A parcela de estilo verifica a ativação do playstyle por `posicao_id`; a
+função e a casa do molde não ligam o bônus. O componente usa
+`bonificador_regua_v3`, `bonificador_carta_v2`,
+`bonificador_contexto_fila_v6` e `gravar_build_bonificador_v5`.
+
+A aba **Lote do Bonificador** preserva V9 somente para consulta e não inicia
+produção. O lote corretivo V11 é iniciado fora do EXE por
+`OPERACAO-CORRECAO-FISICA/INICIAR-REPROCESSAMENTO.bat`, com UUID explícito. O
+console correto mostra `BONIFICADOR v11 — estilo oficial por posição`.
+
+Arquivos que formam a unidade V2.0.28: `Bonificador ClubEfootball.exe`,
+`windows-app/assets/BonificadorComponente.bin`, `interface/servidor.py`,
+`motor_bonus.py` e `OPERACAO-CORRECAO-FISICA/operacao_correcao.py`.
+
+> As revisões V2.0.25 e anteriores abaixo permanecem como histórico de evolução
+> da interface. Nomes de RPC, botões e comportamento produtivo descritos nelas não
+> substituem o contrato V2.0.28 acima.
 
 ## Revisão V2.0.25 — pacote único e fila unificada
 

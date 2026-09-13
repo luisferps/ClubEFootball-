@@ -28,7 +28,8 @@ def main():
     assert not imports_locais, "o motor ganhou dependência local inesperada"
     assert "_acha_a_casa" in texto and "config.txt" in texto
     assert "_executar_pipeline_vivo" in texto
-    assert "bonificador_contexto_fila_v5" in texto
+    assert "bonificador_contexto_fila_v6" in texto
+    assert "v11-0709-estilo-posicao-oficial-v1" in texto
     print("ORGANIZACAO_OK motor=2-MOTORES/BONIFICADOR/motor_bonus.py config=compartilhado")
 
 

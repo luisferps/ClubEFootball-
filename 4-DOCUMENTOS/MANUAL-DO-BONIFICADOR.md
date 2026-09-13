@@ -1,14 +1,66 @@
 # Manual do Bonificador — ClubEfootball
 
-**Versão 1.15 · 02/09/2026**
+## Reparo de retomada HTTP 403 e encerramento — 09/09/2026
 
-Há uma tarefa física principal para operar o lote:
-`2-MOTORES/BONIFICADOR/RODAR-LOTE-BONIFICADOR.bat`.
+A execução na Máquina 2 expôs uma permissão ausente na consulta da carta V3, após a preparação já validada. Corrigido o acesso restrito ao catálogo no banco; HTTP e gravação testados. A única falha 488143 foi recuperada, com prioridade preservada. Bonificador agora retorna código 2 em falha e não anuncia conclusão indevida. Novo pacote único `REPARO-MOTORES-V12` inclui também a correção de prioridade do Otimizador; instalar em `2-MOTORES` por `APLICAR.cmd`, preservando os BATs anteriores. Ver `4-DOCUMENTOS/BONIFICADOR/REPARO-RETOMADA-403-V12.md`. Os registros de prontidão anteriores descrevem a conferência parcial daquela etapa.
 
-Ela chama o processador equivalente que fica em
-`2-MOTORES/BONIFICADOR/OPERACAO-LOCAL-LOTE/PROCESSAR-FILA-BONIFICADOR.bat`.
-O aplicativo `.exe` continua preservado para consulta visual, mas não é o caminho
-de execução do lote.
+
+## Retomada V12 conferida — 09/09/2026
+
+Pacote do Bonificador completo validado (15 arquivos). Retomada, controle e primeira reserva passaram em transação revertida; lote continua pausado, com 14.107 pendentes. Corrigidos no banco o filtro da auditoria e as restrições de versão do lote, agora compatíveis com os conjuntos coerentes V11/V12. Usar o mesmo `OPERACAO-CORRECAO-FISICA/INICIAR-REPROCESSAMENTO.bat`. Nenhuma nova cópia necessária por esses ajustes. Detalhes em `4-DOCUMENTOS/BONIFICADOR/RETOMADA-CONFERIDA-0909.md`.
+
+
+## Encerramento confirmado em 09/09/2026
+
+A correção seletiva dos bônus de estilo terminou: **67.795 resultados e 7.455 publicações concluídos, zero pendências e erros nessa operação**. O banco e o painel confirmaram o encerramento em 2026-09-09T08:13:50.106412+00:00. As nove publicações finais foram conferidas no contrato da Ficha, preservando a revisão de habilidades do Otimizador e a ordem dos lotes. A falha do UPDATE de encerramento foi corrigida no banco e no SQL oficial.
+
+Evidência e alcance: [Conclusão dos bônus de estilo](BONIFICADOR/CONCLUSAO-BONUS-ESTILOS-0909.md). A produção geral do Bonificador e as execuções do Otimizador têm estados próprios; este encerramento não significa que seus lotes foram executados. Os registros de andamento abaixo são históricos.
+
+## Retomada futura na Máquina 2 — arquivos preparados
+
+Os arquivos V12 do Bonificador completo estão preparados para cópia direta.
+O operador usa o mesmo INICIAR-REPROCESSAMENTO.bat após terminar a correção de
+estilos. Antes disso, o comando não inicia nem reserva linhas. A versão do lote
+e a política geral só serão atualizadas no início solicitado pelo operador.
+Detalhes: [Entrega da Máquina 2](BONIFICADOR/ENTREGA-MAQUINA-2-V12.md). Os registros anteriores abaixo são históricos.
+
+## Operação atual — correção seletiva de estilos V12
+
+O executor autônomo foi instalado e iniciado na máquina oficial. Corrige somente
+os estilos de 67.795 resultados e atualiza 7.455 publicações, mantendo as notas
+anteriores disponíveis até cada troca ser confirmada. Não declarar conclusão
+antes do readback final do banco. Apenas o schema clube_novo é operacional.
+A fila geral permanece pausada; a Máquina 2 será atualizada depois.
+Código/EXE V12 estão preparados localmente. A política permanece com implantação
+geral pendente; a execução seletiva já aplica a regra.
+Fonte operacional: [Executor de estilos V12](BONIFICADOR/EXECUTOR-ESTILOS-V12.md).
+Os registros anteriores abaixo descrevem etapas históricas.
+
+**Versão 1.19 · 09/09/2026**
+
+> **Decisão aprovada em 09/09, ainda não implantada:** a função define o slot
+> principal (1,0) e o secundário (0,5); a posição escolhida determina a ativação
+> de cada estilo. Há somente duas exceções: Defensor Criativo e Lateral Defensivo.
+> A regra completa e os quatro estilos pendentes estão em
+> [Regra de estilos aprovada em 09/09](BONIFICADOR/REGRA-ESTILOS-APROVADA-0909.md).
+> A decisão está salva em `clube_novo.bonificador_politica_estilo`, versão
+> `estilos-funcao-20260909-v1`. O registro não migrou motores, filas ou notas publicadas.
+
+> **Referência operacional da V11, anterior à decisão acima:** o bônus de estilo verifica a ativação oficial do
+> playstyle na **posição escolhida**. A função interna e o molde não decidem essa
+> parcela. As seções V9 e V10 permanecem somente como histórico.
+
+Há dois caminhos operacionais distintos:
+
+- a fila incremental normal usa
+  `2-MOTORES/BONIFICADOR/RODAR-LOTE-BONIFICADOR.bat`;
+- o lote corretivo V11 usa
+  `2-MOTORES/BONIFICADOR/OPERACAO-CORRECAO-FISICA/INICIAR-REPROCESSAMENTO.bat`
+  e exige o UUID explícito `0ddaa775-24c1-4293-86ca-77fe698aa044`.
+
+O aplicativo `Bonificador ClubEfootball.exe` V2.0.28 identifica a instalação e
+oferece consulta/teste. A aba “Lote do Bonificador” preserva o lote V9 somente
+para consulta histórica e não inicia produção.
 
 ## Processar Fila do Bonificador — batch físico
 
@@ -44,14 +96,28 @@ da leitura do contrato do lote. Os erros de instalação, Python incompatível,
 configuração ausente e contrato/conexão recusado ficam descritos antes da pausa da
 janela.
 
-## Batch operacional V1 — fila, resultados e controles
+## Histórico do batch operacional V1 — fila, resultados e controles
 
-O aplicativo único está na versão **V2.0.26**. Ele mostra um **lote identificado**
-antes de executar qualquer cálculo. Em 02/09/2026 o lote preparado é
-`a69a67b0-7443-45b3-a859-334ab90919af`: ele tem **10.585 elegíveis e 10.585
-pendentes**, mas **zero itens reservados, zero processando, zero concluídos, zero sem
-bônus e zero falhas**. Preparar ou apenas abrir a tela não chama o writer nem altera
-uma carta.
+Na fotografia de 04/09, o aplicativo estava na versão **V2.0.26**. Ele mostrava um
+**lote identificado** antes de executar qualquer cálculo. O lote histórico era
+`a69a67b0-7443-45b3-a859-334ab90919af`, criado em 02/09/2026. Preparar ou apenas
+abrir a tela não chama o writer nem altera uma carta.
+
+⚠️ **Os contadores deste lote mudam a cada sincronização — não decore número daqui.**
+O tamanho da fila é uma função do que o Otimizador já concluiu, e ele continua
+concluindo. Retrato em **04/09/2026, 01h27 (Goiânia)**, com o lote `rodando`:
+
+```
+itens no snapshot ....... 57.337
+pendentes ...............	52.657
+concluídas + sem bônus ..  4.680
+falhas ..................      0
+resultados gravados .....  5.293   (clube_novo.build_bonificador)
+```
+
+Para o número de agora, sempre `bonificador_lote_status_v1()` — nunca este texto.
+Quando este lote foi criado, em 02/09, ele tinha 10.585 elegíveis; três dias de
+Otimizador depois, são cinco vezes mais.
 
 A descoberta é direta, contínua e exclusiva do modelo novo: uma linha só aparece se
 `build_otimizador_id` existe, `estado_otimizador='concluido'` e
@@ -79,10 +145,14 @@ Publicação permanece bloqueada no próprio lote (`publicacao_liberada=false`).
 fala com o componente local em loopback, que chama apenas RPCs versionadas; o
 navegador não recebe credencial, schema nem acesso direto a `clube_novo`.
 
-O ensaio de controle foi executado integralmente em rollback: reservou 10.585 itens,
-selecionou a linha canônica 3091, fez a transição iniciar → pausar → pausado e reverteu
-tudo. O readback final voltou a lote preparado, 0 itens persistidos e 0 resultados
-novos. Portanto, esta preparação não iniciou o batch real.
+O ensaio de controle de 02/09 foi executado integralmente em rollback: reservou
+10.585 itens, selecionou a linha canônica 3091, fez a transição iniciar → pausar →
+pausado e reverteu tudo, sem iniciar o batch real.
+
+**Em 04/09/2026 o batch real foi iniciado** e está em produção: lote `rodando`,
+snapshot de 57.337 itens persistidos, resultados sendo gravados a **78 linhas por
+minuto**, zero falhas. O histórico do ensaio fica acima só como registro; o estado
+vigente é o de produção.
 
 ## Pontuação final canônica para Ranking, Elenco e Ficha
 
@@ -100,13 +170,22 @@ e todos os seus selos coincidem. Lote de teste, selo incompatível ou resultado 
 continuam bloqueados.
 
 Para a interface existe somente a RPC de leitura
-`public.frontend_build_publicada_v1(card_id, funcao_id, limit, offset)`. Ela devolve
+`public.frontend_build_publicada_v2(card_id, funcao_id, limit, offset)`. Ela devolve
 apenas Builds já publicadas e seladas; não devolve candidatas, não grava nada e não
 expõe as tabelas de `clube_novo`. Em 02/09/2026, as 613 linhas que concluíram a
 paridade foram promovidas de forma transacional para publicação: **613 publicadas,
 0 excluídas e 0 divergências entre snapshot, projeção e RPC**. A promoção não
 recalculou fórmula, pesos, ordem, Otimizador nem bônus; apenas retirou o selo de
 teste após conferir os dois resultados e seus selos.
+
+⚠️ Corrigido na v1.16: este trecho dizia `frontend_build_publicada_v1`. **A tela lê
+a v2** (`MANUAL-DA-TELA`, 04/09). A v1 ainda existe no banco e é legado de leitura.
+
+🔑 **Publicada não é um `estado`.** Medido em 04/09: as 224.602 linhas de
+`build_linha_card` estão todas com `estado='pendente'`, inclusive as 613 publicadas.
+O que marca uma linha publicada é o par `publicacao_fingerprint` + `publicada_em`
+(613/613 preenchidos). Quem procurar `estado='publicada'` vai contar zero e concluir
+errado — já aconteceu.
 
 Cada promoção fica ligada ao lote privado de proveniência
 `clube_novo.bonificador_lote_publicacao_v1`. O lote registra contrato, fingerprint,
@@ -155,21 +234,137 @@ janela WinForms leem a resposta do contrato em UTF-8. Portanto, acentos e as 613
 navegador ou conversão manual. O botão **Parar normalmente** termina a rodada atual e
 impede a próxima, sem travar a janela.
 
-## Fila canônica V5
+## Fila canônica V6
 
-O Bonificador usa `public.bonificador_contexto_fila_v5`, contrato privado que
+O Bonificador usa `public.bonificador_contexto_fila_v6`, contrato privado que
 lista diretamente as linhas canônicas em `clube_novo.build_linha_card` cujo Otimizador
 já concluiu e cujo Bonificador ainda não existe. A identidade permanece em
 `build_linha_card.id`; não há marcador, recorte de teste, lote do Otimizador ou
 dependência de `bonificador_par`. Isso não consulta uma fila externa.
 
-Motor e aplicativo local leem `bonificador_regua_v2`, `bonificador_carta_v2`
-e a fila V5. O escritor `gravar_build_bonificador_v4` é transacional, aceita
+Motor e aplicativo local leem `bonificador_regua_v3`, `bonificador_carta_v2`
+e a fila V6. O escritor `gravar_build_bonificador_v5` é transacional, aceita
 somente linha que ainda tenha a marca canônica e confere identidade, gates,
 versões, fingerprints e a soma das parcelas. Ele não publica nem cria lote.
 
 Recuperação: `BONIFICADOR/SQL/ROLLBACK-FILA-BONIFICADOR-V4.sql`, antes de
 haver resultado. Snapshot: `BONIFICADOR/RECUPERACAO/2026-08-31-ANTES-FILA-OPERACIONAL-V4`.
+
+## Desempenho: o teto de tempo e o ritmo real (04/09/2026)
+
+Em 04/09 o lote parou de iniciar. A mensagem era enganosa:
+
+```
+ERRO DE CONTRATO: contrato recusou a consulta (500):
+{"code":"57014","message":"canceling statement due to statement timeout"}
+```
+
+Isso **não** é credencial, rede nem contrato recusado. É um cronômetro que
+ninguém tinha declarado. Três causas somadas, todas medidas em `begin … rollback`:
+
+### 1. O teto de 8 segundos
+
+O `service_role` não tinha `statement_timeout` próprio e herdava o do
+`authenticator`. Toda RPC do Bonificador tinha **8 segundos** para terminar.
+
+```
+authenticator ... statement_timeout=8s · lock_timeout=8s
+service_role .... (sem nada — herdava os 8s)
+```
+
+Corrigido: `alter role service_role set statement_timeout = '60s'` +
+`notify pgrst, 'reload config'`. O `anon` (3s) e o `authenticated` (8s), que são
+os papéis da tela pública, **não** foram alterados.
+
+### 2. Faltava índice para o critério da fila
+
+O INSERT do snapshot varria `build_linha_card_build_otimizador_id_key` inteira
+(57.950 linhas, 336 mil buffers) para achar as elegíveis. Migração
+`indice_fila_bonificador_elegivel_v5`:
+
+```sql
+create index build_linha_card_bonificador_elegivel_v5_idx
+on clube_novo.build_linha_card (id)
+where build_otimizador_id is not null
+  and estado_otimizador = 'concluido'
+  and build_bonificador_id is null;
+```
+
+É exatamente o critério hoje projetado por `bonificador_contexto_fila_v6`, do bloco `elegiveis`
+de `bonificador_lote_status_v1` e do INSERT do sincronizador — os três passaram a
+usar o mesmo índice. INSERT de 28.152 itens: **6,43 s → 2,03 s**.
+
+### 3. ⛔ O sincronizador rodava a cada linha reservada
+
+Esta era a grande. `bonificador_lote_proxima_linha_v1` chamava
+`clube_novo.bonificador_lote_sincronizar_itens_v1` **antes de cada reserva**.
+
+```
+reservar a linha em si .......... 4,6 ms
+o sincronizador antes dela ...... 10.170 ms
+```
+
+O sincronizador varre as dezenas de milhares de elegíveis e reconcilia o snapshot
+inteiro. Fazer isso por linha é o trabalho do lote todo repetido a cada linha.
+
+Migração `bonificador_proxima_linha_sincroniza_so_quando_a_fila_seca`: a função
+tenta primeiro o **caminho rápido** (pegar um item já pendente, ~5 ms) e só chama
+o sincronizador **quando não há mais pendente** — que é justamente o momento em
+que faz sentido procurar linha nova do Otimizador.
+
+Semântica preservada: nada é apagado, nada é pulado, a reserva continua atômica
+com `for update … skip locked`, e linha que deixou de ser elegível nunca é
+escolhida (o filtro da própria reserva a exclui).
+
+```
+reservar 1 linha:  10.170 ms  →  60 ms
+```
+
+### O ritmo real, medido em produção
+
+Com as três correções, na Máquina 2, contra o banco pela rota HTTPS:
+
+```
+78 linhas por minuto, constante   (~0,77 s por linha)
+antes: ~10,5 s por linha
+```
+
+Para 53.857 linhas pendentes: **~11h30**, contra 6 dias e meio no ritmo antigo.
+
+⚠️ O custo restante por linha é quase todo **ida-e-volta de rede**, não conta: são
+5 chamadas HTTPS por linha (`proxima_linha` → `regua` → `carta` → `gravar` →
+`registrar`). A conta do Bonificador em si é milissegundos. Quem quiser acelerar
+mais ataca a rede, não o cálculo — o motor já sabe falar direto com o Postgres se
+o `config.txt` trouxer `BONIFICADOR_DATABASE_URL` e o `psycopg` estiver instalado.
+
+### Como destravar um lote preso em `rodando`
+
+Se a janela do motor for fechada sem `Ctrl+C`, o lote fica em `rodando` e o
+próximo `iniciar` é recusado — **e isso não é defeito, é a trava funcionando**:
+
+```
+ERRO DE CONTRATO: contrato recusou a consulta (400):
+{"code":"P0001","message":"lote não pode iniciar no estado rodando"}
+```
+
+`iniciar` só aceita `preparado` ou `pausado`. A saída é a sequência oficial, nesta
+ordem, **nunca um UPDATE na mão**:
+
+```sql
+select public.bonificador_lote_controlar_v1('pausar');            -- rodando  -> pausando
+select public.bonificador_lote_assentar_parada_v1(<lote>,'pausar'); -- pausando -> pausado
+```
+
+Depois disso o `RODAR-LOTE-BONIFICADOR.bat` volta a aceitar `S`. Nenhum item e
+nenhum resultado se perde: o que tem readback confirmado está gravado, e o item
+que ficou em `processando` volta para `pendente` no próximo `iniciar`.
+
+🔑 **A lição, e ela vale para o sistema inteiro:** toda RPC de lote no Supabase
+corre contra um cronômetro que ninguém declarou. O padrão de falha é sempre o
+mesmo — funciona por meses, a tabela cresce, e um dia a operação passa do teto e
+o erro que aparece é `57014`/500, que parece contrato recusado, credencial ou
+rede, e não é. Ao ver `57014`: medir a operação em `begin … rollback` primeiro e
+conferir o `statement_timeout` do papel, antes de mexer em qualquer código.
 
 > Este é o manual oficial de funcionamento do Bonificador. O checklist e a pasta
 > `4-DOCUMENTOS/BONIFICADOR` guardam a prova técnica, SQL de recuperação e auditorias;
@@ -207,8 +402,9 @@ tratados como zero: simplesmente não pertencem a esta fórmula.
 - **Molde corporal** é o perfil de uma função. Ele diz como as 12 medidas são lidas,
   com direção, pesos e cortes já aprovados. O Bonificador não altera esse conteúdo.
 - **Parâmetros** são os valores da régua, como tetos e escalas do pé ruim, estilo e IA.
-- **Regra de playstyle** liga um playstyle físico a uma posição e, quando houver casa,
-  à função canônica correspondente. A comparação é feita por ID, não por nome.
+- **Regra de playstyle** liga um playstyle físico às posições em que ele ativa no
+  jogo. A comparação é feita por IDs de playstyle e posição, não por nome, função
+  interna ou casa do molde.
 
 ### Uma carta só segue quando é segura
 
@@ -219,9 +415,9 @@ nunca inventa zero para uma ausência.
 
 ### Origem canônica e contratos
 
-O motor de lote não abre tabelas diretamente. Ele lê `bonificador_regua_v2`,
-`bonificador_carta_v2` e `public.bonificador_contexto_fila_v4`, e grava somente
-por `public.gravar_build_bonificador_v4`. Esses contratos usam
+O motor de lote não abre tabelas diretamente. Ele lê `bonificador_regua_v3`,
+`bonificador_carta_v2` e `public.bonificador_contexto_fila_v6`, e grava somente
+por `public.gravar_build_bonificador_v5`. Esses contratos usam
 IDs físicos/canônicos para carta, posição, playstyle, corpo e função. A referência
 legada sobrevive apenas como fotografia de auditoria e recuperação, fora de gates e da
 decisão do motor.
@@ -262,16 +458,29 @@ Bonificador.
 
 ## 2. Arquitetura ativa
 
-| responsabilidade | origem ativa em 31/08/2026 |
+| responsabilidade | origem ativa em 07/09/2026 |
 |---|---|
 | motor de lote incremental | `2-MOTORES/BONIFICADOR/motor_bonus.py` |
 | aplicativo local de consulta e controle | `2-MOTORES/BONIFICADOR/Bonificador ClubEfootball.exe` |
 | payload interno de compilação | `2-MOTORES/BONIFICADOR/windows-app/assets/BonificadorComponente.bin` |
-| receita | `public.bonificador_regua_v2()` |
+| receita | `public.bonificador_regua_v3()` |
 | carta | `public.bonificador_carta_v2(card_id)` |
-| fila canônica | `public.bonificador_contexto_fila_v4(limit, offset)` → linhas marcadas `bonificador_nao_executado` e selos calculados pelo banco |
-| gravação preparada | `public.gravar_build_bonificador_v4(p_resultado jsonb)` |
+| fila canônica **sem lote** | `public.bonificador_contexto_fila_v6(limit, offset)` — paginada, usada quando não há lote explícito |
+| **reserva atômica em modo lote** | `public.bonificador_lote_proxima_linha_v1(lote)` — uma linha por vez, `for update … skip locked` |
+| **confirmação do item do lote** | `public.bonificador_lote_registrar_v1(lote, linha, estado, total, motivo)` — idempotente |
+| controle do lote | `public.bonificador_lote_controlar_v1('iniciar'\|'pausar'\|'parar')` · `public.bonificador_lote_assentar_parada_v1(lote, modo)` · `public.bonificador_lote_status_v1()` |
+| gravação preparada | `public.gravar_build_bonificador_v5(p_resultado jsonb)` |
 | destino | `clube_novo.build_bonificador` ligado à linha exata em `build_linha_card` |
+
+⚠️ **A tabela acima esteve incompleta até a v1.16.** Ela listava só a
+`contexto_fila_v6` e dava a entender que era por ela que o motor pegava trabalho.
+Não é, em modo lote. Quando `operacao_lote.py` exporta `CLUBEF_BONIFICADOR_LOTE_ID`,
+o `motor_bonus.py` reserva **uma linha por vez** com
+`bonificador_lote_proxima_linha_v1` e confirma cada uma com
+`bonificador_lote_registrar_v1`; a `contexto_fila_v6` só é usada no modo sem lote.
+A allowlist do `interface/servidor.py` (nove RPCs) cobre a **janela de consulta**, e
+não o motor — as duas RPCs do lote não estão nela e mesmo assim são o caminho vivo.
+Foi essa leitura parcial que fez uma sessão declarar as duas como código morto.
 
 `RODAR-O-MOTOR.bat` e `RODAR-TUDO.bat` executam somente o Otimizador
 (`roda_lote_v6.py`). Eles não executam o Bonificador.
@@ -294,11 +503,11 @@ gravada nem impressa. O lote produtivo não foi executado nesta migração.
 | posição principal | `clube.carta_jogo.posicao` + `clube.posicao` | posição que escolhe o slot de estilo | `clube_novo.carta_posicao_principal_jogo` + `posicao_jogo` | (`card_id`,`posicao_id`); exatamente uma relação; catálogo apto |
 | playstyle do slot 1 | `slot_ofensivo_id` + `clube.estilo_jogo` | estilo físico gravado no primeiro slot | `clube_novo.carta_playstyle_jogo` + `playstyle` | (`card_id`,`slot_fisico=1`); `playstyle_id=id_jogo`; catálogo apto |
 | playstyle do slot 2 | `slot_defensivo_id` + `clube.estilo_defensivo` | estilo físico gravado no segundo slot | `clube_novo.carta_playstyle_jogo` + `playstyle` | (`card_id`,`slot_fisico=2`); `playstyle_id=id_jogo`; catálogo apto |
-| regra de estilo | `clube.estilo_regra` + `posicao_slot` | regra ClubEfootball de casa/ativação e slot dominante | `clube_novo.bonificador_regra_playstyle` + `bonificador_posicao_slot` | `playstyle.id_jogo`, `posicao_jogo.id`, `funcao_sistema.id`; 90 regras, incluindo 291 físico |
+| regra de estilo | `clube.estilo_regra` + `posicao_slot` | fotografia histórica de casa/ativação | `clube_novo.bonificador_regra_playstyle` + `bonificador_posicao_slot` | `playstyle.id_jogo`, `posicao_jogo.id` e `da_bonus`; a V11 não usa `funcao_id` para ligar o bônus |
 | estilos de IA | JSON `clube.carta_jogo.estilos_ia` | quantidade de bits de IA ligados na carta | `clube_novo.carta_estilo_ia_jogo` + `estilo_ia` | (`card_id`,`bit_estilo_ia`); catálogo pelo bit físico e `pode_rodar` |
-| pares card × função | `clube.build` | universo histórico já calculado | `clube_novo.build_linha_card` filtrado por `pendencias @> {'bonificador_nao_executado'}` | `build_linha_card.id`, `card_id`, `funcao_id`; fonte operacional V5, sem `clube.build` nem `bonificador_par` |
+| pares card × função | `clube.build` | universo histórico já calculado | `clube_novo.build_linha_card` filtrado pela prontidão vigente | `build_linha_card.id`, `card_id`, `funcao_id`, `posicao_id`; fonte operacional V6, sem `clube.build` nem `bonificador_par` |
 | parâmetros não físicos | `clube.bonus_parametro` | tetos e pesos da regra ClubEfootball | `clube_novo.bonificador_parametro` | 14 valores preservados, sem semântica por texto legado |
-| saída | `clube.build.b_*` via writer legado | fotografia histórica | `clube_novo.build_bonificador` via `gravar_build_bonificador_v4` | writer canônico; nenhuma execução produtiva autorizada |
+| saída | `clube.build.b_*` via writer legado | fotografia histórica | `clube_novo.build_bonificador` via `gravar_build_bonificador_v5` | writer canônico e resultado imutável |
 
 As dimensões de nacionalidade, clube, liga e tipo, as habilidades, as posições
 secundárias, os técnicos e os ímpetos foram inventariados e deliberadamente não entram
@@ -310,11 +519,11 @@ A aplicação não lê `clube_novo` diretamente. A migração cria somente três
 allowlisted em `public`, todas `SECURITY DEFINER`, com `search_path` vazio, referências
 qualificadas e `EXECUTE` apenas para `service_role`:
 
-- `bonificador_regua_v2()` — receita allowlisted, chaves estáveis e gates;
+- `bonificador_regua_v3()` — receita allowlisted, chaves estáveis e gates;
 - `bonificador_carta_v2(card_id)` — somente os campos usados pelo Bonificador, com
   proveniência, cardinalidades, completude vigente, versões, fingerprints e
   `pode_rodar`;
-- `public.bonificador_contexto_fila_v4(limit, offset)` — identidade exata da
+- `public.bonificador_contexto_fila_v6(limit, offset)` — identidade exata da
   linha marcada, card, função, posição e fingerprints calculados pelo banco.
 
 `PUBLIC`, `anon` e `authenticated` não recebem execução. Nenhuma tabela de
@@ -322,7 +531,7 @@ qualificadas e `EXECUTE` apenas para `service_role`:
 
 O runtime produtivo não chama mais `public.gravar_bonus` e não escreve em
 `clube.build`. Para cada resultado apto ele chama exclusivamente
-`public.gravar_build_bonificador_v4`, que relê a completude, confere identidade,
+`public.gravar_build_bonificador_v5`, que relê a completude, confere identidade,
 selos, parcelas, total e ligação, tudo na mesma transação. O retorno só é aceito se
 trouxer `readback=ok`, a mesma linha, os mesmos selos e um fingerprint SHA-256.
 `bonus_fisico_detalhe` leva a contribuição efetiva de cada medida e sua soma decimal
@@ -413,12 +622,12 @@ não pelo rótulo histórico. Iker Casillas `88045755827028` lê `291` no slot 1
 (`Goleiro ofensivo`) no slot 2; a posição GO manda no segundo slot e a mesma fórmula
 entrega `1,5`. A carta está apta e não há bloqueio por nomenclatura.
 
-## 9. Trava global de fórmula e limites desta migração
+## 9. Histórico da migração canônica anterior e trava global
 
-É proibido alterar fórmulas matemáticas, pesos, cortes, ordem de cálculo, composição
-dos moldes ou regras de negócio do Bonificador e dos demais motores sem nova
-autorização explícita e específica do usuário, precedida de prova própria. Esta
-migração altera somente referências/origens de entrada.
+Esta seção registra a migração canônica anterior à V11. Naquela operação era
+proibido alterar fórmulas, pesos, cortes, moldes ou regras. Em 07/09/2026 houve
+autorização específica posterior para corrigir **somente** a parcela de estilo;
+corpo, pé ruim, IA, pesos, cortes e moldes continuaram intactos.
 
 As operações matemáticas, pesos, cortes, ordem e arredondamentos das funções do arquivo
 permanecem iguais ao snapshot. `bonus_do_corpo` trocou apenas a busca de chave do mapa
@@ -448,14 +657,15 @@ principal, o Otimizador ou o Extrator.
 
 ## 11. Estado operacional e gates
 
-O caminho efetivo lê `bonificador_regua_v2`, `bonificador_carta_v2` e
-`bonificador_contexto_fila_v4`. A gravação, quando autorizada, passa somente por
-`gravar_build_bonificador_v4`. As relações de `clube_novo` continuam privadas: a
+O caminho efetivo lê `bonificador_regua_v3`, `bonificador_carta_v2` e
+`bonificador_contexto_fila_v6`. A gravação normal passa somente por
+`gravar_build_bonificador_v5`; o lote corretivo explícito usa
+`gravar_build_bonificador_correcao_v1`. As relações de `clube_novo` continuam privadas: a
 janela não recebe URL de banco, chave, schema nem acesso direto a tabela.
 
-`funcao_id` é a chave que liga o par, o molde e a regra de playstyle. `funcao_codigo`
-e rótulos humanos servem só para mostrar a informação; não escolhem regra nem liberam
-gate. Carta incompleta, catálogo sem `pode_rodar`, fingerprint divergente ou contrato
+`funcao_id` liga o par ao molde corporal. A ativação do playstyle usa exclusivamente
+`posicao_id`; `funcao_codigo`, casa e rótulos humanos não ligam nem desligam essa
+parcela. Carta incompleta, catálogo sem `pode_rodar`, fingerprint divergente ou contrato
 indisponível deixam a linha bloqueada. Não existe fallback legado.
 
 Quando não há linha apta, o motor fica em **aguardando** e consulta a fila novamente.
@@ -510,3 +720,149 @@ Para recuperação, auditoria e prova de paridade, consulte
 `4-DOCUMENTOS/BONIFICADOR/INTERFACE-LOCAL.md`, o checklist oficial e
 `4-DOCUMENTOS/BONIFICADOR/RECUPERACAO`. A limpeza do pacote único tem recuperação em
 `RECUPERACAO/2026-08-31-ANTES-LIMPEZA-PACOTE-UNICO`.
+
+## 14. Correção física V10 — regra vigente
+
+### Fórmula física aprovada
+
+A V10 corrige a incompatibilidade registrada na seção 9. Para cada medida, os
+quatro cortes produzem exatamente as faixas `-2, -1, 0, +1, +2`; o valor igual ao
+corte fica na faixa encerrada por esse corte (`valor <= corte`). A direção do molde
+é sempre o inteiro `-1`, `0` ou `+1`:
+
+- direção `+1`: conserva o sinal da faixa;
+- direção `-1`: inverte o sinal;
+- direção `0`: aparece com contribuição zero no detalhe e fica fora do numerador e
+  do máximo possível;
+- o peso multiplica a contribuição; por isso `altura` com peso `5` pode valer
+  `-10`, `-5`, `0`, `+5` ou `+10` pontos;
+- o máximo é a soma de `2 × peso` somente das medidas com direção ativa;
+- `percentual = clamp(soma / máximo, -1, +1)` e
+  `bônus físico = clamp(percentual × 1,5, -1,5, +1,5)`.
+
+O detalhe persiste as 12 medidas e a soma decimal delas precisa fechar exatamente
+com `bonus_fisico_total`. A prova adicional guarda `corpo_soma`, `corpo_maximo` e
+`corpo_pct`. O caso-ouro obrigatório é Messi `89136409091415` × função `14`:
+físico `+0,9750`, soma `13`, máximo `20`, percentual `0,65` e altura `+0,75`.
+
+Identidade vigente:
+
+- motor `v11-0709-estilo-posicao-oficial-v1`;
+- régua `bonificador-regua-v3`;
+- fórmula SHA-256
+  `2e80a07d51f2bc8f456f9710c82717d38e3142cb3d52fd325b7b587c58ed2879`;
+- writer normal `public.gravar_build_bonificador_v5(jsonb)`;
+- writer de staging `public.gravar_build_bonificador_correcao_v1(uuid,jsonb)`.
+
+### Fluxo obrigatório e sem mistura de versões
+
+O único caminho operacional de composição é
+`clube_novo.finalizar_publicar_linha_v1(bigint,text)`. A função é interna e é
+acionada por gatilhos quando chega o segundo resultado da linha, seja ele do
+Otimizador ou do Bonificador. O complemento posterior dos 26 atributos também
+dispara a mesma função. Um cron consome a fila durável com `SKIP LOCKED` para
+recuperar qualquer evento perdido.
+
+Na mesma transação e sob trava da linha, a finalizadora:
+
+1. exige produção, zero pendências, dois resultados concluídos e compatíveis;
+2. exige Bonificador `v11-0709-estilo-posicao-oficial-v1` com a fórmula aprovada;
+3. valida os 26 valores do vetor efetivamente usado e o `arows_snapshot`;
+4. calcula a nota normalizada do Otimizador e soma `bonus_total` V10;
+5. grava todos os campos `nota_*`, os fingerprints e a proveniência;
+6. substitui somente a linha correspondente no read model incremental;
+7. ativa a ponte pública somente depois do readback interno fechar.
+
+Não existe mais corte, reversão para V9, publicação em lote ou refresh global. Se
+um motor ainda não terminou, a linha fica aguardando; se houver incompatibilidade,
+fica fora da publicação com diagnóstico durável. Linhas já publicadas com a mesma
+dupla de resultados são idempotentes.
+
+A migração de 2026-09-05 foi autorizada porque a geração pública de origem tinha
+zero linhas em readback. O arquivo canônico recusa outro ambiente cuja origem não
+esteja vazia; nesse caso, uma migração separada deve semear e validar a ponte antes
+de mudar qualquer leitor.
+
+### Operação em duas máquinas
+
+A pasta oficial editável fica na Máquina 1. A Máquina 2 executa um espelho no mesmo
+caminho. Nunca copie arquivos avulsos por memória e nunca leve somente o EXE.
+Transfira o pacote portátil completo pelo gerenciador de arquivos do AnyDesk e, na
+Máquina 2, siga esta sequência:
+
+1. feche o Bonificador e confirme que não há processo do componente local;
+2. coloque o pacote em uma pasta temporária, fora da pasta oficial;
+3. execute `APLICAR-ATUALIZACAO.bat` e informe a raiz oficial. Ele valida a raiz e
+   os hashes do pacote, cria backup, copia exclusivamente o manifesto e confirma os
+   hashes pós-cópia; ele nunca inicia produção;
+4. execute `VALIDAR-MAQUINA-2.bat` para provar arquivos, versão, fórmula e caso-ouro
+   sem reservar ou gravar linha;
+5. depois de a migração estar aplicada e do lote correto estar preparado, use
+   `INICIAR-REPROCESSAMENTO.bat`, informe o UUID e digite `REPROCESSAR`;
+6. use `OPERAR-CORRECAO-FISICA.bat status <UUID>` para acompanhar e `pausar <UUID>`
+   para a pausa cooperativa;
+7. não há comando posterior de corte: cada linha aparece automaticamente quando os
+   dois motores forem validados pelo banco.
+
+O EXE oficial V2.0.28, o `BonificadorComponente.bin`, `interface/servidor.py` e
+`motor_bonus.py` são uma unidade de versão. O recurso incorporado no EXE deve ter o
+mesmo SHA-256 do componente ao lado do fonte. A operação corretiva mantém estado
+visível, pausa cooperativa e confirmação do lote, mas não oferece controles de
+publicação manual ou restauração de resultado incorreto.
+
+## 15. Correção V11 — referência anterior à decisão de 09/09
+
+A descrição abaixo registra a regra V11. A política aprovada para a próxima
+implantação está na seção 16: ela substitui a escolha do slot principal por
+posição e a promoção genérica do secundário quando o principal é Básico.
+
+A parcela de estilo não depende da função criada pelo ClubeEfootball. Ela depende
+somente de o estilo de jogo ativar na posição escolhida, conforme o texto do jogo.
+O slot que manda continua valendo `1,0`, o outro slot continua valendo `0,5` e o
+teto continua em `1,5`. Se o slot que manda estiver em Básico, o outro assume a
+parcela cheia. Corpo, pé ruim, IA, moldes e pesos não mudam.
+
+Identidade vigente: motor `v11-0709-estilo-posicao-oficial-v1` e fórmula
+`2e80a07d51f2bc8f456f9710c82717d38e3142cb3d52fd325b7b587c58ed2879`.
+Os resultados V10 já calculados são reaproveitados: somente as duas parcelas de
+estilo e os selos derivados são reconciliados no banco; não se roda novamente o
+Bonificador inteiro.
+
+### Readback de encerramento da correção publicada
+
+Em 07/09/2026, a leitura direta confirmou:
+
+- zero publicação ainda exibindo valor de estilo diferente do V11;
+- zero item prioritário dessa correção aguardando;
+- zero item prioritário dessa correção com erro;
+- linha `405776`, processada na Máquina 2, persistida com motor V11,
+  `b_estilo=1,0` e `b_total=2,0958`;
+- o lote integral permaneceu `rodando`, com 91.657 linhas preparadas e 100.978
+  pendentes no instante do readback.
+
+Publicações que ainda exibiam selo V10, mas tinham valor numericamente idêntico ao
+V11, não foram tratadas como erro de pontuação. A fila automática pode republicá-las
+gradualmente para renovar a proveniência sem mudar a nota.
+
+## 16. Regra de estilos aprovada em 09/09/2026 — implantação pendente
+
+O documento canônico desta decisão é
+[Regra de estilos aprovada em 09/09](BONIFICADOR/REGRA-ESTILOS-APROVADA-0909.md).
+Ele contém a classificação das 19 funções, as duas exceções e exemplos esperados.
+
+- A função define qual slot é principal; a posição escolhida define a ativação.
+- Principal ativo vale 1,0; secundário ativo vale 0,5; Básico ou inativo vale zero.
+- Não há promoção geral do secundário. Somente Defensor Criativo nas funções de
+  zagueiro e Lateral Defensivo na função Lateral defensivo recebem 1,0 quando
+  são o único estilo ativo. Dois estilos ativos continuam limitados a 1,5.
+- Pressão recuada, Marcador forte, Defensor recuado e Goleiro construtor ficam
+  pendentes de definição de posições. Na consulta de 09/09, os quatro tinham zero
+  cartas vinculadas, cadastro inativo e nenhuma regra de ativação. Nenhum deles
+  apareceu nas 43.451 cartas da extração examinada.
+- Uma extração futura que forneça a definição permite validar e cadastrar essas
+  posições na tabela existente `clube_novo.bonificador_regra_playstyle`. A simples
+  aparição de uma carta vinculada não prova todas as posições de ativação.
+
+Nesta revisão foram salvos os critérios aprovados no manual e no banco, com
+calculadora interna de conferência e 25 casos numéricos validados. A execução V11, as parcelas
+gravadas e a publicação não foram migradas por esta alteração documental.

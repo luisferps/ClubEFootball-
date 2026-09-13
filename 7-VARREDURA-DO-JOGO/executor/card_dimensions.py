@@ -1,8 +1,14 @@
 """Comparador read-only das dimensões físicas de carta com clube_novo.
 
 V4.6: preserva a lógica do comparador. Os endereços/proveniência usados para
-interpretar clubes, ligas, nacionalidades, tipos e vínculos vêm das próprias
-tabelas canônicas, sem duplicação de bits/offsets neste módulo.
+interpretar clubes, ligas, nacionalidades e tipos vêm das tabelas canônicas.
+A origem dos vínculos de carta vem do arquivo lido e validado pelo contrato.
+Não há duplicação de bits/offsets neste módulo.
+
+04/09/2026: um item físico sem linha canônica no banco não derruba mais a
+conferência. Ele sai desta rodada em ``classification["deferred"]`` com o
+motivo escrito, a comparação segue com o resto, e o item volta a ser conferido
+na varredura seguinte.
 """
 from __future__ import annotations
 import hashlib, json
@@ -49,43 +55,88 @@ def _compare(source_rows:list[dict[str,Any]],database_rows:list[dict[str,Any]],k
 def _fetch_dicts(cursor:Any,query:Any)->list[dict[str,Any]]:
     cursor.execute(query); names=[d.name for d in cursor.description]; return [dict(zip(names,row,strict=True)) for row in cursor.fetchall()]
 
-def _ref(mapping:dict[str,dict[str,Any]],key:Any,label:str)->dict[str,Any]:
+def _ref(mapping:dict[str,dict[str,Any]],key:Any,label:str,deferred:list[dict[str,Any]],scope:str,target_table:str)->dict[str,Any]|None:
+    """Devolve a linha canônica do banco, ou adia o item quando ela ainda não existe.
+
+    Um item físico sem linha no banco não tem como carregar a procedência do
+    vínculo, que só existe do lado canônico. Em vez de abortar a conferência
+    inteira, ele sai desta rodada com o motivo escrito e volta na próxima.
+    """
     row=mapping.get(str(key))
-    if row is None: raise ValueError(f"{label} sem referência canônica no clube_novo: {key}")
+    if row is None:
+        deferred.append({"escopo":scope,"destino_tabela":target_table,"chave":str(key),"rotulo":label,"motivo":f"{label} lido no jogo ainda sem referência canônica em clube_novo; procedência do vínculo indisponível nesta rodada"})
+        return None
     return row
 
-def _source_clubs(snapshot:dict[str,Any],refs:dict[str,dict[str,Any]])->list[dict[str,Any]]:
+def _source_clubs(snapshot:dict[str,Any],refs:dict[str,dict[str,Any]],deferred:list[dict[str,Any]])->list[dict[str,Any]]:
     role_names={"dt870_updated":"dt870_atualizacao","dt200":"dt200","dt870_original":"dt870_original"}; rows=[]
     for record in snapshot["catalogs"]["clubs"]:
-        ref=_ref(refs,record["codigo_jogo"],"clube")
+        ref=_ref(refs,record["codigo_jogo"],"clube",deferred,"clubes","clube_jogo")
+        if ref is None: continue
         rows.append({"codigo_jogo":record["codigo_jogo"],"nome_pt_br":record.get("nome_pt_br"),"nome_en":record.get("nome_en"),"sigla":record.get("sigla"),"fonte_autoritativa":role_names.get(record["source_role"],record["source_role"]),"arquivo":ref["arquivo"],"registro":record.get("record_index"),"registro_primeira_carta":record.get("registro_primeira_carta"),"tamanho_registro":ref["tamanho_registro"],"offset_codigo":ref["offset_codigo"],"largura_codigo":ref["largura_codigo"],"offset_nome_pt_br":ref.get("offset_nome_pt_br"),"largura_nome_pt_br":ref.get("largura_nome_pt_br"),"offset_nome_en":ref.get("offset_nome_en"),"largura_nome_en":ref.get("largura_nome_en"),"offset_sigla":ref.get("offset_sigla"),"largura_sigla":ref.get("largura_sigla"),"presente_dt870_atualizacao":record["presente_dt870_atualizacao"],"presente_dt200":record["presente_dt200"],"presente_dt870_original":record["presente_dt870_original"],"pode_rodar":record["pode_rodar"],"falta_o_que":record.get("falta_o_que")})
     return rows
 
-def _source_leagues(snapshot:dict[str,Any],refs:dict[str,dict[str,Any]])->list[dict[str,Any]]:
+def _source_leagues(snapshot:dict[str,Any],refs:dict[str,dict[str,Any]],deferred:list[dict[str,Any]])->list[dict[str,Any]]:
     role_names={"dt870_updated":"dt870_atualizacao","dt200":"dt200","dt870_original":"dt870_original"}; rows=[]
     for record in snapshot["catalogs"]["leagues"]:
-        ref=_ref(refs,record["codigo_jogo"],"liga"); has_name=bool(record.get("nome_pt_br") or record.get("nome_en"))
+        ref=_ref(refs,record["codigo_jogo"],"liga",deferred,"ligas","liga_jogo")
+        if ref is None: continue
+        has_name=bool(record.get("nome_pt_br") or record.get("nome_en"))
         rows.append({"codigo_jogo":record["codigo_jogo"],"codigo_pai":record.get("codigo_pai"),"nome_pt_br":record.get("nome_pt_br"),"nome_en":record.get("nome_en"),"fonte_autoritativa":role_names.get(record["source_role"],record["source_role"]),"arquivo":ref["arquivo"],"registro":record["record_index"],"tamanho_registro":ref["tamanho_registro"],"offset_codigo":ref["offset_codigo"],"largura_codigo":ref["largura_codigo"],"offset_codigo_pai":ref["offset_codigo_pai"],"largura_codigo_pai":ref["largura_codigo_pai"],"offset_nome_pt_br":ref["offset_nome_pt_br"],"largura_nome_pt_br":ref["largura_nome_pt_br"],"offset_nome_en":ref["offset_nome_en"],"largura_nome_en":ref["largura_nome_en"],"presente_dt870_atualizacao":record["presente_dt870_atualizacao"],"presente_dt200":record["presente_dt200"],"presente_dt870_original":record["presente_dt870_original"],"pode_rodar":has_name,"falta_o_que":None if has_name else "competição/liga sem nome físico comprovado"})
     return rows
 
-def _source_nationalities(snapshot:dict[str,Any],refs:dict[str,dict[str,Any]])->list[dict[str,Any]]:
+def _source_nationalities(snapshot:dict[str,Any],refs:dict[str,dict[str,Any]],deferred:list[dict[str,Any]])->list[dict[str,Any]]:
     rows=[]
     for record in snapshot["catalogs"]["nationalities"]:
-        ref=_ref(refs,record["codigo_jogo"],"nacionalidade")
+        ref=_ref(refs,record["codigo_jogo"],"nacionalidade",deferred,"nacionalidades","nacionalidade_jogo")
+        if ref is None: continue
         rows.append({"codigo_jogo":record["codigo_jogo"],"nome_pt_br":record["nome_pt_br"],"sigla":record["sigla"],"arquivo":ref["arquivo"],"cpk_origem":ref["cpk_origem"],"fonte_autoritativa":ref["fonte_autoritativa"],"registro":record["record_index"],"tamanho_registro":ref["tamanho_registro"],"bit_codigo":ref["bit_codigo"],"largura_codigo":ref["largura_codigo"],"offset_nome_pt_br":ref["offset_nome_pt_br"],"largura_nome_pt_br":ref["largura_nome_pt_br"],"codificacao_nome_pt_br":ref["codificacao_nome_pt_br"],"offset_sigla":ref["offset_sigla"],"largura_sigla":ref["largura_sigla"],"hash_country_bin":record["source_file_sha256"],"presente_dt200":record["presente_dt200"],"presente_dt870_steam":record["presente_dt870_original"],"presente_dt870_atualizacao":record["presente_dt870_atualizacao"],"pode_rodar":True,"falta_o_que":None})
     return rows
 
-def _source_types(snapshot:dict[str,Any],refs:dict[str,dict[str,Any]])->list[dict[str,Any]]:
+def _source_types(snapshot:dict[str,Any],refs:dict[str,dict[str,Any]],deferred:list[dict[str,Any]])->list[dict[str,Any]]:
     rows=[]
     for record in snapshot["catalogs"]["types"]:
-        ref=_ref(refs,record["tipo_carta_id"],"tipo de carta"); delete_list=bool(record["usa_player_delete_list"])
+        ref=_ref(refs,record["tipo_carta_id"],"tipo de carta",deferred,"tipos","tipo_carta_jogo")
+        if ref is None: continue
+        delete_list=bool(record["usa_player_delete_list"])
         rows.append({"tipo_carta_id":record["tipo_carta_id"],"chave_texto":record.get("chave_texto"),"secao_texto":record.get("secao_texto"),"id_texto":record.get("id_texto"),"nome_pt_br":record.get("nome_pt_br"),"nome_exibicao":record["nome_exibicao"],"codigo_tipo_fisico":record["codigo_tipo_fisico"],"marcador_subtipo":record["marcador_subtipo"],"usa_player_delete_list":delete_list,"arquivo_tipo":ref["arquivo_tipo"],"campo_tipo":ref["campo_tipo"],"bit_subtipo":ref["bit_subtipo"],"arquivo_texto":record.get("arquivo_texto"),"cpk_texto":record.get("cpk_texto"),"entrada_texto":record.get("entrada_texto"),"entrada_offset":record.get("entrada_offset"),"texto_offset":record.get("texto_offset"),"tamanho_armazenado":record.get("tamanho_armazenado"),"hash_all_str":record.get("hash_all_str"),"contrato_extracao":ref["contrato_extracao"],"pode_rodar":True,"status_associacao":record["status_associacao"],"tipo_provisorio":record["tipo_provisorio"]})
     return rows
 
-def _source_cards(snapshot:dict[str,Any],refs:dict[str,dict[str,Any]])->list[dict[str,Any]]:
+_PROCEDENCIA_DO_VINCULO=("fonte_vinculos_jogo","cpk_vinculos_jogo","arquivo_vinculos_jogo","contrato_vinculos_jogo")
+
+def _procedencia_unanime(refs:dict[str,dict[str,Any]])->dict[str,Any]|None:
+    """A procedencia do vinculo que TODAS as cartas do banco declaram igual.
+
+    Ordem do Luis (04/09/2026): carta nova nao pode ficar adiada esperando uma
+    linha no banco que so nasce depois. Esses quatro campos dizem de qual
+    arquivo do jogo o vinculo foi lido - sao da rodada, nao da carta. Quando as
+    cartas ja cadastradas declaram todas o mesmo valor, a carta nova herda o
+    mesmo, provado pela propria rodada. So quando houver divergencia e que o
+    item continua adiado, porque ai a procedencia e realmente ambigua.
+    """
+    encontrado:dict[str,set]= {campo:set() for campo in _PROCEDENCIA_DO_VINCULO}
+    for row in refs.values():
+        for campo in _PROCEDENCIA_DO_VINCULO:
+            encontrado[campo].add(row.get(campo))
+    if any(len(valores)!=1 for valores in encontrado.values()): return None
+    return {campo:next(iter(valores)) for campo,valores in encontrado.items()}
+
+def _source_cards(snapshot:dict[str,Any],refs:dict[str,dict[str,Any]],deferred:list[dict[str,Any]])->list[dict[str,Any]]:
     player_hash=snapshot["source_files"]["dt870_updated:Player.bin"]; rows=[]
+    atual=snapshot.get("card_provenance")
+    if atual is not None:
+        if not isinstance(atual,dict) or any(not isinstance(atual.get(campo),str) or not atual[campo].strip() for campo in _PROCEDENCIA_DO_VINCULO):
+            raise ValueError("procedência física de cartas incompleta")
+        if atual.get("source_role")!="dt870_updated" or atual.get("sha256")!=player_hash or atual.get("arquivo_vinculos_jogo")!="Player.bin" or atual.get("contrato_vinculos_jogo")!=DATABASE_CONTRACT:
+            raise ValueError("procedência física de cartas diverge da fonte conferida")
+    herdada=_procedencia_unanime(refs) if atual is None else atual
     for record in snapshot["cards"]:
-        ref=_ref(refs,record["card_id"],"carta")
+        ref=atual if atual is not None else refs.get(str(record["card_id"]))
+        if ref is None:
+            if herdada is None:
+                _ref(refs,record["card_id"],"carta",deferred,"cartas","carta_jogo")
+                continue
+            ref=herdada
         rows.append({**record,"fonte_vinculos_jogo":ref["fonte_vinculos_jogo"],"cpk_vinculos_jogo":ref["cpk_vinculos_jogo"],"arquivo_vinculos_jogo":ref["arquivo_vinculos_jogo"],"hash_player_bin_vinculos":player_hash,"contrato_vinculos_jogo":ref["contrato_vinculos_jogo"]})
     return rows
 
@@ -112,9 +163,13 @@ def validate_card_dimensions(snapshot:dict[str,Any],connection:Any,schema:str,sq
     card_refs={str(r["card_id"]):r for r in database_cards}; nat_refs={str(r["codigo_jogo"]):r for r in database_nationalities}; club_refs={str(r["codigo_jogo"]):r for r in database_clubs}; league_refs={str(r["codigo_jogo"]):r for r in database_leagues}; type_refs={str(r["tipo_carta_id"]):r for r in database_types}
     card_fields=["registro_vinculos_jogo","codigo_nacionalidade_player_raw","codigo_nacionalidade","codigo_clube","codigo_liga","codigo_tipo_carta_fisico","marcador_subtipo_tipo_carta","jogador_indisponivel","tipo_carta_id","chave_tipo_carta","pode_rodar_vinculos","falta_o_que_vinculos","fonte_vinculos_jogo","cpk_vinculos_jogo","arquivo_vinculos_jogo","hash_player_bin_vinculos","contrato_vinculos_jogo"]
     nationality_fields=[f for f in database_nationalities[0] if f!="codigo_jogo"]; club_fields=[f for f in database_clubs[0] if f!="codigo_jogo"]; league_fields=[f for f in database_leagues[0] if f!="codigo_jogo"]; type_fields=[f for f in database_types[0] if f!="tipo_carta_id"]
-    comparisons={"cards":_compare(_source_cards(snapshot,card_refs),database_cards,"card_id",card_fields,"cartas",tables["cards"]),"nationalities":_compare(_source_nationalities(snapshot,nat_refs),database_nationalities,"codigo_jogo",nationality_fields,"nacionalidades",tables["nationalities"]),"clubs":_compare(_source_clubs(snapshot,club_refs),database_clubs,"codigo_jogo",club_fields,"clubes",tables["clubs"]),"leagues":_compare(_source_leagues(snapshot,league_refs),database_leagues,"codigo_jogo",league_fields,"ligas",tables["leagues"]),"types":_compare(_source_types(snapshot,type_refs),database_types,"tipo_carta_id",type_fields,"tipos",tables["types"])}
-    classification={kind:[] for kind in ("new","removed","altered","repeated","invalid")}
+    deferred:list[dict[str,Any]]=[]
+    comparisons={"cards":_compare(_source_cards(snapshot,card_refs,deferred),database_cards,"card_id",card_fields,"cartas",tables["cards"]),"nationalities":_compare(_source_nationalities(snapshot,nat_refs,deferred),database_nationalities,"codigo_jogo",nationality_fields,"nacionalidades",tables["nationalities"]),"clubs":_compare(_source_clubs(snapshot,club_refs,deferred),database_clubs,"codigo_jogo",club_fields,"clubes",tables["clubs"]),"leagues":_compare(_source_leagues(snapshot,league_refs,deferred),database_leagues,"codigo_jogo",league_fields,"ligas",tables["leagues"]),"types":_compare(_source_types(snapshot,type_refs,deferred),database_types,"tipo_carta_id",type_fields,"tipos",tables["types"])}
+    classification={kind:[] for kind in ("new","removed","altered","repeated","invalid","deferred")}
     for comparison in comparisons.values():
         for kind,items in comparison["classification"].items(): classification[kind].extend(items)
+    classification["deferred"]=[{"classificacao":"adiado","escopo":item["escopo"],"destino_tabela":item["destino_tabela"],"chave_canonica":{"chave":item["chave"]},"fonte_fisica":None,"vinculo_banco":None,"valor_fisico":None,"valor_banco":None,"motivo":item["motivo"]} for item in deferred]
+    deferred_by_scope:dict[str,int]={}
+    for item in deferred: deferred_by_scope[item["escopo"]]=deferred_by_scope.get(item["escopo"],0)+1
     technical_integrity=not any(orphan_counts) and unvalidated_constraints==0 and shared_nationality_fks==2
-    return {"contract":"clubef-card-dimensions-readback-extractor-v2","source_contract":snapshot["contract"],"classification_complete":True,"technical_integrity":technical_integrity,"exact_match":not any(classification[k] for k in ("new","removed","altered","repeated","invalid")),"transaction_read_only":True,"database_write":False,"source_counts":snapshot.get("counts"),"comparisons":comparisons,"classification":classification,"database_integrity":{"orphan_counts":{"nationality":orphan_counts[0],"club":orphan_counts[1],"league":orphan_counts[2],"type":orphan_counts[3],"type_key_mismatch":orphan_counts[4]},"unvalidated_constraints":unvalidated_constraints,"shared_nationality_foreign_keys":shared_nationality_fks}}
+    return {"contract":"clubef-card-dimensions-readback-extractor-v2","source_contract":snapshot["contract"],"classification_complete":True,"technical_integrity":technical_integrity,"exact_match":not any(classification[k] for k in ("new","removed","altered","repeated","invalid")) and not deferred,"transaction_read_only":True,"database_write":False,"source_counts":snapshot.get("counts"),"comparisons":comparisons,"classification":classification,"deferred_count":len(deferred),"deferred_by_scope":deferred_by_scope,"deferred_items":deferred,"database_integrity":{"orphan_counts":{"nationality":orphan_counts[0],"club":orphan_counts[1],"league":orphan_counts[2],"type":orphan_counts[3],"type_key_mismatch":orphan_counts[4]},"unvalidated_constraints":unvalidated_constraints,"shared_nationality_foreign_keys":shared_nationality_fks}}

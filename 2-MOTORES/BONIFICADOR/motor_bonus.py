@@ -1,30 +1,28 @@
 # -*- coding: utf-8 -*-
 """
-BONIFICADOR — v9 (31/08/2026)
+BONIFICADOR — v12 (09/09/2026)
 
 O QUE MUDOU NESTA VERSAO
   1. OS DADOS DO JOGO VEM DO MODELO NOVO. Corpo, pe ruim, posicao,
      playstyles e estilos de IA saem exclusivamente de contratos v1 sobre
      clube_novo. Nao existe fallback para carta_do_motor nem para JSON antigo.
   2. GRAVA SOMENTE NO MODELO NOVO. Cada resultado apto passa pelo writer
-     transacional public.gravar_build_bonificador_v4. Nao existe chamada
+     transacional public.gravar_build_bonificador_v6. Nao existe chamada
      produtiva ou gravacao em estruturas legadas.
-  3. O BONUS DE ESTILO E POR FUNCAO, NAO POR POSICAO.  <-- a correcao de fundo
-     Antes: o estilo ligava na POSICAO, entao Defensor criativo montado como
-     Zagueiro de combate ganhava o mesmo 1,0 que um destruidor legitimo.
-     Agora: 1,0 so na funcao que e a CASA daquele estilo. O impostor zera.
-  4. OS DOIS SLOTS DE 2027. +0,5 quando o segundo slot tambem ativa naquela
-     posicao — repetido ou nao. Teto 1,5.
-     Cascata: se o slot recomendado da posicao esta Basico, o outro slot assume
-     com 1,0 cheio.
+  3. O BONUS DE ESTILO SEGUE A POSICAO COMPATIVEL DO JOGO.
+     A funcao define o principal (1,0) e o secundario (0,5). A posicao
+     escolhida decide a ativacao. Basico nao pontua. So Defensor Criativo
+     e Lateral Defensivo recebem a promocao excepcional aprovada. Teto 1,5.
 
 AS PORTAS DO BANCO
-    public.bonificador_regua_v2() a receita allowlisted e seus gates
-    public.bonificador_carta_v2() somente as entradas usadas pelo Bonificador
-    public.bonificador_contexto_fila_v5() linhas, nomes de apresentação e selos vigentes
-    public.gravar_build_bonificador_v4(jsonb) a volta transacional
-    public.bonificador_lote_proxima_linha_v1(uuid) reserva atômica do batch
-    public.bonificador_lote_registrar_v1(...) confirma o estado do item após o writer
+    public.bonificador_regua_v4() a receita allowlisted e seus gates
+    public.bonificador_carta_v3() somente as entradas usadas pelo Bonificador
+    public.bonificador_contexto_fila_v7() linhas, nomes de apresentação e selos vigentes
+    public.gravar_build_bonificador_v6(jsonb) a volta transacional para linhas novas
+    public.bonificador_correcao_*_v1() prepara resultados V12 sem expor nem
+      substituir o resultado V9 antes do corte transacional
+    public.bonificador_correcao_proxima_linha_v2(uuid) reserva o staging V12
+    public.bonificador_correcao_registrar_v1(...) confirma falha sem cortar a linha
 
 A CHAVE sai do config.txt na hora de rodar. Nunca e gravada nem impressa aqui.
 """
@@ -53,7 +51,7 @@ if _MEU_LUGAR in _sys.path:
     _sys.path.remove(_MEU_LUGAR)
 _sys.path.insert(0, _MEU_LUGAR)
 
-import os, sys, json, time, urllib.request, urllib.error, decimal, signal, threading
+import os, sys, json, time, urllib.request, urllib.error, decimal, signal, threading, ssl
 try:
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 except Exception:
@@ -102,7 +100,7 @@ def _executar_pipeline_vivo():
     anteriores = {sinal: signal.getsignal(sinal) for sinal in sinais}
     for sinal in sinais:
         signal.signal(sinal, solicitar_parada)
-    print('  PIPELINE VIVO: consulta linhas confirmadas pelo Otimizador continuamente.')
+    print('  PIPELINE VIVO: consulta as linhas elegíveis do contrato canônico.')
     print('  Quando não houver linha apta, espera %ds. Ctrl+C para parar normalmente.' % espera)
     try:
         while not parada_solicitada():
@@ -127,6 +125,10 @@ def _executar_pipeline_vivo():
 
             confirmou = int((resultado or {}).get('enviados') or 0)
             if confirmou == 0:
+                if (_os.environ.get('CLUBEF_BONIFICADOR_CORRECAO_LOTE_ID')
+                        or _os.environ.get('CLUBEF_BONIFICADOR_INTEGRAL_LOTE_ID')):
+                    print('  LOTE SELECIONADO SEM PENDÊNCIAS: encerrando o worker normalmente.')
+                    return
                 print('  AGUARDANDO NOVAS LINHAS: nenhuma linha apta confirmada nesta rodada; '
                       'nova consulta em %ds. Ctrl+C para parar.' % espera)
                 for _ in range(espera * 10):
@@ -148,9 +150,17 @@ if __name__ == '__main__' and not _os.environ.get(_MARCADOR_RODADA):
     _executar_pipeline_vivo()
     raise SystemExit(0)
 
-MOTOR_BONUS = 'v9-3108-clube-novo-writer-v1'
-WRITER_BONUS = 'gravar_build_bonificador_v4'
+MOTOR_BONUS = 'v12-0909-estilo-funcao-ativacao-v1'
+FORMULA_BONUS = '4c6ad750fd5c8bb218220b5f330d875ea3cd8cbcb6f89bad24a394eb22322db8'
+REGUA_BONUS = 'bonificador_regua_v4'
+FILA_BONUS = 'bonificador_contexto_fila_v7'
+WRITER_BONUS = 'gravar_build_bonificador_v6'
+WRITER_CORRECAO_BONUS = 'gravar_build_bonificador_correcao_v2'
 LOTE_OPERACIONAL_ID = _os.environ.get('CLUBEF_BONIFICADOR_LOTE_ID', '').strip()
+LOTE_CORRECAO_ID = _os.environ.get('CLUBEF_BONIFICADOR_CORRECAO_LOTE_ID', '').strip()
+LOTE_INTEGRAL_ID = _os.environ.get('CLUBEF_BONIFICADOR_INTEGRAL_LOTE_ID', '').strip()
+if sum(bool(x) for x in (LOTE_OPERACIONAL_ID, LOTE_CORRECAO_ID, LOTE_INTEGRAL_ID)) > 1:
+    raise RuntimeError('Selecione somente um lote do Bonificador por execução.')
 LOTE = 200
 NAOSEI = 'NAO-SEI.txt'
 
@@ -195,17 +205,25 @@ def _rpc_banco(nome, corpo):
     if _CONEXAO_BONIFICADOR is None or _CONEXAO_BONIFICADOR.closed:
         _CONEXAO_BONIFICADOR = psycopg.connect(DB_URL, connect_timeout=15)
     with _CONEXAO_BONIFICADOR.cursor() as cur:
-        if nome == 'bonificador_regua_v2':
-            cur.execute('select public.bonificador_regua_v2()')
+        if nome == REGUA_BONUS:
+            cur.execute('select public.bonificador_regua_v4()')
             return cur.fetchone()[0]
-        if nome == 'bonificador_carta_v2':
-            cur.execute('select public.bonificador_carta_v2(%s)', ((corpo or {}).get('p_card_id'),))
+        if nome == 'bonificador_carta_v3':
+            cur.execute('select public.bonificador_carta_v3(%s)', ((corpo or {}).get('p_card_id'),))
             return cur.fetchone()[0]
-        if nome == 'bonificador_contexto_fila_v5':
-            cur.execute('select * from public.bonificador_contexto_fila_v5(%s,%s)', (
+        if nome == FILA_BONUS:
+            cur.execute('select * from public.bonificador_contexto_fila_v7(%s,%s)', (
                 (corpo or {}).get('p_limit', 1000), (corpo or {}).get('p_offset', 0)))
             colunas = [d.name for d in cur.description]
             return [dict(zip(colunas, linha)) for linha in cur.fetchall()]
+        if nome == 'bonificador_contexto_lote_integral_v1':
+            cur.execute('select * from public.bonificador_contexto_lote_integral_v1(%s::uuid,%s,%s)', (
+                (corpo or {}).get('p_lote_id'), (corpo or {}).get('p_limit', 100), (corpo or {}).get('p_offset', 0)))
+            colunas = [d.name for d in cur.description]
+            return [dict(zip(colunas, linha)) for linha in cur.fetchall()]
+        if nome == 'bonificador_integral_status_v1':
+            cur.execute('select public.bonificador_integral_status_v1(%s::uuid)', ((corpo or {}).get('p_lote_id'),))
+            return cur.fetchone()[0]
         if nome == 'bonificador_lote_proxima_linha_v1':
             cur.execute('select public.bonificador_lote_proxima_linha_v1(%s::uuid)', (
                 (corpo or {}).get('p_lote_id'),))
@@ -220,91 +238,197 @@ def _rpc_banco(nome, corpo):
             resultado = cur.fetchone()[0]
             _CONEXAO_BONIFICADOR.commit()
             return resultado
+        if nome == 'bonificador_correcao_status_v1':
+            cur.execute('select public.bonificador_correcao_status_v1(%s::uuid)', (
+                (corpo or {}).get('p_lote_id'),))
+            return cur.fetchone()[0]
+        if nome == 'bonificador_correcao_proxima_linha_v2':
+            cur.execute('select public.bonificador_correcao_proxima_linha_v2(%s::uuid)', (
+                (corpo or {}).get('p_lote_id'),))
+            resultado = cur.fetchone()[0]
+            _CONEXAO_BONIFICADOR.commit()
+            return resultado
+        if nome == 'bonificador_correcao_registrar_v1':
+            cur.execute('select public.bonificador_correcao_registrar_v1(%s::uuid,%s,%s,%s)', (
+                (corpo or {}).get('p_lote_id'), (corpo or {}).get('p_linha_id'),
+                (corpo or {}).get('p_estado'), (corpo or {}).get('p_motivo')))
+            resultado = cur.fetchone()[0]
+            _CONEXAO_BONIFICADOR.commit()
+            return resultado
         if nome == WRITER_BONUS:
-            cur.execute('select public.gravar_build_bonificador_v4(%s::jsonb)',
+            cur.execute('select public.gravar_build_bonificador_v6(%s::jsonb)',
                         (json.dumps((corpo or {}).get('p_resultado')),))
+            resultado = cur.fetchone()[0]
+            _CONEXAO_BONIFICADOR.commit()
+            return resultado
+        if nome == WRITER_CORRECAO_BONUS:
+            cur.execute('select public.gravar_build_bonificador_correcao_v2(%s::uuid,%s::jsonb)', (
+                (corpo or {}).get('p_lote_id'), json.dumps((corpo or {}).get('p_resultado'))))
             resultado = cur.fetchone()[0]
             _CONEXAO_BONIFICADOR.commit()
             return resultado
     raise RuntimeError('contrato local não permitido: %s' % nome)
 
 
+_HTTP_TRANSITORIOS = {408, 425, 429, 500, 502, 503, 504, 520, 522, 524}
+_WINDOWS_REDE_TRANSITORIA = {10053, 10054, 10060, 10061}
+
+
+def _erro_rpc_transitorio(erro):
+    """Distingue queda de transporte de recusa permanente do contrato."""
+    if isinstance(erro, urllib.error.HTTPError):
+        return erro.code in _HTTP_TRANSITORIOS
+    if isinstance(erro, urllib.error.URLError):
+        motivo = erro.reason
+        if isinstance(motivo, ssl.SSLCertVerificationError):
+            return False
+        if isinstance(motivo, (TimeoutError, ConnectionError)):
+            return True
+        if isinstance(motivo, OSError):
+            if getattr(motivo, 'winerror', None) in _WINDOWS_REDE_TRANSITORIA:
+                return True
+        texto = str(motivo).lower()
+        return any(sinal in texto for sinal in (
+            'timed out', 'timeout', 'temporar', 'connection reset',
+            'connection aborted', 'connection refused', '10053', '10054',
+            '10060', '10061', 'host remoto', 'remote host'))
+    return isinstance(erro, (TimeoutError, ConnectionError))
+
+
 def rpc(nome, corpo=None, timeout=180):
     if USAR_BANCO_DIRETO:
         return _rpc_banco(nome, corpo)
-    req = urllib.request.Request(
-        '%s/rest/v1/rpc/%s' % (URL, nome),
-        data=json.dumps(corpo or {}).encode('utf-8'),
-        headers=CAB, method='POST')
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        t = r.read().decode('utf-8')
-    return json.loads(t) if t.strip() else None
+
+    # No lote corretivo, uma falha transitória não pode virar "dados ausentes" e
+    # bloquear 200 mil linhas. Zero significa repetir até a conexão voltar. Fora
+    # da correção, o limite mantém um erro permanente visível ao operador.
+    limite_padrao = 0 if LOTE_CORRECAO_ID else 6
+    limite = _inteiro_ambiente(
+        'CLUBEF_BONIFICADOR_RPC_MAX_TENTATIVAS', limite_padrao, 0)
+    espera_base = _inteiro_ambiente(
+        'CLUBEF_BONIFICADOR_RPC_ESPERA_SEGUNDOS', 2, 1)
+    tentativa = 0
+
+    while True:
+        tentativa += 1
+        try:
+            req = urllib.request.Request(
+                '%s/rest/v1/rpc/%s' % (URL, nome),
+                data=json.dumps(corpo or {}).encode('utf-8'),
+                headers=CAB, method='POST')
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                t = r.read().decode('utf-8')
+            return json.loads(t) if t.strip() else None
+        except (urllib.error.HTTPError, urllib.error.URLError,
+                TimeoutError, ConnectionError) as erro:
+            if not _erro_rpc_transitorio(erro):
+                raise
+            if limite and tentativa >= limite:
+                raise
+            espera = min(30, espera_base * (2 ** min(tentativa - 1, 4)))
+            print(
+                '   CONEXAO TRANSITORIA no %s (tentativa %d). '
+                'A linha continua reservada; nova tentativa em %ds.'
+                % (nome, tentativa, espera))
+            time.sleep(espera)
 
 
 # ============================================================== A CONTA
 def nota_da_medida(valor, cortes):
-    """os 4 degraus do molde do fisico -> 0..1"""
-    if valor is None:
+    """Regra aprovada: cinco faixas -2..+2, com a borda ``valor <= corte``."""
+    if valor is None or not isinstance(cortes, (list, tuple)) or len(cortes) != 4:
         return None
-    n = 0
-    for c in cortes:
-        if c is None:
-            continue
-        if valor >= c:
-            n += 1
-    return n / 4.0
+    if any(c is None for c in cortes):
+        return None
+    try:
+        c1, c2, c3, c4 = (float(c) for c in cortes)
+        v = float(valor)
+    except (TypeError, ValueError):
+        return None
+    if not (c1 <= c2 <= c3 <= c4):
+        return None
+    if v <= c1:
+        return -2
+    if v <= c2:
+        return -1
+    if v <= c3:
+        return 0
+    if v <= c4:
+        return 1
+    return 2
 
 
 def bonus_do_corpo(molde_corpo, corpo, funcao, corpo_max):
     """corpo = lista de 12 medidas na ordem do corpo_ordem. Devolve (bonus, soma, pct, detalhe)."""
     m = _por_id(molde_corpo or {}, funcao)
-    if not m or not corpo:
+    if not m or not isinstance(corpo, (list, tuple)) or not corpo:
         return None
-    soma = peso_total = 0.0
-    detalhe = {}
+    try:
+        limite = float(corpo_max)
+    except (TypeError, ValueError):
+        return None
+    if limite <= 0:
+        return None
+    soma = maximo = 0.0
+    pontos_por_medida = {}
     for medida, regra in m.items():
         idx = regra.get('idx')
-        if idx is None or idx >= len(corpo):
-            continue
+        if not isinstance(idx, int) or isinstance(idx, bool) or idx < 0 or idx >= len(corpo):
+            return None
         v = corpo[idx]
         if v is None:
-            continue
+            return None
         n = nota_da_medida(v, regra.get('cortes') or [])
         if n is None:
+            return None
+        direcao = regra.get('direcao')
+        if isinstance(direcao, bool) or direcao not in (-1, 0, 1):
+            return None
+        try:
+            peso = float(regra.get('peso'))
+        except (TypeError, ValueError):
+            return None
+        if peso <= 0:
+            return None
+        if direcao == 0:
+            pontos_por_medida[medida] = 0.0
             continue
-        if (regra.get('direcao') or '') == '-':
-            n = 1.0 - n
-        p = float(regra.get('peso') or 0)
-        soma += n * p
-        peso_total += p
-        detalhe[medida] = round(n, 3)
-    if peso_total <= 0:
+        pontos = float(n * direcao) * peso
+        soma += pontos
+        maximo += 2.0 * peso
+        pontos_por_medida[medida] = pontos
+    if maximo <= 0:
         return None
-    pct = soma / peso_total
-    bonus = round((pct * 2 - 1) * float(corpo_max), 4)
-    return bonus, round(soma, 4), round(pct, 4), detalhe
+    pct = max(-1.0, min(1.0, soma / maximo))
+    bonus = round(max(-limite, min(limite, pct * limite)), 4)
+    return bonus, round(soma, 4), round(pct, 4), pontos_por_medida
 
 
 def bonus_do_corpo_writer(molde_corpo, corpo, funcao, corpo_max):
-    """Mantém o total histórico e converte suas notas em contribuições reais."""
+    """Converte os pontos aprovados em parcelas que fecham exatamente no total."""
     resultado = bonus_do_corpo(molde_corpo, corpo, funcao, corpo_max)
     if resultado is None:
         return None
-    bonus, soma, pct, notas = resultado
+    bonus, soma, pct, pontos_por_medida = resultado
     molde = _por_id(molde_corpo or {}, funcao) or {}
-    medidas = [(medida, float((molde.get(medida) or {}).get('peso') or 0), nota)
-               for medida, nota in notas.items()]
-    peso_total = sum(peso for _, peso, _ in medidas)
-    if not medidas or peso_total <= 0:
+    ativas = []
+    maximo = 0.0
+    detalhe = {medida: 0.0 for medida in pontos_por_medida}
+    for medida, pontos in pontos_por_medida.items():
+        regra = molde.get(medida) or {}
+        if regra.get('direcao') == 0:
+            continue
+        peso = float(regra.get('peso'))
+        maximo += 2.0 * peso
+        ativas.append((medida, pontos))
+    if not ativas or maximo <= 0:
         return None
-    detalhe = {}
     acumulado = 0.0
-    for indice, (medida, peso, nota) in enumerate(medidas):
-        if indice == len(medidas) - 1:
+    for indice, (medida, pontos) in enumerate(ativas):
+        if indice == len(ativas) - 1:
             contribuicao = round(bonus - acumulado, 8)
         else:
-            contribuicao = round(
-                (2 * nota - 1) * peso / peso_total * float(corpo_max), 8)
+            contribuicao = round(pontos / maximo * float(corpo_max), 8)
             acumulado = round(acumulado + contribuicao, 8)
         detalhe[medida] = contribuicao
     return bonus, soma, pct, detalhe
@@ -332,66 +456,41 @@ def _por_id(mapa, chave):
 
 
 def bonus_do_estilo(rb, est1, est2, funcao, posicao_id):
-    """
-    ⛔ A REGRA DOS DOIS ESTILOS — aprovada pelo Luis em 26/08.
-
-      1,0  na funcao que e a CASA do estilo do slot que MANDA na posicao
-      +0,5 se o outro slot tambem ATIVA naquela posicao (repetido ou nao)
-      teto 1,5
-
-    CASCATA: se o slot que manda esta Basico, o OUTRO assume com 1,0 cheio.
-
-    POR QUE POR FUNCAO E NAO POR POSICAO: antes o estilo ligava na posicao, e
-    entao Defensor criativo montado como Zagueiro de combate ganhava o mesmo
-    1,0 que um destruidor legitimo. O sistema nao avisava que a ficha estava
-    errada. Agora o impostor zera e o dono da funcao sobe sozinho.
-    """
-    casa = rb.get('casa') or {}
-    liga = rb.get('liga') or {}
-    par  = rb.get('parametro') or {}
-    pri  = float(par.get('estilo_ativo') or 1.0)
-    sec  = float(par.get('estilo_ativo_secundario') or 0.5)
-    teto = pri + sec
-
-    slot_manda = _por_id(rb.get('posicao_slot') or {}, posicao_id) or 'ofensivo'
-    # slot 1 = ofensivo (o legado) · slot 2 = defensivo (o novo de 2027)
-    dono, outro = (est1, est2) if slot_manda == 'ofensivo' else (est2, est1)
-
-    # CASCATA: o slot que manda esta vazio -> o outro assume inteiro
-    if not dono:
-        dono, outro = outro, None
-
-    b = 0.0
-    if dono and _por_id(_por_id(casa, dono) or {}, posicao_id) == funcao:
-        b += pri
-    if outro and posicao_id in (_por_id(liga, outro) or []):
-        b += sec
-    return round(min(b, teto), 4)
+    """V12: funcao escolhe principal; a posicao escolhida decide ativacao."""
+    return bonus_do_estilo_componentes(rb, est1, est2, funcao, posicao_id)[0]
 
 
 def bonus_do_estilo_componentes(rb, est1, est2, funcao, posicao_id):
-    """Expõe por slot físico as mesmas parcelas já somadas pela fórmula v8."""
-    casa = rb.get('casa') or {}
+    """Parcelas por ataque/defesa efetivos, nunca pela ordem fisica antiga."""
+    politica = rb.get('politica_estilo') or {}
+    if politica.get('versao') != 'estilos-funcao-20260909-v1':
+        raise RuntimeError('V12: politica aprovada de estilos ausente')
+    if rb.get('politica_estilo_fingerprint') != '7ed53bbab831180cde9d247782dd133fe072acadb69bd34871c3f83f28773dc5':
+        raise RuntimeError('V12: politica de estilos diverge da decisao aprovada')
+    principal = _por_id(politica.get('principal_por_funcao'), funcao)
+    if principal not in ('ataque', 'defesa') or posicao_id is None:
+        raise RuntimeError('V12: funcao ou posicao escolhida sem definicao')
+    if est1 is None or est2 is None:
+        raise RuntimeError('V12: estilo ausente nao significa Basico')
+    pendentes = politica.get('pendentes_ativacao') or []
+    if est1 in pendentes or est2 in pendentes:
+        raise RuntimeError('V12: estilo aguarda definicao de ativacao no jogo')
+    if (est1 != 256 and ((int(est1) >> 6) & 3) not in (0, 2)) or (est2 != 256 and ((int(est2) >> 6) & 3) not in (1, 2)):
+        raise RuntimeError('V12: slots nao representam ataque e defesa efetivos')
     liga = rb.get('liga') or {}
-    par = rb.get('parametro') or {}
-    pri = float(par.get('estilo_ativo') or 1.0)
-    sec = float(par.get('estilo_ativo_secundario') or 0.5)
-    teto = pri + sec
-    slot_manda = _por_id(rb.get('posicao_slot') or {}, posicao_id) or 'ofensivo'
-    if slot_manda == 'ofensivo':
-        dono, outro, slot_dono, slot_outro = est1, est2, 1, 2
-    else:
-        dono, outro, slot_dono, slot_outro = est2, est1, 2, 1
-    if not dono:
-        dono, outro = outro, None
-        slot_dono, slot_outro = slot_outro, slot_dono
-    por_slot = {1: 0.0, 2: 0.0}
-    if dono and _por_id(_por_id(casa, dono) or {}, posicao_id) == funcao:
-        por_slot[slot_dono] += pri
-    if outro and posicao_id in (_por_id(liga, outro) or []):
-        por_slot[slot_outro] += sec
-    total = round(min(por_slot[1] + por_slot[2], teto), 4)
-    return total, round(por_slot[1], 4), round(por_slot[2], 4)
+    for estilo in (est1, est2):
+        if estilo != 256 and _por_id(liga, estilo) is None:
+            raise RuntimeError('V12: estilo sem cadastro de ativacao')
+    ativo_a = est1 != 256 and posicao_id in (_por_id(liga, est1) or [])
+    ativo_d = est2 != 256 and posicao_id in (_por_id(liga, est2) or [])
+    pontos = politica['pontos']
+    a = float(pontos['principal'] if principal == 'ataque' else pontos['secundario']) if ativo_a else 0.0
+    d = float(pontos['principal'] if principal == 'defesa' else pontos['secundario']) if ativo_d else 0.0
+    if ativo_a and not ativo_d:
+        for regra in politica['excecoes']:
+            if est1 == regra['playstyle_id'] and funcao in regra['funcoes'] and posicao_id in regra['posicoes']:
+                a = float(regra['valor_unico_ativo'])
+    return round(min(a + d, float(pontos['teto'])), 4), round(a, 4), round(d, 4)
 
 
 def bonus_do_estilo_ia(par, lista):
@@ -443,6 +542,9 @@ def preparar_payload_writer(linha):
         raise RuntimeError('detalhe fisico possui contribuicao nao numerica')
     if soma_detalhe != decimal.Decimal(str(parcelas['bonus_fisico_total'])):
         raise RuntimeError('detalhe fisico diverge do bonus_fisico_total')
+    for chave in ('corpo_soma', 'corpo_pct', 'corpo_maximo'):
+        if not isinstance(linha.get(chave), (int, float)) or isinstance(linha.get(chave), bool):
+            raise RuntimeError('resultado apto sem prova física numérica: %s' % chave)
     total = round(sum(parcelas.values()), 4)
     if total != linha.get('b_total'):
         raise RuntimeError('resultado bloqueado: total diverge das parcelas do writer')
@@ -468,6 +570,9 @@ def preparar_payload_writer(linha):
         'bonus_ia': parcelas['bonus_ia'],
         'bonus_outros': {},
         'bonus_total': total,
+        'corpo_soma': linha['corpo_soma'],
+        'corpo_pct': linha['corpo_pct'],
+        'corpo_maximo': linha['corpo_maximo'],
     }
 
 
@@ -492,14 +597,18 @@ def validar_retorno_writer(resposta, payload):
     return resposta
 
 
-def gravar_resultados_canonicos(linhas, rpc_call, lote_operacional_id=''):
+def gravar_resultados_canonicos(linhas, rpc_call, lote_operacional_id='', lote_correcao_id=''):
     """Usa o writer canônico e só então confirma o item estável do lote."""
     respostas = []
     for linha in linhas:
         payload = preparar_payload_writer(linha)
         if payload is None:
             continue
-        resposta = rpc_call(WRITER_BONUS, {'p_resultado': payload})
+        if lote_correcao_id:
+            resposta = rpc_call(WRITER_CORRECAO_BONUS, {
+                'p_lote_id': lote_correcao_id, 'p_resultado': payload})
+        else:
+            resposta = rpc_call(WRITER_BONUS, {'p_resultado': payload})
         resposta = validar_retorno_writer(resposta, payload)
         if lote_operacional_id:
             total = payload['bonus_total']
@@ -520,21 +629,29 @@ def gravar_resultados_canonicos(linhas, rpc_call, lote_operacional_id=''):
 
 # ================================================================== RODA
 print('=' * 70)
-print('  BONIFICADOR v9  —  corpo · pe ruim · estilo (por funcao) · IA')
+print('  BONIFICADOR v12 — estilo por função e posição · físico · pé ruim · IA')
 print('=' * 70)
 
 print('')
 print('[1/4] baixando a receita do banco')
-rb = rpc('bonificador_regua_v2')
+if LOTE_OPERACIONAL_ID and not LOTE_CORRECAO_ID:
+    print('  PAREI: o lote V1 pertence ao motor/fórmula V9 e não pode ser reaproveitado.')
+    print('  Use somente o lote corretivo V1 preparado para a fórmula V12.')
+    pausa(); sys.exit(1)
+rb = rpc(REGUA_BONUS)
 if not rb or not rb.get('pode_rodar'):
-    print('  PAREI: a public.bonificador_regua_v2() esta ausente ou bloqueada.')
+    print('  PAREI: a public.%s() esta ausente ou bloqueada.' % REGUA_BONUS)
     if rb and rb.get('falta_o_que'):
         print('  Falta: %s' % ', '.join(str(x) for x in rb.get('falta_o_que') or []))
     pausa(); sys.exit(1)
-for chave in ('parametro', 'molde_corpo', 'corpo_ordem', 'casa', 'liga', 'posicao_slot'):
+for chave in ('parametro', 'molde_corpo', 'corpo_ordem', 'casa', 'liga', 'politica_estilo', 'politica_estilo_fingerprint'):
     if chave not in rb:
         print('  PAREI: contrato da regua sem a chave obrigatoria %s.' % chave)
         pausa(); sys.exit(1)
+if not rb.get('liberado_para_producao'):
+    print('  V12 PREPARADA: producao sera liberada na etapa de atualizacao da Maquina 2.')
+    print('  Nenhuma linha foi reservada ou gravada.')
+    pausa(); sys.exit(0)
 par = rb.get('parametro') or {}
 CORPO_MAX = float(par.get('bonus_corpo_max') or 1.5)
 
@@ -562,7 +679,16 @@ print('')
 print('[2/4] baixando as linhas pendentes e os selos vigentes')
 pares, passo, de = [], 1000, 0
 try:
-    if LOTE_OPERACIONAL_ID:
+    if LOTE_INTEGRAL_ID:
+        paginas = [rpc('bonificador_contexto_lote_integral_v1', {
+            'p_lote_id': LOTE_INTEGRAL_ID, 'p_limit': 100, 'p_offset': 0,
+        }) or []]
+    elif LOTE_CORRECAO_ID:
+        reservada = rpc('bonificador_correcao_proxima_linha_v2', {
+            'p_lote_id': LOTE_CORRECAO_ID,
+        })
+        paginas = [[reservada]] if reservada else []
+    elif LOTE_OPERACIONAL_ID:
         reservada = rpc('bonificador_lote_proxima_linha_v1', {
             'p_lote_id': LOTE_OPERACIONAL_ID,
         })
@@ -570,7 +696,7 @@ try:
     else:
         paginas = []
         while True:
-            pagina = rpc('bonificador_contexto_fila_v5', {'p_limit': passo, 'p_offset': de})
+            pagina = rpc(FILA_BONUS, {'p_limit': passo, 'p_offset': de})
             if not pagina:
                 break
             paginas.append(pagina)
@@ -596,6 +722,10 @@ for lote in paginas:
             print('  PAREI: contexto do writer nao devolve identidade/selos: %s.'
                   % ', '.join(ausentes))
             pausa(); sys.exit(1)
+        if str(x.get('formula_fingerprint')) != FORMULA_BONUS:
+            print('')
+            print('  PAREI: a fila devolveu fingerprint de fórmula diferente da V12 aprovada.')
+            pausa(); sys.exit(1)
         pares.append({
             'build_linha_card_id': int(x['build_linha_card_id']),
             'card_id': str(x['card_id']),
@@ -618,10 +748,26 @@ for par_da_fila in pares:
     par_da_fila['contrato_versao'] = str(rb.get('contrato') or par_da_fila['contrato_versao'])
     par_da_fila['contrato_fingerprint'] = str(
         rb.get('contrato_fingerprint') or par_da_fila['contrato_fingerprint'])
+    par_da_fila['formula_fingerprint'] = str(
+        rb.get('formula_fingerprint') or par_da_fila['formula_fingerprint'])
 
 if not pares:
+    if LOTE_INTEGRAL_ID:
+        status_lote = rpc('bonificador_integral_status_v1', {'p_lote_id': LOTE_INTEGRAL_ID}) or {}
+        if (status_lote.get('existe') is not True or status_lote.get('preparado') is not True
+                or any(int(status_lote.get(k) or 0) for k in ('nao_conferidas', 'bloqueadas', 'calcular_pendentes'))):
+            print('  LOTE INTERROMPIDO: a conferência não confirmou todas as exceções resolvidas.')
+            pausa(); sys.exit(2)
+    elif LOTE_CORRECAO_ID:
+        status_lote = rpc('bonificador_correcao_status_v1', {'p_lote_id': LOTE_CORRECAO_ID}) or {}
+        contagens_lote = status_lote.get('contagens') or {}
+        if (status_lote.get('ok') is not True
+                or any(int(contagens_lote.get(k) or 0) for k in ('pendente', 'processando', 'falha'))):
+            print('  LOTE INTERROMPIDO: existem pendências/falhas ou o banco não confirmou o encerramento.')
+            pausa(); sys.exit(2)
     print('')
-    print('  CONCLUIDO: nao ha linha pendente em clube_novo.build_linha_card.')
+    print('  CONCLUIDO: não há exceção pendente no lote selecionado.' if LOTE_INTEGRAL_ID
+          else '  CONCLUIDO: nao ha linha pendente em clube_novo.build_linha_card.')
     print('  Nenhuma gravacao era necessaria nesta rodada.')
     if not _os.environ.get(_MARCADOR_RODADA):
         pausa()
@@ -639,13 +785,13 @@ for i, cid in enumerate(cards):
     if i % 200 == 0:
         print('   %d/%d cards...' % (i, len(cards)), end='\r')
     try:
-        CARTA[cid] = rpc('bonificador_carta_v2', {'p_card_id': cid}) or {
+        CARTA[cid] = rpc('bonificador_carta_v3', {'p_card_id': cid}) or {
             'pode_rodar': False,
             'falta_o_que': ['contrato vazio']}
     except Exception as e:
         CARTA[cid] = {
             'pode_rodar': False,
-            'falta_o_que': ['falha no contrato v1: %s' % str(e)[:160]]}
+            'falta_o_que': ['falha no contrato de carta V3: %s' % str(e)[:160]]}
 print('   %d/%d cards            ' % (len(cards), len(cards)))
 
 for contexto in pares:
@@ -677,9 +823,21 @@ for contexto in pares:
             MOLDE_CORPO, c.get('corpo'), fun_id, CORPO_MAX)
         if r is None:
             sem_corpo += 1
-            b_corpo, c_soma, c_pct, detalhe = None, None, None, None
+            b_corpo, c_soma, c_pct, c_maximo, detalhe = None, None, None, None, None
         else:
             b_corpo, c_soma, c_pct, detalhe = r
+            # Etapa estrutural: preserva as doze parcelas e a nota vigente.
+            # A aplicação seletiva da altura usa esta base, sem redistribuição.
+            from altura_independente import separar_altura
+            separado = separar_altura(detalhe, fun_id, aplicar_regra=False)
+            if abs(float(separado['total']) - b_corpo) > 0.00000002:
+                raise ValueError('Separação da altura não fecha com o físico de referência')
+            molde_da_funcao = _por_id(MOLDE_CORPO, fun_id) or {}
+            c_maximo = round(sum(
+                2.0 * float((regra or {}).get('peso') or 0)
+                for regra in molde_da_funcao.values()
+                if (regra or {}).get('direcao') in (-1, 1)
+            ), 4)
 
         b_pe = bonus_do_pe_ruim(
             par, c.get('pe_ruim_uso'), c.get('pe_ruim_precisao'))
@@ -688,10 +846,10 @@ for contexto in pares:
 
         b_est = bonus_do_estilo(
             rb, c.get('slot1_id_jogo'), c.get('slot2_id_jogo'),
-            fun_id, c.get('posicao_id'))
+            fun_id, linha_posicao_id)
         b_est_detalhado, b_est_slot1, b_est_slot2 = bonus_do_estilo_componentes(
             rb, c.get('slot1_id_jogo'), c.get('slot2_id_jogo'),
-            fun_id, c.get('posicao_id'))
+            fun_id, linha_posicao_id)
         if b_est != b_est_detalhado:
             falhas_contrato.append('decomposicao dos playstyles diverge da formula v8')
         if b_est is None:
@@ -705,7 +863,7 @@ for contexto in pares:
             b_ia = bonus_do_estilo_ia(par, ia)
     else:
         b_corpo = b_pe = b_est = b_est_slot1 = b_est_slot2 = b_ia = None
-        c_soma = c_pct = detalhe = None
+        c_soma = c_pct = c_maximo = detalhe = None
         sem_corpo += 1
         sem_pe += 1
         sem_estilo += 1
@@ -731,7 +889,7 @@ for contexto in pares:
         # ⛔ 15/08 ORDEM DO LUIS: "se ele nao sabe, ele vai querer colocar zero,
         #    e um numero inventado". O que faltou fica ESCRITO, com nome.
         'faltou': faltou,
-        'corpo_soma': c_soma, 'corpo_pct': c_pct,
+        'corpo_soma': c_soma, 'corpo_pct': c_pct, 'corpo_maximo': c_maximo,
         'detalhe': detalhe, 'motor_bonus': MOTOR_BONUS,
         'carta_versao': contexto.get('carta_versao'),
         'carta_fingerprint': contexto.get('carta_fingerprint'),
@@ -796,7 +954,17 @@ bloqueados = len(saida) - len(gravaveis)
 print('   pares aptos ........................ %d' % len(gravaveis))
 print('   pares bloqueados (sem fallback) .... %d' % bloqueados)
 try:
-    if LOTE_OPERACIONAL_ID:
+    if LOTE_CORRECAO_ID:
+        for bloqueada in (x for x in saida if x.get('faltou') or not isinstance(x.get('b_total'), (int, float))):
+            item = rpc('bonificador_correcao_registrar_v1', {
+                'p_lote_id': LOTE_CORRECAO_ID,
+                'p_linha_id': bloqueada['build_linha_card_id'],
+                'p_estado': 'falha',
+                'p_motivo': '; '.join(str(f) for f in bloqueada.get('faltou') or [])[:1000],
+            })
+            if not isinstance(item, dict) or not item.get('ok'):
+                raise RuntimeError('lote corretivo não confirmou a falha da linha bloqueada')
+    elif LOTE_OPERACIONAL_ID:
         for bloqueada in (x for x in saida if x.get('faltou') or not isinstance(x.get('b_total'), (int, float))):
             item = rpc('bonificador_lote_registrar_v1', {
                 'p_lote_id': LOTE_OPERACIONAL_ID,
@@ -807,7 +975,8 @@ try:
             })
             if not isinstance(item, dict) or not item.get('ok'):
                 raise RuntimeError('lote não confirmou a falha da linha bloqueada')
-    respostas = gravar_resultados_canonicos(gravaveis, rpc, LOTE_OPERACIONAL_ID)
+    respostas = gravar_resultados_canonicos(
+        gravaveis, rpc, LOTE_OPERACIONAL_ID, LOTE_CORRECAO_ID)
     enviados = len(respostas)
 except urllib.error.HTTPError as e:
     print('')
@@ -825,13 +994,17 @@ if enviados != len(gravaveis):
 print('   %d resultados confirmados em clube_novo.build_bonificador' % enviados)
 print('')
 print('=' * 70)
-print('  PRONTO. O writer novo confirmou identidade, selos e readback transacional.')
-print('  Nenhuma chamada produtiva foi feita para o writer legado.')
+if bloqueados:
+    print('  RODADA INTERROMPIDA: %d linha(s) bloqueada(s); confira as causas acima.' % bloqueados)
+else:
+    print('  RODADA CONFIRMADA: %d resultado(s) gravado(s) e conferido(s) no banco.' % enviados)
 print('=' * 70)
 PIPELINE_RESULTADO = {
     'pares': len(pares),
     'bloqueados': bloqueados,
     'enviados': enviados,
 }
+if bloqueados:
+    pausa(); sys.exit(2)
 if not _os.environ.get(_MARCADOR_RODADA):
     pausa()

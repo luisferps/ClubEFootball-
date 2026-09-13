@@ -1,0 +1,107 @@
+[
+  {
+    "arquivo": "index.html",
+    "bytes": 3833,
+    "sha256": "d8ccd158bc3a71fd95cac689c82bec3b84b66e4d0bfc10076819d51add9ab62e"
+  },
+  {
+    "arquivo": "ficha.html",
+    "bytes": 15588,
+    "sha256": "746b51c7b16174b01d9d5df90ff74541c882061b07bf7893e7e37c1cbdca1c4e"
+  },
+  {
+    "arquivo": "boxes-api.js",
+    "bytes": 3642,
+    "sha256": "542533cbec16fa11c3aa0b89067d0fbb20f6d317f9103be6aadc5f3af84a52c9"
+  },
+  {
+    "arquivo": "boxes.js",
+    "bytes": 10367,
+    "sha256": "06ae509d3258253e3483cdc52bb1c4559c10d329dafd37479fdc763500d533f5"
+  },
+  {
+    "arquivo": "degrau.js",
+    "bytes": 1141,
+    "sha256": "91d721c8d0ea8913454bb68c05925822de2924347212c19cae847f45a3484556"
+  },
+  {
+    "arquivo": "ficha-editor-api.js",
+    "bytes": 8951,
+    "sha256": "44f4f8b85b0e6b94ea3ada8a80c041f13599e09356ff795c5e2684bd346ffc95"
+  },
+  {
+    "arquivo": "ficha-editor.js",
+    "bytes": 28942,
+    "sha256": "45e6ee085573610e3edbb5ce95766674b92510bd05ace222df926d971f30a1f4"
+  },
+  {
+    "arquivo": "ficha.js",
+    "bytes": 55650,
+    "sha256": "6cd3eeb964ac08ed159b0976ec7588a6a31de414789515853a248e48e6049c54"
+  },
+  {
+    "arquivo": "home.js",
+    "bytes": 7035,
+    "sha256": "a0ab5cd3f0b7af5a65da07b9c179c25ca56a233f68f1fbc44f3f9cdb757d32c5"
+  },
+  {
+    "arquivo": "ranking-api.js",
+    "bytes": 3483,
+    "sha256": "80fcfde1609a8c4c635a923e0619539a856387d34c3f3f1c82f1e40c4f89936f"
+  },
+  {
+    "arquivo": "ranking.js",
+    "bytes": 13699,
+    "sha256": "ac4d69d938df5a606e9556a8e9eb1de47fc7ef4c953aab2bd6e50cb1c67ae6bd"
+  },
+  {
+    "arquivo": "search-api.js",
+    "bytes": 2698,
+    "sha256": "a086577e8636167785dc2a2cd02b4e1db03386cffd9043bd3cb96b5575fe1487"
+  },
+  {
+    "arquivo": "search.js",
+    "bytes": 7102,
+    "sha256": "127a25831bdcc11fb13827ed173fe12c176225da41b87917ea8ff8820a93a813"
+  },
+  {
+    "arquivo": "site-shell.js",
+    "bytes": 9897,
+    "sha256": "e14888b2e81221e22766f9aec18fabac1f946013f4afbc95f8041c0c281202b0"
+  },
+  {
+    "arquivo": "site-theme.js",
+    "bytes": 880,
+    "sha256": "9dbc695819066cdbb0088f075eb00995bab15a3805e2f62690f070ce9692164b"
+  },
+  {
+    "arquivo": "boxes.css",
+    "bytes": 9522,
+    "sha256": "d9361d452a836a4ab8f1261c0601ebb3455a050358e8455e9ce878625761e79e"
+  },
+  {
+    "arquivo": "ficha.css",
+    "bytes": 43368,
+    "sha256": "7fdab708574ea265918e9bdadc5aa9ee54028bede422e989b8de57b7925915d6"
+  },
+  {
+    "arquivo": "ranking.css",
+    "bytes": 13486,
+    "sha256": "1474c356aded63f4607df49587f23e7d8aa93ba5d9ba114c82fa4510491b8fae"
+  },
+  {
+    "arquivo": "site-shell.css",
+    "bytes": 16919,
+    "sha256": "595865a5519137fc5e8c37b8cd2236c9d49715153aa26f2c94929050de93931f"
+  },
+  {
+    "arquivo": "assets/playstyle-defensivo.svg",
+    "bytes": 320,
+    "sha256": "2aa65d7b9bd07ea1785608ffe69b456bcee67b272a3d2c2bec0d26cea11c4320"
+  },
+  {
+    "arquivo": "assets/playstyle-ofensivo.svg",
+    "bytes": 319,
+    "sha256": "3193aa775647fdbeca9743d4628e53ce9827b0c1fd173b431c08c6ec63121781"
+  }
+]

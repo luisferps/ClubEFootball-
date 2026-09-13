@@ -16,8 +16,8 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Fila, conferência e auditoria local do Bonificador")]
 [assembly: AssemblyProduct("Bonificador ClubEfootball")]
 [assembly: AssemblyCompany("ClubEfootball")]
-[assembly: AssemblyVersion("2.0.26.0")]
-[assembly: AssemblyFileVersion("2.0.26.0")]
+[assembly: AssemblyVersion("2.0.31.0")]
+[assembly: AssemblyFileVersion("2.0.31.0")]
 
 namespace ClubEfootballBonificador
 {
@@ -26,7 +26,7 @@ namespace ClubEfootballBonificador
         internal static int AppPort = 8766;
         internal static string BaseUrl { get { return "http://127.0.0.1:" + AppPort; } }
         private const string ExpectedApp = "\"aplicativo\": \"bonificador_clubefootball\"";
-        private const string ExpectedVersion = "\"versao_interface\": \"20260902-lote-v1\"";
+        private const string ExpectedVersion = "\"versao_interface\": \"20260909-estilo-v12\"";
         private static Process localComponent;
         private static string localComponentPath;
 
@@ -155,24 +155,98 @@ namespace ClubEfootballBonificador
         private readonly RichTextBox log = new RichTextBox(), resultado = new RichTextBox(); private readonly TextBox cardId = new TextBox(); private readonly ComboBox funcao = new ComboBox();
         private readonly Button iniciar = new Button(), pausar = new Button(), parar = new Button(), atualizar = new Button(), anterior = new Button(), proxima = new Button(), simular = new Button(), auditoria = new Button();
         private readonly System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer(); private bool consultando; private int offsetFila = 0; private const int TamanhoPagina = 100;
+        private readonly Label integralResumo = new Label();
+        private readonly Button integralReusar = new Button(), integralCalcular = new Button(), integralParar = new Button();
+        private string integralLote = ""; private bool integralConsultando; private volatile bool integralReusando, integralParada;
 
         internal BonificadorForm()
         {
-            Text = "Bonificador ClubEfootball V2.0.26 — batch e resultados"; MinimumSize = new Size(980, 680); Size = new Size(1320, 820); StartPosition = FormStartPosition.CenterScreen; Font = new Font("Segoe UI", 9F);
-            BuildLayout(); timer.Interval = 2000; timer.Tick += delegate { RefreshQueue(false); }; Shown += delegate { status.Text = "Contrato: consultando em segundo plano"; andamento.Text = "Estado: carregando fila sem bloquear a tela"; RefreshQueue(true); timer.Start(); }; FormClosing += delegate { timer.Stop(); };
+            Text = "Bonificador ClubEfootball V2.0.31 — regras vigentes"; MinimumSize = new Size(980, 680); Size = new Size(1320, 820); StartPosition = FormStartPosition.CenterScreen; Font = new Font("Segoe UI", 9F);
+            BuildLayout(); timer.Interval = 15000; timer.Tick += delegate { RefreshIntegral(); }; Shown += delegate { RefreshIntegral(); timer.Start(); }; FormClosing += delegate { integralParada = true; timer.Stop(); };
         }
         private void BuildLayout()
         {
             TableLayoutPanel page = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(18), ColumnCount = 1, RowCount = 3 }; page.RowStyles.Add(new RowStyle(SizeType.AutoSize)); page.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); page.RowStyles.Add(new RowStyle(SizeType.AutoSize)); Controls.Add(page);
             FlowLayoutPanel header = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Fill }; Label title = new Label { Text = "BONIFICADOR", AutoSize = true, Font = new Font(Font.FontFamily, 17F, FontStyle.Bold), Padding = new Padding(0, 0, 28, 8) }; status.AutoSize = true; status.Padding = new Padding(0, 7, 28, 8); status.Text = "Contrato: verificando"; header.Controls.Add(title); header.Controls.Add(status); page.Controls.Add(header, 0, 0);
-            TabControl tabs = new TabControl { Dock = DockStyle.Fill }; tabs.TabPages.Add(FilaTab()); tabs.TabPages.Add(ResultadosTab()); tabs.TabPages.Add(ConferenciaTab()); tabs.TabPages.Add(AuditoriaTab()); tabs.SelectedIndexChanged += delegate { if (tabs.SelectedIndex == 2 && funcao.Items.Count == 0) LoadFunctions(); }; page.Controls.Add(tabs, 0, 1);
+            TabControl tabs = new TabControl { Dock = DockStyle.Fill }; tabs.TabPages.Add(IntegralTab()); tabs.TabPages.Add(FilaTab()); tabs.TabPages.Add(ResultadosTab()); tabs.TabPages.Add(ConferenciaTab()); tabs.TabPages.Add(AuditoriaTab()); tabs.SelectedIndexChanged += delegate { if (tabs.SelectedIndex == 3 && funcao.Items.Count == 0) LoadFunctions(); }; page.Controls.Add(tabs, 0, 1);
             page.Controls.Add(new Label { AutoSize = true, Text = "Aplicativo local. O navegador não acessa o banco. A fila vem apenas do contrato canônico; nenhum fallback legado é usado.", ForeColor = Color.DimGray, Padding = new Padding(0, 10, 0, 0) }, 0, 2);
+        }
+        private TabPage IntegralTab()
+        {
+            TabPage tab = new TabPage("Lote integral atual");
+            FlowLayoutPanel box = new FlowLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(16), FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoScroll = true };
+            tab.Controls.Add(box);
+            box.Controls.Add(new Label { AutoSize = true, MaximumSize = new Size(1150, 0), Text = "Primeiro confira e reaproveite os bônus conformes. Depois calcule somente as exceções. A conferência usa as regras atuais, independentemente do nome da versão antiga.", Padding = new Padding(0, 0, 0, 18) });
+            FlowLayoutPanel actions = new FlowLayoutPanel { AutoSize = true };
+            integralReusar.Text = "REAPROVEITAR CONFORMES"; integralCalcular.Text = "CALCULAR EXCEÇÕES"; integralParar.Text = "PARAR APÓS A FATIA";
+            Button refresh = new Button { Text = "ATUALIZAR", AutoSize = true };
+            foreach (Button b in new[] { integralReusar, integralCalcular, integralParar }) { b.AutoSize = true; b.Enabled = false; actions.Controls.Add(b); }
+            actions.Controls.Add(refresh); box.Controls.Add(actions);
+            integralResumo.AutoSize = true; integralResumo.MaximumSize = new Size(1150, 0); integralResumo.Padding = new Padding(0, 18, 0, 0); integralResumo.Text = "Consultando o lote..."; box.Controls.Add(integralResumo);
+            refresh.Click += delegate { RefreshIntegral(); };
+            integralReusar.Click += delegate { ReuseIntegral(); };
+            integralCalcular.Click += delegate { IntegralCommand("calcular"); };
+            integralParar.Click += delegate { integralParada = true; if (!integralReusando) IntegralCommand("parar"); };
+            return tab;
+        }
+        private void RefreshIntegral()
+        {
+            if (integralConsultando || integralReusando) return;
+            integralConsultando = true;
+            ThreadPool.QueueUserWorkItem(delegate {
+                try {
+                    string body = Program.Get("/api/integral/status");
+                    OnUi(delegate {
+                        try {
+                            if (integralReusando) return;
+                            Dictionary<string, object> response = Map(body), lote = Map(response["lote"]), pipe = Map(response["pipeline"]);
+                            integralLote = Value(lote, "lote_id"); bool active = Bool(pipe, "ativo");
+                            integralReusar.Enabled = !active && Bool(lote, "pode_reaproveitar"); integralCalcular.Enabled = !active && Bool(lote, "pode_calcular"); integralParar.Enabled = active;
+                            status.Text = "Conferência pelas regras vigentes";
+                            integralResumo.Text = !Bool(lote, "existe") ? "Aguardando a fila integral da régua atual." :
+                                "Lote: " + integralLote + "\r\nEstado: " + Value(lote, "estado") + (Bool(lote, "preparado") ? " — preparado" : " — preparo ainda não concluído") +
+                                "\r\n\r\nLinhas: " + Number(lote, "linhas") + "\r\nBônus vinculados: " + Number(lote, "vinculadas") +
+                                "\r\nReaproveitados: " + Number(lote, "reaproveitadas") + "\r\nAinda sem conferência: " + Number(lote, "nao_conferidas") +
+                                "\r\nExceções a calcular: " + Number(lote, "calcular_pendentes") + "\r\nImpedimentos: " + Number(lote, "bloqueadas") +
+                                "\r\n\r\n" + Value(pipe, "mensagem");
+                        } catch (Exception e) { integralResumo.Text = "Não foi possível ler o estado: " + e.Message; integralReusar.Enabled = integralCalcular.Enabled = false; }
+                        finally { integralConsultando = false; }
+                    });
+                } catch (Exception e) { OnUi(delegate { integralResumo.Text = "Consulta indisponível: " + e.Message; integralReusar.Enabled = integralCalcular.Enabled = false; integralConsultando = false; }); }
+            });
+        }
+        private void IntegralCommand(string action)
+        {
+            string id = integralLote; if (String.IsNullOrEmpty(id)) return;
+            integralReusar.Enabled = integralCalcular.Enabled = false;
+            ThreadPool.QueueUserWorkItem(delegate {
+                try { Program.Post("/api/integral/" + action + "?lote_id=" + Uri.EscapeDataString(id)); OnUi(delegate { RefreshIntegral(); }); }
+                catch (Exception e) { OnUi(delegate { integralResumo.Text = "Ação não concluída: " + e.Message; }); }
+            });
+        }
+        private void ReuseIntegral()
+        {
+            string id = integralLote; if (String.IsNullOrEmpty(id) || integralReusando) return;
+            integralReusando = true; integralParada = false; integralReusar.Enabled = integralCalcular.Enabled = false; integralParar.Enabled = true;
+            ThreadPool.QueueUserWorkItem(delegate {
+                int total = 0;
+                try {
+                    while (!integralParada) {
+                        Dictionary<string, object> response = Map(Program.Post("/api/integral/reaproveitar?lote_id=" + Uri.EscapeDataString(id))), result = Map(response["resultado"]);
+                        int count = Number(result, "processadas"); total += count; int observed = total;
+                        OnUi(delegate { integralReusar.Enabled = integralCalcular.Enabled = false; integralParar.Enabled = true; integralResumo.Text = "Lote: " + id + "\r\nLinhas conferidas nesta execução: " + observed + "\r\nAs fatias concluídas estão salvas. A parada ocorre entre fatias."; });
+                        if (Number(result, "bloqueadas") > 0) throw new InvalidOperationException("A conferência encontrou impedimentos. Consulte o estado do lote antes de prosseguir.");
+                        if (count == 0) break;
+                    }
+                    OnUi(delegate { integralReusando = false; integralParar.Enabled = false; RefreshIntegral(); });
+                } catch (Exception e) { OnUi(delegate { integralReusando = false; integralParar.Enabled = false; integralResumo.Text = "Reaproveitamento interrompido: " + e.Message + "\r\nAs fatias anteriores permanecem salvas. ATUALIZAR consulta o banco."; }); }
+            });
         }
         private TabPage FilaTab()
         {
             TabPage tab = new TabPage("Lote do Bonificador"); TableLayoutPanel box = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(12), ColumnCount = 1, RowCount = 6 }; box.RowStyles.Add(new RowStyle(SizeType.AutoSize)); box.RowStyles.Add(new RowStyle(SizeType.AutoSize)); box.RowStyles.Add(new RowStyle(SizeType.AutoSize)); box.RowStyles.Add(new RowStyle(SizeType.AutoSize)); box.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); box.RowStyles.Add(new RowStyle(SizeType.Absolute, 135F)); tab.Controls.Add(box);
-            box.Controls.Add(new Label { AutoSize = true, Text = "Lote canônico: descobre somente linhas com Otimizador concluído e Bonificador ausente. Publicação permanece desligada." }, 0, 0);
-            FlowLayoutPanel actions = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Fill }; iniciar.Text = "INICIAR / RETOMAR"; pausar.Text = "PAUSAR"; parar.Text = "PARAR LOTE"; atualizar.Text = "ATUALIZAR"; pausar.Enabled = parar.Enabled = false; iniciar.AutoSize = pausar.AutoSize = parar.AutoSize = atualizar.AutoSize = true; iniciar.Click += delegate { ActionLote("/api/lote/iniciar"); }; pausar.Click += delegate { ActionLote("/api/lote/pausar"); }; parar.Click += delegate { ActionLote("/api/lote/parar"); }; atualizar.Click += delegate { RefreshQueue(true); }; actions.Controls.Add(iniciar); actions.Controls.Add(pausar); actions.Controls.Add(parar); actions.Controls.Add(atualizar); box.Controls.Add(actions, 0, 1);
+            box.Controls.Add(new Label { AutoSize = true, Text = "Lote V9 preservado somente para consulta histórica. Para a rodada atual, use a aba Lote integral atual." }, 0, 0);
+            FlowLayoutPanel actions = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Fill }; iniciar.Text = "V9 DESATIVADO"; pausar.Text = "PAUSA V9 DESATIVADA"; parar.Text = "PARADA V9 DESATIVADA"; atualizar.Text = "ATUALIZAR CONSULTA"; iniciar.Enabled = pausar.Enabled = parar.Enabled = false; iniciar.AutoSize = pausar.AutoSize = parar.AutoSize = atualizar.AutoSize = true; atualizar.Click += delegate { RefreshQueue(true); }; actions.Controls.Add(iniciar); actions.Controls.Add(pausar); actions.Controls.Add(parar); actions.Controls.Add(atualizar); box.Controls.Add(actions, 0, 1);
             andamento.AutoSize = true; andamento.Text = "Estado: consultando"; box.Controls.Add(andamento, 0, 2); FlowLayoutPanel summary = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Fill }; loteIdentificado.AutoSize = true; loteIdentificado.Padding = new Padding(0, 4, 30, 4); totais.AutoSize = true; totais.Padding = new Padding(0, 4, 30, 4); linhaAtual.AutoSize = true; linhaAtual.Padding = new Padding(0, 4, 0, 4); summary.Controls.Add(loteIdentificado); summary.Controls.Add(totais); summary.Controls.Add(linhaAtual); box.Controls.Add(summary, 0, 3);
             TableLayoutPanel gridBox = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 3 }; gridBox.RowStyles.Add(new RowStyle(SizeType.AutoSize)); gridBox.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); gridBox.RowStyles.Add(new RowStyle(SizeType.AutoSize)); progresso.Minimum = 0; progresso.Maximum = 100; progresso.Dock = DockStyle.Top; progresso.Height = 14; gridBox.Controls.Add(progresso, 0, 0); ConfigureGrid(fila, false); gridBox.Controls.Add(fila, 0, 1); FlowLayoutPanel pages = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Fill }; anterior.Text = "ANTERIOR"; proxima.Text = "PRÓXIMA"; anterior.AutoSize = proxima.AutoSize = pagina.AutoSize = true; anterior.Click += delegate { if (offsetFila >= TamanhoPagina) { offsetFila -= TamanhoPagina; RefreshQueue(true); } }; proxima.Click += delegate { offsetFila += TamanhoPagina; RefreshQueue(true); }; pages.Controls.Add(anterior); pages.Controls.Add(proxima); pages.Controls.Add(pagina); gridBox.Controls.Add(pages, 0, 2); box.Controls.Add(gridBox, 0, 4); log.Dock = DockStyle.Fill; log.ReadOnly = true; log.Font = new Font("Consolas", 8.5F); log.BackColor = Color.White; box.Controls.Add(log, 0, 5); return tab;
         }
@@ -245,7 +319,7 @@ namespace ClubEfootballBonificador
                     {
                         try
                         {
-                            Dictionary<string, object> root = Map(queueBody), data = Map(root["fila"]), pipe = Map(data["pipeline"]), lote = Map(data["lote"]); status.Text = "Lote disponível; contrato canônico apto"; string state = Value(lote, "estado"), message = Value(pipe, "mensagem"); andamento.Text = "Estado do lote: " + state + " — " + message; bool active = Bool(pipe, "ativo"); iniciar.Enabled = Bool(lote, "pode_iniciar") && !active; pausar.Enabled = Bool(lote, "pode_pausar") && active; parar.Enabled = Bool(lote, "pode_parar");
+                            Dictionary<string, object> root = Map(queueBody), data = Map(root["fila"]), pipe = Map(data["pipeline"]), lote = Map(data["lote"]); status.Text = "V10 ativa; lote V9 em consulta histórica"; string state = Value(lote, "estado"), message = Value(pipe, "mensagem"); andamento.Text = "Estado histórico V9: " + state + " — " + message; iniciar.Enabled = false; pausar.Enabled = false; parar.Enabled = false;
                             loteIdentificado.Text = "Lote: " + Value(lote, "lote_id") + " · publicação: desligada";
                             int eligible = Number(lote, "elegiveis"), pending = Number(lote, "pendentes"), processing = Number(lote, "em_processamento"), completed = Number(lote, "concluidas"), zero = Number(lote, "sem_bonus"), failures = Number(lote, "falhas"); totais.Text = "Elegíveis: " + eligible + " | Pendentes: " + pending + " | Em processamento: " + processing + " | Concluídas: " + completed + " | Sem bônus: " + zero + " | Falhas: " + failures;
                             Dictionary<string, object> current = lote.ContainsKey("linha_atual") && lote["linha_atual"] is Dictionary<string, object> ? (Dictionary<string, object>)lote["linha_atual"] : (pipe.ContainsKey("linha_atual") && pipe["linha_atual"] is Dictionary<string, object> ? (Dictionary<string, object>)pipe["linha_atual"] : new Dictionary<string, object>()); linhaAtual.Text = current.Count == 0 ? "Linha atual: nenhuma" : "Linha atual: " + CartaExibicao(current) + " · " + FuncaoExibicao(current) + " · " + PosicaoExibicao(current); int denominator = Math.Max(1, completed + zero + failures + pending + processing); progresso.Value = Math.Min(100, Math.Max(0, (int)Math.Round(100.0 * (completed + zero + failures) / denominator)));
@@ -264,7 +338,7 @@ namespace ClubEfootballBonificador
                     {
                         try
                         {
-                            Dictionary<string, object> health = Map(healthBody); bool apt = Bool(health, "pode_rodar"); status.Text = apt ? "Lote disponível; contrato canônico apto" : "Lote disponível; régua bloqueada"; iniciar.Enabled = iniciar.Enabled && apt;
+                            Dictionary<string, object> health = Map(healthBody); bool apt = Bool(health, "pode_rodar"); status.Text = apt ? "Fórmula V10 apta; lote V9 somente leitura" : "Fórmula V10 bloqueada"; iniciar.Enabled = false;
                         }
                         catch (Exception error) { status.Text = "Fila disponível; régua indisponível"; log.Text = "Consulta da régua: " + error.Message + Environment.NewLine + log.Text; }
                         finally { consultando = false; }
@@ -300,7 +374,7 @@ namespace ClubEfootballBonificador
         }
         private void Audit() { RichTextBox target = auditoria.Tag as RichTextBox; target.Text = "Consultando auditoria em segundo plano..."; ThreadPool.QueueUserWorkItem(delegate { try { string body = Program.Get("/api/auditoria"); OnUi(delegate { try { target.Text = json.Serialize(Map(body)); } catch (Exception error) { target.Text = "Auditoria indisponível: " + error.Message; } }); } catch (Exception error) { OnUi(delegate { target.Text = "Auditoria indisponível: " + error.Message; }); } }); }
         private Dictionary<string, object> Map(object value) { Dictionary<string, object> map = value as Dictionary<string, object>; if (map == null) throw new InvalidOperationException("Resposta local inválida."); return map; }
-        private Dictionary<string, object> Map(string body) { return Map(json.DeserializeObject(body)); }
+        private Dictionary<string, object> Map(string body) { return Map(new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue }.DeserializeObject(body)); }
         private List<object> List(Dictionary<string, object> map, string key) { if (!map.ContainsKey(key) || map[key] == null || map[key] is string) return new List<object>(); IEnumerable sequence = map[key] as IEnumerable; if (sequence == null) return new List<object>(); List<object> result = new List<object>(); foreach (object item in sequence) result.Add(item); return result; }
         private string Value(Dictionary<string, object> map, string key) { return map.ContainsKey(key) && map[key] != null ? Convert.ToString(map[key]) : "—"; }
         private string LinhaId(Dictionary<string, object> map) { string id = Value(map, "build_linha_card_id"); return id == "—" ? Value(map, "linha_id") : id; }

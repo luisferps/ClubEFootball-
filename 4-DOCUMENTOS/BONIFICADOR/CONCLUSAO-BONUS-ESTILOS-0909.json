@@ -1,0 +1,185 @@
+{
+  "linhas": [
+    {
+      "linha": 403298,
+      "estado": "concluida",
+      "o_atual": null,
+      "nota_final": "101.5878657889148439",
+      "nota_confere": true,
+      "bonus_corrigido": 1.5,
+      "fila_preservada": true,
+      "estado_otimizador": "pendente",
+      "bonus_na_publicacao": true,
+      "o_publicado_preservado": true
+    },
+    {
+      "linha": 403305,
+      "estado": "concluida",
+      "o_atual": null,
+      "nota_final": "100.9998523010655180",
+      "nota_confere": true,
+      "bonus_corrigido": 1.5,
+      "fila_preservada": true,
+      "estado_otimizador": "pendente",
+      "bonus_na_publicacao": true,
+      "o_publicado_preservado": true
+    },
+    {
+      "linha": 403306,
+      "estado": "concluida",
+      "o_atual": null,
+      "nota_final": "103.4775307834804402",
+      "nota_confere": true,
+      "bonus_corrigido": 1.5,
+      "fila_preservada": true,
+      "estado_otimizador": "pendente",
+      "bonus_na_publicacao": true,
+      "o_publicado_preservado": true
+    },
+    {
+      "linha": 403307,
+      "estado": "concluida",
+      "o_atual": 69379,
+      "nota_final": "97.9917391771404018",
+      "nota_confere": true,
+      "bonus_corrigido": 1.5,
+      "fila_preservada": true,
+      "estado_otimizador": "concluido",
+      "bonus_na_publicacao": true,
+      "o_publicado_preservado": true
+    },
+    {
+      "linha": 403308,
+      "estado": "concluida",
+      "o_atual": 69380,
+      "nota_final": "98.9724915782706525",
+      "nota_confere": true,
+      "bonus_corrigido": 1.5,
+      "fila_preservada": true,
+      "estado_otimizador": "concluido",
+      "bonus_na_publicacao": true,
+      "o_publicado_preservado": true
+    },
+    {
+      "linha": 403309,
+      "estado": "concluida",
+      "o_atual": null,
+      "nota_final": "103.2341917331095258",
+      "nota_confere": true,
+      "bonus_corrigido": 1.5,
+      "fila_preservada": true,
+      "estado_otimizador": "pendente",
+      "bonus_na_publicacao": true,
+      "o_publicado_preservado": true
+    },
+    {
+      "linha": 403310,
+      "estado": "concluida",
+      "o_atual": null,
+      "nota_final": "101.2472891696750903",
+      "nota_confere": true,
+      "bonus_corrigido": 1.5,
+      "fila_preservada": true,
+      "estado_otimizador": "pendente",
+      "bonus_na_publicacao": true,
+      "o_publicado_preservado": true
+    },
+    {
+      "linha": 403323,
+      "estado": "concluida",
+      "o_atual": null,
+      "nota_final": "101.0717037347880822",
+      "nota_confere": true,
+      "bonus_corrigido": 1,
+      "fila_preservada": true,
+      "estado_otimizador": "pendente",
+      "bonus_na_publicacao": true,
+      "o_publicado_preservado": true
+    },
+    {
+      "linha": 403328,
+      "estado": "concluida",
+      "o_atual": 69400,
+      "nota_final": "104.0352741114523914",
+      "nota_confere": true,
+      "bonus_corrigido": 1,
+      "fila_preservada": true,
+      "estado_otimizador": "concluido",
+      "bonus_na_publicacao": true,
+      "o_publicado_preservado": true
+    }
+  ],
+  "status": {
+    "erros": 0,
+    "total": 67795,
+    "contrato": "correcao-estilos-v12",
+    "pendentes": 0,
+    "preparada": true,
+    "concluidas": 67795,
+    "corrigidas": 67795,
+    "ultimo_erro": null,
+    "concluida_em": "2026-09-09T08:13:50.106412+00:00",
+    "publicacoes_total": 7455,
+    "publicacoes_concluidas": 7455,
+    "producao_geral_liberada": false
+  },
+  "site": [
+    {
+      "linha_id": 403298,
+      "estado": null,
+      "linha_exposta": 403298,
+      "nota_exposta": "101.5878657889148439"
+    },
+    {
+      "linha_id": 403305,
+      "estado": null,
+      "linha_exposta": 403305,
+      "nota_exposta": "100.9998523010655180"
+    },
+    {
+      "linha_id": 403306,
+      "estado": null,
+      "linha_exposta": 403306,
+      "nota_exposta": "103.4775307834804402"
+    },
+    {
+      "linha_id": 403307,
+      "estado": null,
+      "linha_exposta": 403307,
+      "nota_exposta": "97.9917391771404018"
+    },
+    {
+      "linha_id": 403308,
+      "estado": null,
+      "linha_exposta": 403308,
+      "nota_exposta": "98.9724915782706525"
+    },
+    {
+      "linha_id": 403309,
+      "estado": null,
+      "linha_exposta": 403309,
+      "nota_exposta": "103.2341917331095258"
+    },
+    {
+      "linha_id": 403310,
+      "estado": null,
+      "linha_exposta": 403310,
+      "nota_exposta": "101.2472891696750903"
+    },
+    {
+      "linha_id": 403323,
+      "estado": null,
+      "linha_exposta": 403323,
+      "nota_exposta": "101.0717037347880822"
+    },
+    {
+      "linha_id": 403328,
+      "estado": null,
+      "linha_exposta": 403328,
+      "nota_exposta": "104.0352741114523914"
+    }
+  ],
+  "migracao": "20260909081108_corrigir_filtro_encerramento_executor_estilos_v12",
+  "maquina2_atualizacao_confirmada_pelo_operador": true,
+  "maquina2_revisao": "5ff9a0bc25cf408982348990cb4c800b"
+}

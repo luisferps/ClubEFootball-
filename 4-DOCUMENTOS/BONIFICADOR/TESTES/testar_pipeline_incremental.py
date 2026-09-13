@@ -8,6 +8,7 @@ import json
 import os
 import runpy
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -20,14 +21,15 @@ def regua() -> dict:
     return {
         "pode_rodar": True,
         "falta_o_que": [],
-        "contrato": "bonificador-regua-v1",
+        "contrato": "bonificador-regua-v3",
         "contrato_fingerprint": "r" * 64,
+        "formula_fingerprint": "2e80a07d51f2bc8f456f9710c82717d38e3142cb3d52fd325b7b587c58ed2879",
         "parametro": {"bonus_corpo_max": 1.5, "estilo_ativo": 1.0,
                       "estilo_ativo_secundario": 0.5, "pe_ruim_teto": 1.0,
                       "pe_ruim_frequencia_0": 0.0, "pe_ruim_precisao_0": 0.0,
                       "estilo_ia_ponto": 1.0, "estilo_ia_teto": 4},
         "molde_corpo": {"1": {"altura": {"cortes": [170, 175, 180, 185],
-                                            "peso": 1.0, "direcao": "+"}}},
+                                            "peso": 1.0, "direcao": 1}}},
         "corpo_ordem": {"0": {"nosso": "altura"}},
         "casa": {}, "liga": {}, "posicao_slot": {"3": "ofensivo"},
     }
@@ -36,22 +38,25 @@ def regua() -> dict:
 def contexto() -> dict:
     return {"build_linha_card_id": 99, "card_id": "cardo-1", "funcao_id": 1,
             "funcao_codigo": "f-1", "posicao_id": 3, "carta_versao": "cv-1",
-            "carta_fingerprint": "c" * 64, "contrato_versao": "bonificador-regua-v1",
-            "contrato_fingerprint": "r" * 64, "formula_fingerprint": "f" * 64}
+            "carta_fingerprint": "c" * 64, "contrato_versao": "bonificador-regua-v3",
+            "contrato_fingerprint": "r" * 64,
+            "formula_fingerprint": "2e80a07d51f2bc8f456f9710c82717d38e3142cb3d52fd325b7b587c58ed2879"}
 
 
 def carta(apta: bool) -> dict:
     return {"pode_rodar": apta, "falta_o_que": [] if apta else ["corpo incompleto"],
             "card_id": "cardo-1", "completude_motor": {"apto_motor": apta,
             "fingerprint": "c" * 64}, "carta_versao": "cv-1",
-            "carta_fingerprint": "c" * 64, "contrato_versao": "bonificador-regua-v1",
+            "carta_fingerprint": "c" * 64, "contrato_versao": "bonificador-regua-v3",
             "corpo": [182], "pe_ruim_uso": 0, "pe_ruim_precisao": 0,
             "slot1_id_jogo": None, "slot2_id_jogo": None, "posicao_id": 3,
             "estilos_ia": []}
 
 
-def executar(sequencia_contexto: list[list[dict]], apta: bool):
+def executar(sequencia_contexto: list[list[dict]], apta: bool,
+             falhas_transitorias: int = 0):
     chamadas, esperas, escritas = [], [], []
+    falhas_restantes = falhas_transitorias
     original_urlopen, original_open, original_sleep = urllib.request.urlopen, builtins.open, time.sleep
 
     class Resposta:
@@ -61,14 +66,20 @@ def executar(sequencia_contexto: list[list[dict]], apta: bool):
         def read(self): return json.dumps(self.valor).encode("utf-8")
 
     def abrir(req, timeout=0):
+        nonlocal falhas_restantes
         nome = req.full_url.rsplit("/", 1)[-1]
         corpo = json.loads(req.data.decode("utf-8"))
         chamadas.append(nome)
-        if nome == "bonificador_regua_v2": return Resposta(regua())
-        if nome == "bonificador_contexto_fila_v5":
+        if nome == "bonificador_regua_v3": return Resposta(regua())
+        if nome == "bonificador_contexto_fila_v6":
             return Resposta(sequencia_contexto.pop(0) if sequencia_contexto else [])
-        if nome == "bonificador_carta_v2": return Resposta(carta(apta))
-        if nome == "gravar_build_bonificador_v4":
+        if nome == "bonificador_carta_v2":
+            if falhas_restantes:
+                falhas_restantes -= 1
+                raise urllib.error.URLError(
+                    ConnectionResetError(10054, "conexão encerrada pelo host remoto"))
+            return Resposta(carta(apta))
+        if nome == "gravar_build_bonificador_v5":
             payload = corpo["p_resultado"]
             escritas.append(payload)
             return Resposta({"gravado": True, "idempotente": False,
@@ -86,6 +97,7 @@ def executar(sequencia_contexto: list[list[dict]], apta: bool):
     urllib.request.urlopen, builtins.open, time.sleep = abrir, abrir_arquivo, lambda segundos: esperas.append(segundos)
     os.environ["CLUBEF_BONIFICADOR_MAX_RODADAS"] = str(len(sequencia_contexto))
     os.environ["CLUBEF_BONIFICADOR_INTERVALO_SEGUNDOS"] = "1"
+    os.environ["CLUBEF_BONIFICADOR_RPC_ESPERA_SEGUNDOS"] = "1"
     try:
         try:
             runpy.run_path(str(MOTOR), run_name="__main__")
@@ -95,22 +107,30 @@ def executar(sequencia_contexto: list[list[dict]], apta: bool):
         urllib.request.urlopen, builtins.open, time.sleep = original_urlopen, original_open, original_sleep
         os.environ.pop("CLUBEF_BONIFICADOR_MAX_RODADAS", None)
         os.environ.pop("CLUBEF_BONIFICADOR_INTERVALO_SEGUNDOS", None)
+        os.environ.pop("CLUBEF_BONIFICADOR_RPC_ESPERA_SEGUNDOS", None)
     return chamadas, esperas, escritas
 
 
 def main():
     chamadas, esperas, escritas = executar([[], [contexto()], []], apta=True)
-    assert chamadas.count("bonificador_contexto_fila_v5") == 3, chamadas
-    assert chamadas.count("bonificador_regua_v2") == 3, chamadas
+    assert chamadas.count("bonificador_contexto_fila_v6") == 3, chamadas
+    assert chamadas.count("bonificador_regua_v3") == 3, chamadas
     assert len(escritas) == 1 and escritas[0]["build_linha_card_id"] == 99
 
     chamadas, esperas, escritas = executar([[contexto()], []], apta=False)
-    assert chamadas.count("bonificador_contexto_fila_v5") == 2, chamadas
+    assert chamadas.count("bonificador_contexto_fila_v6") == 2, chamadas
     assert escritas == [], "linha incompleta chamou o writer"
     texto_motor = MOTOR.read_text(encoding="utf-8")
     assert "CLUBEF_BONIFICADOR_STOP_FILE" in texto_motor
     assert "parada_solicitada()" in texto_motor
-    print("PIPELINE_INCREMENTAL_OK vazio_espera_reconsulta=sim apto_grava=1 incompleto_grava=0")
+
+    chamadas, esperas, escritas = executar(
+        [[contexto()]], apta=True, falhas_transitorias=2)
+    assert chamadas.count("bonificador_carta_v2") == 3, chamadas
+    assert len(escritas) == 1, "retry transitório não chegou ao writer"
+    assert esperas[:2] == [1, 2], esperas
+    print("PIPELINE_INCREMENTAL_OK vazio_espera_reconsulta=sim apto_grava=1 "
+          "incompleto_grava=0 retry_10054=sim")
 
 
 if __name__ == "__main__":

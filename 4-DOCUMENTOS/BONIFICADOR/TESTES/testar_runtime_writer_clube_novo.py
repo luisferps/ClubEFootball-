@@ -47,8 +47,8 @@ def apt_row() -> dict:
         "carta_fingerprint": "c" * 64,
         "contrato_versao": "bonificador-carta-v1",
         "contrato_fingerprint": "d" * 64,
-        "formula_fingerprint": "e" * 64,
-        "motor_bonus": "v9-3108-clube-novo-writer-v1",
+        "formula_fingerprint": "2e80a07d51f2bc8f456f9710c82717d38e3142cb3d52fd325b7b587c58ed2879",
+        "motor_bonus": "v11-0709-estilo-posicao-oficial-v1",
         "b_corpo": 0.4,
         "b_pe_ruim": 0.2,
         "b_estilo": 1.5,
@@ -57,6 +57,9 @@ def apt_row() -> dict:
         "b_ia": 0.25,
         "b_total": 2.35,
         "detalhe": {"altura": 0.4},
+        "corpo_soma": 4.0,
+        "corpo_pct": 0.2667,
+        "corpo_maximo": 15.0,
         "faltou": [],
     }
 
@@ -64,14 +67,14 @@ def apt_row() -> dict:
 def run() -> None:
     body_result = namespace["bonus_do_corpo_writer"](
         {"10": {
-            "altura": {"idx": 0, "cortes": [170, 175, 180, 185], "peso": 2},
-            "peso": {"idx": 1, "cortes": [60, 70, 80, 90], "peso": 1},
+            "altura": {"idx": 0, "cortes": [170, 175, 180, 185], "peso": 2, "direcao": 1},
+            "peso": {"idx": 1, "cortes": [60, 70, 80, 90], "peso": 1, "direcao": 0},
         }},
         [182, 76], 10, 1.5,
     )
     assert body_result is not None
     body_bonus, _body_sum, _body_pct, body_detail = body_result
-    assert body_bonus == 0.5 and _body_sum == 2.0 and _body_pct == 0.6667
+    assert body_bonus == 0.75 and _body_sum == 2.0 and _body_pct == 0.5
     assert body_detail and all(isinstance(value, (int, float)) for value in body_detail.values())
     assert sum(Decimal(str(value)) for value in body_detail.values()) == Decimal(str(body_bonus))
 
@@ -95,6 +98,12 @@ def run() -> None:
         assert bonus(rule, slot1, slot2, 10, 3) == detail[0]
         assert detail[0] == round(detail[1] + detail[2], 4)
 
+    # A função do sistema não interfere: só a posição compatível do jogo liga
+    # cada parcela de estilo.
+    assert bonus(base, 101, 202, 10, 3) == 1.5
+    assert bonus(base, 101, 202, 99, 3) == 1.5
+    assert bonus(base, 101, 202, 10, 4) == 0.0
+
     # Cobertura integral das combinações estruturais da fórmula: slot que
     # manda, slot vazio/preenchido, casa verdadeira/falsa e ativação secundária.
     for leading in ("ofensivo", "defensivo"):
@@ -110,7 +119,7 @@ def run() -> None:
 
     def fake_rpc(name, body):
         calls.append((name, body))
-        assert name == "gravar_build_bonificador_v4"
+        assert name == "gravar_build_bonificador_v5"
         payload = body["p_resultado"]
         assert set(payload) == {
             "build_linha_card_id", "card_id", "funcao_id", "posicao_id",
@@ -119,6 +128,7 @@ def run() -> None:
             "bonus_pe", "bonus_fisico_total", "bonus_fisico_detalhe",
             "bonus_posicao", "bonus_playstyle_1", "bonus_playstyle_2",
             "bonus_ia", "bonus_outros", "bonus_total",
+            "corpo_soma", "corpo_pct", "corpo_maximo",
         }
         assert payload["bonus_posicao"] == 0.0
         assert payload["bonus_outros"] == {}
@@ -154,7 +164,7 @@ def run() -> None:
     assert all(call[0] != "gravar_bonus" for call in calls)
 
     def divergent_rpc(name, body):
-        assert name == "gravar_build_bonificador_v4"
+        assert name == "gravar_build_bonificador_v5"
         payload = body["p_resultado"]
         return {
             "gravado": True,
@@ -176,7 +186,7 @@ def run() -> None:
 
     assert "rpc('gravar_bonus'" not in SOURCE
     assert "rpc('bonificador_pares_v1'" not in SOURCE
-    assert "bonificador_contexto_fila_v4" in SOURCE
+    assert "bonificador_contexto_fila_v6" in SOURCE
     assert "Content-Profile" not in SOURCE and "Accept-Profile" not in SOURCE
     print("OK: bloqueado não escreve; apto usa somente writer público para clube_novo; retorno divergente falha fechado")
 

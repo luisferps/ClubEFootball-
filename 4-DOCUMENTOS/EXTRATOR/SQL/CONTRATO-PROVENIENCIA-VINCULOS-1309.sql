@@ -1,0 +1,1 @@
+update clube_novo.contrato_leitura_escritor_destino set colunas_escrita=array(select distinct c from unnest(colunas_escrita||array['contrato_vinculos_jogo']) c order by c), tipos_colunas=tipos_colunas||jsonb_build_object('contrato_vinculos_jogo','text') where escritor_id='extrator.envelope.dimensoes.v1' and destino_schema='clube_novo' and destino_tabela='carta_jogo' and ativo;

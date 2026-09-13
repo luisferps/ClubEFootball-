@@ -1,6 +1,7 @@
 ﻿param(
   [ValidateSet('Menu', 'Status', 'Configurar', 'Iniciar', 'Pausar', 'Retomar', 'Parar', 'Verificar')]
-  [string]$Acao = 'Menu'
+  [string]$Acao = 'Menu',
+  [switch]$Automatico
 )
 
 $ErrorActionPreference = 'Stop'
@@ -189,6 +190,7 @@ function Mostrar-Status {
   Write-Host ('Lotes seguros fechados: {0}' -f [int]$estado.safe_batches)
   Write-Host ('Links gravados e relidos: {0}' -f [int]$estado.updated)
   Write-Host ('Conflitos: {0}' -f [int]$estado.conflicts)
+  if ($estado.PSObject.Properties.Name -contains 'source_missing_images' -and $null -ne $estado.source_missing_images) { Write-Host ('Sem imagem na fonte (efHub 404): {0}' -f [int]$estado.source_missing_images) }
   if ($null -ne $estado.final_missing) { Write-Host ('Pendências na última leitura: {0}' -f [int]$estado.final_missing) }
   if ($estado.PSObject.Properties.Name -contains 'last_safe_batch' -and $null -ne $estado.last_safe_batch) { Write-Host ('Último lote seguro: {0}' -f [int]$estado.last_safe_batch) }
   if ($estado.PSObject.Properties.Name -contains 'message' -and -not [string]::IsNullOrWhiteSpace([string]$estado.message)) { Write-Host ('Mensagem: ' + [string]$estado.message) -ForegroundColor Green }
@@ -206,8 +208,17 @@ function Confirmar-Inicio {
   Write-Host '- nunca substituir link já existente;'
   Write-Host '- reler o banco após cada APPLY.'
   Write-Host ''
-  & choice.exe /C SN /N /M 'Deseja INICIAR/RETOMAR agora? [S/N] '
-  return $LASTEXITCODE -eq 1
+  if ($Automatico) {
+    Write-Host 'Modo automatico: confirmado sem pergunta.' -ForegroundColor Cyan
+    return $true
+  }
+  for (;;) {
+    $resposta = [string](Read-Host 'Deseja INICIAR/RETOMAR agora? Digite S para SIM ou N para NAO')
+    $resposta = $resposta.Trim().ToUpperInvariant()
+    if ($resposta -eq 'S') { return $true }
+    if ($resposta -eq 'N') { return $false }
+    Write-Host 'Responda apenas S ou N.' -ForegroundColor Yellow
+  }
 }
 
 function Esperar-Estado-Inicial([string]$RunId, $Processo, [string]$StderrPath) {
@@ -225,6 +236,10 @@ function Esperar-Estado-Inicial([string]$RunId, $Processo, [string]$StderrPath) 
         Write-Host ('CONCLUÍDO: ' + [string]$estado.message) -ForegroundColor Green
         Write-Host ('Log: ' + [string]$estado.log_file)
         return 'completed'
+      }
+      if ([string]$estado.status -eq 'waiting_sources') {
+        Write-Host ('AGUARDANDO FONTE: ' + [string]$estado.message) -ForegroundColor Yellow
+        return 'waiting_sources'
       }
       if ([string]$estado.status -in @('paused', 'stopped_safe')) { return [string]$estado.status }
       if ([string]$estado.status -eq 'running' -and [string]$estado.phase -notin @('starting', 'discovering')) { return 'running' }

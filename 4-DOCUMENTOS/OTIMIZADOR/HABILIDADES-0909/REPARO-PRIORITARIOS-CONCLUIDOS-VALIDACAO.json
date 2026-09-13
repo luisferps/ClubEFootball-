@@ -1,0 +1,20 @@
+{
+  "arquivos": [
+    {
+      "caminho": "bin/OperacaoLocalJson.exe",
+      "sha256": "5bd4d814f5a819a9e7d9f413053ee97951c5d24c01f115dbcece13d39d7b2ac7"
+    },
+    {
+      "caminho": "programas/operacao_local_json.py",
+      "sha256": "f69b19351dca5810b28ca2084453cd50128ab899042f8d91495ed7cdd9b927a3"
+    }
+  ],
+  "instalador_codigo": 0,
+  "exe_codigo": 0,
+  "exe_saida": "Fila global conferida: 0 linhas em 0 lotes.\r\n",
+  "fila_preservada": true,
+  "resultados_preservados": true,
+  "testes_prioridade": 15,
+  "testes_operacao": 21,
+  "rede_utilizada_no_teste": false
+}

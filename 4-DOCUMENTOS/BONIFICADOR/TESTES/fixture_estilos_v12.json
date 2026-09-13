@@ -1,0 +1,3672 @@
+{
+  "regua": {
+    "casa": {
+      "257": {
+        "9": 15,
+        "10": 15,
+        "12": 2
+      },
+      "258": {
+        "8": 9,
+        "11": 9,
+        "12": 2
+      },
+      "259": {
+        "12": 1
+      },
+      "260": {
+        "9": 15,
+        "10": 15
+      },
+      "261": {
+        "5": 10,
+        "8": 8,
+        "11": 8
+      },
+      "262": {
+        "5": 11,
+        "6": 12,
+        "7": 12,
+        "8": 9,
+        "11": 9
+      },
+      "266": {
+        "1": 19
+      },
+      "267": {
+        "2": 7,
+        "3": 7
+      },
+      "268": {
+        "2": 6,
+        "3": 6
+      },
+      "269": {
+        "11": 3,
+        "12": 3
+      },
+      "270": {
+        "5": 10,
+        "6": 12,
+        "7": 12,
+        "8": 8,
+        "9": 14,
+        "10": 14,
+        "11": 8
+      },
+      "271": {
+        "1": 19
+      },
+      "274": {
+        "6": 13,
+        "7": 13,
+        "9": 14,
+        "10": 14
+      },
+      "275": {
+        "6": 13,
+        "7": 13,
+        "9": 14,
+        "10": 14
+      },
+      "276": {
+        "4": 16,
+        "5": 10
+      },
+      "277": {
+        "2": 7,
+        "3": 7
+      },
+      "278": {
+        "12": 1
+      },
+      "329": {
+        "1": 18,
+        "2": 6,
+        "3": 6,
+        "4": 17,
+        "5": 10
+      },
+      "336": {
+        "0": 5
+      },
+      "337": {
+        "0": 4
+      },
+      "391": {
+        "4": 16,
+        "5": 11,
+        "6": 13,
+        "7": 13
+      },
+      "392": {
+        "4": 17
+      }
+    },
+    "liga": {
+      "257": [
+        12
+      ],
+      "258": [
+        8,
+        11,
+        12
+      ],
+      "259": [
+        12
+      ],
+      "260": [
+        9,
+        10
+      ],
+      "261": [
+        8,
+        11
+      ],
+      "262": [
+        5,
+        6,
+        7,
+        8,
+        11
+      ],
+      "266": [
+        1
+      ],
+      "267": [
+        2,
+        3
+      ],
+      "268": [
+        2,
+        3
+      ],
+      "269": [
+        11,
+        12
+      ],
+      "270": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "271": [
+        1
+      ],
+      "274": [
+        6,
+        7,
+        9,
+        10
+      ],
+      "275": [
+        6,
+        7,
+        9,
+        10
+      ],
+      "276": [
+        4,
+        5
+      ],
+      "277": [
+        2,
+        3
+      ],
+      "278": [
+        12
+      ],
+      "291": [
+        0
+      ],
+      "329": [
+        1,
+        4,
+        5
+      ],
+      "336": [
+        0
+      ],
+      "337": [
+        0
+      ],
+      "344": [
+        9,
+        10,
+        11,
+        12
+      ],
+      "345": [
+        9,
+        10,
+        11,
+        12
+      ],
+      "346": [
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "347": [
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "348": [
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "349": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "350": [
+        1,
+        2,
+        3
+      ],
+      "353": [
+        0
+      ],
+      "391": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "392": [
+        4
+      ]
+    },
+    "contrato": "bonificador-regua-v4",
+    "parametro": {
+      "estilo_ativo": 1,
+      "pe_ruim_teto": 1,
+      "estilo_ia_teto": 4,
+      "bonus_corpo_max": 1.5,
+      "estilo_ia_ponto": 1,
+      "pe_ruim_precisao_0": 0,
+      "pe_ruim_precisao_1": 0.4,
+      "pe_ruim_precisao_2": 0.75,
+      "pe_ruim_precisao_3": 1,
+      "pe_ruim_frequencia_0": 0,
+      "pe_ruim_frequencia_1": 0.35,
+      "pe_ruim_frequencia_2": 0.7,
+      "pe_ruim_frequencia_3": 1,
+      "estilo_ativo_secundario": 0.5
+    },
+    "pode_rodar": true,
+    "corpo_ordem": {
+      "0": {
+        "nosso": "altura",
+        "codigo": "PB:248:8",
+        "pode_rodar": true
+      },
+      "1": {
+        "nosso": "coxa",
+        "codigo": "PA:12:0:4",
+        "pode_rodar": true
+      },
+      "2": {
+        "nosso": "panturrilha",
+        "codigo": "PA:12:4:4",
+        "pode_rodar": true
+      },
+      "3": {
+        "nosso": "cintura",
+        "codigo": "PA:8:20:4",
+        "pode_rodar": true
+      },
+      "4": {
+        "nosso": "peito",
+        "codigo": "PA:8:16:4",
+        "pode_rodar": true
+      },
+      "5": {
+        "nosso": "tamBraco",
+        "codigo": "PA:8:24:4",
+        "pode_rodar": true
+      },
+      "6": {
+        "nosso": "tamPescoco",
+        "codigo": "PA:8:4:4",
+        "pode_rodar": true
+      },
+      "7": {
+        "nosso": "comprPerna",
+        "codigo": "PA:12:8:4",
+        "pode_rodar": true
+      },
+      "8": {
+        "nosso": "comprBraco",
+        "codigo": "PA:8:28:4",
+        "pode_rodar": true
+      },
+      "9": {
+        "nosso": "comprPescoco",
+        "codigo": "PA:8:0:4",
+        "pode_rodar": true
+      },
+      "10": {
+        "nosso": "largOmbro",
+        "codigo": "PA:8:12:4",
+        "pode_rodar": true
+      },
+      "11": {
+        "nosso": "altOmbro",
+        "codigo": "PA:8:8:4",
+        "pode_rodar": true
+      }
+    },
+    "falta_o_que": [],
+    "molde_corpo": {
+      "1": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": 1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": -1
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        }
+      },
+      "2": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 1
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": -1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 1
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 1
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        }
+      },
+      "3": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 1
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": -1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": -1
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 1
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        }
+      },
+      "4": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": -1
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            179,
+            184,
+            189,
+            194
+          ],
+          "direcao": -1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 1
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 1
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": -1
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 1
+        }
+      },
+      "5": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": -1
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            179,
+            184,
+            189,
+            194
+          ],
+          "direcao": 1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 1
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 1
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": -1
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 1
+        }
+      },
+      "6": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": -1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        }
+      },
+      "7": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": -1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": 0
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        }
+      },
+      "8": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 1
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": -1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 1
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": -1
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        }
+      },
+      "9": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": -1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        }
+      },
+      "10": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": -1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": -1
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": -1
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        }
+      },
+      "11": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": -1
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": -1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": -1
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": 0
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": -1
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": -1
+        }
+      },
+      "12": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": -1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": 0
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        }
+      },
+      "13": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": 1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 1
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        }
+      },
+      "14": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": -1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": -1
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 1
+        }
+      },
+      "15": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": -1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 1
+        }
+      },
+      "16": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": -1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 1
+        }
+      },
+      "17": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 1
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": 1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": -1
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 1
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        }
+      },
+      "18": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": 1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": 0
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        }
+      },
+      "19": {
+        "coxa": {
+          "idx": 1,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "peito": {
+          "idx": 4,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "altura": {
+          "idx": 0,
+          "peso": 5,
+          "cortes": [
+            171,
+            178,
+            184,
+            191
+          ],
+          "direcao": 1
+        },
+        "cintura": {
+          "idx": 3,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            8
+          ],
+          "direcao": 0
+        },
+        "altOmbro": {
+          "idx": 11,
+          "peso": 1,
+          "cortes": [
+            3,
+            6,
+            8,
+            11
+          ],
+          "direcao": -1
+        },
+        "tamBraco": {
+          "idx": 5,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            7,
+            9
+          ],
+          "direcao": 0
+        },
+        "largOmbro": {
+          "idx": 10,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": -1
+        },
+        "comprBraco": {
+          "idx": 8,
+          "peso": 1,
+          "cortes": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "direcao": -1
+        },
+        "comprPerna": {
+          "idx": 7,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            10,
+            12
+          ],
+          "direcao": 0
+        },
+        "tamPescoco": {
+          "idx": 6,
+          "peso": 1,
+          "cortes": [
+            5,
+            7,
+            9,
+            11
+          ],
+          "direcao": 0
+        },
+        "panturrilha": {
+          "idx": 2,
+          "peso": 1,
+          "cortes": [
+            4,
+            6,
+            8,
+            10
+          ],
+          "direcao": 0
+        },
+        "comprPescoco": {
+          "idx": 9,
+          "peso": 1,
+          "cortes": [
+            4,
+            5,
+            7,
+            8
+          ],
+          "direcao": 1
+        }
+      }
+    },
+    "funcao_molde": {
+      "falso_nove": {
+        "id": 3,
+        "rotulo": "Falso nove",
+        "pode_rodar": true
+      },
+      "ponta_criadora": {
+        "id": 14,
+        "rotulo": "Atacante criador",
+        "pode_rodar": true
+      },
+      "goleiro_ofensivo": {
+        "id": 5,
+        "rotulo": "Goleiro ofensivo",
+        "pode_rodar": true
+      },
+      "lateral_ofensivo": {
+        "id": 7,
+        "rotulo": "Lateral ofensivo",
+        "pode_rodar": true
+      },
+      "segundo_atacante": {
+        "id": 9,
+        "rotulo": "Atacante infiltrador",
+        "pode_rodar": true
+      },
+      "centroavante_fixo": {
+        "id": 1,
+        "rotulo": "Centroavante fixo",
+        "pode_rodar": true
+      },
+      "goleiro_defensivo": {
+        "id": 4,
+        "rotulo": "Goleiro defensivo",
+        "pode_rodar": true
+      },
+      "lateral_defensivo": {
+        "id": 6,
+        "rotulo": "Lateral defensivo",
+        "pode_rodar": true
+      },
+      "zagueiro_de_saida": {
+        "id": 19,
+        "rotulo": "Zagueiro de saída",
+        "pode_rodar": true
+      },
+      "centroavante_movel": {
+        "id": 2,
+        "rotulo": "Centroavante móvel",
+        "pode_rodar": true
+      },
+      "ponta_finalizadora": {
+        "id": 15,
+        "rotulo": "Atacante driblador",
+        "pode_rodar": true
+      },
+      "zagueiro_de_combate": {
+        "id": 18,
+        "rotulo": "Zagueiro de combate",
+        "pode_rodar": true
+      },
+      "meia_central_armador": {
+        "id": 10,
+        "rotulo": "Meia armador",
+        "pode_rodar": true
+      },
+      "volante_de_contencao": {
+        "id": 17,
+        "rotulo": "Volante de contenção",
+        "pode_rodar": true
+      },
+      "meia_de_lado_por_fora": {
+        "id": 13,
+        "rotulo": "Ala cruzador",
+        "pode_rodar": true
+      },
+      "meia_ofensivo_armador": {
+        "id": 8,
+        "rotulo": "Meia ofensivo",
+        "pode_rodar": true
+      },
+      "volante_de_construcao": {
+        "id": 16,
+        "rotulo": "Volante de construção",
+        "pode_rodar": true
+      },
+      "meia_central_de_chegada": {
+        "id": 11,
+        "rotulo": "Meia de arranque",
+        "pode_rodar": true
+      },
+      "meia_de_lado_por_dentro": {
+        "id": 12,
+        "rotulo": "Ala driblador",
+        "pode_rodar": true
+      }
+    },
+    "motor_versao": "v12-0909-estilo-funcao-ativacao-v1",
+    "posicao_slot": {
+      "0": "defensivo",
+      "1": "defensivo",
+      "2": "defensivo",
+      "3": "defensivo",
+      "4": "defensivo",
+      "5": "ofensivo",
+      "6": "ofensivo",
+      "7": "ofensivo",
+      "8": "ofensivo",
+      "9": "ofensivo",
+      "10": "ofensivo",
+      "11": "ofensivo",
+      "12": "ofensivo"
+    },
+    "proveniencia": {
+      "funcao": "clube_novo.funcao_sistema.id",
+      "parametro": "clube_novo.bonificador_parametro",
+      "playstyle": "clube_novo.playstyle.id_jogo",
+      "corpo_ordem": "clube_novo.corpo_ordem.pos",
+      "molde_corpo": "clube_novo.bonificador_molde_corpo(funcao_id,corpo_pos)",
+      "estilo_regra": "clube_novo.bonificador_regra_playstyle(playstyle_id,posicao_id,funcao_id)",
+      "posicao_slot": "clube_novo.bonificador_posicao_slot.posicao_id"
+    },
+    "cardinalidades": {
+      "moldes": 228,
+      "funcoes": 19,
+      "parametros": 14,
+      "posicao_slots": 13,
+      "playstyles_regra": 31,
+      "regras_playstyle": 90
+    },
+    "politica_estilo": {
+      "pontos": {
+        "teto": 1.5,
+        "principal": 1,
+        "secundario": 0.5
+      },
+      "versao": "estilos-funcao-20260909-v1",
+      "excecoes": [
+        {
+          "funcoes": [
+            18,
+            19
+          ],
+          "posicoes": [
+            1
+          ],
+          "playstyle_id": 271,
+          "valor_unico_ativo": 1
+        },
+        {
+          "funcoes": [
+            6
+          ],
+          "posicoes": [
+            2,
+            3
+          ],
+          "playstyle_id": 268,
+          "valor_unico_ativo": 1
+        }
+      ],
+      "basico_id": 256,
+      "ativacao_por": "posicao_escolhida_id",
+      "basico_pontua": false,
+      "principal_por": "funcao_id",
+      "fonte_ativacao": "clube_novo.bonificador_regra_playstyle.da_bonus",
+      "inativo_pontua": false,
+      "normalizacao_slots": "usar_ataque_defesa_efetivos_do_jogo_nao_ordem_fisica_dos_campos",
+      "pendentes_ativacao": [
+        87,
+        95,
+        96,
+        34
+      ],
+      "principal_por_funcao": {
+        "1": "ataque",
+        "2": "ataque",
+        "3": "ataque",
+        "4": "defesa",
+        "5": "defesa",
+        "6": "defesa",
+        "7": "ataque",
+        "8": "ataque",
+        "9": "ataque",
+        "10": "ataque",
+        "11": "ataque",
+        "12": "ataque",
+        "13": "ataque",
+        "14": "ataque",
+        "15": "ataque",
+        "16": "ataque",
+        "17": "defesa",
+        "18": "defesa",
+        "19": "defesa"
+      },
+      "tratamento_pendentes": "aguardar_definicao_do_jogo_em_extracao_futura_sem_inferir_posicoes",
+      "outros_bonus_alterados": false,
+      "motor_otimizador_alterado": false,
+      "promocao_generica_secundario": false
+    },
+    "semantica_fisico": {
+      "borda": "valor <= corte",
+      "clamp": [
+        -1.5,
+        1.5
+      ],
+      "faixas": [
+        -2,
+        -1,
+        0,
+        1,
+        2
+      ],
+      "maximo": "soma de 2 x peso somente das medidas ativas",
+      "versao": "fisico-v10-estilo-posicao-v11",
+      "direcao": "inteiro -1, 0 ou 1",
+      "direcao_zero": "fora do numerador e do maximo"
+    },
+    "estado_implantacao": "aprovada_implantacao_pendente",
+    "estilos_bloqueados": [],
+    "formula_fingerprint": "4c6ad750fd5c8bb218220b5f330d875ea3cd8cbcb6f89bad24a394eb22322db8",
+    "contrato_fingerprint": "b9c8038baa0e141159c73f2b99f249668c5364e492b4cde090fd635daa3f27ae",
+    "liberado_para_producao": false,
+    "politica_estilo_fingerprint": "7ed53bbab831180cde9d247782dd133fe072acadb69bd34871c3f83f28773dc5"
+  },
+  "cartas": [
+    {
+      "v2": {
+        "nome": "Patrick Vieira",
+        "corpo": [
+          192,
+          7,
+          7,
+          2,
+          5,
+          7,
+          5,
+          14,
+          14,
+          6,
+          8,
+          10
+        ],
+        "card_id": "88044145348029",
+        "contrato": "bonificador-carta-v2",
+        "slot1_raw": 32,
+        "slot2_raw": 0,
+        "estilos_ia": [],
+        "pode_rodar": true,
+        "posicao_id": 4,
+        "slot1_nome": "Primeiro volante",
+        "slot2_nome": "Básico",
+        "falta_o_que": [],
+        "pe_ruim_uso": 1,
+        "posicao_raw": "DMF",
+        "carta_versao": "2026-08-27 00:09:52.619221+00",
+        "proveniencia": {
+          "ia": "clube_novo.carta_estilo_ia_jogo.bit_estilo_ia",
+          "pe": "clube_novo.carta_pe_jogo(campo,valor) -> clube_novo.pe(campo,valor)",
+          "carta": "clube_novo.carta_jogo",
+          "corpo": "clube_novo.carta_corpo_jogo -> corpo_ordem.codigo",
+          "slot1": "clube_novo.carta_playstyle_jogo(slot_fisico=1).playstyle_id -> playstyle.id_jogo",
+          "slot2": "clube_novo.carta_playstyle_jogo(slot_fisico=2).playstyle_id -> playstyle.id_jogo",
+          "posicao": "clube_novo.carta_posicao_principal_jogo.posicao_id -> posicao_jogo.id"
+        },
+        "slot1_id_jogo": 392,
+        "slot2_id_jogo": 256,
+        "posicao_codigo": "VOL",
+        "pe_ruim_precisao": 2,
+        "carta_fingerprint": "269fd6b4cd1b5e7ca42b7bf77ba95db615b055fdc6be3e45f103d82e57428fa2",
+        "corpo_cardinalidade": 12,
+        "estilos_ia_cardinalidade": 0,
+        "pe_relacao_cardinalidade": 3,
+        "posicao_relacao_cardinalidade": 1,
+        "playstyle_relacao_cardinalidade": 2
+      },
+      "v3": {
+        "nome": "Patrick Vieira",
+        "corpo": [
+          192,
+          7,
+          7,
+          2,
+          5,
+          7,
+          5,
+          14,
+          14,
+          6,
+          8,
+          10
+        ],
+        "card_id": "88044145348029",
+        "contrato": "bonificador-carta-v3",
+        "slot1_raw": 32,
+        "slot2_raw": 0,
+        "estilos_ia": [],
+        "pode_rodar": true,
+        "posicao_id": 4,
+        "slot1_nome": "Primeiro volante",
+        "slot2_nome": "Primeiro volante",
+        "falta_o_que": [],
+        "pe_ruim_uso": 1,
+        "posicao_raw": "DMF",
+        "carta_versao": "2026-08-27 00:09:52.619221+00",
+        "proveniencia": {
+          "ia": "clube_novo.carta_estilo_ia_jogo.bit_estilo_ia",
+          "pe": "clube_novo.carta_pe_jogo(campo,valor) -> clube_novo.pe(campo,valor)",
+          "carta": "clube_novo.carta_jogo",
+          "corpo": "clube_novo.carta_corpo_jogo -> corpo_ordem.codigo",
+          "slot1": "clube_novo.carta_playstyle_jogo(slot_fisico=1).playstyle_id -> playstyle.id_jogo",
+          "slot2": "clube_novo.carta_playstyle_jogo(slot_fisico=2).playstyle_id -> playstyle.id_jogo",
+          "posicao": "clube_novo.carta_posicao_principal_jogo.posicao_id -> posicao_jogo.id"
+        },
+        "slot1_id_jogo": 392,
+        "slot2_id_jogo": 392,
+        "posicao_codigo": "VOL",
+        "semantica_slots": "1=ataque efetivo; 2=defesa efetiva; raw preservado em seus campos fisicos",
+        "estilos_efetivos": {
+          "ataque_id": 392,
+          "defesa_id": 392,
+          "pode_rodar": true,
+          "falta_o_que": [],
+          "interpretacao": "fase_playstyle_ataque_defesa_v1",
+          "fisico_slot1_id": 392,
+          "fisico_slot2_id": 256
+        },
+        "pe_ruim_precisao": 2,
+        "carta_fingerprint": "269fd6b4cd1b5e7ca42b7bf77ba95db615b055fdc6be3e45f103d82e57428fa2",
+        "corpo_cardinalidade": 12,
+        "estilos_ia_cardinalidade": 0,
+        "pe_relacao_cardinalidade": 3,
+        "posicao_relacao_cardinalidade": 1,
+        "playstyle_relacao_cardinalidade": 2
+      },
+      "card_id": "88044145348029"
+    },
+    {
+      "v2": {
+        "nome": "Marcel Desailly",
+        "corpo": [
+          185,
+          7,
+          2,
+          2,
+          7,
+          2,
+          9,
+          13,
+          7,
+          7,
+          9,
+          7
+        ],
+        "card_id": "89138288270047",
+        "contrato": "bonificador-carta-v2",
+        "slot1_raw": 36,
+        "slot2_raw": 0,
+        "estilos_ia": [],
+        "pode_rodar": true,
+        "posicao_id": 1,
+        "slot1_nome": "O destruidor",
+        "slot2_nome": "Básico",
+        "falta_o_que": [],
+        "pe_ruim_uso": 1,
+        "posicao_raw": "CB",
+        "carta_versao": "2026-08-27 00:09:45.692996+00",
+        "proveniencia": {
+          "ia": "clube_novo.carta_estilo_ia_jogo.bit_estilo_ia",
+          "pe": "clube_novo.carta_pe_jogo(campo,valor) -> clube_novo.pe(campo,valor)",
+          "carta": "clube_novo.carta_jogo",
+          "corpo": "clube_novo.carta_corpo_jogo -> corpo_ordem.codigo",
+          "slot1": "clube_novo.carta_playstyle_jogo(slot_fisico=1).playstyle_id -> playstyle.id_jogo",
+          "slot2": "clube_novo.carta_playstyle_jogo(slot_fisico=2).playstyle_id -> playstyle.id_jogo",
+          "posicao": "clube_novo.carta_posicao_principal_jogo.posicao_id -> posicao_jogo.id"
+        },
+        "slot1_id_jogo": 329,
+        "slot2_id_jogo": 256,
+        "posicao_codigo": "ZC",
+        "pe_ruim_precisao": 2,
+        "carta_fingerprint": "09e60da64fbdc296a4cfd4681a23561aebaf9178c63d6830c5c3c61b844ba09f",
+        "corpo_cardinalidade": 12,
+        "estilos_ia_cardinalidade": 0,
+        "pe_relacao_cardinalidade": 3,
+        "posicao_relacao_cardinalidade": 1,
+        "playstyle_relacao_cardinalidade": 2
+      },
+      "v3": {
+        "nome": "Marcel Desailly",
+        "corpo": [
+          185,
+          7,
+          2,
+          2,
+          7,
+          2,
+          9,
+          13,
+          7,
+          7,
+          9,
+          7
+        ],
+        "card_id": "89138288270047",
+        "contrato": "bonificador-carta-v3",
+        "slot1_raw": 36,
+        "slot2_raw": 0,
+        "estilos_ia": [],
+        "pode_rodar": true,
+        "posicao_id": 1,
+        "slot1_nome": "Básico",
+        "slot2_nome": "O destruidor",
+        "falta_o_que": [],
+        "pe_ruim_uso": 1,
+        "posicao_raw": "CB",
+        "carta_versao": "2026-08-27 00:09:45.692996+00",
+        "proveniencia": {
+          "ia": "clube_novo.carta_estilo_ia_jogo.bit_estilo_ia",
+          "pe": "clube_novo.carta_pe_jogo(campo,valor) -> clube_novo.pe(campo,valor)",
+          "carta": "clube_novo.carta_jogo",
+          "corpo": "clube_novo.carta_corpo_jogo -> corpo_ordem.codigo",
+          "slot1": "clube_novo.carta_playstyle_jogo(slot_fisico=1).playstyle_id -> playstyle.id_jogo",
+          "slot2": "clube_novo.carta_playstyle_jogo(slot_fisico=2).playstyle_id -> playstyle.id_jogo",
+          "posicao": "clube_novo.carta_posicao_principal_jogo.posicao_id -> posicao_jogo.id"
+        },
+        "slot1_id_jogo": 256,
+        "slot2_id_jogo": 329,
+        "posicao_codigo": "ZC",
+        "semantica_slots": "1=ataque efetivo; 2=defesa efetiva; raw preservado em seus campos fisicos",
+        "estilos_efetivos": {
+          "ataque_id": 256,
+          "defesa_id": 329,
+          "pode_rodar": true,
+          "falta_o_que": [],
+          "interpretacao": "fase_playstyle_ataque_defesa_v1",
+          "fisico_slot1_id": 329,
+          "fisico_slot2_id": 256
+        },
+        "pe_ruim_precisao": 2,
+        "carta_fingerprint": "09e60da64fbdc296a4cfd4681a23561aebaf9178c63d6830c5c3c61b844ba09f",
+        "corpo_cardinalidade": 12,
+        "estilos_ia_cardinalidade": 0,
+        "pe_relacao_cardinalidade": 3,
+        "posicao_relacao_cardinalidade": 1,
+        "playstyle_relacao_cardinalidade": 2
+      },
+      "card_id": "89138288270047"
+    },
+    {
+      "v2": {
+        "nome": "Andriy Shevchenko",
+        "corpo": [
+          183,
+          7,
+          7,
+          7,
+          6,
+          8,
+          7,
+          7,
+          5,
+          4,
+          7,
+          9
+        ],
+        "card_id": "88045755964138",
+        "contrato": "bonificador-carta-v2",
+        "slot1_raw": 4,
+        "slot2_raw": 24,
+        "estilos_ia": [
+          647,
+          680
+        ],
+        "pode_rodar": true,
+        "posicao_id": 12,
+        "slot1_nome": "Artilheiro",
+        "slot2_nome": "Pressão no ataque",
+        "falta_o_que": [],
+        "pe_ruim_uso": 2,
+        "posicao_raw": "CF",
+        "carta_versao": "2026-09-04 21:07:19.038881+00",
+        "proveniencia": {
+          "ia": "clube_novo.carta_estilo_ia_jogo.bit_estilo_ia",
+          "pe": "clube_novo.carta_pe_jogo(campo,valor) -> clube_novo.pe(campo,valor)",
+          "carta": "clube_novo.carta_jogo",
+          "corpo": "clube_novo.carta_corpo_jogo -> corpo_ordem.codigo",
+          "slot1": "clube_novo.carta_playstyle_jogo(slot_fisico=1).playstyle_id -> playstyle.id_jogo",
+          "slot2": "clube_novo.carta_playstyle_jogo(slot_fisico=2).playstyle_id -> playstyle.id_jogo",
+          "posicao": "clube_novo.carta_posicao_principal_jogo.posicao_id -> posicao_jogo.id"
+        },
+        "slot1_id_jogo": 257,
+        "slot2_id_jogo": 344,
+        "posicao_codigo": "CA",
+        "pe_ruim_precisao": 3,
+        "carta_fingerprint": "a86b24d6512cbb7a9ca18930380fe821cacede9cf73be8e488cf0284e05bd2ff",
+        "corpo_cardinalidade": 12,
+        "estilos_ia_cardinalidade": 2,
+        "pe_relacao_cardinalidade": 3,
+        "posicao_relacao_cardinalidade": 1,
+        "playstyle_relacao_cardinalidade": 2
+      },
+      "v3": {
+        "nome": "Andriy Shevchenko",
+        "corpo": [
+          183,
+          7,
+          7,
+          7,
+          6,
+          8,
+          7,
+          7,
+          5,
+          4,
+          7,
+          9
+        ],
+        "card_id": "88045755964138",
+        "contrato": "bonificador-carta-v3",
+        "slot1_raw": 4,
+        "slot2_raw": 24,
+        "estilos_ia": [
+          647,
+          680
+        ],
+        "pode_rodar": true,
+        "posicao_id": 12,
+        "slot1_nome": "Artilheiro",
+        "slot2_nome": "Pressão no ataque",
+        "falta_o_que": [],
+        "pe_ruim_uso": 2,
+        "posicao_raw": "CF",
+        "carta_versao": "2026-09-04 21:07:19.038881+00",
+        "proveniencia": {
+          "ia": "clube_novo.carta_estilo_ia_jogo.bit_estilo_ia",
+          "pe": "clube_novo.carta_pe_jogo(campo,valor) -> clube_novo.pe(campo,valor)",
+          "carta": "clube_novo.carta_jogo",
+          "corpo": "clube_novo.carta_corpo_jogo -> corpo_ordem.codigo",
+          "slot1": "clube_novo.carta_playstyle_jogo(slot_fisico=1).playstyle_id -> playstyle.id_jogo",
+          "slot2": "clube_novo.carta_playstyle_jogo(slot_fisico=2).playstyle_id -> playstyle.id_jogo",
+          "posicao": "clube_novo.carta_posicao_principal_jogo.posicao_id -> posicao_jogo.id"
+        },
+        "slot1_id_jogo": 257,
+        "slot2_id_jogo": 344,
+        "posicao_codigo": "CA",
+        "semantica_slots": "1=ataque efetivo; 2=defesa efetiva; raw preservado em seus campos fisicos",
+        "estilos_efetivos": {
+          "ataque_id": 257,
+          "defesa_id": 344,
+          "pode_rodar": true,
+          "falta_o_que": [],
+          "interpretacao": "fase_playstyle_ataque_defesa_v1",
+          "fisico_slot1_id": 257,
+          "fisico_slot2_id": 344
+        },
+        "pe_ruim_precisao": 3,
+        "carta_fingerprint": "a86b24d6512cbb7a9ca18930380fe821cacede9cf73be8e488cf0284e05bd2ff",
+        "corpo_cardinalidade": 12,
+        "estilos_ia_cardinalidade": 2,
+        "pe_relacao_cardinalidade": 3,
+        "posicao_relacao_cardinalidade": 1,
+        "playstyle_relacao_cardinalidade": 2
+      },
+      "card_id": "88045755964138"
+    },
+    {
+      "v2": {
+        "nome": "Claude Makélélé",
+        "corpo": [
+          174,
+          12,
+          9,
+          1,
+          10,
+          10,
+          12,
+          13,
+          10,
+          5,
+          14,
+          0
+        ],
+        "card_id": "88045755964130",
+        "contrato": "bonificador-carta-v2",
+        "slot1_raw": 0,
+        "slot2_raw": 27,
+        "estilos_ia": [],
+        "pode_rodar": true,
+        "posicao_id": 4,
+        "slot1_nome": "Básico",
+        "slot2_nome": "Defensor participativo",
+        "falta_o_que": [],
+        "pe_ruim_uso": 1,
+        "posicao_raw": "DMF",
+        "carta_versao": "2026-09-04 21:07:19.038881+00",
+        "proveniencia": {
+          "ia": "clube_novo.carta_estilo_ia_jogo.bit_estilo_ia",
+          "pe": "clube_novo.carta_pe_jogo(campo,valor) -> clube_novo.pe(campo,valor)",
+          "carta": "clube_novo.carta_jogo",
+          "corpo": "clube_novo.carta_corpo_jogo -> corpo_ordem.codigo",
+          "slot1": "clube_novo.carta_playstyle_jogo(slot_fisico=1).playstyle_id -> playstyle.id_jogo",
+          "slot2": "clube_novo.carta_playstyle_jogo(slot_fisico=2).playstyle_id -> playstyle.id_jogo",
+          "posicao": "clube_novo.carta_posicao_principal_jogo.posicao_id -> posicao_jogo.id"
+        },
+        "slot1_id_jogo": 256,
+        "slot2_id_jogo": 347,
+        "posicao_codigo": "VOL",
+        "pe_ruim_precisao": 2,
+        "carta_fingerprint": "2625dec4ddf177dbf25a723e03d22f7c79d944aa16f38e159e84e0cb39aae2b0",
+        "corpo_cardinalidade": 12,
+        "estilos_ia_cardinalidade": 0,
+        "pe_relacao_cardinalidade": 3,
+        "posicao_relacao_cardinalidade": 1,
+        "playstyle_relacao_cardinalidade": 2
+      },
+      "v3": {
+        "nome": "Claude Makélélé",
+        "corpo": [
+          174,
+          12,
+          9,
+          1,
+          10,
+          10,
+          12,
+          13,
+          10,
+          5,
+          14,
+          0
+        ],
+        "card_id": "88045755964130",
+        "contrato": "bonificador-carta-v3",
+        "slot1_raw": 0,
+        "slot2_raw": 27,
+        "estilos_ia": [],
+        "pode_rodar": true,
+        "posicao_id": 4,
+        "slot1_nome": "Básico",
+        "slot2_nome": "Defensor participativo",
+        "falta_o_que": [],
+        "pe_ruim_uso": 1,
+        "posicao_raw": "DMF",
+        "carta_versao": "2026-09-04 21:07:19.038881+00",
+        "proveniencia": {
+          "ia": "clube_novo.carta_estilo_ia_jogo.bit_estilo_ia",
+          "pe": "clube_novo.carta_pe_jogo(campo,valor) -> clube_novo.pe(campo,valor)",
+          "carta": "clube_novo.carta_jogo",
+          "corpo": "clube_novo.carta_corpo_jogo -> corpo_ordem.codigo",
+          "slot1": "clube_novo.carta_playstyle_jogo(slot_fisico=1).playstyle_id -> playstyle.id_jogo",
+          "slot2": "clube_novo.carta_playstyle_jogo(slot_fisico=2).playstyle_id -> playstyle.id_jogo",
+          "posicao": "clube_novo.carta_posicao_principal_jogo.posicao_id -> posicao_jogo.id"
+        },
+        "slot1_id_jogo": 256,
+        "slot2_id_jogo": 347,
+        "posicao_codigo": "VOL",
+        "semantica_slots": "1=ataque efetivo; 2=defesa efetiva; raw preservado em seus campos fisicos",
+        "estilos_efetivos": {
+          "ataque_id": 256,
+          "defesa_id": 347,
+          "pode_rodar": true,
+          "falta_o_que": [],
+          "interpretacao": "fase_playstyle_ataque_defesa_v1",
+          "fisico_slot1_id": 256,
+          "fisico_slot2_id": 347
+        },
+        "pe_ruim_precisao": 2,
+        "carta_fingerprint": "2625dec4ddf177dbf25a723e03d22f7c79d944aa16f38e159e84e0cb39aae2b0",
+        "corpo_cardinalidade": 12,
+        "estilos_ia_cardinalidade": 0,
+        "pe_relacao_cardinalidade": 3,
+        "posicao_relacao_cardinalidade": 1,
+        "playstyle_relacao_cardinalidade": 2
+      },
+      "card_id": "88045755964130"
+    },
+    {
+      "v2": {
+        "nome": "Petr Čech",
+        "corpo": [
+          196,
+          6,
+          5,
+          5,
+          5,
+          6,
+          6,
+          10,
+          5,
+          6,
+          11,
+          7
+        ],
+        "card_id": "88045755829367",
+        "contrato": "bonificador-carta-v2",
+        "slot1_raw": 0,
+        "slot2_raw": 17,
+        "estilos_ia": [],
+        "pode_rodar": true,
+        "posicao_id": 0,
+        "slot1_nome": "Básico",
+        "slot2_nome": "Goleiro defensivo",
+        "falta_o_que": [],
+        "pe_ruim_uso": 0,
+        "posicao_raw": "GK",
+        "carta_versao": "2026-09-04 21:07:19.038881+00",
+        "proveniencia": {
+          "ia": "clube_novo.carta_estilo_ia_jogo.bit_estilo_ia",
+          "pe": "clube_novo.carta_pe_jogo(campo,valor) -> clube_novo.pe(campo,valor)",
+          "carta": "clube_novo.carta_jogo",
+          "corpo": "clube_novo.carta_corpo_jogo -> corpo_ordem.codigo",
+          "slot1": "clube_novo.carta_playstyle_jogo(slot_fisico=1).playstyle_id -> playstyle.id_jogo",
+          "slot2": "clube_novo.carta_playstyle_jogo(slot_fisico=2).playstyle_id -> playstyle.id_jogo",
+          "posicao": "clube_novo.carta_posicao_principal_jogo.posicao_id -> posicao_jogo.id"
+        },
+        "slot1_id_jogo": 256,
+        "slot2_id_jogo": 337,
+        "posicao_codigo": "GO",
+        "pe_ruim_precisao": 1,
+        "carta_fingerprint": "34abb8581b04da2515bf0ac1f56cc58b24c9907d777edcdc2126b7c70eb99c92",
+        "corpo_cardinalidade": 12,
+        "estilos_ia_cardinalidade": 0,
+        "pe_relacao_cardinalidade": 3,
+        "posicao_relacao_cardinalidade": 1,
+        "playstyle_relacao_cardinalidade": 2
+      },
+      "v3": {
+        "nome": "Petr Čech",
+        "corpo": [
+          196,
+          6,
+          5,
+          5,
+          5,
+          6,
+          6,
+          10,
+          5,
+          6,
+          11,
+          7
+        ],
+        "card_id": "88045755829367",
+        "contrato": "bonificador-carta-v3",
+        "slot1_raw": 0,
+        "slot2_raw": 17,
+        "estilos_ia": [],
+        "pode_rodar": true,
+        "posicao_id": 0,
+        "slot1_nome": "Básico",
+        "slot2_nome": "Goleiro defensivo",
+        "falta_o_que": [],
+        "pe_ruim_uso": 0,
+        "posicao_raw": "GK",
+        "carta_versao": "2026-09-04 21:07:19.038881+00",
+        "proveniencia": {
+          "ia": "clube_novo.carta_estilo_ia_jogo.bit_estilo_ia",
+          "pe": "clube_novo.carta_pe_jogo(campo,valor) -> clube_novo.pe(campo,valor)",
+          "carta": "clube_novo.carta_jogo",
+          "corpo": "clube_novo.carta_corpo_jogo -> corpo_ordem.codigo",
+          "slot1": "clube_novo.carta_playstyle_jogo(slot_fisico=1).playstyle_id -> playstyle.id_jogo",
+          "slot2": "clube_novo.carta_playstyle_jogo(slot_fisico=2).playstyle_id -> playstyle.id_jogo",
+          "posicao": "clube_novo.carta_posicao_principal_jogo.posicao_id -> posicao_jogo.id"
+        },
+        "slot1_id_jogo": 256,
+        "slot2_id_jogo": 337,
+        "posicao_codigo": "GO",
+        "semantica_slots": "1=ataque efetivo; 2=defesa efetiva; raw preservado em seus campos fisicos",
+        "estilos_efetivos": {
+          "ataque_id": 256,
+          "defesa_id": 337,
+          "pode_rodar": true,
+          "falta_o_que": [],
+          "interpretacao": "fase_playstyle_ataque_defesa_v1",
+          "fisico_slot1_id": 256,
+          "fisico_slot2_id": 337
+        },
+        "pe_ruim_precisao": 1,
+        "carta_fingerprint": "34abb8581b04da2515bf0ac1f56cc58b24c9907d777edcdc2126b7c70eb99c92",
+        "corpo_cardinalidade": 12,
+        "estilos_ia_cardinalidade": 0,
+        "pe_relacao_cardinalidade": 3,
+        "posicao_relacao_cardinalidade": 1,
+        "playstyle_relacao_cardinalidade": 2
+      },
+      "card_id": "88045755829367"
+    }
+  ],
+  "regua_v11_fingerprint": "442cb3b421e9774c9b05c775d587a212d384875f0390d41ac73a392cbebea3f7"
+}

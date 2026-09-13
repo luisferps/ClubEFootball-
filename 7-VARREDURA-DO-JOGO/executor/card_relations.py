@@ -1,4 +1,4 @@
-"""Validação somente leitura das cinco relações normalizadas de cartas.
+"""Validação somente leitura das oito relações normalizadas de cartas.
 
 O módulo recebe a fotografia de cartas produzida pelo núcleo a partir do CPK
 atual, resolve somente chaves canônicas comprovadas nos catálogos de
@@ -7,6 +7,12 @@ atual, resolve somente chaves canônicas comprovadas nos catálogos de
 Não contém DDL, INSERT, UPDATE, DELETE, TRUNCATE nem caminhos de aplicação.
 ``carta_impeto_jogo`` e as dimensões de carta estão deliberadamente fora deste
 contrato.
+
+Famílias cobertas: atributos, corpo, habilidades, estilos de IA, aptidões por
+posição, posição principal, pé e playstyle. As três últimas foram acrescentadas
+em 04/09/2026: o dado já era lido pelo núcleo, mas nenhuma especificação as
+comparava, então o destino declarado no contrato ficava órfão e as cartas novas
+subiam sem pé, sem playstyle e sem posição principal.
 """
 
 from __future__ import annotations
@@ -26,6 +32,10 @@ REQUIRED_CARD_COLUMNS = {
     "atributos",
     "corpo",
     "aptidoes",
+    "posicao",
+    "pe",
+    "pe_ruim_uso",
+    "pe_ruim_precisao",
 }
 
 
@@ -54,6 +64,29 @@ RELATIONS = (
     ),
     RelationSpec("estilos_ia", "carta_estilo_ia_jogo", ("card_id", "bit_estilo_ia"), ("str", "int"), "cartas-fisicas-canonicas.json"),
     RelationSpec("posicoes", "carta_posicao_jogo", ("card_id", "posicao_id", "nivel_aptidao"), ("str", "int", "int")),
+    RelationSpec(
+        "posicao_principal",
+        "carta_posicao_principal_jogo",
+        ("card_id", "posicao_id"),
+        ("str", "int"),
+        comparison_identity_columns=("card_id",),
+    ),
+    RelationSpec("pe", "carta_pe_jogo", ("card_id", "campo", "valor"), ("str", "str", "int")),
+    RelationSpec(
+        "playstyle",
+        "carta_playstyle_jogo",
+        ("card_id", "slot_fisico", "playstyle_id", "valor_raw"),
+        ("str", "int", "int", "int"),
+        "cartas-fisicas-canonicas.json",
+        comparison_identity_columns=("card_id", "slot_fisico"),
+    ),
+)
+
+# Campos do CSV que alimentam a relação de pé, na ordem canônica da tabela.
+_PE_CAMPOS = (
+    ("pe_dominante", "pe"),
+    ("pe_ruim_precisao", "pe_ruim_precisao"),
+    ("pe_ruim_uso", "pe_ruim_uso"),
 )
 
 
@@ -148,12 +181,81 @@ def fetch_catalog_maps(
         raise ValueError(f"aptidão física sem chave canônica: {unresolved_positions[0]}")
     # posicao_jogo também contém GK como posição principal. Player.bin possui
     # somente as 12 aptidões de campo; o goleiro não é uma 13ª aptidão.
+    # A posição principal usa o catálogo inteiro, com GK, e por isso é guardada
+    # antes do recorte das aptidões.
+    maps["posicao_principal"] = dict(maps["posicoes"])
     maps["posicoes"] = {
         code: position_id
         for code, position_id in maps["posicoes"].items()
         if code in required_positions
     }
+    maps.update(_foot_catalog_maps(connection, ident, sql))
+    maps.update(_playstyle_catalog_maps(connection, ident, sql))
     return maps
+
+
+def _foot_catalog_maps(connection: Any, ident: Any, sql: Any) -> dict[str, dict[Any, Any]]:
+    """Régua do pé lida de clube_novo.pe, nunca deduzida.
+
+    ``pe_dominante`` chega do CSV como rótulo ("Direito"/"Esquerdo") e o valor
+    canônico é o que o catálogo declara. Uso e precisão do pé ruim são
+    numéricos, mas o par (campo, valor) ainda precisa existir no catálogo apto.
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(
+            sql.SQL("select campo,valor,nome_pt,pode_rodar from {}.pe order by campo,valor").format(ident)
+        )
+        rows = cursor.fetchall()
+    dominante: dict[str, int] = {}
+    aptos: dict[tuple[str, int], bool] = {}
+    for campo, valor, nome_pt, pode_rodar in rows:
+        campo = str(campo)
+        valor = int(valor)
+        aptos[(campo, valor)] = bool(pode_rodar)
+        if campo != "pe_dominante":
+            continue
+        rotulo = str(nome_pt or "").strip()
+        if not rotulo:
+            raise ValueError(f"clube_novo.pe sem rótulo para pe_dominante={valor}")
+        if rotulo in dominante and dominante[rotulo] != valor:
+            raise ValueError(f"catálogo ambíguo para pe_dominante: {rotulo}")
+        dominante[rotulo] = valor
+    if not dominante:
+        raise ValueError("clube_novo.pe sem linhas de pe_dominante")
+    return {"pe_dominante": dominante, "pe_aptos": aptos}
+
+
+def _playstyle_catalog_maps(connection: Any, ident: Any, sql: Any) -> dict[str, dict[Any, Any]]:
+    """Duas chaves físicas distintas para o mesmo catálogo.
+
+    O slot ofensivo do Player.bin carrega o **bit** do estilo; o slot defensivo
+    carrega o **índice**. São endereçamentos diferentes do mesmo catálogo, e por
+    isso cada um tem o seu mapa. Nenhum dos dois é calculado a partir do outro.
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(
+            sql.SQL("select id_jogo,indice,bit,pode_rodar from {}.playstyle order by indice").format(ident)
+        )
+        rows = cursor.fetchall()
+    por_bit: dict[int, int] = {}
+    por_indice: dict[int, int] = {}
+    for id_jogo, indice, bit, pode_rodar in rows:
+        if not pode_rodar:
+            continue
+        id_jogo = int(id_jogo)
+        if bit is not None:
+            bit = int(bit)
+            if bit in por_bit and por_bit[bit] != id_jogo:
+                raise ValueError(f"catálogo ambíguo para playstyle.bit: {bit}")
+            por_bit[bit] = id_jogo
+        if indice is not None:
+            indice = int(indice)
+            if indice in por_indice and por_indice[indice] != id_jogo:
+                raise ValueError(f"catálogo ambíguo para playstyle.indice: {indice}")
+            por_indice[indice] = id_jogo
+    if not por_bit or not por_indice:
+        raise ValueError("clube_novo.playstyle sem bit ou sem índice apto")
+    return {"playstyle_bit": por_bit, "playstyle_indice": por_indice}
 
 
 def _expected_for_card(row: dict[str, str], family: str, maps: dict[str, dict[Any, Any]]) -> list[tuple[Any, ...]]:
@@ -182,7 +284,76 @@ def _expected_for_card(row: dict[str, str], family: str, maps: dict[str, dict[An
         if any(value < 0 or value > 2 for _, _, value in output):
             raise ValueError(f"{card_id}.aptidoes contém nível fora de 0..2")
         return sorted(output, key=lambda item: item[1])
+    if family == "posicao_principal":
+        codigo = str(row.get("posicao") or "").strip()
+        if not codigo:
+            raise ValueError(f"{card_id}.posicao ausente na fotografia física")
+        catalogo = maps["posicao_principal"]
+        if codigo not in catalogo:
+            raise ValueError(f"{card_id}.posicao sem chave canônica: {codigo}")
+        return [(card_id, int(catalogo[codigo]))]
+    if family == "pe":
+        output: list[tuple[Any, ...]] = []
+        for campo, coluna in _PE_CAMPOS:
+            bruto = str(row.get(coluna) or "").strip()
+            if bruto == "":
+                raise ValueError(f"{card_id}.{coluna} ausente na fotografia física")
+            if campo == "pe_dominante":
+                catalogo = maps["pe_dominante"]
+                if bruto not in catalogo:
+                    raise ValueError(f"{card_id}.pe sem chave canônica no catálogo: {bruto}")
+                valor = int(catalogo[bruto])
+            else:
+                valor = _integer(bruto, f"{card_id}.{coluna}")
+            if not maps["pe_aptos"].get((campo, valor), False):
+                raise ValueError(f"{card_id}.{coluna}: par ({campo},{valor}) sem catálogo apto")
+            output.append((card_id, campo, valor))
+        return sorted(output, key=lambda item: item[1])
     raise ValueError(f"família desconhecida: {family}")
+
+
+def _canonical_playstyle_rows(
+    cards: Sequence[dict[str, Any]],
+    maps: dict[str, dict[Any, Any]],
+) -> tuple[list[tuple[Any, ...]], dict[tuple[Any, ...], dict[str, Any]]]:
+    """Dois slots por carta, cada um com o seu endereçamento físico.
+
+    Slot 1 = ``primary_style_id``, endereçado por bit.
+    Slot 2 = ``defensive_style_id``, endereçado por índice.
+
+    Um código bruto fora do catálogo apto derruba a leitura em vez de virar
+    linha: não se inventa playstyle.
+    """
+    por_bit = maps["playstyle_bit"]
+    por_indice = maps["playstyle_indice"]
+    result: list[tuple[Any, ...]] = []
+    provenance: dict[tuple[Any, ...], dict[str, Any]] = {}
+    for card in cards:
+        card_id = card["card_id"]
+        if card.get("primary_style_unknown") is True:
+            raise ValueError(f"{card_id}.primary_style_id lido mas não resolvido pelo núcleo")
+        for slot, chave, catalogo, endereco in (
+            (1, "primary_style_id", por_bit, "bit"),
+            (2, "defensive_style_id", por_indice, "indice"),
+        ):
+            if chave not in card:
+                raise ValueError(f"{card_id}.{chave} ausente no artefato canônico")
+            bruto = _integer(card.get(chave), f"{card_id}.{chave}")
+            if bruto < 0:
+                raise ValueError(f"{card_id}.{chave} negativo: {bruto}")
+            if bruto not in catalogo:
+                raise ValueError(f"{card_id}.{chave} sem catálogo apto: {endereco} {bruto}")
+            playstyle_id = int(catalogo[bruto])
+            result.append((card_id, slot, playstyle_id, bruto))
+            provenance[(card_id, slot)] = {
+                "fotografia": "cartas-fisicas-canonicas.json",
+                "campo": chave,
+                "endereco_fisico": endereco,
+                "valor_raw": bruto,
+                "playstyle_id": playstyle_id,
+                "catalogo": "clube_novo.playstyle",
+            }
+    return sorted(result, key=lambda item: (item[0], item[1])), provenance
 
 
 def iter_expected(rows: Sequence[dict[str, str]], family: str, maps: dict[str, dict[Any, Any]]) -> Iterator[tuple[Any, ...]]:
@@ -595,6 +766,8 @@ def validate_card_relations(
             expected, provenance = _canonical_skill_rows(canonical, reading_contract)
         elif spec.name == "estilos_ia":
             expected, provenance, style_coverage, style_alerts, projected_style_bits = _canonical_style_rows(canonical, reading_contract)
+        elif spec.name == "playstyle":
+            expected, provenance = _canonical_playstyle_rows(canonical, maps)
         else:
             expected, provenance = list(iter_expected(rows, spec.name, maps)), {}
         expected_by_relation[spec.name] = expected
@@ -652,6 +825,7 @@ def validate_card_relations(
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "target_schema": schema,
         "source": "fotografia física DT870: CSV de apresentação + JSON canônico de FKs/procedência",
+        "families": [spec.name for spec in RELATIONS],
         "cards": len(rows),
         "unique_card_ids": len(rows),
         "transaction_read_only": True,

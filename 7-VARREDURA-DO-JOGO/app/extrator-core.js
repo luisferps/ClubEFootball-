@@ -11,19 +11,22 @@
   const { K, OVRW, STYLE_CAT, DEF_CAT } = global.CLUBEF_PHYSICAL_MAP;
   const CATALOG_SOURCE_MAP = global.CLUBEF_CATALOG_SOURCE_MAP || {};
   const TD = new TextDecoder('utf-8');
+  // Códigos comprovados em 106 boosts/65 técnicos, referência eFHUB 12/09.
+  // Não preencher códigos ainda não observados com a antiga suposição raw-1.
+  const COACH_BOOST_INDICES = Object.freeze({1:0,2:1,3:3,4:2,5:4,6:5,7:6,8:8,10:7,11:10,12:11,13:12,14:21,15:19,16:20,17:23,18:24,19:22,20:25,26:13});
   const CARD_COLUMNS = Object.freeze([
     'card_id', 'tipo', 'overall', 'roda_motor', 'nome', 'posicao',
     'slot_ofensivo_id', 'slot_ofensivo_confirmado', 'slot_defensivo_id',
     'slot_defensivo_confirmado', 'pe', 'altura', 'peso', 'idade',
     'nacionalidade', 'pe_ruim_uso', 'pe_ruim_precisao', 'resistencia_lesao',
-    'forma', 'impeto_s1', 'impeto_s2_cond', 'vaga_s1', 'vaga_s2', 'box',
+    'forma', 'impeto_s1', 'impeto_s2_cond', 'vaga_s1', 'vaga_s2',
     'atributos', 'habilidades', 'aptidoes', 'estilos_ia', 'corpo'
   ]);
   const STRUCTURED_COLUMNS = new Set(['atributos', 'habilidades', 'aptidoes', 'estilos_ia', 'corpo']);
   const CONTRACT_VERSION = 'clubef-extrator-v4';
   const CARD_RELATIONS_CONTRACT_VERSION = 'clubef-card-relations-physical-v1';
   const CARD_DIMENSIONS_CONTRACT_VERSION = 'clubef-card-dimensions-physical-v2';
-  const BOX_RADAR_MEMBER = 'PlayerVariationDetail.bin';
+  const CARD_VARIATION_MEMBER = 'PlayerVariationDetail.bin';
   const CARD_DIMENSION_TYPES = Object.freeze([
     { tipo_carta_id: 'player_type_0_subtype_0', codigo_tipo_fisico: 0, marcador_subtipo: 0, usa_player_delete_list: false, chave_texto: 'Any1W:980', nome_exibicao: 'Normal', status_associacao: 'rotulo_dicionario_ancora_tela_sem_ponte_fisica', tipo_provisorio: false },
     { tipo_carta_id: 'player_delete_list', codigo_tipo_fisico: 0, marcador_subtipo: 0, usa_player_delete_list: true, chave_texto: 'Any2W:923', nome_exibicao: 'Jogador indisponível', status_associacao: 'classificacao_operacional_usuario_sem_ponte_fisica', tipo_provisorio: false },
@@ -218,18 +221,17 @@
   }
 
   /**
-   * Abre somente o membro físico que relaciona card_id ao nome da box.
-   * A interpretação dos registros e a comparação entre rodadas ficam no
-   * módulo radar-lancamentos.js. Este método não altera a linha canônica da
-   * carta nem cria um destino de aplicação para o campo observacional.
+   * Abre o membro físico que relaciona card_id ao nome da versão/variação da
+   * carta. Esse texto não identifica a box comercial e nunca deve alimentar
+   * o catálogo ou a relação box-card.
    */
   async function extractPlayerVariationDetailMember(bytes) {
     const cpk = extractCpk(bytes);
-    const packed = cpk[BOX_RADAR_MEMBER];
-    if (!packed) throw new Error(`${BOX_RADAR_MEMBER} não encontrado no CPK atual.`);
+    const packed = cpk[CARD_VARIATION_MEMBER];
+    if (!packed) throw new Error(`${CARD_VARIATION_MEMBER} não encontrado no CPK atual.`);
     const raw = await unpackWesys(packed);
     return {
-      member_file: BOX_RADAR_MEMBER,
+      member_file: CARD_VARIATION_MEMBER,
       packed_bytes: packed.length,
       packed_sha256: await sha256(packed),
       raw_bytes: raw.length,
@@ -244,7 +246,28 @@
     const locator = (readingContract.localizadores_fontes || []).find((item) => item && item.papel_fonte === role && Number(item.ordem) === 1);
     if (!locator) throw new Error(`o contrato ativo não declara localizador para a fonte ${role}`);
     const cpkHash = await sha256(bytes);
-    if (locator.sha256_cpk && cpkHash !== String(locator.sha256_cpk).toLowerCase()) throw new Error(`fingerprint do CPK divergente: ${role}`);
+    if (locator.sha256_cpk && cpkHash !== String(locator.sha256_cpk).toLowerCase()) {
+      const members = extractCpk(bytes);
+      const files = [];
+      for (const file of requested) {
+        const packed = members[file.arquivo];
+        if (!packed) throw new Error(`Atualização incompatível: ${file.arquivo} ausente em ${role}`);
+        const raw = await unpackWesys(packed);
+        const size = file.tamanho_registro;
+        if (size != null && (!Number.isInteger(size) || size <= 0 || raw.length % size !== 0)) {
+          throw new Error(`Atualização incompatível: tamanho dos registros de ${file.arquivo}`);
+        }
+        files.push({ arquivo_id: file.arquivo_id, arquivo: file.arquivo,
+          sha256_anterior: file.sha256_arquivo, sha256_observado: await sha256(raw),
+          bytes: raw.length, tamanho_registro: size, registros: size ? raw.length / size : null });
+      }
+      const error = new Error(`Atualização do jogo detectada em ${role}. A estrutura dos arquivos foi conferida; o contrato de leitura precisa ser atualizado antes da comparação e do envio.`);
+      error.source_update = { schema: 'clubef-atualizacao-fonte-v1', papel_fonte: role,
+        sha256_anterior: String(locator.sha256_cpk).toLowerCase(), sha256_observado: cpkHash,
+        contrato_id: readingContract.contrato_id, estrutura_compativel: true,
+        validacao_semantica_concluida: false, database_write: false, arquivos: files };
+      throw error;
+    }
     if (!requested.length) {
       return {
         contract: Object.fromEntries(CONTRACT_READER.SEAL_KEYS.map((key) => [key, readingContract[key]])),
@@ -653,31 +676,17 @@
   }
   function validCard(card) {
     const id = BigInt(card.card_id);
-    return id !== 0n && id < (1n << 50n) && card.height >= 145 && card.height <= 210 && card.age >= 14 && card.age <= 47;
+    return id !== 0n && id < (1n << 50n) && card.height >= 145 && card.height <= 210 && card.age >= 10 && card.age <= 73;
   }
   async function extractCardsFromCpk(bytes, readingContract, log = () => {}) {
     const cpk = extractCpk(bytes);
     if (!cpk['Player.bin']) throw new Error('Player.bin não encontrado no CPK atual.');
-    const boxes = {};
-    if (cpk['PlayerVariationDetail.bin']) {
-      const raw = await unpackWesys(cpk['PlayerVariationDetail.bin']);
-      if (raw.length % 168 !== 0) throw new Error('PlayerVariationDetail.bin incompatível com registros de 168 bytes.');
-      for (let offset = 0; offset < raw.length; offset += 168) {
-        const id = (BigInt(u32(raw, offset)) | (BigInt(u32(raw, offset + 4)) << 32n)).toString();
-        let end = offset + 12;
-        while (end < offset + 168 && raw[end] !== 0) end += 1;
-        const name = TD.decode(raw.slice(offset + 12, end));
-        if (id !== '0' && name) boxes[id] = name;
-      }
-      log(`boxes físicos: ${Object.keys(boxes).length}`);
-    }
     const rawPlayers = await unpackWesys(cpk['Player.bin']);
     if (rawPlayers.length % K.RECORD_SIZE !== 0) throw new Error(`Player.bin não é múltiplo do registro físico de ${K.RECORD_SIZE} bytes.`);
     const cards = [];
     for (let offset = 0; offset < rawPlayers.length; offset += K.RECORD_SIZE) {
       const card = decodeCard(rawPlayers, offset);
       if (!validCard(card)) continue;
-      card.box = boxes[card.card_id] || null;
       cards.push(card);
     }
     const contractSlots = await extractCardSlotsByContract(bytes, readingContract);
@@ -1102,7 +1111,6 @@
       impeto_s2_cond: card.booster_conditional.state === 'preench' ? String(card.booster_conditional.id) : '',
       vaga_s1: String(card.booster_primary.state === 'vaga'),
       vaga_s2: String(card.booster_conditional.state === 'vaga'),
-      box: card.box || '',
       atributos: JSON.stringify(card.attrs),
       habilidades: JSON.stringify(card.skills || []),
       aptidoes: JSON.stringify(card.aptitudes || {}),
@@ -1361,11 +1369,11 @@
       const boosts = [];
       for (const [order, bit] of [[1, 160], [2, 148]]) {
         const encoded = readBits(coach, offset, bit, 5);
-        if (encoded) boosts.push({ ordem: order, atributo_idx_canonico: encoded - 1, delta: 1, bit, largura: 5 });
+        if (encoded) boosts.push({ ordem: order, atributo_idx_canonico: CONTRACT_READER.coachBoostIndex(encoded, COACH_BOOST_INDICES), codigo_fisico: encoded, delta: 1, bit, largura: 5 });
       }
       const ageRaw = readBits(coach, offset, 231, 7);
       const proficiencias = Object.fromEntries(styleBits.map(([code, bit]) => [code, readBits(coach, offset, bit, 7)]));
-      const sobreposicao = readBits(coach, offset, 135, 7);
+      const sobreposicao = readBits(coach, offset, 192, 7);
       if (sobreposicao) proficiencias.overload = sobreposicao;
       const record = {
         id: u64String(coach, offset),
@@ -1389,7 +1397,7 @@
           idade: { bit: 231, largura: 7, transformacao: 'valor_fisico + 14' },
           nacionalidade: { bit: 170, largura: 8, resolve_em: 'Country.bin.codigo bit 10 largura 9' },
           afinidade: { bit: 187, largura: 3, zero: 'ausencia_legitima' },
-          sobreposicao: { bit: 135, largura: 7, zero: 'ausencia_legitima; relação somente quando valor maior que zero' }
+          sobreposicao: { bit: 192, largura: 7, zero: 'ausencia_legitima; relação somente quando valor maior que zero' }
         },
         ativo: true
       };
@@ -1831,7 +1839,7 @@
     CONTRACT_VERSION,
     CARD_RELATIONS_CONTRACT_VERSION,
     CARD_DIMENSIONS_CONTRACT_VERSION,
-    BOX_RADAR_MEMBER,
+    CARD_VARIATION_MEMBER,
     CARD_COLUMNS,
     STRUCTURED_COLUMNS,
     stableJson,

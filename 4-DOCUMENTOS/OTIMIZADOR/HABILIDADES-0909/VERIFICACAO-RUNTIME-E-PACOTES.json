@@ -1,0 +1,52 @@
+{
+  "executavel_sha256": "1b7fbc28618316ed0e7422bb69364aa4a38a4ba45ea7cdad453e94058eab543d",
+  "fontes_embutidos": {
+    "equacao.py": "1d4db85f5c625623789234b740985e67c93fe4c84dbfb73406a3797c0d168a6f",
+    "motor.py": "bf85312894225c6974769dc8615d674f88ef6f8cbfdfad0de754615f63d77e60",
+    "regua.py": "26a0a6416c95c9315c5c652f8df32015e128f9d1a7a3fc1515d38ddaba779d85",
+    "fonte_unica.py": "f1c3f26b3b8e6969f8b488d528e104614fb2bb0cb04c71f1e01a6762454fd7d8",
+    "roda_lote_v6.py": "116a2c64c7bededb1f7410948a496d3d1f3fa9cdc3053138ce9453aa11994f74"
+  },
+  "pacotes": [
+    {
+      "lote": "ddbcbc86-1ae7-4b95-b9f0-22601f41b61d",
+      "linhas": 18324,
+      "cartas": 2613
+    },
+    {
+      "lote": "7581b184-dccb-4a4b-9ad9-c767d4f4947c",
+      "linhas": 824,
+      "cartas": 119
+    },
+    {
+      "lote": "c5e38fd5-877c-416e-8063-977e24d229db",
+      "linhas": 17138,
+      "cartas": 1779
+    },
+    {
+      "lote": "b02cf0df-d271-4659-8e42-64a8b88b0134",
+      "linhas": 89615,
+      "cartas": 10442
+    },
+    {
+      "lote": "1833e4d0-1707-4ea2-8ba3-3733b5101310",
+      "linhas": 22,
+      "cartas": 3
+    },
+    {
+      "lote": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "linhas": 395,
+      "cartas": 26
+    }
+  ],
+  "ordem_lotes_preservada": true,
+  "prioridades_preservadas": true,
+  "sem_pendentes": [
+    "57071c55-9ebc-4ad1-b7d8-bf8729b4ae56",
+    "0789ae01-111c-41f1-98ef-7b4311f2de0d"
+  ],
+  "dados_incompletos": {
+    "base,fisicos,internos,arows,nativas": 110
+  },
+  "workers_iniciados": false
+}

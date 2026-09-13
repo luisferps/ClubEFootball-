@@ -9,7 +9,7 @@ if not exist "bin\OperacaoLocalJson.exe" (
   exit /b 1
 )
 echo.
-echo PROCESSAMENTO LOCAL: uma linha por vez. Nao envia nada ao banco.
+echo PROCESSAMENTO LOCAL: 4 processos de calculo. Nao envia nada ao banco.
 echo Para parar com seguranca, pressione Ctrl+C. O que ja foi gravado fica salvo.
 echo.
 "bin\OperacaoLocalJson.exe" processar %*

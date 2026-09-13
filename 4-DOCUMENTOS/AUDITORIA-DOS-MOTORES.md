@@ -3,6 +3,11 @@
 `equacao.py` (270) · `motor_bonus.py` (840). **32 achados.** Depois da revisão contra o dado (ver abaixo): **8 críticos · 19 graves · 5 atenção**.
 Todos gravados em `clube.achado_motor`.
 
+> **Nota de 07/09/2026:** as contagens desta auditoria retratam o motor histórico.
+> Na V11, `b_estilo` não depende mais de o estilo “ligar na função”; depende de
+> ativar na posição oficial. O registro atual está em
+> `BONIFICADOR/REGISTRO-OPERACIONAL-CORRECAO-ESTILO-V11.md`.
+
 > Sua ordem, literal: *"procurar número inventado ou valor padrão disfarçado"*.
 > O motivo: *"se faltar um insumo o motor roda também, mas dá resultado errado e a
 > gente pensa que está certo."*
@@ -147,7 +152,7 @@ Por isso refiz o teste de **todos** os críticos contra o dado real. Resultado:
 | "régua não confere se vieram 26 atributos" | idem — nunca chegou com menos |
 | orçamento ausente (`or 0`) | **confirmado, mas contido:** 125 builds de 32 cartas com **sobra negativa** (pior: −112) — build impossível de montar no jogo. **100% delas são de carta com orçamento NULL e 100% já estavam na fila** pela trava de completude |
 | vagas de ímpeto ausentes | **confirmado, mas pequeno:** 21 builds com "o motor pôs" em carta de vaga **desconhecida**. Em carta com vaga 0 **conhecida: zero**. O motor respeita a vaga quando ela existe |
-| estilo ativo sem "não sei" | **confirmado, mas menor:** das 8.118 builds com `b_estilo = 0`, **8.009 são zero legítimo** (a carta tem estilo e ele não liga naquela função). Só **109 de 53 cartas** são "não sei" virado zero. Todas já na fila |
+| estilo ativo sem "não sei" | **fotografia histórica:** das 8.118 builds com `b_estilo = 0`, 8.009 eram consideradas zero pela antiga regra por função e 109 de 53 cartas eram “não sei” convertido em zero. Essa classificação não deve ser reutilizada na V11, que valida ativação por posição. |
 
 ### Confirmaram-se, com número
 

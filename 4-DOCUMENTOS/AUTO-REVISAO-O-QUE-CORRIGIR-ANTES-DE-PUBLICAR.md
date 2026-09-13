@@ -75,12 +75,17 @@ linhas" que você viu.
 |---|---|---:|---|
 | `BONUS_PRONTO` | dados-e-catalogos.js | **1.050 KB** | 17.463 bônus já calculados |
 | `CORPO_EFHUB` | dados-e-catalogos.js | 308 KB | medidas de corpo de 10.056 cartas |
-| `BOXHIST` | motor-e-ficha-base.js | 192 KB | 1.026 boxes históricas |
+| `BOXHIST` | motor-e-ficha-base.js | 192 KB | fotografia antiga com 1.026 entradas; o acervo canônico validado em 07/09 contém 1.023 Boxes históricas |
 | `PACOTE` | motor-e-ficha-base.js | 151 KB | 3.133 ids → campanha |
 | `PR_RAW`, `FILA`, `CAT`, `ESTV`, `FIS_*`… | os dois | 297 KB | resto |
 | **soma** | | **2.021 KB** | **67% do JS é dado, não lógica** |
 
 Tudo isso já existe no banco (`box`, `carta.corpo`, `bonus`, `impeto_fabricavel`).
+Para Boxes, a referência operacional atual é o manifesto
+`clube_novo.box_acervo_legado_v1`: somente nome, participantes e data foram
+copiados, com 1.023 Boxes e 6.708 vínculos confirmados. As três entradas da
+fotografia antiga que não pertenciam ao acervo canônico ficaram sem fonte
+pública.
 Isto é o item **1B do plano — "o sistema arrumado"** — que eu **pulei** para ir direto
 à virada. Foi o erro de sequência que você apontou.
 

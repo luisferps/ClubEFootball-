@@ -13,6 +13,25 @@ import tecnicos as legacy
 CONTRACT = "clubef-tecnicos-carga-v4-sobreposicao"
 
 
+def _proveniencia_tecnico(record: dict[str, Any], contract: dict[str, Any], source_role: str) -> dict[str, Any]:
+    arquivo = legacy._source_file(record, f"técnico {record.get('id')}")
+    specs = [item for item in contract.get("arquivos", [])
+             if item.get("papel_fonte") == source_role and item.get("arquivo") == arquivo]
+    if len(specs) != 1 or specs[0].get("sha256_arquivo") != record.get("source_file_sha256"):
+        raise ValueError("proveniência do técnico não corresponde ao arquivo atual do contrato")
+    spec = specs[0]
+    if not spec.get("cpk") or record.get("record_index") is None:
+        raise ValueError("proveniência do técnico incompleta")
+    return {
+        "fonte_autoritativa": source_role, "cpk_origem": spec["cpk"], "arquivo": arquivo,
+        "hash_coach_bin": record["source_file_sha256"], "contrato_extracao": CONTRACT,
+        "registro_dt870_atualizacao": int(record["record_index"]), "presente_dt870_atualizacao": True,
+        "fonte_campos_apresentacao": source_role, "cpk_campos_apresentacao": spec["cpk"],
+        "arquivo_campos_apresentacao": arquivo,
+        "contrato_campos_apresentacao": "clubef-coach-display-fields-extraction-v2",
+    }
+
+
 def _classify(scope: str, target_table: str, columns: tuple[str, ...], source: set[tuple[Any, ...]], database: set[tuple[Any, ...]], key_size: int) -> dict[str, list[dict[str, Any]]]:
     """Compara por identidade estável; valores restantes são conteúdo."""
     result: dict[str, list[dict[str, Any]]] = {kind: [] for kind in ("new", "removed", "altered", "repeated", "invalid")}
@@ -280,6 +299,15 @@ def validate_tecnicos_v4610(snapshot: dict[str, Any], connection: Any, reading_c
         "proficiencies_and_overload": _classify("proficiencias_tecnico", "tecnico_estilo_jogo", ("tecnico_id", "codigo_estilo", "proficiencia", "arquivo", "registro", "bit", "largura", "hash_coach_bin", "confirmado"), source_styles, database_styles, 2),
         "boosts": _classify("boosts_tecnico", "tecnico_atributo_jogo", ("tecnico_id", "ordem", "codigo_atributo", "delta", "arquivo", "registro", "bit", "largura", "hash_coach_bin", "confirmado"), source_boosts, database_boosts, 2),
     }
+    records_by_id = {int(row["id"]): row for row in records}
+    for kind in ("new", "altered"):
+        for item in classifications["technicians"][kind]:
+            source = dict(zip(item["colunas_fisicas"], item["valor_fisico"], strict=True))
+            if item["valor_banco"] is not None:
+                item["valor_banco"] = dict(zip(item["colunas_fisicas"], item["valor_banco"], strict=True))
+            source.update(_proveniencia_tecnico(records_by_id[int(source["id"])], reading_contract, source_role))
+            item["valor_fisico"] = source
+            item["colunas_fisicas"] = list(source)
     classification = {kind: [] for kind in ("new", "removed", "altered", "repeated", "invalid")}
     for items in classifications.values():
         for kind, entries in items.items(): classification[kind].extend(entries)

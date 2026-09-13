@@ -20,8 +20,8 @@ from pathlib import Path
 PASTA = Path(__file__).resolve().parent
 CONTRATO = "otimizador_fila_producao_v3"
 CONTRATO_ENTRADA_V7 = "otimizador_entrada_linha_v1"
-MOTOR_VERSAO = "otimizador-fila-producao-v3-local-20260903-goleiro-e-condicional-v11"
-FORMULA_APROVADA = "5a7446b3dfa7b6b45ece1f611b1751fc1221f06e76c53cbd0827a83962c76e89"
+MOTOR_VERSAO = "otimizador-fila-producao-v3-local-20260909-habilidades-v12"
+FORMULA_APROVADA = "a1cc830af3366e2d0c9ac12138d892058b3e57ed216e43d68242d105b33cb9d2"
 
 
 class FalhaFilaProducao(RuntimeError):
@@ -134,6 +134,8 @@ class WorkerFilaProducaoV3:
     def _preparar_executor(self, contexto: dict) -> None:
         import roda_lote_v6 as runner
         runner.prepara_lote_producao_v3(contexto["regua"])
+        from complemento_runtime_v14 import ativar
+        ativar(runner, self._rpc("complemento_contexto_v14", {}))
         self._runner = runner
 
     def _contexto_da_entrada_v7(self, entrada: dict) -> dict:

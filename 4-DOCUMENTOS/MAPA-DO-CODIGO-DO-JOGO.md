@@ -38,7 +38,7 @@ Regra: número maior + `_win` **SOBRESCREVE**. Banco vivo = **dt870 sobre dt200*
 |---|---|
 | **Player.bin** | uma linha por carta, 400 bytes — ver seção 4 |
 | PlayerBooster.bin | catálogo de ímpetos (195 definições) — não é por carta |
-| PlayerVariationDetail.bin | coleções Epic/Legend (time-temporada), 1375 variações |
+| PlayerVariationDetail.bin | variações individuais Epic/Legend (time-temporada), 1375 registros; não identifica Box comercial |
 | PlayerWeekly.bin | POTW |
 | PlayerSkill.bin | catálogo de habilidades |
 | Playstyle.bin | catálogo de estilos |
@@ -63,8 +63,9 @@ Regra: número maior + `_win` **SOBRESCREVE**. Banco vivo = **dt870 sobre dt200*
 | **ÍMPETO — vaga + ímpeto de fábrica** | **bytes 36–39** (sem vaga → byte38=0; vaga vazia → bits 311/315; cheia+vaga → byte36=0x88; qual ímpeto → bits 308–312) |
 
 ## 5 · Featured / Epic / POTW
-No **Player.bin do dt870** (33.616 cartas, 11.013 especiais). Nome da coleção no
-PlayerVariationDetail.bin; POTW no PlayerWeekly.bin. ID = mesmo esquema do card_id.
+No **Player.bin do dt870** (33.616 cartas, 11.013 especiais). Rótulo da variação
+individual no PlayerVariationDetail.bin; POTW no PlayerWeekly.bin. Nenhum desses
+rótulos deve ser tratado como nome de Box comercial. ID = mesmo esquema do card_id.
 **94% das bases das nossas featured (3.007/3.189) estão no arquivo.** Casamento por
 base + digital (atributos/estilo), não por ID cru.
 
@@ -74,6 +75,27 @@ base + digital (atributos/estilo), não por ID cru.
 
 _Método: extração real do CPK do Steam, decifra WESYS, cruzamento por card_id e base
 (18 bits) contra 23.519 (dt200) e 33.616 (dt870). O que não foi aberto = convenção._
+
+## 6.1 · Boxes comerciais atuais na memória — comprovado em 07/09/2026
+
+A origem física é a resposta `CmdGetMyclubAgentlist` já convertida e mantida na
+sessão do jogo. Ela cobre as ofertas carregadas naquele momento e não recupera
+o histórico. O contrato é `boxes-cmd-get-myclub-agentlist-v1`, vinculado ao EXE
+6.0.0.0, SHA-256
+`a6911e9613750df33d10598d6493db629b03195c3ec1d011704cd1e853d8c6e4`.
+
+| dado | endereço/registro | leitura |
+|---|---|---|
+| raiz | `G=[base+0x86c9fc0]`; `A=[G+0x28]`; `B=[A+0x20]` | ponteiros UInt64 |
+| vetor de agentes | `B+0`, `B+8`, `B+0x10`; stride `0x238` | início, fim e capacidade |
+| ID comercial | agente `+0x08` | UInt64 |
+| título comercial | agente `+0x68` | `std::string` MSVC x64 |
+| início/fim | agente `+0x1c` / `+0x24` | UInt32 epoch |
+| participantes | vetores `+0xe8` stride `0xf8`; `+0x200` e `+0x218` stride `0xf0` | `card_id` UInt64 em `+0x08` |
+
+Parser da resposta: `0x1457eb210`; conversor do objeto: `0x1445d7d70`.
+Validação, rejeições e persistência estão detalhadas em
+`7-VARREDURA-DO-JOGO/DOCUMENTACAO/MAPEAMENTO-BOXES-RUNTIME.md`.
 
 ## 7 · Técnicos e nacionalidades — mapeamento comprovado em 28/08/2026
 

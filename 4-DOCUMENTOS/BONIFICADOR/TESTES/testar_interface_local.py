@@ -31,9 +31,9 @@ class GatewayFalso:
         }
 
     def rpc(self, nome, corpo=None):
-        if nome == "bonificador_regua_v2":
+        if nome == "bonificador_regua_v3":
             return {
-                "contrato": "bonificador-regua-v2", "pode_rodar": True, "falta_o_que": [],
+                "contrato": "bonificador-regua-v3", "pode_rodar": True, "falta_o_que": [],
                 "funcao_molde": {"goleiro_ofensivo": {"id": 19, "rotulo": "Goleiro ofensivo", "pode_rodar": True}},
                 "parametro": {
                     "bonus_corpo_max": 1.5, "pe_ruim_teto": 1, "pe_ruim_frequencia_0": 0,
@@ -43,7 +43,7 @@ class GatewayFalso:
                     "estilo_ia_ponto": 1, "estilo_ia_teto": 4,
                 },
                 "corpo_ordem": {"0": {"nosso": "altura"}},
-                "molde_corpo": {"19": {"altura": {"cortes": [180, 185, 190, 195], "peso": 1, "direcao": "+"}}},
+                "molde_corpo": {"19": {"altura": {"cortes": [180, 185, 190, 195], "peso": 1, "direcao": 1}}},
                 "posicao_slot": {"0": "ofensivo"}, "casa": {"291": {"0": 19}}, "liga": {"336": [0]},
                 "cardinalidades": {"molde": 1}, "proveniencia": {"modelo": "clube_novo"},
             }
@@ -58,13 +58,13 @@ class GatewayFalso:
                 "posicao_relacao_cardinalidade": 1, "playstyle_relacao_cardinalidade": 2,
                 "estilos_ia_cardinalidade": 2,
             }
-        if nome == "bonificador_contexto_fila_v5":
+        if nome == "bonificador_contexto_fila_v6":
             assert corpo == {"p_limit": 5000, "p_offset": 0}
             return [{
                 "build_linha_card_id": 77, "card_id": "casillas-teste", "carta_nome": "Iker Casillas", "carta_tipo": "Épica", "carta_overall": 99, "funcao_id": 19,
                 "funcao_codigo": "GO", "funcao_nome": "Goleiro ofensivo", "posicao_id": 0, "posicao_codigo": "GO", "posicao_nome": "Goleiro",
                 "carta_versao": "v-teste", "carta_fingerprint": "a" * 64,
-                "contrato_versao": "bonificador-regua-v2", "contrato_fingerprint": "b" * 64,
+                "contrato_versao": "bonificador-regua-v3", "contrato_fingerprint": "b" * 64,
                 "formula_fingerprint": "c" * 64,
             }]
         if nome == "bonificador_resultados_v1":
@@ -84,28 +84,13 @@ class GatewayFalso:
                 "carta_versao": "v-teste", "carta_fingerprint": "a" * 64, "estado": "pendente", "motivo": None,
                 "b_corpo": None, "b_pe_ruim": None, "b_estilo": None, "b_ia": None, "b_total": None,
             }]
-        if nome == "bonificador_lote_controlar_v1":
-            acao = corpo["p_acao"]
-            if acao == "iniciar":
-                self.lote.update(estado="rodando", itens_snapshot=1, pode_iniciar=False, pode_pausar=True, pode_parar=True)
-            elif acao == "pausar":
-                self.lote.update(estado="pausando", pode_pausar=False)
-            elif acao == "parar":
-                self.lote.update(estado="encerrando", pode_pausar=False)
-            else:
-                raise AssertionError(acao)
-            return self.lote
-        if nome == "bonificador_lote_assentar_parada_v1":
-            assert corpo["p_lote_id"] == self.lote["lote_id"]
-            self.lote.update(estado="pausado" if corpo["p_modo"] == "pausar" else "encerrado")
-            return self.lote
         raise AssertionError(f"RPC inesperada: {nome} {corpo}")
 
 
 class GatewayFilaSemRegua:
     """Prova que a fila não depende da régua para ser exibida."""
     def rpc(self, nome, corpo=None):
-        if nome != "bonificador_contexto_fila_v5":
+        if nome != "bonificador_contexto_fila_v6":
             raise AssertionError(f"a fila não deveria consultar {nome}")
         return [{
             "build_linha_card_id": 88, "card_id": "fila-isolada", "carta_nome": "Carta isolada", "carta_tipo": "Teste", "carta_overall": 1, "funcao_id": 19,
@@ -191,18 +176,14 @@ def main():
         assert status == 200 and resultados["resultados"]["itens"][0]["carta_nome"] == "Iker Casillas"
         status, simulado = obter(base + "/api/simular?card_id=casillas-teste&funcao_id=19")
         assert status == 200 and simulado["bonus"]["estilo"] == 1.5
-        status, iniciado = obter(base + "/api/lote/iniciar", b"{}")
-        assert status == 200 and iniciado["pipeline"]["ativo"] is True
-        esperar(lambda: bool(pipeline.estado().get("resultados")))
-        status, fila_com_resultado = obter(base + "/api/fila/status?limite=100&offset=0")
-        item = fila_com_resultado["fila"]["itens"][0]
-        assert item["estado"] == "apta" and item["b_total"] == 3.25
+        try:
+            obter(base + "/api/lote/iniciar", b"{}")
+            raise AssertionError("lote V9 não poderia iniciar na interface V10")
+        except urllib.error.HTTPError as erro:
+            assert erro.code == 409
         status, estado = obter(base + "/api/pipeline/estado")
-        assert status == 200 and estado["pipeline"]["ativo"] is True
-        assert processos and processos[0].poll() is None
-        status, parada = obter(base + "/api/lote/pausar", b"{}")
-        assert status == 200 and parada["pipeline"]["estado"] in {"parando", "parado"}
-        esperar(lambda: pipeline.estado()["ativo"] is False)
+        assert status == 200 and estado["pipeline"]["ativo"] is False
+        assert processos == []
         try:
             obter(base + "/api/simular", b"{}")
             raise AssertionError("POST deveria ser bloqueado")
@@ -213,7 +194,7 @@ def main():
 
     servidor = SERVIDOR.read_text(encoding="utf-8")
     assert "bonificador_lote_listar_v1" in servidor
-    assert "bonificador_lote_controlar_v1" in servidor
+    assert "bonificador_lote_controlar_v1" not in servidor
     assert "bonificador_resultados_v1" in servidor
     assert '"clube_novo"' not in servidor
     assert "responder_arquivo" not in servidor
@@ -221,12 +202,11 @@ def main():
     assert not (SERVIDOR.parent / "app.js").exists()
     assert not (SERVIDOR.parent / "style.css").exists()
     lancador = LANCADOR.read_text(encoding="utf-8")
-    assert "INICIAR / RETOMAR" in lancador
-    assert "PAUSAR" in lancador
-    assert "PARAR LOTE" in lancador
+    assert "V9 DESATIVADO" in lancador
+    assert "este painel não inicia produção" in lancador
     assert "c.Encoding = Encoding.UTF8" in lancador
     assert "using System.Text;" in lancador
-    print("INTERFACE_LOCAL_OK simulacao=casillas lote_preparado=1 paginacao=sim inicio_pausa_assincronos=sim post=405 sem_web=sim")
+    print("INTERFACE_LOCAL_OK simulacao=casillas lote_v9=somente_leitura paginacao=sim inicio_v9=409 post=405 sem_web=sim")
 
 
 if __name__ == "__main__":

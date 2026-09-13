@@ -15,8 +15,8 @@ using System.Windows.Forms;
 [assembly: System.Reflection.AssemblyDescription("Varredura somente leitura e ações separadas confirmadas")]
 [assembly: System.Reflection.AssemblyProduct("Extrator eFootball")]
 [assembly: System.Reflection.AssemblyCompany("ClubEfootball")]
-[assembly: System.Reflection.AssemblyVersion("5.3.0.0")]
-[assembly: System.Reflection.AssemblyFileVersion("5.3.0.0")]
+[assembly: System.Reflection.AssemblyVersion("5.4.0.7")]
+[assembly: System.Reflection.AssemblyFileVersion("5.4.0.7")]
 
 namespace ClubEfootballWindowsApp
 {
@@ -33,7 +33,7 @@ namespace ClubEfootballWindowsApp
 
     internal sealed class ExtractorForm : Form
     {
-        private const string DesktopProtocolVersion = "5.3.0";
+        private const string DesktopProtocolVersion = "5.4.0";
         private const string CredentialSchema = "clubef-credencial-banco-windows-dpapi-v1";
         // O valor V1 é estável de propósito: trocá-lo invalidaria a credencial
         // DPAPI que o operador já salvou na versão anterior.
@@ -43,11 +43,15 @@ namespace ClubEfootballWindowsApp
         private readonly Dictionary<string, ListViewItem> families = new Dictionary<string, ListViewItem>(StringComparer.OrdinalIgnoreCase);
         private readonly Label database = new Label(), sources = new Label(), stage = new Label();
         private readonly ProgressBar progress = new ProgressBar();
+        private readonly Button applyLevels = new Button();
+        private readonly Button efhubLevels = new Button();
+        private readonly Button boxesGame = new Button();
+        private string levelsPackagePath;
         private readonly ListView familyList = new ListView();
         private readonly RichTextBox log = new RichTextBox();
         private readonly Button start = new Button(), cancel = new Button(), viewResult = new Button(), reviewMotors = new Button(), selectItems = new Button(), approve = new Button(), apply = new Button(), installMotorProtection = new Button(), configureConnection = new Button(), openLog = new Button();
         private readonly object logLock = new object();
-        private Process worker;
+        private Process worker, auxiliaryProcess;
         private WorkerRunState currentWorkerRun;
         private string cancelPath, resultPath, sessionLogPath, selectedPackagePath, motorProtectionManifestPath;
         private bool applicationReady, selectionAvailable, motorProtectionSeedReady, auxiliaryCommandRunning;
@@ -61,6 +65,8 @@ namespace ClubEfootballWindowsApp
             internal string InitialResultPath, FinalResultPath;
             internal bool CompleteSeen, ApplicationReady, SelectionAvailable, MotorProtectionSeedReady;
             internal string MotorProtectionManifestPath;
+            internal bool RuntimeLevelsReady;
+            internal string RuntimeLevelsPackagePath;
             internal int CompletionScheduled;
         }
 
@@ -85,7 +91,8 @@ namespace ClubEfootballWindowsApp
 
         private sealed class AuxiliaryUiState
         {
-            internal bool Start, ViewResult, ReviewMotors, SelectItems, Approve, Apply, InstallMotorProtection, ConfigureConnection;
+            internal bool Start, Cancel, ViewResult, ReviewMotors, SelectItems, Approve, Apply, InstallMotorProtection, ConfigureConnection;
+            internal bool ApplyLevels, EfhubLevels, BoxesGame;
         }
 
         private sealed class SelectionChoice
@@ -132,12 +139,15 @@ namespace ClubEfootballWindowsApp
             database.AutoSize = true; database.Padding = new Padding(0, 8, 28, 6); sources.AutoSize = true; sources.Padding = new Padding(0, 8, 28, 6); status.Controls.Add(database); status.Controls.Add(sources); layout.Controls.Add(status, 0, 1);
             Panel progressPanel = new Panel { Height = 54, Dock = DockStyle.Fill }; stage.AutoSize = true; stage.Dock = DockStyle.Top; progress.Dock = DockStyle.Bottom; progress.Height = 17; progress.Minimum = 0; progress.Maximum = 100; progressPanel.Controls.Add(stage); progressPanel.Controls.Add(progress); layout.Controls.Add(progressPanel, 0, 2);
             familyList.Dock = DockStyle.Fill; familyList.View = View.Details; familyList.FullRowSelect = true; familyList.GridLines = true; familyList.Columns.Add("Família", 155); familyList.Columns.Add("Estado", 150); familyList.Columns.Add("Detalhe", 660);
-            foreach (string family in new[] { "Cartas", "Relações", "Dimensões", "Ímpetos", "Técnicos", "Textos", "Metadados" }) UpdateFamily(family, "aguardando", "Ainda não iniciada."); layout.Controls.Add(familyList, 0, 3);
+            foreach (string family in new[] { "Cartas", "Níveis reais", "Relações", "Dimensões", "Ímpetos", "Técnicos", "Textos", "Metadados" }) UpdateFamily(family, "aguardando", "Ainda não iniciada."); layout.Controls.Add(familyList, 0, 3);
             log.Dock = DockStyle.Fill; log.ReadOnly = true; log.BackColor = Color.White; log.Font = new Font("Consolas", 9F); layout.Controls.Add(log, 0, 4);
             FlowLayoutPanel actions = new FlowLayoutPanel { AutoSize = true };
             start.Text = "INICIAR VARREDURA"; start.AutoSize = true; start.Padding = new Padding(12, 6, 12, 6); start.Click += delegate { StartWorker(); };
             cancel.Text = "CANCELAR"; cancel.AutoSize = true; cancel.Padding = new Padding(12, 6, 12, 6); cancel.Enabled = false; cancel.Click += delegate { RequestCancel(); };
             viewResult.Text = "VER RESULTADO"; viewResult.AutoSize = true; viewResult.Padding = new Padding(12, 6, 12, 6); viewResult.Enabled = false; viewResult.Click += delegate { OpenResult(); };
+            applyLevels.Text = "ATUALIZAR NÍVEIS"; applyLevels.AutoSize = true; applyLevels.Padding = new Padding(12, 6, 12, 6); applyLevels.Enabled = false; applyLevels.Click += delegate { ApplyRuntimeLevels(); };
+            efhubLevels.Text = "EFHUB: PRÓXIMO LOTE"; efhubLevels.AutoSize = true; efhubLevels.Padding = new Padding(12, 6, 12, 6); efhubLevels.Click += delegate { ExtractEfhubLevels(); };
+            boxesGame.Text = "ATUALIZAR BOXES NOVAS"; boxesGame.AutoSize = true; boxesGame.Padding = new Padding(12, 6, 12, 6); boxesGame.Click += delegate { ExtractBoxesFromGame(); };
             reviewMotors.Text = "REVISAR USO NOS MOTORES"; reviewMotors.AutoSize = true; reviewMotors.Padding = new Padding(12, 6, 12, 6); reviewMotors.Enabled = false; reviewMotors.Click += delegate { ReviewMotorCards(); };
             selectItems.Text = "ESCOLHER O QUE ENVIAR"; selectItems.AutoSize = true; selectItems.Padding = new Padding(12, 6, 12, 6); selectItems.Enabled = false; selectItems.Click += delegate { SelectApplicationItems(); };
             approve.Text = "APROVAR PACOTE"; approve.AutoSize = true; approve.Padding = new Padding(12, 6, 12, 6); approve.Enabled = false; approve.Click += delegate { ApprovePackage(); };
@@ -145,7 +155,7 @@ namespace ClubEfootballWindowsApp
             installMotorProtection.Text = "INSTALAR/ATUALIZAR PROTEÇÃO DOS MOTORES"; installMotorProtection.AutoSize = true; installMotorProtection.Padding = new Padding(12, 6, 12, 6); installMotorProtection.Enabled = false; installMotorProtection.Click += delegate { InstallProtectionForMotors(); };
             configureConnection.Text = "CONFIGURAR CONEXÃO"; configureConnection.AutoSize = true; configureConnection.Padding = new Padding(12, 6, 12, 6); configureConnection.Click += delegate { ConfigureDatabaseConnection(); };
             openLog.Text = "ABRIR LOG"; openLog.AutoSize = true; openLog.Padding = new Padding(12, 6, 12, 6); openLog.Click += delegate { OpenPersistentLog(); };
-            actions.Controls.Add(start); actions.Controls.Add(cancel); actions.Controls.Add(viewResult); actions.Controls.Add(reviewMotors); actions.Controls.Add(selectItems); actions.Controls.Add(approve); actions.Controls.Add(apply); actions.Controls.Add(installMotorProtection); actions.Controls.Add(configureConnection); actions.Controls.Add(openLog); layout.Controls.Add(actions, 0, 5);
+            actions.Controls.Add(start); actions.Controls.Add(cancel); actions.Controls.Add(viewResult); actions.Controls.Add(boxesGame); actions.Controls.Add(applyLevels); actions.Controls.Add(efhubLevels); actions.Controls.Add(reviewMotors); actions.Controls.Add(selectItems); actions.Controls.Add(approve); actions.Controls.Add(apply); actions.Controls.Add(installMotorProtection); actions.Controls.Add(configureConnection); actions.Controls.Add(openLog); layout.Controls.Add(actions, 0, 5);
         }
 
         private void SetAvailability(string databaseText, string sourceText, string stageText) { database.Text = databaseText; sources.Text = sourceText; stage.Text = "Etapa: " + stageText; }
@@ -421,8 +431,9 @@ namespace ClubEfootballWindowsApp
             catch (Exception error) { AppendLog(error.Message); MessageBox.Show(error.Message, "Extrator eFootball", MessageBoxButtons.OK, MessageBoxIcon.Information); return; }
             string runDirectory = Path.Combine(root, "artefatos", "desktop", "run-" + DateTime.Now.ToString("yyyyMMdd-HHmmss")); Directory.CreateDirectory(runDirectory);
             cancelPath = Path.Combine(runDirectory, "CANCELAR.txt"); resultPath = Path.Combine(runDirectory, "resultado.json");
+            levelsPackagePath = null; applyLevels.Enabled = false;
             foreach (ListViewItem item in families.Values) { item.SubItems[1].Text = "aguardando"; item.SubItems[2].Text = "Ainda não iniciada."; }
-            applicationReady = false; selectionAvailable = false; motorProtectionSeedReady = false; selectedPackagePath = null; motorProtectionManifestPath = null; log.Clear(); progress.Value = 0; start.Enabled = false; cancel.Enabled = true; viewResult.Enabled = false; reviewMotors.Enabled = false; selectItems.Enabled = false; approve.Enabled = false; apply.Enabled = false; installMotorProtection.Enabled = false; configureConnection.Enabled = false; SetAvailability("Banco: conectando em leitura", "Fontes: verificando", "Preparando processo de extração separado."); AppendLog("Iniciando worker desktop V" + DesktopProtocolVersion + ". Nenhuma escrita no banco é permitida.");
+            applicationReady = false; selectionAvailable = false; motorProtectionSeedReady = false; selectedPackagePath = null; motorProtectionManifestPath = null; log.Clear(); progress.Value = 0; start.Enabled = false; cancel.Enabled = true; viewResult.Enabled = false; applyLevels.Enabled = false; efhubLevels.Enabled = false; reviewMotors.Enabled = false; selectItems.Enabled = false; approve.Enabled = false; apply.Enabled = false; installMotorProtection.Enabled = false; configureConnection.Enabled = false; SetAvailability("Banco: conectando em leitura", "Fontes: verificando", "Preparando processo de extração separado."); AppendLog("Iniciando worker desktop V" + DesktopProtocolVersion + ". A varredura geral compara cartas e não altera boxes.");
             ProcessStartInfo info = new ProcessStartInfo(); info.FileName = python; info.Arguments = (launcher ? "-3 " : "") + Quote(script) + " --root " + Quote(root) + " --run-dir " + Quote(runDirectory) + " --cancel " + Quote(cancelPath) + " --protocol-version " + Quote(DesktopProtocolVersion); info.WorkingDirectory = root; info.UseShellExecute = false; info.CreateNoWindow = true; info.RedirectStandardOutput = true; info.RedirectStandardError = true; info.EnvironmentVariables["PYTHONPATH"] = Path.Combine(root, "executor", "vendor"); info.EnvironmentVariables["PYTHONUNBUFFERED"] = "1"; info.EnvironmentVariables.Remove("CLUBEF_ENABLE_REAL_WRITE");
             InjectDatabaseCredential(info, protectedDsn);
             WorkerRunState run = new WorkerRunState();
@@ -445,7 +456,7 @@ namespace ClubEfootballWindowsApp
                 try { if (!process.HasExited) process.Kill(); } catch { }
                 currentWorkerRun = null; worker = null;
                 run.StandardOutputClosed.Close(); run.StandardErrorClosed.Close(); process.Dispose();
-                start.Enabled = true; cancel.Enabled = false; configureConnection.Enabled = true; AppendLog("Falha ao iniciar worker: " + error.Message); MessageBox.Show(error.Message, "Extrator eFootball", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                start.Enabled = true; efhubLevels.Enabled = true; cancel.Enabled = false; configureConnection.Enabled = true; AppendLog("Falha ao iniciar worker: " + error.Message); MessageBox.Show(error.Message, "Extrator eFootball", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -457,7 +468,7 @@ namespace ClubEfootballWindowsApp
                 JavaScriptSerializer parser = new JavaScriptSerializer(); parser.MaxJsonLength = Int32.MaxValue;
                 Dictionary<string, object> message = parser.DeserializeObject(line) as Dictionary<string, object>;
                 if (message == null || TextValue(message, "type") != "complete") return;
-                bool ready, canSelect, protectionReady;
+                bool ready, canSelect, protectionReady, levelsReady;
                 string completedPath = TextValue(message, "result_path");
                 lock (run.Sync)
                 {
@@ -467,6 +478,8 @@ namespace ClubEfootballWindowsApp
                     run.SelectionAvailable = Boolean.TryParse(TextValue(message, "selection_available"), out canSelect) && canSelect;
                     run.MotorProtectionSeedReady = Boolean.TryParse(TextValue(message, "motor_protection_seed_ready"), out protectionReady) && protectionReady;
                     run.MotorProtectionManifestPath = TextValue(message, "motor_protection_manifest_path");
+                    run.RuntimeLevelsReady = Boolean.TryParse(TextValue(message, "runtime_levels_ready"), out levelsReady) && levelsReady;
+                    run.RuntimeLevelsPackagePath = TextValue(message, "runtime_levels_package_path");
                 }
             }
             catch { /* A mensagem será exibida como evento inválido pela interface. */ }
@@ -540,8 +553,10 @@ namespace ClubEfootballWindowsApp
         }
         private void RequestCancel()
         {
-            if (String.IsNullOrEmpty(cancelPath) || worker == null || worker.HasExited) return;
-            try { File.WriteAllText(cancelPath, "cancelled by user", new UTF8Encoding(false)); cancel.Enabled = false; AppendLog("Cancelamento solicitado. O worker salvará o estado seguro e encerrará."); }
+            bool mainRunning = worker != null && !worker.HasExited;
+            bool auxiliaryRunning = auxiliaryProcess != null && !auxiliaryProcess.HasExited;
+            if (String.IsNullOrEmpty(cancelPath) || (!mainRunning && !auxiliaryRunning)) return;
+            try { File.WriteAllText(cancelPath, "cancelled by user", new UTF8Encoding(false)); cancel.Enabled = false; AppendLog("Cancelamento solicitado. O worker preservará o checkpoint e encerrará antes da gravação do lote incompleto."); }
             catch (Exception error) { AppendLog("Não foi possível solicitar cancelamento: " + error.Message); }
         }
         private void FinishWorker(WorkerRunState run, int exitCode, string drainError)
@@ -559,6 +574,8 @@ namespace ClubEfootballWindowsApp
                 finalMotorProtectionManifestPath = run.MotorProtectionManifestPath;
             }
             resultPath = finalResultPath;
+            levelsPackagePath = run.RuntimeLevelsPackagePath;
+            applyLevels.Enabled = exitCode == 0 && completeSeen && String.IsNullOrEmpty(drainError) && run.RuntimeLevelsReady && !String.IsNullOrEmpty(levelsPackagePath) && File.Exists(levelsPackagePath);
             applicationReady = exitCode == 0 && completeSeen && String.IsNullOrEmpty(drainError) && finalApplicationReady;
             selectionAvailable = exitCode == 0 && completeSeen && String.IsNullOrEmpty(drainError) && finalSelectionAvailable;
             motorProtectionManifestPath = finalMotorProtectionManifestPath;
@@ -569,10 +586,25 @@ namespace ClubEfootballWindowsApp
                 applicationReady = false; selectionAvailable = false;
                 AppendLog("O worker não entregou a confirmação final em JSON. Seleção, aprovação e aplicação permanecem bloqueadas por segurança.");
             }
-            cancel.Enabled = false; start.Enabled = true; configureConnection.Enabled = true; viewResult.Enabled = File.Exists(resultPath); reviewMotors.Enabled = File.Exists(Path.Combine(Path.GetDirectoryName(resultPath), "revisao-prontidao-motores.json")); selectItems.Enabled = selectionAvailable && File.Exists(Path.Combine(Path.GetDirectoryName(resultPath), "pacote-revisao.json")); approve.Enabled = applicationReady && !String.IsNullOrEmpty(selectedPackagePath) && File.Exists(selectedPackagePath); apply.Enabled = false; installMotorProtection.Enabled = motorProtectionSeedReady;
-            if (exitCode == 0 && completeSeen && String.IsNullOrEmpty(drainError)) { progress.Value = 100; stage.Text = "Etapa: conferência concluída — somente leitura."; AppendLog("Worker concluído. Nenhuma escrita automática foi executada."); }
+            cancel.Enabled = false; start.Enabled = true; efhubLevels.Enabled = true; configureConnection.Enabled = true; viewResult.Enabled = File.Exists(resultPath); reviewMotors.Enabled = File.Exists(Path.Combine(Path.GetDirectoryName(resultPath), "revisao-prontidao-motores.json")); selectItems.Enabled = selectionAvailable && File.Exists(Path.Combine(Path.GetDirectoryName(resultPath), "pacote-revisao.json")); approve.Enabled = applicationReady && !String.IsNullOrEmpty(selectedPackagePath) && File.Exists(selectedPackagePath); apply.Enabled = false; installMotorProtection.Enabled = motorProtectionSeedReady;
+            if (exitCode == 0 && completeSeen && String.IsNullOrEmpty(drainError)) { progress.Value = 100; stage.Text = "Etapa: comparação concluída. Revise os dados antes de enviar."; AppendLog("Varredura concluída sem importar dados. Revise e selecione o pacote; boxes e níveis usam seus botões próprios. Correções manuais registradas prevalecem."); }
             else if (exitCode == 0) { stage.Text = "Etapa: worker encerrado sem confirmação final completa. Envio bloqueado; consulte o log."; }
             else { stage.Text = "Etapa: worker encerrado com código " + exitCode + ". Consulte o log e o resultado local."; AppendLog("Worker encerrado com código " + exitCode + ". A janela permaneceu disponível."); }
+            if (exitCode != 0 && File.Exists(resultPath))
+            {
+                try
+                {
+                    Dictionary<string, object> saved = json.DeserializeObject(File.ReadAllText(resultPath, Encoding.UTF8)) as Dictionary<string, object>;
+                    if (saved != null && TextValue(saved, "state") == "source_update_pending")
+                    {
+                        database.Text = "Banco: nenhuma alteração realizada";
+                        sources.Text = "Fontes: atualização do jogo detectada";
+                        stage.Text = "Etapa: atualizar o contrato de leitura antes de comparar e enviar os dados novos.";
+                        AppendLog(TextValue(saved, "reason"));
+                    }
+                }
+                catch (Exception error) { AppendLog("Não foi possível ler o diagnóstico da fonte: " + error.Message); }
+            }
             run.StandardOutputClosed.Close(); run.StandardErrorClosed.Close();
         }
 
@@ -694,29 +726,38 @@ namespace ClubEfootballWindowsApp
             if (auxiliaryCommandRunning) throw new InvalidOperationException("Já existe uma ação em andamento. Aguarde a conclusão mostrada na própria janela.");
             AuxiliaryUiState state = new AuxiliaryUiState {
                 Start = start.Enabled,
+                Cancel = cancel.Enabled,
                 ViewResult = viewResult.Enabled,
                 ReviewMotors = reviewMotors.Enabled,
                 SelectItems = selectItems.Enabled,
                 Approve = approve.Enabled,
                 Apply = apply.Enabled,
+                ApplyLevels = applyLevels.Enabled,
+                EfhubLevels = efhubLevels.Enabled,
+                BoxesGame = boxesGame.Enabled,
                 InstallMotorProtection = installMotorProtection.Enabled,
                 ConfigureConnection = configureConnection.Enabled
             };
             auxiliaryCommandRunning = true; UseWaitCursor = true;
-            start.Enabled = false; viewResult.Enabled = false; reviewMotors.Enabled = false; selectItems.Enabled = false; approve.Enabled = false; apply.Enabled = false; installMotorProtection.Enabled = false; configureConnection.Enabled = false;
+            applyLevels.Enabled = false;
+            efhubLevels.Enabled = false; start.Enabled = false; cancel.Enabled = false; viewResult.Enabled = false; reviewMotors.Enabled = false; selectItems.Enabled = false; approve.Enabled = false; apply.Enabled = false; installMotorProtection.Enabled = false; configureConnection.Enabled = false;
+            boxesGame.Enabled = false;
             return state;
         }
 
         private void RestoreAuxiliaryOperation(AuxiliaryUiState state)
         {
             auxiliaryCommandRunning = false; UseWaitCursor = false;
-            start.Enabled = state.Start; viewResult.Enabled = state.ViewResult; reviewMotors.Enabled = state.ReviewMotors; selectItems.Enabled = state.SelectItems; approve.Enabled = state.Approve; apply.Enabled = state.Apply; installMotorProtection.Enabled = state.InstallMotorProtection; configureConnection.Enabled = state.ConfigureConnection;
+            applyLevels.Enabled = state.ApplyLevels;
+            efhubLevels.Enabled = state.EfhubLevels; start.Enabled = state.Start; cancel.Enabled = state.Cancel; viewResult.Enabled = state.ViewResult; reviewMotors.Enabled = state.ReviewMotors; selectItems.Enabled = state.SelectItems; approve.Enabled = state.Approve; apply.Enabled = state.Apply; installMotorProtection.Enabled = state.InstallMotorProtection; configureConnection.Enabled = state.ConfigureConnection;
+            boxesGame.Enabled = state.BoxesGame;
         }
 
         private void RunCommandAsync(ProcessStartInfo info, Action<CommandResult> completed)
         {
             CommandRunState run = new CommandRunState();
             Process process = new Process { StartInfo = info, EnableRaisingEvents = true }; run.Process = process;
+            auxiliaryProcess = process;
             process.OutputDataReceived += delegate(object sender, DataReceivedEventArgs e) {
                 if (e.Data == null) { run.StandardOutputClosed.Set(); return; }
                 lock (run.Sync) run.StandardOutput.AppendLine(e.Data);
@@ -732,6 +773,7 @@ namespace ClubEfootballWindowsApp
             catch
             {
                 try { if (!process.HasExited) process.Kill(); } catch { }
+                if (Object.ReferenceEquals(auxiliaryProcess, process)) auxiliaryProcess = null;
                 try { process.Dispose(); } catch { }
                 throw;
             }
@@ -757,7 +799,9 @@ namespace ClubEfootballWindowsApp
                     result.StandardOutput = run.StandardOutput.ToString();
                     result.StandardError = run.StandardError.ToString();
                 }
-                run.StandardOutputClosed.Close(); run.StandardErrorClosed.Close(); run.Process.Dispose();
+                run.StandardOutputClosed.Close(); run.StandardErrorClosed.Close();
+                if (Object.ReferenceEquals(auxiliaryProcess, run.Process)) auxiliaryProcess = null;
+                run.Process.Dispose();
                 if (IsDisposed || !IsHandleCreated) return;
                 try { BeginInvoke((MethodInvoker)delegate { completed(result); }); }
                 catch (InvalidOperationException) { }
@@ -766,13 +810,12 @@ namespace ClubEfootballWindowsApp
 
         private static string CommandFailureText(CommandResult result, string fallback)
         {
-            StringBuilder detail = new StringBuilder();
-            if (!String.IsNullOrEmpty(result.InfrastructureError)) detail.AppendLine(result.InfrastructureError);
-            if (!String.IsNullOrWhiteSpace(result.StandardError)) detail.AppendLine(result.StandardError.Trim());
-            if (!String.IsNullOrWhiteSpace(result.StandardOutput)) detail.AppendLine(result.StandardOutput.Trim());
-            string text = detail.ToString().Trim();
-            if (text.Length > 3500) text = text.Substring(text.Length - 3500);
-            return String.IsNullOrEmpty(text) ? fallback : fallback + Environment.NewLine + Environment.NewLine + text;
+            // A saída integral já foi persistida por AppendFromWorker. Não despejar
+            // JSON, SQL e traceback numa caixa que ocupa toda a tela do operador.
+            string detail = String.IsNullOrWhiteSpace(result.InfrastructureError)
+                ? "Consulte ABRIR LOG para os detalhes da falha."
+                : result.InfrastructureError + Environment.NewLine + "Consulte ABRIR LOG para os detalhes.";
+            return fallback + Environment.NewLine + Environment.NewLine + detail;
         }
 
         private void ReviewMotorCards()
@@ -868,12 +911,29 @@ namespace ClubEfootballWindowsApp
 
         private List<SelectionChoice> ReadSelectionChoices(string packagePath)
         {
-            Dictionary<string, object> package = json.DeserializeObject(File.ReadAllText(packagePath, Encoding.UTF8)) as Dictionary<string, object>;
-            object reviewObject, statusObject, choicesObject;
-            Dictionary<string, object> review, status;
-            if (package == null || !package.TryGetValue("pacote_revisao", out reviewObject) || (review = reviewObject as Dictionary<string, object>) == null ||
-                !review.TryGetValue("application_status", out statusObject) || (status = statusObject as Dictionary<string, object>) == null ||
-                !status.TryGetValue("selectable_items", out choicesObject)) throw new InvalidOperationException("O pacote não contém a lista de mudanças selecionáveis.");
+            object choicesObject;
+            string previewPath = Path.Combine(Path.GetDirectoryName(packagePath), "selecao-disponivel.json");
+            if (File.Exists(previewPath))
+            {
+                if (new FileInfo(previewPath).Length > 524288) throw new InvalidOperationException("Resumo de seleção excessivo.");
+                Dictionary<string, object> preview = json.DeserializeObject(File.ReadAllText(previewPath, Encoding.UTF8)) as Dictionary<string, object>;
+                if (preview == null || TextValue(preview, "schema") != "clubef-selecao-disponivel-v1" || !preview.TryGetValue("selectable_items", out choicesObject))
+                    throw new InvalidOperationException("Resumo de seleção inválido.");
+                string actual;
+                using (SHA256 hash = SHA256.Create())
+                using (FileStream stream = File.OpenRead(packagePath)) actual = BitConverter.ToString(hash.ComputeHash(stream)).Replace("-", "").ToLowerInvariant();
+                if (!String.Equals(actual, TextValue(preview, "arquivo_sha256"), StringComparison.Ordinal))
+                    throw new InvalidOperationException("O pacote mudou desde a geração da seleção. Execute nova varredura.");
+            }
+            else
+            {
+                Dictionary<string, object> package = json.DeserializeObject(File.ReadAllText(packagePath, Encoding.UTF8)) as Dictionary<string, object>;
+                object reviewObject, statusObject;
+                Dictionary<string, object> review, status;
+                if (package == null || !package.TryGetValue("pacote_revisao", out reviewObject) || (review = reviewObject as Dictionary<string, object>) == null ||
+                    !review.TryGetValue("application_status", out statusObject) || (status = statusObject as Dictionary<string, object>) == null ||
+                    !status.TryGetValue("selectable_items", out choicesObject)) throw new InvalidOperationException("O pacote não contém a lista de mudanças selecionáveis.");
+            }
             IEnumerable sequence = choicesObject as IEnumerable;
             if (sequence == null) throw new InvalidOperationException("A lista de mudanças selecionáveis é inválida.");
             List<SelectionChoice> result = new List<SelectionChoice>();
@@ -1096,6 +1156,35 @@ namespace ClubEfootballWindowsApp
             return info;
         }
 
+        private ProcessStartInfo BuildEfhubLevelsCommand(string runDirectory)
+        {
+            bool launcher; string python = FindPython(out launcher); string script = Path.Combine(root, "executor", "desktop_worker.py");
+            if (String.IsNullOrEmpty(python)) throw new InvalidOperationException("Python não foi encontrado neste Windows.");
+            string arguments = (launcher ? "-3 " : "") + Quote(script) + " --root " + Quote(root) + " --run-dir " + Quote(runDirectory) +
+                " --cancel " + Quote(Path.Combine(runDirectory, "CANCELAR.txt")) + " --protocol-version " + Quote(DesktopProtocolVersion) +
+                " --extract-efhub-levels --efhub-batch-size 100";
+            ProcessStartInfo info = new ProcessStartInfo { FileName = python, Arguments = arguments, WorkingDirectory = root, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true };
+            info.EnvironmentVariables["PYTHONPATH"] = Path.Combine(root, "executor", "vendor");
+            info.EnvironmentVariables["PYTHONUNBUFFERED"] = "1";
+            info.EnvironmentVariables["CLUBEF_ENABLE_REAL_WRITE"] = "1";
+            InjectStoredDatabaseCredential(info, true);
+            return info;
+        }
+
+        private ProcessStartInfo BuildBoxesGameCommand(string runDirectory)
+        {
+            bool launcher; string python = FindPython(out launcher); string script = Path.Combine(root, "executor", "desktop_worker.py");
+            if (String.IsNullOrEmpty(python)) throw new InvalidOperationException("Python não foi encontrado neste Windows.");
+            string arguments = (launcher ? "-3 " : "") + Quote(script) + " --root " + Quote(root) + " --run-dir " + Quote(runDirectory) +
+                " --cancel " + Quote(Path.Combine(runDirectory, "CANCELAR.txt")) + " --protocol-version " + Quote(DesktopProtocolVersion) + " --extract-boxes";
+            ProcessStartInfo info = new ProcessStartInfo { FileName = python, Arguments = arguments, WorkingDirectory = root, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true };
+            info.EnvironmentVariables["PYTHONPATH"] = Path.Combine(root, "executor", "vendor");
+            info.EnvironmentVariables["PYTHONUNBUFFERED"] = "1";
+            info.EnvironmentVariables["CLUBEF_ENABLE_REAL_WRITE"] = "1";
+            InjectStoredDatabaseCredential(info, true);
+            return info;
+        }
+
         private void ApprovePackage()
         {
             if (auxiliaryCommandRunning) return;
@@ -1121,26 +1210,146 @@ namespace ClubEfootballWindowsApp
             }
             catch (Exception error) { if (uiState != null) RestoreAuxiliaryOperation(uiState); AppendLog("Falha ao aprovar pacote: " + error.Message); MessageBox.Show(error.Message, "Extrator eFootball", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
-        private void ApplyPackage()
+        private void ExtractEfhubLevels()
         {
-            if (auxiliaryCommandRunning) return;
-            string package = selectedPackagePath; if (String.IsNullOrEmpty(package) || !File.Exists(package)) return;
-            if (MessageBox.Show("Aplicar exclusivamente os itens marcados e já aprovados? O worker recusará qualquer diferença de hash, fontes, contrato, seleção ou leitura de volta.", "Aplicação transacional", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+            if (auxiliaryCommandRunning || (worker != null && !worker.HasExited)) return;
+            AuxiliaryUiState uiState = null;
+            try
+            {
+                string runDirectory = Path.Combine(root, "artefatos", "efhub-niveis", "run-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N").Substring(0, 8));
+                Directory.CreateDirectory(runDirectory);
+                resultPath = Path.Combine(runDirectory, "efhub-resultado.json");
+                cancelPath = Path.Combine(runDirectory, "CANCELAR.txt");
+                uiState = BeginAuxiliaryOperation();
+                cancel.Enabled = true;
+                stage.Text = "Etapa: consultando o próximo lote de 100 cartas no eFHUB e comparando com o banco.";
+                UpdateFamily("Níveis reais", "coletando eFHUB", "Ordem: especiais com evolução, sem evolução e base; maior overall primeiro.");
+                AppendLog("Lote eFHUB iniciado. Cada card será comparado pelo ID com o nível e o orçamento já registrados.");
+                RunCommandAsync(BuildEfhubLevelsCommand(runDirectory), delegate(CommandResult commandResult) {
+                    RestoreAuxiliaryOperation(uiState);
+                    if (commandResult.Succeeded)
+                    {
+                        viewResult.Enabled = File.Exists(resultPath);
+                        stage.Text = "Etapa: lote eFHUB gravado, comparado e conferido no banco.";
+                        UpdateFamily("Níveis reais", "lote conferido", "Valores diferentes foram reescritos; entradas antigas foram encaminhadas à revisão.");
+                        AppendLog("Lote eFHUB concluído com readback independente. O JSON e o relatório HTML ficaram na pasta da rodada.");
+                    }
+                    else
+                    {
+                        stage.Text = "Etapa: lote eFHUB incompleto ou recusado; o checkpoint foi preservado.";
+                        UpdateFamily("Níveis reais", "erro no lote", "Confira o log; cartas sem resposta não receberam nível inferido.");
+                        string failure = CommandFailureText(commandResult, "Não foi possível concluir o lote eFHUB.");
+                        AppendLog(failure); MessageBox.Show(failure, "Níveis eFHUB", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                });
+            }
+            catch (Exception error)
+            {
+                if (uiState != null) RestoreAuxiliaryOperation(uiState);
+                AppendLog("Falha ao iniciar lote eFHUB: " + error.Message);
+                MessageBox.Show(error.Message, "Níveis eFHUB", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ExtractBoxesFromGame()
+        {
+            if (auxiliaryCommandRunning || (worker != null && !worker.HasExited)) return;
+            AuxiliaryUiState uiState = null;
+            try
+            {
+                string runDirectory = Path.Combine(root, "artefatos", "capturas-boxes-jogo", "run-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N").Substring(0, 8));
+                Directory.CreateDirectory(runDirectory);
+                resultPath = Path.Combine(runDirectory, "boxes-resultado.json");
+                cancelPath = Path.Combine(runDirectory, "CANCELAR.txt");
+                uiState = BeginAuxiliaryOperation();
+                cancel.Enabled = true;
+                stage.Text = "Etapa: procurando boxes novas na área de contratos do eFootball.";
+                UpdateFamily("Boxes do jogo", "lendo o jogo", "Fonte: resposta CmdGetMyclubAgentlist carregada na área de contratos.");
+                AppendLog("Atualização de boxes iniciada. PlayerVariationDetail.bin não será usado como nome de box.");
+                RunCommandAsync(BuildBoxesGameCommand(runDirectory), delegate(CommandResult commandResult) {
+                    RestoreAuxiliaryOperation(uiState);
+                    viewResult.Enabled = File.Exists(resultPath);
+                    if (commandResult.Succeeded)
+                    {
+                        stage.Text = "Etapa: boxes novas publicadas; histórico e boxes atuais preservados.";
+                        UpdateFamily("Boxes do jogo", "conferidas", "A captura reconheceu as já cadastradas e publicou apenas títulos novos.");
+                        AppendLog("Atualização concluída. A base histórica veio do legado; a captura física só acrescenta boxes novas e atualiza as que ela própria criou.");
+                    }
+                    else
+                    {
+                        stage.Text = "Etapa: boxes não atualizadas; abra a área de contratos do jogo e consulte o log.";
+                        UpdateFamily("Boxes do jogo", "aguardando jogo", "A captura não foi publicada; nenhuma etiqueta de variação foi usada como box.");
+                        string failure = CommandFailureText(commandResult, "Não foi possível ler as boxes carregadas no eFootball.");
+                        AppendLog(failure); MessageBox.Show(failure, "Boxes do jogo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                });
+            }
+            catch (Exception error)
+            {
+                if (uiState != null) RestoreAuxiliaryOperation(uiState);
+                AppendLog("Falha ao iniciar a atualização das boxes: " + error.Message);
+                MessageBox.Show(error.Message, "Boxes do jogo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ApplyRuntimeLevels()
+        {
+            if (auxiliaryCommandRunning || (worker != null && !worker.HasExited)) return;
+            if (String.IsNullOrEmpty(levelsPackagePath) || !File.Exists(levelsPackagePath)) return;
             AuxiliaryUiState uiState = null;
             try
             {
                 uiState = BeginAuxiliaryOperation();
+                stage.Text = "Etapa: atualizando níveis e orçamentos das cartas conferidas.";
+                AppendLog("Atualizar níveis solicitado pelo operador. A captura e o contrato serão reconferidos antes da gravação.");
+                RunCommandAsync(BuildWorkerCommand("--apply-runtime-levels", levelsPackagePath, true), delegate(CommandResult commandResult) {
+                    RestoreAuxiliaryOperation(uiState);
+                    if (commandResult.Succeeded)
+                    {
+                        applyLevels.Enabled = false;
+                        stage.Text = "Etapa: níveis e orçamentos atualizados e conferidos no banco.";
+                        UpdateFamily("Níveis reais", "aplicado", "Níveis, orçamentos e provas confirmados no banco.");
+                        AppendLog("Atualização de níveis concluída; cartas não observadas continuam pendentes.");
+                    }
+                    else
+                    {
+                        stage.Text = "Etapa: atualização de níveis não confirmada; confira o log.";
+                        string failure = CommandFailureText(commandResult, "Não foi possível confirmar a atualização dos níveis.");
+                        AppendLog(failure);
+                        MessageBox.Show(failure, "Atualizar níveis", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                });
+            }
+            catch (Exception error)
+            {
+                if (uiState != null) RestoreAuxiliaryOperation(uiState);
+                AppendLog("Falha ao atualizar níveis: " + error.Message);
+                MessageBox.Show(error.Message, "Atualizar níveis", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ApplyPackage()
+        {
+            if (auxiliaryCommandRunning) return;
+            string package = selectedPackagePath; if (String.IsNullOrEmpty(package) || !File.Exists(package)) return;
+            if (MessageBox.Show("Aplicar os itens marcados e já aprovados? Os dados são gravados e conferidos por lotes. Se houver interrupção, os lotes confirmados ficam salvos para retomar o mesmo pacote.", "Aplicar dados", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+            AuxiliaryUiState uiState = null;
+            try
+            {
+                uiState = BeginAuxiliaryOperation();
+                stage.Text = "Etapa: aplicando dados por lotes; aguardando conferência final.";
                 RunCommandAsync(BuildWorkerCommand("--apply-review", package, true), delegate(CommandResult commandResult) {
                     RestoreAuxiliaryOperation(uiState);
                     if (commandResult.Succeeded)
                     {
-                        apply.Enabled = false; approve.Enabled = false; selectItems.Enabled = false; stage.Text = "Etapa: pacote aplicado e confirmado por readback independente.";
-                        MessageBox.Show("Pacote aplicado e confirmado por readback independente.", "Extrator eFootball", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        apply.Enabled = false; approve.Enabled = false; selectItems.Enabled = false; stage.Text = "Etapa: dados aplicados e conferidos no banco.";
+                        MessageBox.Show("Dados aplicados e confirmados por uma nova leitura do banco.", "Extrator eFootball", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
                         apply.Enabled = true;
-                        string failure = CommandFailureText(commandResult, "Aplicação recusada com segurança.");
+                        stage.Text = "Etapa: aplicação não concluída; pode haver lotes já salvos.";
+                        string failure = CommandFailureText(commandResult, "Não foi possível confirmar a conclusão.") + "\n\nPode haver lotes já salvos. Preserve este pacote: a retomada confere os lotes confirmados antes de continuar.";
                         AppendLog(failure); MessageBox.Show(failure, "Extrator eFootball", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 });

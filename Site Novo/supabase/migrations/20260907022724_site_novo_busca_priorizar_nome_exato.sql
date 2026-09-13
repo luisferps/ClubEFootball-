@@ -1,0 +1,115 @@
+-- Resultados cujo nome contém a palavra ou frase exata vêm antes de prefixos parecidos.
+create or replace function public.site_novo_busca_v1(
+  p_busca text,
+  p_limite integer default 48,
+  p_offset integer default 0
+) returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = ''
+set jit = off
+set statement_timeout = '5s'
+as $$
+declare
+  v_termo text;
+  v_limpo text;
+  v_tokens text[];
+  v_consulta tsquery;
+  v_resposta jsonb;
+begin
+  if p_busca is null
+     or length(btrim(p_busca)) not between 3 and 120
+     or p_busca ~ '[[:cntrl:]]'
+     or p_limite is null or p_limite not between 1 and 48
+     or p_offset is null or p_offset not between 0 and 100000 then
+    raise exception 'Parametros da busca invalidos' using errcode = '22023';
+  end if;
+
+  v_termo := btrim(p_busca);
+  v_limpo := btrim(regexp_replace(
+    clube_novo.site_novo_busca_normalizar_v1(v_termo),
+    '[^a-z0-9]+', ' ', 'g'
+  ));
+  v_tokens := regexp_split_to_array(v_limpo, ' +');
+
+  if v_limpo = '' or coalesce(array_length(v_tokens, 1), 0) not between 1 and 12 then
+    raise exception 'Parametros da busca invalidos' using errcode = '22023';
+  end if;
+
+  select to_tsquery('simple', string_agg(token || ':*', ' & ' order by ordem))
+  into v_consulta
+  from unnest(v_tokens) with ordinality as t(token, ordem);
+
+  with base as materialized (
+    select
+      c.card_id,
+      c.nome,
+      c.foto_url_cloudinary as foto_url,
+      nullif(btrim(c.box), '') as box,
+      c.overall,
+      coalesce(p.codigo_pt, nullif(btrim(c.posicao), '')) as posicao,
+      p.nome_pt as posicao_nome,
+      coalesce(tc.nome_exibicao, tc.nome_pt_br, nullif(btrim(c.tipo), '')) as tipo_carta,
+      ts_rank_cd(
+        to_tsvector(
+          'simple',
+          clube_novo.site_novo_busca_normalizar_v1(
+            coalesce(c.card_id, '') || ' ' || coalesce(c.nome, '') || ' ' ||
+            coalesce(c.box, '') || ' ' || coalesce(c.posicao, '') || ' ' ||
+            coalesce(c.estilo_of_pos, '') || ' ' || coalesce(c.nacionalidade, '') || ' ' ||
+            coalesce(c.tipo, '')
+          )
+        ),
+        v_consulta
+      ) as relevancia,
+      case
+        when clube_novo.site_novo_busca_normalizar_v1(c.nome) = v_limpo then 0
+        when ' ' || clube_novo.site_novo_busca_normalizar_v1(c.nome) || ' ' like '% ' || v_limpo || ' %' then 1
+        when clube_novo.site_novo_busca_normalizar_v1(c.nome) like v_limpo || '%' then 2
+        else 3
+      end as prioridade
+    from clube_novo.carta_jogo c
+    left join clube_novo.carta_posicao_principal_jogo cp on cp.card_id = c.card_id
+    left join clube_novo.posicao_jogo p on p.id = cp.posicao_id
+    left join clube_novo.tipo_carta_jogo tc on tc.tipo_carta_id = c.tipo_carta_id
+    where c.card_id ~ '^[1-9][0-9]*$'
+      and nullif(btrim(c.nome), '') is not null
+      and to_tsvector(
+        'simple',
+        clube_novo.site_novo_busca_normalizar_v1(
+          coalesce(c.card_id, '') || ' ' || coalesce(c.nome, '') || ' ' ||
+          coalesce(c.box, '') || ' ' || coalesce(c.posicao, '') || ' ' ||
+          coalesce(c.estilo_of_pos, '') || ' ' || coalesce(c.nacionalidade, '') || ' ' ||
+          coalesce(c.tipo, '')
+        )
+      ) @@ v_consulta
+  ),
+  ordenada as materialized (
+    select b.*, row_number() over (
+      order by b.prioridade, b.relevancia desc, b.overall desc nulls last,
+               b.nome collate "C", b.card_id collate "C"
+    ) as ordem
+    from base b
+  ),
+  pagina as (select * from ordenada order by ordem limit p_limite offset p_offset)
+  select jsonb_build_object(
+    'contrato', 'site-novo-busca-v1', 'versao', 1,
+    'status', case when exists(select 1 from pagina) then 'pronto' else 'vazio' end,
+    'busca', v_termo, 'total', (select count(*) from ordenada),
+    'limite', p_limite, 'offset', p_offset,
+    'tem_mais', (select count(*) from ordenada) > p_offset + p_limite,
+    'itens', coalesce((select jsonb_agg(jsonb_build_object(
+      'card_id', card_id, 'nome', nome, 'foto_url', foto_url, 'box', box,
+      'overall', overall, 'posicao', posicao, 'posicao_nome', posicao_nome,
+      'tipo_carta', tipo_carta
+    ) order by ordem) from pagina), '[]'::jsonb)
+  ) into v_resposta;
+  return v_resposta;
+end;
+$$;
+
+comment on function public.site_novo_busca_v1(text, integer, integer)
+is 'Busca publica do Site Novo sobre carta_jogo. Nome exato precede palavra exata, prefixos semelhantes e correspondencias nos demais campos.';
+
+notify pgrst, 'reload schema';

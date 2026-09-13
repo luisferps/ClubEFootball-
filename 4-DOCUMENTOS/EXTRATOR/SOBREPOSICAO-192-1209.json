@@ -1,0 +1,1862 @@
+{
+  "database_write": false,
+  "source_sha256": "cb2484b8d29d4d966a22202cf463719c51c968a75f83fad05667263f4955eced",
+  "record_size": 176,
+  "referencias": 65,
+  "presentes": 65,
+  "ausentes": [],
+  "melhores": [
+    {
+      "bit": 192,
+      "largura": 7,
+      "acertos": 65,
+      "total": 65,
+      "samples": [
+        {
+          "id": "17592991451474",
+          "nome": "Erik ten Hag",
+          "esperado": 40,
+          "lido": 40,
+          "registro": 1429
+        },
+        {
+          "id": "17592991452893",
+          "nome": "Mikel Arteta",
+          "esperado": 20,
+          "lido": 20,
+          "registro": 1430
+        },
+        {
+          "id": "17592991452928",
+          "nome": "Xavi Hernández",
+          "esperado": 18,
+          "lido": 18,
+          "registro": 1431
+        },
+        {
+          "id": "17593259786612",
+          "nome": "Stefano Pioli",
+          "esperado": 45,
+          "lido": 45,
+          "registro": 1432
+        },
+        {
+          "id": "17593259887057",
+          "nome": "Simone Inzaghi",
+          "esperado": 29,
+          "lido": 29,
+          "registro": 1433
+        },
+        {
+          "id": "17593259887058",
+          "nome": "Thomas Tuchel",
+          "esperado": 24,
+          "lido": 24,
+          "registro": 1434
+        },
+        {
+          "id": "17593528325190",
+          "nome": "Zico",
+          "esperado": 20,
+          "lido": 20,
+          "registro": 1435
+        },
+        {
+          "id": "17593796657368",
+          "nome": "Pep Guardiola",
+          "esperado": 32,
+          "lido": 32,
+          "registro": 1436
+        },
+        {
+          "id": "17593796759765",
+          "nome": "Xabi Alonso",
+          "esperado": 28,
+          "lido": 28,
+          "registro": 1437
+        },
+        {
+          "id": "17594065092609",
+          "nome": "R. Martínez",
+          "esperado": 52,
+          "lido": 52,
+          "registro": 1438
+        },
+        {
+          "id": "17594065092637",
+          "nome": "V. Montella",
+          "esperado": 45,
+          "lido": 45,
+          "registro": 1439
+        },
+        {
+          "id": "17594065092748",
+          "nome": "D. Deschamps",
+          "esperado": 62,
+          "lido": 62,
+          "registro": 1440
+        },
+        {
+          "id": "17594065193592",
+          "nome": "G. Southgate",
+          "esperado": 32,
+          "lido": 32,
+          "registro": 1441
+        },
+        {
+          "id": "17594065194415",
+          "nome": "Lionel Scaloni",
+          "esperado": 37,
+          "lido": 37,
+          "registro": 1442
+        },
+        {
+          "id": "17594073481737",
+          "nome": "Olympio H.",
+          "esperado": 45,
+          "lido": 45,
+          "registro": 1443
+        },
+        {
+          "id": "17594333629521",
+          "nome": "D. Stojković",
+          "esperado": 53,
+          "lido": 53,
+          "registro": 1444
+        },
+        {
+          "id": "17594333631255",
+          "nome": "L. de la Fuente",
+          "esperado": 22,
+          "lido": 22,
+          "registro": 1445
+        },
+        {
+          "id": "17594870501085",
+          "nome": "Mikel Arteta",
+          "esperado": 30,
+          "lido": 30,
+          "registro": 1446
+        },
+        {
+          "id": "17595138936066",
+          "nome": "Steven Gerrard",
+          "esperado": 35,
+          "lido": 35,
+          "registro": 1447
+        },
+        {
+          "id": "17595407371499",
+          "nome": "Patrick Vieira",
+          "esperado": 35,
+          "lido": 35,
+          "registro": 1448
+        },
+        {
+          "id": "17595675705641",
+          "nome": "Paulo Fonseca",
+          "esperado": 36,
+          "lido": 36,
+          "registro": 1449
+        },
+        {
+          "id": "17595944242399",
+          "nome": "Frank Lampard",
+          "esperado": 45,
+          "lido": 45,
+          "registro": 1450
+        },
+        {
+          "id": "17596212679870",
+          "nome": "Frank Rijkaard",
+          "esperado": 35,
+          "lido": 35,
+          "registro": 1451
+        },
+        {
+          "id": "17596481012062",
+          "nome": "Ronald Koeman",
+          "esperado": 45,
+          "lido": 45,
+          "registro": 1452
+        },
+        {
+          "id": "17596749549482",
+          "nome": "Ruben Amorim",
+          "esperado": 38,
+          "lido": 38,
+          "registro": 1453
+        },
+        {
+          "id": "17597017982861",
+          "nome": "José Mourinho",
+          "esperado": 45,
+          "lido": 45,
+          "registro": 1454
+        },
+        {
+          "id": "17597286420066",
+          "nome": "Vincent Kompany",
+          "esperado": 54,
+          "lido": 54,
+          "registro": 1455
+        },
+        {
+          "id": "17597554855616",
+          "nome": "Hansi Flick",
+          "esperado": 31,
+          "lido": 31,
+          "registro": 1456
+        },
+        {
+          "id": "17597823189022",
+          "nome": "G. P. Gasperini",
+          "esperado": 41,
+          "lido": 41,
+          "registro": 1457
+        },
+        {
+          "id": "17598091725265",
+          "nome": "Simone Inzaghi",
+          "esperado": 43,
+          "lido": 43,
+          "registro": 1458
+        },
+        {
+          "id": "17598360161790",
+          "nome": "Johan Cruyff",
+          "esperado": 43,
+          "lido": 43,
+          "registro": 1459
+        },
+        {
+          "id": "17598897033429",
+          "nome": "Xabi Alonso",
+          "esperado": 42,
+          "lido": 42,
+          "registro": 1460
+        },
+        {
+          "id": "17599165366362",
+          "nome": "Ståle Solbakken",
+          "esperado": 47,
+          "lido": 47,
+          "registro": 1461
+        },
+        {
+          "id": "17599433801745",
+          "nome": "Rudi Garcia",
+          "esperado": 52,
+          "lido": 52,
+          "registro": 1462
+        },
+        {
+          "id": "17599702337955",
+          "nome": "L. Spalletti",
+          "esperado": 46,
+          "lido": 46,
+          "registro": 1463
+        },
+        {
+          "id": "17599970775443",
+          "nome": "F. Beckenbauer",
+          "esperado": 53,
+          "lido": 53,
+          "registro": 1464
+        },
+        {
+          "id": "17600239209395",
+          "nome": "Okan Buruk",
+          "esperado": 43,
+          "lido": 43,
+          "registro": 1465
+        },
+        {
+          "id": "17600507543553",
+          "nome": "R. Martínez",
+          "esperado": 46,
+          "lido": 46,
+          "registro": 1466
+        },
+        {
+          "id": "17600776082342",
+          "nome": "P. Kluivert",
+          "esperado": 48,
+          "lido": 48,
+          "registro": 1467
+        },
+        {
+          "id": "17601044514701",
+          "nome": "José Mourinho",
+          "esperado": 59,
+          "lido": 59,
+          "registro": 1468
+        },
+        {
+          "id": "17601312850052",
+          "nome": "Fabio Capello",
+          "esperado": 46,
+          "lido": 46,
+          "registro": 1469
+        },
+        {
+          "id": "17601581388990",
+          "nome": "Frank Rijkaard",
+          "esperado": 46,
+          "lido": 46,
+          "registro": 1470
+        },
+        {
+          "id": "17601849721048",
+          "nome": "Pep Guardiola",
+          "esperado": 51,
+          "lido": 51,
+          "registro": 1471
+        },
+        {
+          "id": "17602118258602",
+          "nome": "Ruben Amorim",
+          "esperado": 46,
+          "lido": 46,
+          "registro": 1472
+        },
+        {
+          "id": "17602386693824",
+          "nome": "Hansi Flick",
+          "esperado": 45,
+          "lido": 45,
+          "registro": 1473
+        },
+        {
+          "id": "17602655027637",
+          "nome": "M. Allegri",
+          "esperado": 58,
+          "lido": 58,
+          "registro": 1474
+        },
+        {
+          "id": "17602923564765",
+          "nome": "Mikel Arteta",
+          "esperado": 54,
+          "lido": 54,
+          "registro": 1475
+        },
+        {
+          "id": "17603460437385",
+          "nome": "Cristian Chivu",
+          "esperado": 55,
+          "lido": 55,
+          "registro": 1476
+        },
+        {
+          "id": "17603728769159",
+          "nome": "Niko Kovač",
+          "esperado": 56,
+          "lido": 56,
+          "registro": 1477
+        },
+        {
+          "id": "17603997307931",
+          "nome": "Cesc Fàbregas",
+          "esperado": 56,
+          "lido": 56,
+          "registro": 1478
+        },
+        {
+          "id": "17604534075742",
+          "nome": "Ronald Koeman",
+          "esperado": 55,
+          "lido": 55,
+          "registro": 1479
+        },
+        {
+          "id": "17604802510874",
+          "nome": "Gennaro Gattuso",
+          "esperado": 53,
+          "lido": 53,
+          "registro": 1480
+        },
+        {
+          "id": "17605071047055",
+          "nome": "Jürgen Klopp",
+          "esperado": 57,
+          "lido": 57,
+          "registro": 1481
+        },
+        {
+          "id": "17605339484373",
+          "nome": "Xabi Alonso",
+          "esperado": 54,
+          "lido": 54,
+          "registro": 1482
+        },
+        {
+          "id": "17605607920019",
+          "nome": "F. Beckenbauer",
+          "esperado": 57,
+          "lido": 57,
+          "registro": 1483
+        },
+        {
+          "id": "17605876354558",
+          "nome": "Johan Cruyff",
+          "esperado": 54,
+          "lido": 54,
+          "registro": 1484
+        },
+        {
+          "id": "17606144688129",
+          "nome": "R. Martínez",
+          "esperado": 58,
+          "lido": 58,
+          "registro": 1485
+        },
+        {
+          "id": "17606413224402",
+          "nome": "Thomas Tuchel",
+          "esperado": 58,
+          "lido": 58,
+          "registro": 1486
+        },
+        {
+          "id": "17606681559180",
+          "nome": "D. Deschamps",
+          "esperado": 59,
+          "lido": 59,
+          "registro": 1487
+        },
+        {
+          "id": "17606950096730",
+          "nome": "J. Nagelsmann",
+          "esperado": 59,
+          "lido": 59,
+          "registro": 1488
+        },
+        {
+          "id": "17607218430302",
+          "nome": "Ronald Koeman",
+          "esperado": 60,
+          "lido": 60,
+          "registro": 1489
+        },
+        {
+          "id": "17607755300893",
+          "nome": "V. Montella",
+          "esperado": 58,
+          "lido": 58,
+          "registro": 1490
+        },
+        {
+          "id": "17608292273375",
+          "nome": "Frank Lampard",
+          "esperado": 89,
+          "lido": 89,
+          "registro": 1491
+        },
+        {
+          "id": "17608560707469",
+          "nome": "José Mourinho",
+          "esperado": 59,
+          "lido": 59,
+          "registro": 1492
+        },
+        {
+          "id": "17609097478250",
+          "nome": "Antonio Conte",
+          "esperado": 69,
+          "lido": 69,
+          "registro": 1493
+        }
+      ]
+    },
+    {
+      "bit": 199,
+      "largura": 7,
+      "acertos": 36,
+      "total": 65,
+      "samples": [
+        {
+          "id": "17592991451474",
+          "nome": "Erik ten Hag",
+          "esperado": 40,
+          "lido": 40,
+          "registro": 1429
+        },
+        {
+          "id": "17592991452893",
+          "nome": "Mikel Arteta",
+          "esperado": 20,
+          "lido": 20,
+          "registro": 1430
+        },
+        {
+          "id": "17592991452928",
+          "nome": "Xavi Hernández",
+          "esperado": 18,
+          "lido": 25,
+          "registro": 1431
+        },
+        {
+          "id": "17593259786612",
+          "nome": "Stefano Pioli",
+          "esperado": 45,
+          "lido": 45,
+          "registro": 1432
+        },
+        {
+          "id": "17593259887057",
+          "nome": "Simone Inzaghi",
+          "esperado": 29,
+          "lido": 29,
+          "registro": 1433
+        },
+        {
+          "id": "17593259887058",
+          "nome": "Thomas Tuchel",
+          "esperado": 24,
+          "lido": 24,
+          "registro": 1434
+        },
+        {
+          "id": "17593528325190",
+          "nome": "Zico",
+          "esperado": 20,
+          "lido": 20,
+          "registro": 1435
+        },
+        {
+          "id": "17593796657368",
+          "nome": "Pep Guardiola",
+          "esperado": 32,
+          "lido": 32,
+          "registro": 1436
+        },
+        {
+          "id": "17593796759765",
+          "nome": "Xabi Alonso",
+          "esperado": 28,
+          "lido": 28,
+          "registro": 1437
+        },
+        {
+          "id": "17594065092609",
+          "nome": "R. Martínez",
+          "esperado": 52,
+          "lido": 88,
+          "registro": 1438
+        },
+        {
+          "id": "17594065092637",
+          "nome": "V. Montella",
+          "esperado": 45,
+          "lido": 57,
+          "registro": 1439
+        },
+        {
+          "id": "17594065092748",
+          "nome": "D. Deschamps",
+          "esperado": 62,
+          "lido": 67,
+          "registro": 1440
+        },
+        {
+          "id": "17594065193592",
+          "nome": "G. Southgate",
+          "esperado": 32,
+          "lido": 32,
+          "registro": 1441
+        },
+        {
+          "id": "17594065194415",
+          "nome": "Lionel Scaloni",
+          "esperado": 37,
+          "lido": 37,
+          "registro": 1442
+        },
+        {
+          "id": "17594073481737",
+          "nome": "Olympio H.",
+          "esperado": 45,
+          "lido": 86,
+          "registro": 1443
+        },
+        {
+          "id": "17594333629521",
+          "nome": "D. Stojković",
+          "esperado": 53,
+          "lido": 53,
+          "registro": 1444
+        },
+        {
+          "id": "17594333631255",
+          "nome": "L. de la Fuente",
+          "esperado": 22,
+          "lido": 22,
+          "registro": 1445
+        },
+        {
+          "id": "17594870501085",
+          "nome": "Mikel Arteta",
+          "esperado": 30,
+          "lido": 30,
+          "registro": 1446
+        },
+        {
+          "id": "17595138936066",
+          "nome": "Steven Gerrard",
+          "esperado": 35,
+          "lido": 88,
+          "registro": 1447
+        },
+        {
+          "id": "17595407371499",
+          "nome": "Patrick Vieira",
+          "esperado": 35,
+          "lido": 88,
+          "registro": 1448
+        },
+        {
+          "id": "17595675705641",
+          "nome": "Paulo Fonseca",
+          "esperado": 36,
+          "lido": 63,
+          "registro": 1449
+        },
+        {
+          "id": "17595944242399",
+          "nome": "Frank Lampard",
+          "esperado": 45,
+          "lido": 45,
+          "registro": 1450
+        },
+        {
+          "id": "17596212679870",
+          "nome": "Frank Rijkaard",
+          "esperado": 35,
+          "lido": 35,
+          "registro": 1451
+        },
+        {
+          "id": "17596481012062",
+          "nome": "Ronald Koeman",
+          "esperado": 45,
+          "lido": 45,
+          "registro": 1452
+        },
+        {
+          "id": "17596749549482",
+          "nome": "Ruben Amorim",
+          "esperado": 38,
+          "lido": 38,
+          "registro": 1453
+        },
+        {
+          "id": "17597017982861",
+          "nome": "José Mourinho",
+          "esperado": 45,
+          "lido": 66,
+          "registro": 1454
+        },
+        {
+          "id": "17597286420066",
+          "nome": "Vincent Kompany",
+          "esperado": 54,
+          "lido": 54,
+          "registro": 1455
+        },
+        {
+          "id": "17597554855616",
+          "nome": "Hansi Flick",
+          "esperado": 31,
+          "lido": 31,
+          "registro": 1456
+        },
+        {
+          "id": "17597823189022",
+          "nome": "G. P. Gasperini",
+          "esperado": 41,
+          "lido": 41,
+          "registro": 1457
+        },
+        {
+          "id": "17598091725265",
+          "nome": "Simone Inzaghi",
+          "esperado": 43,
+          "lido": 43,
+          "registro": 1458
+        },
+        {
+          "id": "17598360161790",
+          "nome": "Johan Cruyff",
+          "esperado": 43,
+          "lido": 43,
+          "registro": 1459
+        },
+        {
+          "id": "17598897033429",
+          "nome": "Xabi Alonso",
+          "esperado": 42,
+          "lido": 42,
+          "registro": 1460
+        },
+        {
+          "id": "17599165366362",
+          "nome": "Ståle Solbakken",
+          "esperado": 47,
+          "lido": 80,
+          "registro": 1461
+        },
+        {
+          "id": "17599433801745",
+          "nome": "Rudi Garcia",
+          "esperado": 52,
+          "lido": 69,
+          "registro": 1462
+        },
+        {
+          "id": "17599702337955",
+          "nome": "L. Spalletti",
+          "esperado": 46,
+          "lido": 46,
+          "registro": 1463
+        },
+        {
+          "id": "17599970775443",
+          "nome": "F. Beckenbauer",
+          "esperado": 53,
+          "lido": 89,
+          "registro": 1464
+        },
+        {
+          "id": "17600239209395",
+          "nome": "Okan Buruk",
+          "esperado": 43,
+          "lido": 63,
+          "registro": 1465
+        },
+        {
+          "id": "17600507543553",
+          "nome": "R. Martínez",
+          "esperado": 46,
+          "lido": 53,
+          "registro": 1466
+        },
+        {
+          "id": "17600776082342",
+          "nome": "P. Kluivert",
+          "esperado": 48,
+          "lido": 48,
+          "registro": 1467
+        },
+        {
+          "id": "17601044514701",
+          "nome": "José Mourinho",
+          "esperado": 59,
+          "lido": 80,
+          "registro": 1468
+        },
+        {
+          "id": "17601312850052",
+          "nome": "Fabio Capello",
+          "esperado": 46,
+          "lido": 89,
+          "registro": 1469
+        },
+        {
+          "id": "17601581388990",
+          "nome": "Frank Rijkaard",
+          "esperado": 46,
+          "lido": 46,
+          "registro": 1470
+        },
+        {
+          "id": "17601849721048",
+          "nome": "Pep Guardiola",
+          "esperado": 51,
+          "lido": 51,
+          "registro": 1471
+        },
+        {
+          "id": "17602118258602",
+          "nome": "Ruben Amorim",
+          "esperado": 46,
+          "lido": 46,
+          "registro": 1472
+        },
+        {
+          "id": "17602386693824",
+          "nome": "Hansi Flick",
+          "esperado": 45,
+          "lido": 45,
+          "registro": 1473
+        },
+        {
+          "id": "17602655027637",
+          "nome": "M. Allegri",
+          "esperado": 58,
+          "lido": 89,
+          "registro": 1474
+        },
+        {
+          "id": "17602923564765",
+          "nome": "Mikel Arteta",
+          "esperado": 54,
+          "lido": 54,
+          "registro": 1475
+        },
+        {
+          "id": "17603460437385",
+          "nome": "Cristian Chivu",
+          "esperado": 55,
+          "lido": 55,
+          "registro": 1476
+        },
+        {
+          "id": "17603728769159",
+          "nome": "Niko Kovač",
+          "esperado": 56,
+          "lido": 56,
+          "registro": 1477
+        },
+        {
+          "id": "17603997307931",
+          "nome": "Cesc Fàbregas",
+          "esperado": 56,
+          "lido": 57,
+          "registro": 1478
+        },
+        {
+          "id": "17604534075742",
+          "nome": "Ronald Koeman",
+          "esperado": 55,
+          "lido": 61,
+          "registro": 1479
+        },
+        {
+          "id": "17604802510874",
+          "nome": "Gennaro Gattuso",
+          "esperado": 53,
+          "lido": 71,
+          "registro": 1480
+        },
+        {
+          "id": "17605071047055",
+          "nome": "Jürgen Klopp",
+          "esperado": 57,
+          "lido": 57,
+          "registro": 1481
+        },
+        {
+          "id": "17605339484373",
+          "nome": "Xabi Alonso",
+          "esperado": 54,
+          "lido": 56,
+          "registro": 1482
+        },
+        {
+          "id": "17605607920019",
+          "nome": "F. Beckenbauer",
+          "esperado": 57,
+          "lido": 89,
+          "registro": 1483
+        },
+        {
+          "id": "17605876354558",
+          "nome": "Johan Cruyff",
+          "esperado": 54,
+          "lido": 54,
+          "registro": 1484
+        },
+        {
+          "id": "17606144688129",
+          "nome": "R. Martínez",
+          "esperado": 58,
+          "lido": 89,
+          "registro": 1485
+        },
+        {
+          "id": "17606413224402",
+          "nome": "Thomas Tuchel",
+          "esperado": 58,
+          "lido": 58,
+          "registro": 1486
+        },
+        {
+          "id": "17606681559180",
+          "nome": "D. Deschamps",
+          "esperado": 59,
+          "lido": 63,
+          "registro": 1487
+        },
+        {
+          "id": "17606950096730",
+          "nome": "J. Nagelsmann",
+          "esperado": 59,
+          "lido": 89,
+          "registro": 1488
+        },
+        {
+          "id": "17607218430302",
+          "nome": "Ronald Koeman",
+          "esperado": 60,
+          "lido": 69,
+          "registro": 1489
+        },
+        {
+          "id": "17607755300893",
+          "nome": "V. Montella",
+          "esperado": 58,
+          "lido": 68,
+          "registro": 1490
+        },
+        {
+          "id": "17608292273375",
+          "nome": "Frank Lampard",
+          "esperado": 89,
+          "lido": 89,
+          "registro": 1491
+        },
+        {
+          "id": "17608560707469",
+          "nome": "José Mourinho",
+          "esperado": 59,
+          "lido": 75,
+          "registro": 1492
+        },
+        {
+          "id": "17609097478250",
+          "nome": "Antonio Conte",
+          "esperado": 69,
+          "lido": 68,
+          "registro": 1493
+        }
+      ]
+    },
+    {
+      "bit": 206,
+      "largura": 7,
+      "acertos": 11,
+      "total": 65,
+      "samples": [
+        {
+          "id": "17592991451474",
+          "nome": "Erik ten Hag",
+          "esperado": 40,
+          "lido": 51,
+          "registro": 1429
+        },
+        {
+          "id": "17592991452893",
+          "nome": "Mikel Arteta",
+          "esperado": 20,
+          "lido": 85,
+          "registro": 1430
+        },
+        {
+          "id": "17592991452928",
+          "nome": "Xavi Hernández",
+          "esperado": 18,
+          "lido": 85,
+          "registro": 1431
+        },
+        {
+          "id": "17593259786612",
+          "nome": "Stefano Pioli",
+          "esperado": 45,
+          "lido": 51,
+          "registro": 1432
+        },
+        {
+          "id": "17593259887057",
+          "nome": "Simone Inzaghi",
+          "esperado": 29,
+          "lido": 41,
+          "registro": 1433
+        },
+        {
+          "id": "17593259887058",
+          "nome": "Thomas Tuchel",
+          "esperado": 24,
+          "lido": 65,
+          "registro": 1434
+        },
+        {
+          "id": "17593528325190",
+          "nome": "Zico",
+          "esperado": 20,
+          "lido": 83,
+          "registro": 1435
+        },
+        {
+          "id": "17593796657368",
+          "nome": "Pep Guardiola",
+          "esperado": 32,
+          "lido": 88,
+          "registro": 1436
+        },
+        {
+          "id": "17593796759765",
+          "nome": "Xabi Alonso",
+          "esperado": 28,
+          "lido": 72,
+          "registro": 1437
+        },
+        {
+          "id": "17594065092609",
+          "nome": "R. Martínez",
+          "esperado": 52,
+          "lido": 72,
+          "registro": 1438
+        },
+        {
+          "id": "17594065092637",
+          "nome": "V. Montella",
+          "esperado": 45,
+          "lido": 64,
+          "registro": 1439
+        },
+        {
+          "id": "17594065092748",
+          "nome": "D. Deschamps",
+          "esperado": 62,
+          "lido": 69,
+          "registro": 1440
+        },
+        {
+          "id": "17594065193592",
+          "nome": "G. Southgate",
+          "esperado": 32,
+          "lido": 44,
+          "registro": 1441
+        },
+        {
+          "id": "17594065194415",
+          "nome": "Lionel Scaloni",
+          "esperado": 37,
+          "lido": 87,
+          "registro": 1442
+        },
+        {
+          "id": "17594073481737",
+          "nome": "Olympio H.",
+          "esperado": 45,
+          "lido": 67,
+          "registro": 1443
+        },
+        {
+          "id": "17594333629521",
+          "nome": "D. Stojković",
+          "esperado": 53,
+          "lido": 63,
+          "registro": 1444
+        },
+        {
+          "id": "17594333631255",
+          "nome": "L. de la Fuente",
+          "esperado": 22,
+          "lido": 88,
+          "registro": 1445
+        },
+        {
+          "id": "17594870501085",
+          "nome": "Mikel Arteta",
+          "esperado": 30,
+          "lido": 72,
+          "registro": 1446
+        },
+        {
+          "id": "17595138936066",
+          "nome": "Steven Gerrard",
+          "esperado": 35,
+          "lido": 88,
+          "registro": 1447
+        },
+        {
+          "id": "17595407371499",
+          "nome": "Patrick Vieira",
+          "esperado": 35,
+          "lido": 35,
+          "registro": 1448
+        },
+        {
+          "id": "17595675705641",
+          "nome": "Paulo Fonseca",
+          "esperado": 36,
+          "lido": 36,
+          "registro": 1449
+        },
+        {
+          "id": "17595944242399",
+          "nome": "Frank Lampard",
+          "esperado": 45,
+          "lido": 56,
+          "registro": 1450
+        },
+        {
+          "id": "17596212679870",
+          "nome": "Frank Rijkaard",
+          "esperado": 35,
+          "lido": 88,
+          "registro": 1451
+        },
+        {
+          "id": "17596481012062",
+          "nome": "Ronald Koeman",
+          "esperado": 45,
+          "lido": 64,
+          "registro": 1452
+        },
+        {
+          "id": "17596749549482",
+          "nome": "Ruben Amorim",
+          "esperado": 38,
+          "lido": 74,
+          "registro": 1453
+        },
+        {
+          "id": "17597017982861",
+          "nome": "José Mourinho",
+          "esperado": 45,
+          "lido": 49,
+          "registro": 1454
+        },
+        {
+          "id": "17597286420066",
+          "nome": "Vincent Kompany",
+          "esperado": 54,
+          "lido": 88,
+          "registro": 1455
+        },
+        {
+          "id": "17597554855616",
+          "nome": "Hansi Flick",
+          "esperado": 31,
+          "lido": 88,
+          "registro": 1456
+        },
+        {
+          "id": "17597823189022",
+          "nome": "G. P. Gasperini",
+          "esperado": 41,
+          "lido": 57,
+          "registro": 1457
+        },
+        {
+          "id": "17598091725265",
+          "nome": "Simone Inzaghi",
+          "esperado": 43,
+          "lido": 60,
+          "registro": 1458
+        },
+        {
+          "id": "17598360161790",
+          "nome": "Johan Cruyff",
+          "esperado": 43,
+          "lido": 89,
+          "registro": 1459
+        },
+        {
+          "id": "17598897033429",
+          "nome": "Xabi Alonso",
+          "esperado": 42,
+          "lido": 88,
+          "registro": 1460
+        },
+        {
+          "id": "17599165366362",
+          "nome": "Ståle Solbakken",
+          "esperado": 47,
+          "lido": 47,
+          "registro": 1461
+        },
+        {
+          "id": "17599433801745",
+          "nome": "Rudi Garcia",
+          "esperado": 52,
+          "lido": 52,
+          "registro": 1462
+        },
+        {
+          "id": "17599702337955",
+          "nome": "L. Spalletti",
+          "esperado": 46,
+          "lido": 82,
+          "registro": 1463
+        },
+        {
+          "id": "17599970775443",
+          "nome": "F. Beckenbauer",
+          "esperado": 53,
+          "lido": 53,
+          "registro": 1464
+        },
+        {
+          "id": "17600239209395",
+          "nome": "Okan Buruk",
+          "esperado": 43,
+          "lido": 55,
+          "registro": 1465
+        },
+        {
+          "id": "17600507543553",
+          "nome": "R. Martínez",
+          "esperado": 46,
+          "lido": 64,
+          "registro": 1466
+        },
+        {
+          "id": "17600776082342",
+          "nome": "P. Kluivert",
+          "esperado": 48,
+          "lido": 89,
+          "registro": 1467
+        },
+        {
+          "id": "17601044514701",
+          "nome": "José Mourinho",
+          "esperado": 59,
+          "lido": 59,
+          "registro": 1468
+        },
+        {
+          "id": "17601312850052",
+          "nome": "Fabio Capello",
+          "esperado": 46,
+          "lido": 46,
+          "registro": 1469
+        },
+        {
+          "id": "17601581388990",
+          "nome": "Frank Rijkaard",
+          "esperado": 46,
+          "lido": 70,
+          "registro": 1470
+        },
+        {
+          "id": "17601849721048",
+          "nome": "Pep Guardiola",
+          "esperado": 51,
+          "lido": 89,
+          "registro": 1471
+        },
+        {
+          "id": "17602118258602",
+          "nome": "Ruben Amorim",
+          "esperado": 46,
+          "lido": 62,
+          "registro": 1472
+        },
+        {
+          "id": "17602386693824",
+          "nome": "Hansi Flick",
+          "esperado": 45,
+          "lido": 89,
+          "registro": 1473
+        },
+        {
+          "id": "17602655027637",
+          "nome": "M. Allegri",
+          "esperado": 58,
+          "lido": 58,
+          "registro": 1474
+        },
+        {
+          "id": "17602923564765",
+          "nome": "Mikel Arteta",
+          "esperado": 54,
+          "lido": 89,
+          "registro": 1475
+        },
+        {
+          "id": "17603460437385",
+          "nome": "Cristian Chivu",
+          "esperado": 55,
+          "lido": 58,
+          "registro": 1476
+        },
+        {
+          "id": "17603728769159",
+          "nome": "Niko Kovač",
+          "esperado": 56,
+          "lido": 65,
+          "registro": 1477
+        },
+        {
+          "id": "17603997307931",
+          "nome": "Cesc Fàbregas",
+          "esperado": 56,
+          "lido": 89,
+          "registro": 1478
+        },
+        {
+          "id": "17604534075742",
+          "nome": "Ronald Koeman",
+          "esperado": 55,
+          "lido": 89,
+          "registro": 1479
+        },
+        {
+          "id": "17604802510874",
+          "nome": "Gennaro Gattuso",
+          "esperado": 53,
+          "lido": 53,
+          "registro": 1480
+        },
+        {
+          "id": "17605071047055",
+          "nome": "Jürgen Klopp",
+          "esperado": 57,
+          "lido": 89,
+          "registro": 1481
+        },
+        {
+          "id": "17605339484373",
+          "nome": "Xabi Alonso",
+          "esperado": 54,
+          "lido": 71,
+          "registro": 1482
+        },
+        {
+          "id": "17605607920019",
+          "nome": "F. Beckenbauer",
+          "esperado": 57,
+          "lido": 65,
+          "registro": 1483
+        },
+        {
+          "id": "17605876354558",
+          "nome": "Johan Cruyff",
+          "esperado": 54,
+          "lido": 89,
+          "registro": 1484
+        },
+        {
+          "id": "17606144688129",
+          "nome": "R. Martínez",
+          "esperado": 58,
+          "lido": 58,
+          "registro": 1485
+        },
+        {
+          "id": "17606413224402",
+          "nome": "Thomas Tuchel",
+          "esperado": 58,
+          "lido": 90,
+          "registro": 1486
+        },
+        {
+          "id": "17606681559180",
+          "nome": "D. Deschamps",
+          "esperado": 59,
+          "lido": 89,
+          "registro": 1487
+        },
+        {
+          "id": "17606950096730",
+          "nome": "J. Nagelsmann",
+          "esperado": 59,
+          "lido": 62,
+          "registro": 1488
+        },
+        {
+          "id": "17607218430302",
+          "nome": "Ronald Koeman",
+          "esperado": 60,
+          "lido": 60,
+          "registro": 1489
+        },
+        {
+          "id": "17607755300893",
+          "nome": "V. Montella",
+          "esperado": 58,
+          "lido": 61,
+          "registro": 1490
+        },
+        {
+          "id": "17608292273375",
+          "nome": "Frank Lampard",
+          "esperado": 89,
+          "lido": 75,
+          "registro": 1491
+        },
+        {
+          "id": "17608560707469",
+          "nome": "José Mourinho",
+          "esperado": 59,
+          "lido": 62,
+          "registro": 1492
+        },
+        {
+          "id": "17609097478250",
+          "nome": "Antonio Conte",
+          "esperado": 69,
+          "lido": 68,
+          "registro": 1493
+        }
+      ]
+    }
+  ],
+  "antigo": {
+    "bit": 135,
+    "largura": 7,
+    "acertos": 0,
+    "total": 65,
+    "samples": [
+      {
+        "id": "17592991451474",
+        "nome": "Erik ten Hag",
+        "esperado": 40,
+        "lido": 0,
+        "registro": 1429
+      },
+      {
+        "id": "17592991452893",
+        "nome": "Mikel Arteta",
+        "esperado": 20,
+        "lido": 0,
+        "registro": 1430
+      },
+      {
+        "id": "17592991452928",
+        "nome": "Xavi Hernández",
+        "esperado": 18,
+        "lido": 0,
+        "registro": 1431
+      },
+      {
+        "id": "17593259786612",
+        "nome": "Stefano Pioli",
+        "esperado": 45,
+        "lido": 0,
+        "registro": 1432
+      },
+      {
+        "id": "17593259887057",
+        "nome": "Simone Inzaghi",
+        "esperado": 29,
+        "lido": 0,
+        "registro": 1433
+      },
+      {
+        "id": "17593259887058",
+        "nome": "Thomas Tuchel",
+        "esperado": 24,
+        "lido": 0,
+        "registro": 1434
+      },
+      {
+        "id": "17593528325190",
+        "nome": "Zico",
+        "esperado": 20,
+        "lido": 0,
+        "registro": 1435
+      },
+      {
+        "id": "17593796657368",
+        "nome": "Pep Guardiola",
+        "esperado": 32,
+        "lido": 0,
+        "registro": 1436
+      },
+      {
+        "id": "17593796759765",
+        "nome": "Xabi Alonso",
+        "esperado": 28,
+        "lido": 0,
+        "registro": 1437
+      },
+      {
+        "id": "17594065092609",
+        "nome": "R. Martínez",
+        "esperado": 52,
+        "lido": 0,
+        "registro": 1438
+      },
+      {
+        "id": "17594065092637",
+        "nome": "V. Montella",
+        "esperado": 45,
+        "lido": 0,
+        "registro": 1439
+      },
+      {
+        "id": "17594065092748",
+        "nome": "D. Deschamps",
+        "esperado": 62,
+        "lido": 0,
+        "registro": 1440
+      },
+      {
+        "id": "17594065193592",
+        "nome": "G. Southgate",
+        "esperado": 32,
+        "lido": 0,
+        "registro": 1441
+      },
+      {
+        "id": "17594065194415",
+        "nome": "Lionel Scaloni",
+        "esperado": 37,
+        "lido": 0,
+        "registro": 1442
+      },
+      {
+        "id": "17594073481737",
+        "nome": "Olympio H.",
+        "esperado": 45,
+        "lido": 0,
+        "registro": 1443
+      },
+      {
+        "id": "17594333629521",
+        "nome": "D. Stojković",
+        "esperado": 53,
+        "lido": 0,
+        "registro": 1444
+      },
+      {
+        "id": "17594333631255",
+        "nome": "L. de la Fuente",
+        "esperado": 22,
+        "lido": 0,
+        "registro": 1445
+      },
+      {
+        "id": "17594870501085",
+        "nome": "Mikel Arteta",
+        "esperado": 30,
+        "lido": 0,
+        "registro": 1446
+      },
+      {
+        "id": "17595138936066",
+        "nome": "Steven Gerrard",
+        "esperado": 35,
+        "lido": 0,
+        "registro": 1447
+      },
+      {
+        "id": "17595407371499",
+        "nome": "Patrick Vieira",
+        "esperado": 35,
+        "lido": 0,
+        "registro": 1448
+      },
+      {
+        "id": "17595675705641",
+        "nome": "Paulo Fonseca",
+        "esperado": 36,
+        "lido": 0,
+        "registro": 1449
+      },
+      {
+        "id": "17595944242399",
+        "nome": "Frank Lampard",
+        "esperado": 45,
+        "lido": 0,
+        "registro": 1450
+      },
+      {
+        "id": "17596212679870",
+        "nome": "Frank Rijkaard",
+        "esperado": 35,
+        "lido": 0,
+        "registro": 1451
+      },
+      {
+        "id": "17596481012062",
+        "nome": "Ronald Koeman",
+        "esperado": 45,
+        "lido": 0,
+        "registro": 1452
+      },
+      {
+        "id": "17596749549482",
+        "nome": "Ruben Amorim",
+        "esperado": 38,
+        "lido": 0,
+        "registro": 1453
+      },
+      {
+        "id": "17597017982861",
+        "nome": "José Mourinho",
+        "esperado": 45,
+        "lido": 0,
+        "registro": 1454
+      },
+      {
+        "id": "17597286420066",
+        "nome": "Vincent Kompany",
+        "esperado": 54,
+        "lido": 0,
+        "registro": 1455
+      },
+      {
+        "id": "17597554855616",
+        "nome": "Hansi Flick",
+        "esperado": 31,
+        "lido": 0,
+        "registro": 1456
+      },
+      {
+        "id": "17597823189022",
+        "nome": "G. P. Gasperini",
+        "esperado": 41,
+        "lido": 0,
+        "registro": 1457
+      },
+      {
+        "id": "17598091725265",
+        "nome": "Simone Inzaghi",
+        "esperado": 43,
+        "lido": 0,
+        "registro": 1458
+      },
+      {
+        "id": "17598360161790",
+        "nome": "Johan Cruyff",
+        "esperado": 43,
+        "lido": 0,
+        "registro": 1459
+      },
+      {
+        "id": "17598897033429",
+        "nome": "Xabi Alonso",
+        "esperado": 42,
+        "lido": 0,
+        "registro": 1460
+      },
+      {
+        "id": "17599165366362",
+        "nome": "Ståle Solbakken",
+        "esperado": 47,
+        "lido": 0,
+        "registro": 1461
+      },
+      {
+        "id": "17599433801745",
+        "nome": "Rudi Garcia",
+        "esperado": 52,
+        "lido": 0,
+        "registro": 1462
+      },
+      {
+        "id": "17599702337955",
+        "nome": "L. Spalletti",
+        "esperado": 46,
+        "lido": 0,
+        "registro": 1463
+      },
+      {
+        "id": "17599970775443",
+        "nome": "F. Beckenbauer",
+        "esperado": 53,
+        "lido": 0,
+        "registro": 1464
+      },
+      {
+        "id": "17600239209395",
+        "nome": "Okan Buruk",
+        "esperado": 43,
+        "lido": 0,
+        "registro": 1465
+      },
+      {
+        "id": "17600507543553",
+        "nome": "R. Martínez",
+        "esperado": 46,
+        "lido": 0,
+        "registro": 1466
+      },
+      {
+        "id": "17600776082342",
+        "nome": "P. Kluivert",
+        "esperado": 48,
+        "lido": 0,
+        "registro": 1467
+      },
+      {
+        "id": "17601044514701",
+        "nome": "José Mourinho",
+        "esperado": 59,
+        "lido": 0,
+        "registro": 1468
+      },
+      {
+        "id": "17601312850052",
+        "nome": "Fabio Capello",
+        "esperado": 46,
+        "lido": 0,
+        "registro": 1469
+      },
+      {
+        "id": "17601581388990",
+        "nome": "Frank Rijkaard",
+        "esperado": 46,
+        "lido": 0,
+        "registro": 1470
+      },
+      {
+        "id": "17601849721048",
+        "nome": "Pep Guardiola",
+        "esperado": 51,
+        "lido": 0,
+        "registro": 1471
+      },
+      {
+        "id": "17602118258602",
+        "nome": "Ruben Amorim",
+        "esperado": 46,
+        "lido": 0,
+        "registro": 1472
+      },
+      {
+        "id": "17602386693824",
+        "nome": "Hansi Flick",
+        "esperado": 45,
+        "lido": 0,
+        "registro": 1473
+      },
+      {
+        "id": "17602655027637",
+        "nome": "M. Allegri",
+        "esperado": 58,
+        "lido": 0,
+        "registro": 1474
+      },
+      {
+        "id": "17602923564765",
+        "nome": "Mikel Arteta",
+        "esperado": 54,
+        "lido": 0,
+        "registro": 1475
+      },
+      {
+        "id": "17603460437385",
+        "nome": "Cristian Chivu",
+        "esperado": 55,
+        "lido": 0,
+        "registro": 1476
+      },
+      {
+        "id": "17603728769159",
+        "nome": "Niko Kovač",
+        "esperado": 56,
+        "lido": 0,
+        "registro": 1477
+      },
+      {
+        "id": "17603997307931",
+        "nome": "Cesc Fàbregas",
+        "esperado": 56,
+        "lido": 0,
+        "registro": 1478
+      },
+      {
+        "id": "17604534075742",
+        "nome": "Ronald Koeman",
+        "esperado": 55,
+        "lido": 0,
+        "registro": 1479
+      },
+      {
+        "id": "17604802510874",
+        "nome": "Gennaro Gattuso",
+        "esperado": 53,
+        "lido": 0,
+        "registro": 1480
+      },
+      {
+        "id": "17605071047055",
+        "nome": "Jürgen Klopp",
+        "esperado": 57,
+        "lido": 0,
+        "registro": 1481
+      },
+      {
+        "id": "17605339484373",
+        "nome": "Xabi Alonso",
+        "esperado": 54,
+        "lido": 0,
+        "registro": 1482
+      },
+      {
+        "id": "17605607920019",
+        "nome": "F. Beckenbauer",
+        "esperado": 57,
+        "lido": 0,
+        "registro": 1483
+      },
+      {
+        "id": "17605876354558",
+        "nome": "Johan Cruyff",
+        "esperado": 54,
+        "lido": 0,
+        "registro": 1484
+      },
+      {
+        "id": "17606144688129",
+        "nome": "R. Martínez",
+        "esperado": 58,
+        "lido": 0,
+        "registro": 1485
+      },
+      {
+        "id": "17606413224402",
+        "nome": "Thomas Tuchel",
+        "esperado": 58,
+        "lido": 0,
+        "registro": 1486
+      },
+      {
+        "id": "17606681559180",
+        "nome": "D. Deschamps",
+        "esperado": 59,
+        "lido": 0,
+        "registro": 1487
+      },
+      {
+        "id": "17606950096730",
+        "nome": "J. Nagelsmann",
+        "esperado": 59,
+        "lido": 0,
+        "registro": 1488
+      },
+      {
+        "id": "17607218430302",
+        "nome": "Ronald Koeman",
+        "esperado": 60,
+        "lido": 0,
+        "registro": 1489
+      },
+      {
+        "id": "17607755300893",
+        "nome": "V. Montella",
+        "esperado": 58,
+        "lido": 0,
+        "registro": 1490
+      },
+      {
+        "id": "17608292273375",
+        "nome": "Frank Lampard",
+        "esperado": 89,
+        "lido": 0,
+        "registro": 1491
+      },
+      {
+        "id": "17608560707469",
+        "nome": "José Mourinho",
+        "esperado": 59,
+        "lido": 112,
+        "registro": 1492
+      },
+      {
+        "id": "17609097478250",
+        "nome": "Antonio Conte",
+        "esperado": 69,
+        "lido": 96,
+        "registro": 1493
+      }
+    ]
+  }
+}

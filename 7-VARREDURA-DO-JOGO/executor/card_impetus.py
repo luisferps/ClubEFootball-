@@ -261,19 +261,39 @@ def validate_physical_slot_projection(csv_text: str, connection: Any, reading_co
     relation_projection, relation = _relation_projection(connection)
     differences: list[tuple[str, str, str, str]] = []
     classification: dict[str, list[dict[str, Any]]] = {kind: [] for kind in ("new", "removed", "altered", "repeated", "invalid")}
+    cartas_do_banco = set(relation_projection)
     for card_id, slots in physical.items():
+        conhecida = card_id in cartas_do_banco
         database = relation_projection.get(card_id, EMPTY)
+        # Uma linha por carta/slot, com o nome da coluna que a tabela usa.
+        # Ordem do Luis (04/09/2026): entregar "impeto_s1"/"vaga_s1" fazia o
+        # aplicador nao achar coluna nenhuma em carta_impeto_jogo e recusar
+        # tudo. E carta que o banco nao conhece e NOVA: nao pode sair como
+        # alterada, porque nao existe valor anterior para ter mudado.
+        por_slot: dict[int, dict[str, Any]] = {}
         for field in SLOT_COLUMNS:
-            if slots[field] != database[field]:
-                differences.append((card_id, field, slots[field], database[field]))
-                slot = 1 if field in {"impeto_s1", "vaga_s1"} else 2
-                classification["altered"].append({
-                    "classificacao": "alterado", "escopo": "slots_de_impeto",
-                    "chave_canonica": {"card_id": card_id, "slot": slot},
-                    "fonte_fisica": {"fotografia": "cartas-fisicas.csv", "card_id": card_id},
-                    "vinculo_banco": {"card_id": card_id, "slot": slot},
-                    "campo": field, "valor_fisico": slots[field], "valor_banco": database[field],
-                })
+            if slots[field] == database[field]:
+                continue
+            differences.append((card_id, field, slots[field], database[field]))
+            slot = 1 if field in {"impeto_s1", "vaga_s1"} else 2
+            alvo = por_slot.setdefault(slot, {"fisico": {}, "banco": {}})
+            coluna = "vaga" if field.startswith("vaga") else "codigo_impeto"
+            alvo["fisico"][coluna] = (slots[field] == "true") if coluna == "vaga" else (int(slots[field]) if slots[field] else None)
+            alvo["banco"][coluna] = (database[field] == "true") if coluna == "vaga" else (int(database[field]) if database[field] else None)
+        for slot, valores in sorted(por_slot.items()):
+            fisico = {"card_id": card_id, "slot": slot, **valores["fisico"]}
+            banco = {"card_id": card_id, "slot": slot, **valores["banco"]}
+            item = {
+                "classificacao": "alterado" if conhecida else "novo",
+                "escopo": "slots_de_impeto",
+                "destino_tabela": "carta_impeto_jogo",
+                "chave_canonica": {"card_id": card_id, "slot": slot},
+                "fonte_fisica": {"fotografia": "cartas-fisicas.csv", "card_id": card_id},
+                "vinculo_banco": {"card_id": card_id, "slot": slot} if conhecida else None,
+                "valor_fisico": fisico,
+                "valor_banco": banco if conhecida else None,
+            }
+            classification["altered" if conhecida else "new"].append(item)
     for card_id in sorted(set(relation_projection) - set(physical)):
         for slot in (1, 2):
             classification["removed"].append({"classificacao": "removido", "escopo": "slots_de_impeto", "chave_canonica": {"card_id": card_id, "slot": slot}, "fonte_fisica": None, "vinculo_banco": {"card_id": card_id, "slot": slot}})

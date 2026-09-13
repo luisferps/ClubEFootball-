@@ -1,0 +1,17 @@
+COMPLEMENTO V14 - ORDEM DE OPERACAO
+
+1. Com processador e enviador antigos PARADOS, instale por APLICAR.bat.
+2. Abra COMPLEMENTO-LOCAL-V14/0-ENVIAR-JSONS-ANTIGOS.bat.
+   Aguarde finalizar sem erro. Isso faz as builds locais prontas entrarem no
+   banco ANTES da fotografia da correcao. Nao inicie o processador nesta etapa.
+3. Abra 1-CALCULAR-COMPLEMENTOS.bat e 2-ENVIAR-COMPLEMENTOS.bat juntos.
+   O primeiro baixa a fila e calcula localmente; o segundo envia paginas de
+   ate 100 e salva recibos. Pode pausar com Ctrl+C e abrir os mesmos botoes.
+4. Quando ambos concluirem, volte aos botoes de sempre em OPERACAO-LOCAL-JSON:
+   PROCESSAR-FILA-PRINCIPAL.bat e ENVIAR-FILA-PRINCIPAL.bat.
+   Novos calculos ja incluem a regra complementar.
+
+Nao apague FILA, RESULTADOS ou RECIBOS. Se houver erro, preserve a pasta e
+copie a mensagem. Nao reinicie o otimizador durante a correcao.
+A instalacao nao significa que as builds ja foram atualizadas.
+Nao precisa rodar o Bonificador novamente para esta alteracao.

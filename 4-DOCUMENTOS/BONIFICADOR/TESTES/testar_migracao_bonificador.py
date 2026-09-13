@@ -56,12 +56,21 @@ def validar_portas(arvore: ast.AST):
             if isinstance(primeiro, ast.Constant) and isinstance(primeiro.value, str):
                 chamadas.append(primeiro.value)
 
-    assert set(chamadas) == {
-        "bonificador_regua_v1",
-        "bonificador_carta_v1",
-        "bonificador_contexto_escrita_v2",
-    }, chamadas
-    assert "gravar_build_bonificador_v1" in FONTE.read_text(encoding="utf-8")
+    permitidas = {
+        "bonificador_carta_v2",
+        "bonificador_lote_proxima_linha_v1",
+        "bonificador_lote_registrar_v1",
+        "bonificador_correcao_proxima_linha_v1",
+        "bonificador_correcao_registrar_v1",
+    }
+    assert set(chamadas) <= permitidas, chamadas
+    fonte = FONTE.read_text(encoding="utf-8")
+    for porta in (
+        "bonificador_regua_v3", "bonificador_contexto_fila_v6",
+        "gravar_build_bonificador_v5", "gravar_build_bonificador_correcao_v1",
+    ):
+        assert porta in fonte
+    assert "v11-0709-estilo-posicao-oficial-v1" in fonte
     assert "regua_bonus" not in chamadas
     assert "carta_do_motor" not in chamadas
     assert not any(
@@ -71,6 +80,8 @@ def validar_portas(arvore: ast.AST):
 
 
 def validar_conta(escopo):
+    nota_da_medida = escopo["nota_da_medida"]
+    bonus_do_corpo = escopo["bonus_do_corpo"]
     bonus_do_estilo = escopo["bonus_do_estilo"]
     bonus_do_pe_ruim = escopo["bonus_do_pe_ruim"]
     bonus_do_estilo_ia = escopo["bonus_do_estilo_ia"]
@@ -93,14 +104,22 @@ def validar_conta(escopo):
         },
         "posicao_slot": {"5": "ofensivo"},
         "casa": {"391": {"5": "FUNCAO-A"}},
-        "liga": {"256": [5]},
+        "liga": {"391": [5], "256": [5]},
     }
     assert bonus_do_estilo(regua, 391, 256, "FUNCAO-A", 5) == 1.5
-    assert bonus_do_estilo(regua, 391, 256, "FUNCAO-B", 5) == 0.5
+    assert bonus_do_estilo(regua, 391, 256, "FUNCAO-B", 5) == 1.5
     assert bonus_do_estilo(regua, None, 391, "FUNCAO-A", 5) == 1.0
+    assert bonus_do_estilo(regua, 391, 256, "FUNCAO-A", 6) == 0.0
     assert bonus_do_pe_ruim(regua["parametro"], 3, 2) == 0.5
     assert bonus_do_pe_ruim(regua["parametro"], None, 2) is None
     assert bonus_do_estilo_ia(regua["parametro"], [616, 647, 680, 678]) == 1.0
+    assert [nota_da_medida(v, [10, 20, 30, 40]) for v in (10, 20, 30, 40)] == [-2, -1, 0, 1]
+    corpo = bonus_do_corpo({"14": {
+        "altura": {"idx": 0, "direcao": -1, "peso": 5, "cortes": [171, 178, 184, 191]},
+        "neutra": {"idx": 1, "direcao": 0, "peso": 100, "cortes": [1, 2, 3, 4]},
+        "ombro": {"idx": 2, "direcao": -1, "peso": 1, "cortes": [3, 6, 8, 11]},
+    }}, [170, 999, 2], 14, 1.5)
+    assert corpo is not None and corpo[:3] == (1.5, 12.0, 1.0)
 
 
 def ler_config():
@@ -118,9 +137,9 @@ def ler_config():
 
 def rpc_leitura(url: str, key: str, nome: str, corpo=None):
     assert nome in {
-        "bonificador_regua_v1",
-        "bonificador_carta_v1",
-        "bonificador_contexto_escrita_v2",
+        "bonificador_regua_v3",
+        "bonificador_carta_v2",
+        "bonificador_contexto_fila_v6",
     }
     pedido = urllib.request.Request(
         f"{url}/rest/v1/rpc/{nome}",
@@ -140,7 +159,7 @@ def rpc_leitura(url: str, key: str, nome: str, corpo=None):
 def validar_online(escopo):
     bonus_do_estilo = escopo["bonus_do_estilo"]
     url, key = ler_config()
-    regua = rpc_leitura(url, key, "bonificador_regua_v1")
+    regua = rpc_leitura(url, key, "bonificador_regua_v3")
     assert regua["pode_rodar"] is True
     assert regua["falta_o_que"] == []
     assert regua["estilos_bloqueados"] == []
@@ -153,7 +172,7 @@ def validar_online(escopo):
     }
     readback = {}
     for card_id, esperado in casos.items():
-        carta = rpc_leitura(url, key, "bonificador_carta_v1", {"p_card_id": card_id})
+        carta = rpc_leitura(url, key, "bonificador_carta_v2", {"p_card_id": card_id})
         assert carta["pode_rodar"] is esperado["pode_rodar"]
         assert carta["corpo_cardinalidade"] == 12
         if "precisao" in esperado:
@@ -169,7 +188,7 @@ def validar_online(escopo):
         readback[card_id] = carta
 
     casillas = rpc_leitura(
-        url, key, "bonificador_carta_v1", {"p_card_id": "88045755827028"}
+        url, key, "bonificador_carta_v2", {"p_card_id": "88045755827028"}
     )
     assert casillas["pode_rodar"] is True
     assert casillas["slot1_id_jogo"] == 291
@@ -181,13 +200,16 @@ def validar_online(escopo):
     ) == 1.5
 
     ausente = rpc_leitura(
-        url, key, "bonificador_carta_v1", {"p_card_id": "card-inexistente"}
+        url, key, "bonificador_carta_v2", {"p_card_id": "card-inexistente"}
     )
-    assert ausente["pode_rodar"] is False
-    assert ausente["falta_o_que"]
+    # O contrato vigente devolve JSON null para card inexistente. Ambos os formatos
+    # são fail-closed; nenhum deles pode virar carta apta por fallback local.
+    assert ausente is None or (
+        ausente.get("pode_rodar") is False and bool(ausente.get("falta_o_que"))
+    )
 
     pares = rpc_leitura(
-        url, key, "bonificador_contexto_escrita_v2", {"p_limit": 1, "p_offset": 0}
+        url, key, "bonificador_contexto_fila_v6", {"p_limit": 1, "p_offset": 0}
     )
     assert isinstance(pares, list)
 

@@ -1,0 +1,380 @@
+{
+  "medido_em": "2026-09-09",
+  "amostra_funcoes": 19,
+  "amostra_linhas": 38,
+  "medicao": {
+    "desfeito": true,
+    "total_ms": 15948.28,
+    "simulacoes": [
+      {
+        "linha": 2543,
+        "funcao": 6,
+        "calculo_ms": 13.18,
+        "publicar_ms": 533.26,
+        "nota_simulada": 107.36166801830879,
+        "gravar_vincular_ms": 26.1
+      },
+      {
+        "linha": 2544,
+        "funcao": 6,
+        "calculo_ms": 0.71,
+        "publicar_ms": 90.97,
+        "nota_simulada": 107.36166801830879,
+        "gravar_vincular_ms": 2.88
+      },
+      {
+        "linha": 2545,
+        "funcao": 7,
+        "calculo_ms": 0.73,
+        "publicar_ms": 811.4,
+        "nota_simulada": 107.42110122860903,
+        "gravar_vincular_ms": 7.3
+      },
+      {
+        "linha": 2546,
+        "funcao": 7,
+        "calculo_ms": 0.59,
+        "publicar_ms": 1758.65,
+        "nota_simulada": 107.42110122860903,
+        "gravar_vincular_ms": 4.13
+      },
+      {
+        "linha": 2563,
+        "funcao": 10,
+        "calculo_ms": 3.13,
+        "publicar_ms": 1016.82,
+        "nota_simulada": 97.92823996826117,
+        "gravar_vincular_ms": 4.12
+      },
+      {
+        "linha": 2564,
+        "funcao": 11,
+        "calculo_ms": 0.61,
+        "publicar_ms": 94.55,
+        "nota_simulada": 103.67132632668628,
+        "gravar_vincular_ms": 2.62
+      },
+      {
+        "linha": 2567,
+        "funcao": 16,
+        "calculo_ms": 0.33,
+        "publicar_ms": 87.13,
+        "nota_simulada": 104.7377775493076,
+        "gravar_vincular_ms": 2.45
+      },
+      {
+        "linha": 2568,
+        "funcao": 17,
+        "calculo_ms": 0.34,
+        "publicar_ms": 84.67,
+        "nota_simulada": 108.16011898492249,
+        "gravar_vincular_ms": 3.02
+      },
+      {
+        "linha": 2569,
+        "funcao": 4,
+        "calculo_ms": 2.25,
+        "publicar_ms": 87.82,
+        "nota_simulada": 105.71787151200519,
+        "gravar_vincular_ms": 3.09
+      },
+      {
+        "linha": 2570,
+        "funcao": 5,
+        "calculo_ms": 0.34,
+        "publicar_ms": 85.79,
+        "nota_simulada": 107.91972917521542,
+        "gravar_vincular_ms": 2.53
+      },
+      {
+        "linha": 2702,
+        "funcao": 10,
+        "calculo_ms": 2.27,
+        "publicar_ms": 90.71,
+        "nota_simulada": 104.82419485377466,
+        "gravar_vincular_ms": 2.59
+      },
+      {
+        "linha": 2703,
+        "funcao": 11,
+        "calculo_ms": 0.41,
+        "publicar_ms": 84.63,
+        "nota_simulada": 106.87949632777597,
+        "gravar_vincular_ms": 3.51
+      },
+      {
+        "linha": 2705,
+        "funcao": 12,
+        "calculo_ms": 0.34,
+        "publicar_ms": 84.37,
+        "nota_simulada": 104.23322053926307,
+        "gravar_vincular_ms": 2.29
+      },
+      {
+        "linha": 2706,
+        "funcao": 12,
+        "calculo_ms": 0.4,
+        "publicar_ms": 84.45,
+        "nota_simulada": 104.23322053926307,
+        "gravar_vincular_ms": 2.43
+      },
+      {
+        "linha": 2707,
+        "funcao": 13,
+        "calculo_ms": 0.42,
+        "publicar_ms": 83.05,
+        "nota_simulada": 106.07751110039645,
+        "gravar_vincular_ms": 2.01
+      },
+      {
+        "linha": 2708,
+        "funcao": 13,
+        "calculo_ms": 0.41,
+        "publicar_ms": 83,
+        "nota_simulada": 106.07751110039645,
+        "gravar_vincular_ms": 2.27
+      },
+      {
+        "linha": 2709,
+        "funcao": 16,
+        "calculo_ms": 0.42,
+        "publicar_ms": 84.16,
+        "nota_simulada": 105.4480083508183,
+        "gravar_vincular_ms": 1.79
+      },
+      {
+        "linha": 2710,
+        "funcao": 17,
+        "calculo_ms": 0.34,
+        "publicar_ms": 986.59,
+        "nota_simulada": 105.95265243151412,
+        "gravar_vincular_ms": 1.97
+      },
+      {
+        "linha": 2731,
+        "funcao": 4,
+        "calculo_ms": 0.33,
+        "publicar_ms": 273.44,
+        "nota_simulada": 100.06527579493836,
+        "gravar_vincular_ms": 4.51
+      },
+      {
+        "linha": 2734,
+        "funcao": 5,
+        "calculo_ms": 0.37,
+        "publicar_ms": 109.39,
+        "nota_simulada": 101.6279975379565,
+        "gravar_vincular_ms": 2.86
+      },
+      {
+        "linha": 2880,
+        "funcao": 18,
+        "calculo_ms": 2.46,
+        "publicar_ms": 117.83,
+        "nota_simulada": 105.0812511542013,
+        "gravar_vincular_ms": 5.68
+      },
+      {
+        "linha": 2881,
+        "funcao": 19,
+        "calculo_ms": 0.47,
+        "publicar_ms": 108.08,
+        "nota_simulada": 106.67889845559846,
+        "gravar_vincular_ms": 3
+      },
+      {
+        "linha": 2982,
+        "funcao": 18,
+        "calculo_ms": 2.27,
+        "publicar_ms": 113.36,
+        "nota_simulada": 101.99822253000923,
+        "gravar_vincular_ms": 5.13
+      },
+      {
+        "linha": 2983,
+        "funcao": 19,
+        "calculo_ms": 0.43,
+        "publicar_ms": 1081.85,
+        "nota_simulada": 103.63648648648649,
+        "gravar_vincular_ms": 2.77
+      },
+      {
+        "linha": 371151,
+        "funcao": 14,
+        "calculo_ms": 0.42,
+        "publicar_ms": 1030.03,
+        "nota_simulada": 104.70055092819425,
+        "gravar_vincular_ms": 7.07
+      },
+      {
+        "linha": 371152,
+        "funcao": 14,
+        "calculo_ms": 0.34,
+        "publicar_ms": 1028.42,
+        "nota_simulada": 105.80022973487942,
+        "gravar_vincular_ms": 3.03
+      },
+      {
+        "linha": 371157,
+        "funcao": 15,
+        "calculo_ms": 0.34,
+        "publicar_ms": 1004.56,
+        "nota_simulada": 106.1380296883983,
+        "gravar_vincular_ms": 3.32
+      },
+      {
+        "linha": 371158,
+        "funcao": 15,
+        "calculo_ms": 0.33,
+        "publicar_ms": 1002.51,
+        "nota_simulada": 107.13837463493158,
+        "gravar_vincular_ms": 3.1
+      },
+      {
+        "linha": 371187,
+        "funcao": 1,
+        "calculo_ms": 1.02,
+        "publicar_ms": 946.16,
+        "nota_simulada": 101.08384113848362,
+        "gravar_vincular_ms": 3.66
+      },
+      {
+        "linha": 371188,
+        "funcao": 1,
+        "calculo_ms": 0.34,
+        "publicar_ms": 1000.3,
+        "nota_simulada": 102.18405639799091,
+        "gravar_vincular_ms": 2.47
+      },
+      {
+        "linha": 371193,
+        "funcao": 2,
+        "calculo_ms": 0.33,
+        "publicar_ms": 149.3,
+        "nota_simulada": 104.330610549029,
+        "gravar_vincular_ms": 3.19
+      },
+      {
+        "linha": 371194,
+        "funcao": 2,
+        "calculo_ms": 0.35,
+        "publicar_ms": 86.18,
+        "nota_simulada": 105.43346358187485,
+        "gravar_vincular_ms": 3.03
+      },
+      {
+        "linha": 371199,
+        "funcao": 3,
+        "calculo_ms": 0.37,
+        "publicar_ms": 957.03,
+        "nota_simulada": 102.9577926510321,
+        "gravar_vincular_ms": 2.37
+      },
+      {
+        "linha": 371200,
+        "funcao": 3,
+        "calculo_ms": 0.38,
+        "publicar_ms": 145.66,
+        "nota_simulada": 104.04933053063871,
+        "gravar_vincular_ms": 4.44
+      },
+      {
+        "linha": 371328,
+        "funcao": 8,
+        "calculo_ms": 2.36,
+        "publicar_ms": 88.43,
+        "nota_simulada": 87.56916654195618,
+        "gravar_vincular_ms": 5.12
+      },
+      {
+        "linha": 371329,
+        "funcao": 8,
+        "calculo_ms": 0.33,
+        "publicar_ms": 84.03,
+        "nota_simulada": 87.83640331373597,
+        "gravar_vincular_ms": 6.03
+      },
+      {
+        "linha": 371331,
+        "funcao": 9,
+        "calculo_ms": 0.38,
+        "publicar_ms": 83.58,
+        "nota_simulada": 90.33782271944922,
+        "gravar_vincular_ms": 2.46
+      },
+      {
+        "linha": 371332,
+        "funcao": 9,
+        "calculo_ms": 0.33,
+        "publicar_ms": 82.82,
+        "nota_simulada": 90.70357142857142,
+        "gravar_vincular_ms": 2.39
+      }
+    ]
+  },
+  "estado_antes": {
+    "lote": [
+      {
+        "estado": "pausado",
+        "versao": "v11-0709-estilo-posicao-oficial-v1"
+      }
+    ],
+    "exemplos": [
+      {
+        "nota": 107.57700208112125,
+        "selo": "59c322722f91766262d22c919d1c605ece4ddffadb350f755f102e8e81e602cd",
+        "linha": 36663,
+        "bonus_id": 229505
+      },
+      {
+        "nota": 106.53523776546629,
+        "selo": "fc12e3b18bf71dec2e35035c88fcb8993ef588f06fb9a920d7788619ceb4ff53",
+        "linha": 382550,
+        "bonus_id": 250315
+      },
+      {
+        "nota": 107.93595675675675,
+        "selo": "01ea40dee995554b9fe5226ddd0ee99c4c4dad6985717a6b71a2a679578d3e31",
+        "linha": 382551,
+        "bonus_id": 250316
+      }
+    ],
+    "publicadas": 55151,
+    "processando": 0,
+    "resultados_v12": 0
+  },
+  "estado_depois": {
+    "lote": [
+      {
+        "estado": "pausado",
+        "versao": "v11-0709-estilo-posicao-oficial-v1"
+      }
+    ],
+    "exemplos": [
+      {
+        "nota": 107.57700208112125,
+        "selo": "59c322722f91766262d22c919d1c605ece4ddffadb350f755f102e8e81e602cd",
+        "linha": 36663,
+        "bonus_id": 229505
+      },
+      {
+        "nota": 106.53523776546629,
+        "selo": "fc12e3b18bf71dec2e35035c88fcb8993ef588f06fb9a920d7788619ceb4ff53",
+        "linha": 382550,
+        "bonus_id": 250315
+      },
+      {
+        "nota": 107.93595675675675,
+        "selo": "01ea40dee995554b9fe5226ddd0ee99c4c4dad6985717a6b71a2a679578d3e31",
+        "linha": 382551,
+        "bonus_id": 250316
+      }
+    ],
+    "publicadas": 55151,
+    "processando": 0,
+    "resultados_v12": 0
+  },
+  "estado_comparado_inalterado": true,
+  "estimativa_minutos_publicacao": 51.41654644736842,
+  "limite": "Simulacao transacional revertida. Caminho atual de publicacao V11, com valores V12 somente temporarios. Nenhuma implantacao produtiva V12 realizada."
+}

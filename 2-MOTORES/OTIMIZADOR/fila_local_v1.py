@@ -381,6 +381,32 @@ class PacoteLocalV1:
         if not isinstance(regua, dict) or (regua.get("gate") or {}).get("pode_rodar") is not True:
             raise FalhaPacoteLocal("régua ausente ou recusada no pacote local")
 
+        # Decisão de 08/09/2026: nunca executar uma fotografia anterior ao veto.
+        # O cálculo continua lendo os bloqueios da régua canônica, sem injetá-los.
+        bloqueios_56 = {
+            int(b["funcao_id"]) for b in regua.get("bloqueios", [])
+            if int(b.get("skill_id", -1)) == 56
+        }
+        exigidos_56 = {1, 2, 6, 7, 10, 11, 16, 17, 18, 19}
+        if not exigidos_56.issubset(bloqueios_56):
+            raise FalhaPacoteLocal(
+                "pacote anterior à proibição de Volta para marcar; "
+                "copie o pacote atualizado da máquina oficial antes de processar"
+            )
+
+        politica = regua.get("politica_habilidades") or {}
+        if politica.get("versao") != "habilidades-funcao-20260909-v1":
+            raise FalhaPacoteLocal("pacote anterior a politica de habilidades de 09/09; renove a fotografia")
+        exigidos = {0: [4, 5, 6, 17, 18, 19], 1: [4, 5, 6, 17, 18, 19], 2: [4, 5, 6, 17, 18, 19], 3: [4, 5, 6, 17, 18, 19], 4: [4, 5, 6, 12, 13, 17, 18, 19], 5: [4, 5, 6, 17, 18, 19], 6: [4, 5, 6, 17, 18, 19], 7: [4, 5, 6, 17, 18, 19], 10: [4, 5, 6, 17, 18, 19], 15: [4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15], 19: [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19], 27: [4, 5, 17], 34: [1, 2, 3, 4, 5, 8, 9, 10, 11, 16, 17, 18, 19], 37: [4, 5, 6, 7, 16, 17, 18, 19], 38: [4, 5, 17, 18, 19], 46: [1, 2, 3, 4, 5, 8, 9, 10, 11, 16, 17, 18, 19], 55: [1, 2, 3, 4, 5, 9, 14, 15], 56: [1, 2, 4, 5, 6, 7, 10, 11, 16, 17, 18, 19]}
+        # Tres vetos antigos do volante de construcao foram revogados.
+        if any(int(b['skill_id']) in (0,2,4) and int(b['funcao_id']) == 16
+               for b in regua.get('bloqueios', [])):
+            raise FalhaPacoteLocal("pacote ainda bloqueia dribles aprovados no volante de construcao")
+        existentes = {(int(b['skill_id']), int(b['funcao_id']))
+                      for b in regua.get('bloqueios', [])}
+        if any((h, f) not in existentes for h, funcoes in exigidos.items() for f in funcoes):
+            raise FalhaPacoteLocal("pacote incompleto: faltam bloqueios de habilidades por funcao")
+
         if int(m.get("versao_pacote") or 0) == VERSAO_PACOTE_LOCAL_V3:
             for chave in ("cartas", "linhas"):
                 meta = (m.get("arquivos") or {}).get(chave)
@@ -778,6 +804,8 @@ class WorkerFilaLocalV1:
     def _preparar_executor(self) -> None:
         import roda_lote_v6 as runner
         runner.prepara_lote_producao_v3(self.pacote.manifesto["regua"])
+        from complemento_runtime_v14 import ativar
+        ativar(runner, self.gateway.rpc("complemento_contexto_v14", {}))
         self._runner = runner
 
     def _controle(self) -> dict:

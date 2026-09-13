@@ -4,8 +4,8 @@
 Há dois comandos deliberadamente separados:
 
 ``processar``
-    Lê somente a fotografia em ``PACOTE-FILA-INTEGRAL`` e calcula uma linha por
-    vez. O resultado é durável no disco antes de qualquer contato com o banco.
+    Lê a fotografia em ``PACOTE-FILA-INTEGRAL`` com até quatro processos.
+    Um único escritor grava os resultados duráveis na ordem da fila.
 
 ``enviar``
     Lê somente os JSONs prontos, confirma uma linha por chamada e registra o
@@ -23,6 +23,7 @@ import contextlib
 import datetime as dt
 import hashlib
 import json
+import multiprocessing
 import os
 import re
 import sys
@@ -33,6 +34,7 @@ import urllib.request
 import uuid
 from pathlib import Path
 from typing import Any, Iterator
+from calculo_paralelo import iter_calculos
 
 
 CONTRATO_RESULTADO = "otimizador_resultado_local_json_v1"
@@ -40,9 +42,11 @@ CONTRATO_RECIBO = "otimizador_recibo_local_json_v1"
 CONTRATO_IMPORTACAO = "otimizador_importacao_json_local_v1"
 VERSAO = 1
 TAMANHO_JSON = 100
+PROCESSOS_CONFIGURADOS = 4
 NOME_PASTA = "OPERACAO-LOCAL-JSON"
 NOME_PACOTE = "PACOTE-FILA-INTEGRAL"
 PADRAO_ARQUIVO_RESULTADO = re.compile(r"^resultado-(\d{6})\.json$")
+ESPERAS_BANCO_OCUPADO_SEGUNDOS = (5, 10, 20, 30)
 
 
 class FalhaOperacao(RuntimeError):
@@ -57,8 +61,16 @@ class FalhaBanco(FalhaOperacao):
     """O banco respondeu recusando o resultado; nada é apagado do disco."""
 
 
+class BancoOcupado(FalhaBanco):
+    """Uma trava transitória impediu a transação; a mesma linha pode ser repetida."""
+
+
 class LinhaJaConcluidaNoBanco(FalhaBanco):
     """A linha já tinha um resultado diferente antes deste envio local."""
+
+
+class LinhaForaFilaNoBanco(FalhaBanco):
+    """A fotografia local ainda contém uma linha que o banco já retirou."""
 
 
 def agora_utc() -> str:
@@ -107,14 +119,17 @@ def _mostrar_processamento(
     total = int(pacote.manifesto.get("linhas_total") or 0)
     cartas = int(pacote.manifesto.get("cartas_total") or 0)
     _cabecalho_painel("FILA LOCAL — PROCESSANDO SEM PAINEL ANTIGO")
-    print(f"Cartas preparadas: {cartas}/{cartas}")
+    print(f"Cartas neste pacote: {cartas}")
     print(f"Linhas no pacote local: {total}")
-    print(f"Concluídas localmente: {calculadas}")
-    print(f"Resultados únicos prontos para envio: {prontas_para_envio}")
-    print(f"Enviadas e confirmadas pelo banco: {enviadas}")
-    print(f"Em andamento: {1 if linha_atual else 0}")
-    print(f"Pendentes de cálculo no pacote: {max(0, total - calculadas)}")
-    print(f"Problemas registrados: {falhas}")
+    print(f"Linhas com cálculo local salvo: {calculadas}")
+    print(f"Resultados locais aguardando envio: {prontas_para_envio}")
+    # ENVIADOS contém envelopes cujo envio já recebeu uma decisão terminal.
+    # A decisão pode ser confirmação, resultado já existente ou linha retirada
+    # da fila. Por isso este número nunca deve ser chamado de "confirmadas".
+    print(f"Linhas com envio já encerrado: {enviadas}")
+    print(f"Processos de cálculo configurados: {PROCESSOS_CONFIGURADOS}")
+    print(f"Linhas ainda sem cálculo local: {max(0, total - calculadas)}")
+    print(f"Falhas de cálculo registradas: {falhas}")
     if repetidos_prontos:
         print(f"Repetidos locais ignorados: {repetidos_prontos}")
     print("-" * 72)
@@ -127,7 +142,7 @@ def _mostrar_processamento(
         print(f"Função: {funcao}")
         print(f"Posição: {posicao}")
         print(f"Em processamento há: {segundos}s")
-        print("Resultado: calculando localmente; ainda não enviado ao banco.")
+        print("Resultado: aguardando gravação local; ainda não enviado ao banco.")
     else:
         print("AGORA")
         print("Nenhuma linha em cálculo neste instante.")
@@ -270,7 +285,7 @@ def _mortar_pacote(raiz: Path, operacao: Path, lote_id: str | None):
     raiz continua sendo aceita enquanto a transferência física da pasta ainda
     não foi feita.
     """
-    from fila_local_v1 import PacoteLocalV1
+    from fila_local_v1 import FalhaPacoteLocal, PacoteLocalV1
 
     possiveis: list[Path] = []
     for base in (operacao / NOME_PACOTE, raiz / NOME_PACOTE):
@@ -287,11 +302,17 @@ def _mortar_pacote(raiz: Path, operacao: Path, lote_id: str | None):
         raise FalhaOperacao(f"pacote local{alvo} não encontrado em {NOME_PACOTE}")
     if len(possiveis) != 1:
         raise FalhaOperacao("há mais de um pacote local; informe o lote pelo parâmetro --lote")
-    return PacoteLocalV1(possiveis[0])
+    try:
+        return PacoteLocalV1(possiveis[0])
+    except FalhaPacoteLocal as erro:
+        raise FalhaOperacao(f"pacote do lote {lote_id}: {erro}") from erro
 
 
 def pasta_saida(operacao: Path, lote_id: str) -> Path:
-    return operacao / "RESULTADOS-JSON" / str(lote_id)
+    nome_raiz = os.environ.get("CLUBEFOOTBALL_RESULTADOS_SUBPASTA", "RESULTADOS-JSON").strip()
+    if not re.fullmatch(r"[A-Za-z0-9._-]+", nome_raiz):
+        raise FalhaOperacao("subpasta de resultados inválida")
+    return operacao / nome_raiz / str(lote_id)
 
 
 def garantir_estrutura(saida: Path) -> dict[str, Path]:
@@ -304,12 +325,150 @@ def garantir_estrutura(saida: Path) -> dict[str, Path]:
         "falhas_envio": "FALHAS-ENVIO",
         "conflitos_banco": "CONFLITOS-NO-BANCO",
         "arquivados": "ARQUIVADOS-COM-CONFLITO",
+        "nao_enviados": "ARQUIVADOS-FORA-DA-FILA-ATIVA",
+        "historico_renovacoes": "HISTORICO-RENOVACOES",
         "controle": "CONTROLE",
     }
     estrutura = {chave: saida / nome for chave, nome in nomes.items()}
     for caminho in estrutura.values():
         caminho.mkdir(parents=True, exist_ok=True)
     return estrutura
+
+
+def _selos_resultado(item: dict[str, Any]) -> tuple[str, str, str]:
+    resultado = item.get("resultado")
+    if not isinstance(resultado, dict):
+        return "", "", ""
+    return tuple(
+        str(resultado.get(chave) or "")
+        for chave in ("lote_fingerprint", "formula_fingerprint", "contrato_fingerprint")
+    )
+
+
+def _selos_pacote(pacote: Any) -> tuple[str, str, str]:
+    return tuple(
+        str(pacote.manifesto.get(chave) or "")
+        for chave in ("lote_fingerprint", "formula_fingerprint", "contrato_fingerprint")
+    )
+
+
+def _mover_historico(origem: Path, destino: Path) -> None:
+    if not origem.is_file():
+        return
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    if destino.exists():
+        raise FalhaOperacao(f"o histórico da renovação já contém {destino.name}")
+    os.replace(origem, destino)
+
+
+def _itens_resultado_ou_jornal(caminho: Path) -> list[dict[str, Any]]:
+    if caminho.suffix.lower() == ".jsonl":
+        itens = ler_jsonl(caminho)
+        if not itens:
+            raise FalhaOperacao(f"jornal vazio: {caminho.name}")
+        for item in itens:
+            _validar_item(item, caminho)
+        return itens
+    return _ler_envelope(caminho)["itens"]
+
+
+def reconciliar_historico_renovado(estrutura: dict[str, Path], pacote: Any) -> dict[str, Any]:
+    """Separa resultados de uma fotografia anterior antes de calcular a atual.
+
+    Lotes renovados preservam ``RESULTADOS-JSON`` para auditoria e podem reutilizar
+    os mesmos ``linha_id``. Um resultado só pertence à fotografia carregada quando
+    seus selos de lote, fórmula e contrato coincidem com o manifesto atual. Os
+    demais são movidos inteiros para um histórico fora do inventário operacional.
+    Nenhum arquivo com mistura de fotografias é escolhido automaticamente.
+    """
+    selos_atuais = _selos_pacote(pacote)
+    if any(not selo for selo in selos_atuais):
+        raise FalhaOperacao("o pacote atual não possui todos os selos de reconciliação")
+
+    pastas_finais = (
+        estrutura["pendentes"], estrutura["enviados"], estrutura["arquivados"],
+        estrutura["nao_enviados"],
+    )
+    arquivos = [
+        arquivo
+        for pasta in pastas_finais
+        for arquivo in _arquivos_resultado(pasta)
+    ]
+    arquivos.extend(sorted(estrutura["trabalho"].glob("resultado-*.jsonl")))
+
+    sufixo = selos_atuais[0][:16]
+    # A sequência resultado-000001 pode reaparecer em outra fotografia ou
+    # numa cópia restaurada da máquina dedicada. Cada reconciliação recebe
+    # seu próprio destino: nunca substitui nem deduplica o histórico antigo.
+    raiz_historico = (
+        estrutura["historico_renovacoes"] / sufixo / ("passagem-" + uuid.uuid4().hex)
+    )
+    movidos_arquivos = 0
+    movidos_itens = 0
+    mantidos_arquivos = 0
+    ids_historicos: set[int] = set()
+
+    for arquivo in arquivos:
+        itens = _itens_resultado_ou_jornal(arquivo)
+        compativeis = [_selos_resultado(item) == selos_atuais for item in itens]
+        if all(compativeis):
+            mantidos_arquivos += 1
+            continue
+        if any(compativeis):
+            raise FalhaOperacao(
+                f"{arquivo.name} mistura resultados da fotografia atual e anterior; "
+                "o arquivo foi preservado sem alteração"
+            )
+
+        ids_arquivo = {int(item["linha_id"]) for item in itens}
+        ids_historicos.update(ids_arquivo)
+        destino_pasta = raiz_historico / arquivo.parent.name
+        _mover_historico(arquivo, destino_pasta / arquivo.name)
+        movidos_arquivos += 1
+        movidos_itens += len(itens)
+
+        # Recibos e resumos têm o mesmo radical do envelope. Eles precisam
+        # acompanhar o resultado antigo para não tornarem a nova linha terminal.
+        companheiros = list(arquivo.parent.glob(arquivo.stem + ".recibos.jsonl"))
+        companheiros.extend(arquivo.parent.glob(arquivo.stem + ".resumo.json"))
+        if arquivo.parent == estrutura["pendentes"]:
+            companheiros.extend(estrutura["recibos"].glob(arquivo.stem + ".recibos.jsonl"))
+        for companheiro in companheiros:
+            destino = raiz_historico / companheiro.parent.name / companheiro.name
+            _mover_historico(companheiro, destino)
+
+    # Diagnósticos por linha também descrevem a fotografia anterior. Mantê-los
+    # nas pastas ativas adulteraria o painel e decisões de uma nova tentativa.
+    for chave in ("falhas_calculo", "falhas_envio", "conflitos_banco"):
+        pasta = estrutura[chave]
+        for linha_id in ids_historicos:
+            diagnostico = pasta / f"linha-{linha_id}.json"
+            if diagnostico.is_file():
+                _mover_historico(
+                    diagnostico,
+                    raiz_historico / pasta.name / diagnostico.name,
+                )
+
+    relatorio = {
+        "contrato": "otimizador_reconciliacao_historico_renovado_v1",
+        "lote_id": pacote.lote_id,
+        "lote_fingerprint": selos_atuais[0],
+        "formula_fingerprint": selos_atuais[1],
+        "contrato_fingerprint": selos_atuais[2],
+        "executado_em_utc": agora_utc(),
+        "arquivos_historicos_movidos": movidos_arquivos,
+        "resultados_historicos_movidos": movidos_itens,
+        "arquivos_atuais_mantidos": mantidos_arquivos,
+        "historico_relativo": str(raiz_historico.relative_to(estrutura["historico_renovacoes"].parent)),
+    }
+    gravar_json_atomico(estrutura["controle"] / "ULTIMA-RECONCILIACAO-RENOVACAO.json", relatorio)
+    if movidos_arquivos:
+        print(
+            f"Renovação reconciliada: {movidos_itens} resultados antigos preservados em "
+            f"{raiz_historico.name}; a fotografia atual continuará normalmente.",
+            flush=True,
+        )
+    return relatorio
 
 
 def _pid_ativo(pid: int) -> bool:
@@ -399,7 +558,9 @@ def _arquivos_resultado(pasta: Path) -> list[Path]:
 
 def _arquivos_finalizados(estrutura: dict[str, Path]) -> list[Path]:
     return sorted(_arquivos_resultado(estrutura["pendentes"]) +
-                  _arquivos_resultado(estrutura["enviados"]))
+                  _arquivos_resultado(estrutura["enviados"]) +
+                  _arquivos_resultado(estrutura["arquivados"]) +
+                  _arquivos_resultado(estrutura["nao_enviados"]))
 
 
 def _assinatura_resultado(item: dict[str, Any]) -> str:
@@ -459,6 +620,21 @@ def linhas_ja_calculadas(estrutura: dict[str, Path]) -> set[int]:
     """Linhas já fechadas em JSON final; o jornal aberto é tratado à parte."""
     unicos, _, _ = _inventariar_resultados(_arquivos_finalizados(estrutura))
     return set(unicos)
+
+
+def contagens_painel_pacote(ids_pacote, concluidas, ids_jornal,
+                            pendentes_unicos, enviados_unicos) -> tuple[int, int, int]:
+    """Conta somente resultados cujos IDs ainda existem no pacote renovado."""
+    atuais = {int(valor) for valor in ids_pacote}
+    concluidas_atuais = {int(valor) for valor in concluidas}.intersection(atuais)
+    jornal_atual = {int(valor) for valor in ids_jornal}.intersection(atuais)
+    pendentes_atuais = {int(valor) for valor in pendentes_unicos}.intersection(atuais)
+    enviados_atuais = {int(valor) for valor in enviados_unicos}.intersection(atuais)
+    return (
+        len(concluidas_atuais.union(jornal_atual)),
+        len(pendentes_atuais - enviados_atuais),
+        len(enviados_atuais),
+    )
 
 
 def proxima_sequencia(estrutura: dict[str, Path]) -> int:
@@ -580,7 +756,163 @@ def calcular_linha(pacote, runner: Any, linha: dict[str, Any]) -> dict[str, Any]
     return resultado
 
 
-def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
+def chave_prioridade(linha: dict[str, Any]) -> tuple:
+    """Mesma ordem do contrato SQL; desconhecido nunca equivale a nível 1."""
+    grupo = linha.get("prioridade_grupo")
+    ordenacao = linha.get("prioridade_ordenacao", "prioridade_orcamento_v1")
+    if ordenacao not in ("prioridade_orcamento_v1", "novos_orcamento_overall_desc_v2"):
+        raise FalhaOperacao("ordenação de prioridade desconhecida; renove a fotografia")
+    novos_primeiro = ordenacao == "novos_orcamento_overall_desc_v2"
+    nivel = linha.get("nivel_maximo")
+    orcamento = linha.get("orcamento_real")
+    if type(grupo) is not int or grupo not in ((0, 1, 2) if novos_primeiro else (1, 2, 3)):
+        raise FalhaOperacao("pacote sem grupo de prioridade comprovado; renove a fotografia")
+    if type(nivel) is not int or nivel < 1 or type(orcamento) is not int or orcamento != 2 * (nivel - 1):
+        raise FalhaOperacao("pacote sem nível/orçamento físico válido; renove a fotografia")
+    if not linha.get("captura_id") or (grupo == 1 and nivel == 1) or (grupo == 2 and nivel != 1):
+        raise FalhaOperacao("prioridade não corresponde à evidência física da linha")
+    overall = linha.get("overall_prioridade")
+    if overall is not None and type(overall) is not int:
+        raise FalhaOperacao("overall da prioridade deve ser inteiro ou ausente")
+    # Na rodada atual, o banco identifica as cartas novas pelo grupo 0.
+    # Cada grupo usa overall decrescente; ausência de overall não inventa nota.
+    # Pacotes históricos mantêm sua ordenação anterior.
+    return (
+        grupo, (overall is None if novos_primeiro else overall is not None), -overall if overall is not None else 0,
+        str(linha["card_id"]), int(linha["funcao_id"]), int(linha["posicao_id"]),
+        linha.get("impeto_condicional_codigo") is not None,
+        int(linha.get("impeto_condicional_codigo") or 0),
+        linha.get("impeto_condicional_nivel") is not None,
+        int(linha.get("impeto_condicional_nivel") or 0), int(linha["linha_id"]),
+    )
+
+
+def ordenar_fila_global(pacotes, calculadas_por_lote: dict[str, set[int]], lotes_prioritarios=None):
+    """Escolhe linhas entre lotes; cada resultado continua no lote de origem."""
+    prioritarios = lotes_prioritarios or []
+    if (not isinstance(prioritarios, list) or any(not isinstance(lote, str) for lote in prioritarios)
+            or len(set(prioritarios)) != len(prioritarios)
+            or not set(prioritarios).issubset({pacote.lote_id for pacote in pacotes})):
+        raise FalhaOperacao("lotes prioritários inválidos para a fila ativa")
+    fila = []
+    vistos = set()
+    for pacote in pacotes:
+        if pacote.manifesto.get("prioridade_contrato") != "prioridade_orcamento_v1":
+            raise FalhaOperacao(f"pacote {pacote.lote_id} anterior à prioridade física; renove o pacote")
+        for linha in pacote.iter_linhas():
+            if linha.get("prioridade_ordenacao", "prioridade_orcamento_v1") != pacote.manifesto.get("prioridade_ordenacao", "prioridade_orcamento_v1"):
+                raise FalhaOperacao("ordenação da linha diverge do manifesto; renove a fotografia")
+            linha_id = int(linha["linha_id"])
+            if linha_id in vistos:
+                raise FalhaOperacao(f"linha {linha_id} repetida entre pacotes ativos")
+            vistos.add(linha_id)
+            chave = chave_prioridade(linha)
+            carta = pacote.carta_da_linha(linha)
+            usado = (carta.get("carta") or {}).get("escalares", {}).get("orcamento")
+            if usado != linha["orcamento_real"]:
+                raise FalhaOperacao(f"linha {linha_id} usa orçamento diferente da prova")
+            if linha_id not in calculadas_por_lote.get(pacote.lote_id, set()):
+                fila.append((chave, pacote, linha))
+    fila.sort(key=lambda item: item[0])
+    # Partição estável: somente a correção vai para a frente. A sequência
+    # anteriormente calculada de TODOS os demais lotes fica idêntica.
+    if prioritarios:
+        prioridade = {lote: indice for indice, lote in enumerate(prioritarios)}
+        fila.sort(key=lambda item: prioridade.get(item[1].lote_id, len(prioridade)))
+    return [(pacote, linha) for _, pacote, linha in fila]
+
+
+def processar_global(raiz: Path, limite: int | None, cards_alvo: list[str] | None = None,
+                     linhas_alvo: list[int] | None = None, processos: int = 4) -> int:
+    operacao = pasta_operacao(raiz)
+    if str(raiz) not in sys.path:
+        sys.path.insert(0, str(raiz))
+    selecao = ler_json(operacao / "FILA-ATIVA.json")
+    lotes = selecao.get("lotes")
+    if selecao.get("contrato") != "prioridade_orcamento_v1" or not isinstance(lotes, list) or not lotes:
+        raise FalhaOperacao("fila ativa ausente ou inválida; renove os pacotes antes de processar")
+    if len(set(lotes)) != len(lotes):
+        raise FalhaOperacao("fila ativa contém lote repetido")
+    with trava_exclusiva(operacao / "PROCESSADOR-GLOBAL.lock", "processador global"):
+        sem_pendentes = set(selecao.get("lotes_sem_pendentes") or [])
+        if not sem_pendentes.issubset(set(lotes)):
+            raise FalhaOperacao("lotes sem pendentes fora da fila ativa")
+        prioritarios = selecao.get("lotes_prioritarios", [])
+        if (not isinstance(prioritarios, list)
+                or any(not isinstance(lote, str) for lote in prioritarios)
+                or len(set(prioritarios)) != len(prioritarios)
+                or not set(prioritarios).issubset(set(lotes))):
+            raise FalhaOperacao("lotes prioritários inválidos para a fila ativa")
+        # A fotografia pode confirmar que um lote prioritário já terminou.
+        # Ele permanece na seleção e na ordem histórica, mas não é montado.
+        # A fotografia confirma ausência de linhas elegíveis, não a conclusão
+        # de todo o histórico do lote (cartas removidas podem ficar pendentes).
+        prioritarios = [lote for lote in prioritarios if lote not in sem_pendentes]
+        pacotes = [_mortar_pacote(raiz, operacao, lote) for lote in lotes
+                   if lote not in sem_pendentes]
+        calculadas = {}
+        ids_por_lote = {}
+        for pacote in pacotes:
+            pacote.validar_integridade()
+            ids_por_lote[pacote.lote_id] = {
+                int(linha["linha_id"]) for linha in pacote.iter_linhas()
+            }
+            estrutura = garantir_estrutura(pasta_saida(operacao, pacote.lote_id))
+            # A fila global precisa separar a fotografia anterior antes de
+            # inventariar o que já foi calculado. Fazer isso apenas dentro de
+            # ``processar`` é tarde demais: este inventário global é executado
+            # primeiro e encontraria dois resultados legítimos da mesma linha,
+            # um de cada fotografia, abortando antes da reconciliação.
+            reconciliar_historico_renovado(estrutura, pacote)
+            feitas = linhas_ja_calculadas(estrutura)
+            _, _, jornal = _jornal_atual(estrutura, pacote)
+            feitas.update(int(item["linha_id"]) for item in jornal)
+            calculadas[pacote.lote_id] = feitas
+        fila = ordenar_fila_global(pacotes, calculadas, prioritarios)
+        if cards_alvo:
+            ordem_cards = {card_id: indice for indice, card_id in enumerate(cards_alvo)}
+            fila = [
+                item for item in fila
+                if str(item[1].get("card_id")) in ordem_cards
+            ]
+            fila.sort(key=lambda item: ordem_cards[str(item[1]["card_id"])])
+        if linhas_alvo:
+            ordem_linhas = {linha_id: indice for indice, linha_id in enumerate(linhas_alvo)}
+            fila = [item for item in fila if int(item[1]["linha_id"]) in ordem_linhas]
+            fila.sort(key=lambda item: ordem_linhas[int(item[1]["linha_id"])])
+        if limite is not None:
+            fila = fila[:limite]
+        print(f"Fila global conferida: {len(fila)} linhas em {len(pacotes)} lotes.", flush=True)
+        # Trechos consecutivos do mesmo lote permitem reaproveitar o protocolo
+        # durável existente sem misturar envelopes de lotes diferentes.
+        inicio = 0
+        codigo_saida = 0
+        while inicio < len(fila):
+            pacote = fila[inicio][0]
+            fim = inicio + 1
+            while fim < len(fila) and fila[fim][0].lote_id == pacote.lote_id:
+                fim += 1
+            codigo_saida = max(codigo_saida, processar(raiz, pacote.lote_id, None, pacote_override=pacote,
+                      linhas_override=[linha for _, linha in fila[inicio:fim]],
+                      ids_pacote_override=ids_por_lote[pacote.lote_id], processos=processos))
+            inicio = fim
+        # Também fecha journals parciais de uma execução interrompida, sem
+        # recalcular suas linhas, inclusive quando não restou trabalho novo.
+        for pacote in pacotes:
+            codigo_saida = max(codigo_saida, processar(raiz, pacote.lote_id, None, pacote_override=pacote, linhas_override=[],
+                      ids_pacote_override=ids_por_lote[pacote.lote_id]))
+        gravar_json_atomico(operacao / "ESTADO-PROCESSAMENTO-GLOBAL.json", {
+            "atualizado_em_utc": agora_utc(), "codigo_saida": codigo_saida,
+            "estado": "com_falhas" if codigo_saida else "concluido_sem_falhas_nesta_execucao",
+            "linhas_selecionadas": len(fila), "lotes": [p.lote_id for p in pacotes],
+        })
+    if codigo_saida:
+        print("Processamento encerrado com falhas. Resultados válidos preservados; consulte FALHAS-CALCULO.", flush=True)
+    return codigo_saida
+
+
+def processar(raiz: Path, lote_id: str | None, limite: int | None,
+              *, pacote_override=None, linhas_override=None, ids_pacote_override=None, processos: int = 4) -> int:
     # A pasta de trabalho fica como diretório atual antes de importar o motor:
     # assim a versão empacotada encontra o config local caso algum módulo o
     # consulte, porém o cálculo em si não abre rede nem usa a chave.
@@ -592,7 +924,9 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
     from fila_producao_v3 import FORMULA_APROVADA, formula_fingerprint
     import roda_lote_v6 as runner
 
-    pacote = _mortar_pacote(raiz, operacao, lote_id)
+    pacote = pacote_override or _mortar_pacote(raiz, operacao, lote_id)
+    if pacote.manifesto.get("prioridade_contrato") != "prioridade_orcamento_v1":
+        raise FalhaOperacao("pacote anterior à correção de orçamento; renove o pacote antes de processar")
     saida = pasta_saida(operacao, pacote.lote_id)
     estrutura = garantir_estrutura(saida)
     with trava_exclusiva(estrutura["controle"] / "PROCESSADOR.lock", "processador"):
@@ -600,10 +934,15 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
         pacote.validar_integridade()
         if formula_fingerprint() != FORMULA_APROVADA:
             raise FalhaOperacao("a fórmula local não corresponde à fórmula aprovada")
+        reconciliar_historico_renovado(estrutura, pacote)
         # O motor antigo nunca pode gravar por conta própria neste fluxo. O
         # único escritor passa a ser o segundo batch, depois do JSON durável.
         runner._gd.LIGADO = False
         runner.prepara_lote_producao_v3(pacote.manifesto["regua"])
+        from complemento_contexto_v14 import carregar_atual
+        from complemento_runtime_v14 import ativar
+        complemento = carregar_atual(raiz)
+        ativar(runner, complemento)
         concluidas = linhas_ja_calculadas(estrutura)
         pendentes_unicos, _, repetidos_pendentes = _inventariar_resultados(
             _arquivos_resultado(estrutura["pendentes"])
@@ -616,20 +955,37 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
         if concluidas.intersection(ids_jornal):
             raise FalhaOperacao("uma linha aparece em JSON final e no jornal aberto")
 
+        # Uma renovação remove do pacote as linhas já confirmadas ou invalidadas,
+        # mas preserva seus resultados locais para auditoria. O painel deve contar
+        # apenas IDs que ainda pertencem à fotografia atual; somar todo o histórico
+        # fazia o restante exibido ficar artificialmente menor.
+        ids_pacote = (set(ids_pacote_override) if ids_pacote_override is not None else
+                      {int(linha["linha_id"]) for linha in pacote.iter_linhas()})
+        concluidas_pacote = concluidas.intersection(ids_pacote)
+        ids_jornal_pacote = ids_jornal.intersection(ids_pacote)
+
         novos = 0
         falhas = 0
         tentativas = 0
         falhas_total = len(list(estrutura["falhas_calculo"].glob("linha-*.json")))
-        prontos_para_envio = len(set(pendentes_unicos) - set(enviados_unicos))
-        enviados_confirmados = contar_resultados(estrutura["enviados"])
-        for linha in pacote.iter_linhas():
+        calculadas_no_pacote, prontos_para_envio, enviados_confirmados = contagens_painel_pacote(
+            ids_pacote, concluidas, ids_jornal, pendentes_unicos, enviados_unicos
+        )
+        linhas = linhas_override if linhas_override is not None else [
+            linha for _, linha in ordenar_fila_global([pacote], {})
+        ]
+        linhas = [linha for linha in linhas if int(linha['linha_id']) not in concluidas
+                  and int(linha['linha_id']) not in ids_jornal]
+        if limite is not None:
+            linhas = linhas[:limite]
+        for linha, futuro in iter_calculos(raiz, pacote.lote_id, linhas, processos, complemento):
             linha_id = int(linha["linha_id"])
             if linha_id in concluidas or linha_id in ids_jornal:
                 continue
             inicio_linha = time.monotonic()
             _mostrar_processamento(
                 pacote,
-                len(concluidas) + len(ids_jornal),
+                calculadas_no_pacote,
                 prontos_para_envio,
                 enviados_confirmados,
                 falhas_total,
@@ -638,7 +994,7 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
                 repetidos_prontos=repetidos_pendentes,
             )
             try:
-                resultado = calcular_linha(pacote, runner, linha)
+                resultado = futuro.result() if futuro is not None else calcular_linha(pacote, runner, linha)
             except Exception as erro:
                 falhas += 1
                 tentativas += 1
@@ -672,6 +1028,8 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
                 acrescentar_jsonl_duravel(jornal, item)
                 itens_jornal.append(item)
                 ids_jornal.add(linha_id)
+                ids_jornal_pacote.add(linha_id)
+                calculadas_no_pacote += 1
                 novos += 1
                 tentativas += 1
                 if len(itens_jornal) >= TAMANHO_JSON:
@@ -683,12 +1041,23 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
                     # contagem no corte de 100 e evita qualquer repetição após um
                     # próximo trecho do mesmo processo.
                     concluidas.update(ids_jornal)
+                    concluidas_pacote.update(ids_jornal_pacote)
                     sequencia += 1
                     jornal = estrutura["trabalho"] / f"resultado-{sequencia:06d}.jsonl"
                     itens_jornal = []
                     ids_jornal = set()
+                    ids_jornal_pacote = set()
                 elif novos % 10 == 0:
-                    enviados_confirmados = contar_resultados(estrutura["enviados"])
+                    pendentes_agora, _, _ = _inventariar_resultados(
+                        _arquivos_resultado(estrutura["pendentes"])
+                    )
+                    enviados_agora, _, _ = _inventariar_resultados(
+                        _arquivos_resultado(estrutura["enviados"])
+                    )
+                    prontos_para_envio = len(
+                        (set(pendentes_agora) - set(enviados_agora)).intersection(ids_pacote)
+                    )
+                    enviados_confirmados = len(set(enviados_agora).intersection(ids_pacote))
 
             if limite is not None and tentativas >= limite:
                 break
@@ -701,8 +1070,10 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
             finalizar_jornal(estrutura, pacote, sequencia, jornal, itens_jornal)
             prontos_para_envio += len(itens_jornal)
             concluidas.update(ids_jornal)
+            concluidas_pacote.update(ids_jornal_pacote)
             itens_jornal = []
             ids_jornal = set()
+            ids_jornal_pacote = set()
 
         gravar_json_atomico(estrutura["controle"] / "ESTADO-PROCESSAMENTO.json", {
             "contrato": "otimizador_estado_processamento_local_json_v1",
@@ -710,23 +1081,25 @@ def processar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
             "atualizado_em_utc": agora_utc(),
             "calculadas_nesta_execucao": novos,
             "falhas_nesta_execucao": falhas,
+            "estado": "com_falhas" if falhas else "concluido_sem_falhas_nesta_execucao",
+            "codigo_saida": 2 if falhas else 0,
             "jsons_prontos": len(_arquivos_resultado(estrutura["pendentes"])),
             "resultados_no_jornal": len(itens_jornal),
         })
         _mostrar_processamento(
             pacote,
-            len(concluidas) + len(ids_jornal),
+            calculadas_no_pacote,
             prontos_para_envio,
             enviados_confirmados,
             falhas_total,
             repetidos_prontos=repetidos_pendentes,
         )
         print(
-            f"Processamento terminou. Novas: {novos}; falhas registradas: {falhas}; "
+            f"Processamento terminou {'COM FALHAS' if falhas else 'sem falhas nesta execução'}. Novas: {novos}; falhas registradas: {falhas}; "
             f"resultados prontos para envio: {prontos_para_envio}.",
             flush=True,
         )
-    return 0
+    return 2 if falhas else 0
 
 
 def _ler_config(raiz: Path, operacao: Path) -> tuple[str, str, Path]:
@@ -748,6 +1121,56 @@ def _ler_config(raiz: Path, operacao: Path) -> tuple[str, str, Path]:
         "config.txt sem SUPABASE_URL e SUPABASE_KEY. Coloque-o dentro de "
         f"{NOME_PASTA} ou na pasta 2-MOTORES desta cópia."
     )
+
+
+def _codigo_erro_http(detalhe: str) -> str:
+    """Extrai o SQLSTATE devolvido pelo PostgREST sem depender do texto humano."""
+    try:
+        corpo = json.loads(detalhe)
+    except (json.JSONDecodeError, TypeError):
+        return ""
+    if not isinstance(corpo, dict):
+        return ""
+    return str(corpo.get("code") or "").strip().upper()
+
+
+def _mensagem_erro_http(detalhe: str) -> str:
+    """Lê a mensagem do PostgREST já com os escapes JSON decodificados."""
+    try:
+        corpo = json.loads(detalhe)
+    except (json.JSONDecodeError, TypeError):
+        return str(detalhe or "")
+    if not isinstance(corpo, dict):
+        return str(detalhe or "")
+    return str(corpo.get("message") or "")
+
+
+def _segundos_banco_ocupado(tentativa: int) -> int:
+    indice = min(max(int(tentativa), 1), len(ESPERAS_BANCO_OCUPADO_SEGUNDOS)) - 1
+    return ESPERAS_BANCO_OCUPADO_SEGUNDOS[indice]
+
+
+def _aguardar_banco_ocupado(item: dict[str, Any], tentativa: int) -> None:
+    """Espera com contagem visível; Ctrl+C continua sendo uma parada segura."""
+    segundos = _segundos_banco_ocupado(tentativa)
+    linha_id = int(item["linha_id"])
+    print()
+    print(
+        f"BANCO OCUPADO (55P03). A linha {linha_id} continua pendente e intacta.",
+        flush=True,
+    )
+    print(
+        f"Tentativa automática {tentativa}: aguardando a outra operação terminar.",
+        flush=True,
+    )
+    for restante in range(segundos, 0, -1):
+        print(
+            f"\rNova tentativa da mesma linha em {restante:02d}s. Ctrl+C para parar com segurança.",
+            end="",
+            flush=True,
+        )
+        time.sleep(1)
+    print("\rTentando novamente a mesma linha agora.                              ", flush=True)
 
 
 def chamar_importacao(url: str, chave: str, lote_id: str, item: dict[str, Any]) -> dict[str, Any]:
@@ -774,9 +1197,18 @@ def chamar_importacao(url: str, chave: str, lote_id: str, item: dict[str, Any]) 
             bruto = resposta.read().decode("utf-8")
     except urllib.error.HTTPError as erro:
         detalhe = erro.read().decode("utf-8", "replace")[:1000]
-        if erro.code == 400 and "linha concluída com resultado diferente" in detalhe:
+        mensagem = _mensagem_erro_http(detalhe)
+        if _codigo_erro_http(detalhe) == "55P03":
+            raise BancoOcupado(
+                f"o banco está ocupado ao receber a linha {item['linha_id']} (HTTP {erro.code}): {detalhe}"
+            ) from erro
+        if erro.code == 400 and "linha concluída com resultado diferente" in mensagem:
             raise LinhaJaConcluidaNoBanco(
                 f"a linha {item['linha_id']} já foi concluída no banco com outro resultado"
+            ) from erro
+        if erro.code == 400 and "lote ou linha não pertence à fila integral" in mensagem:
+            raise LinhaForaFilaNoBanco(
+                f"a linha {item['linha_id']} foi retirada da fila integral no banco"
             ) from erro
         raise FalhaBanco(f"o banco recusou a linha {item['linha_id']} (HTTP {erro.code}): {detalhe}") from erro
     except (urllib.error.URLError, TimeoutError, OSError) as erro:
@@ -841,7 +1273,9 @@ def _decisoes_globais(estrutura: dict[str, Path]) -> dict[int, dict[str, Any]]:
     """
     caminhos = sorted(estrutura["recibos"].glob("*.recibos.jsonl")) + sorted(
         estrutura["enviados"].glob("*.recibos.jsonl")
-    ) + sorted(estrutura["arquivados"].glob("*.recibos.jsonl"))
+    ) + sorted(estrutura["arquivados"].glob("*.recibos.jsonl")) + sorted(
+        estrutura["nao_enviados"].glob("*.recibos.jsonl")
+    )
     decisoes: dict[int, dict[str, Any]] = {}
     for caminho in caminhos:
         for linha_id, recibo in _recibos_terminais(caminho).items():
@@ -901,6 +1335,45 @@ def _decisao_conflito_banco(lote_id: str, item: dict[str, Any], erro: Exception,
     }
 
 
+def _decisao_fora_fila_ativa(lote_id: str, item: dict[str, Any], arquivo: Path) -> dict[str, Any]:
+    """Preserva um cálculo de fotografia anterior sem oferecê-lo ao banco."""
+    return {
+        "contrato": CONTRATO_RECIBO,
+        "versao": VERSAO,
+        "confirmado": False,
+        "ignorado_por_banco": True,
+        "lote_id": lote_id,
+        "linha_id": int(item["linha_id"]),
+        "calculado_em_utc": item["calculado_em_utc"],
+        "decidido_em_utc": agora_utc(),
+        "motivo": "linha ausente da fotografia ativa renovada",
+        "motivo_codigo": "linha_fora_da_fila_ativa",
+        "arquivo_origem": arquivo.name,
+    }
+
+
+def _decisao_fora_fila_no_banco(
+    lote_id: str,
+    item: dict[str, Any],
+    erro: Exception,
+    arquivo: Path,
+) -> dict[str, Any]:
+    """Registra a recusa definitiva sem bloquear os resultados posteriores."""
+    return {
+        "contrato": CONTRATO_RECIBO,
+        "versao": VERSAO,
+        "confirmado": False,
+        "ignorado_por_banco": True,
+        "lote_id": lote_id,
+        "linha_id": int(item["linha_id"]),
+        "calculado_em_utc": item["calculado_em_utc"],
+        "decidido_em_utc": agora_utc(),
+        "motivo": str(erro),
+        "motivo_codigo": "linha_retirada_da_fila_integral_no_banco",
+        "arquivo_origem": arquivo.name,
+    }
+
+
 def _mover_envio_terminal(
     estrutura: dict[str, Path],
     arquivo: Path,
@@ -909,7 +1382,15 @@ def _mover_envio_terminal(
     total_confirmado: int,
     total_ignorado: int,
 ) -> None:
-    destino_pasta = estrutura["arquivados"] if total_ignorado else estrutura["enviados"]
+    # Um envelope pode misturar linhas ainda ativas com linhas retiradas após
+    # a renovação. Se ao menos uma foi confirmada, o envelope continua entre
+    # os finalizados normais para o processador não recalculá-la. Só um arquivo
+    # inteiramente obsoleto vai para o arquivo de evidências não enviadas.
+    destino_pasta = (
+        estrutura["nao_enviados"]
+        if total_confirmado == 0 and total_ignorado > 0
+        else estrutura["enviados"]
+    )
     destino = destino_pasta / arquivo.name
     destino_recibo = destino_pasta / (arquivo.stem + ".recibos.jsonl")
     if destino.exists() and destino != arquivo:
@@ -927,8 +1408,63 @@ def _mover_envio_terminal(
     })
 
 
-def enviar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
+def _arquivos_da_formula_atual(arquivos: list[Path], pacote: Any) -> list[Path]:
+    """Preserva fórmulas anteriores sem bloquear a remessa da fórmula atual.
+
+    Não compara o agregado do lote: ele pode mudar com novas cartas sem mudar
+    o contrato de uma linha. A identidade e os selos da linha continuam sendo
+    conferidos pelo importador canônico. Não move arquivos usados pelo cálculo.
+    """
+    chaves = ("formula_fingerprint", "contrato_fingerprint", "motor_versao")
+    esperado = tuple(str(pacote.manifesto.get(chave) or "") for chave in chaves)
+    if not all(esperado):
+        raise FalhaOperacao("pacote sem selos completos para conferir a fórmula do envio")
+    atuais = []
+    for arquivo in arquivos:
+        envelope = _ler_envelope(arquivo)
+        if str(envelope.get("lote_id")) != pacote.lote_id:
+            raise FalhaOperacao(f"{arquivo.name} pertence a outro lote")
+        compativeis = []
+        for item in envelope["itens"]:
+            recebido = tuple(str(item["resultado"].get(chave) or "") for chave in chaves)
+            if not all(recebido):
+                raise FalhaOperacao(f"{arquivo.name} contém resultado sem selos completos")
+            compativeis.append(recebido == esperado)
+        if all(compativeis):
+            atuais.append(arquivo)
+        elif any(compativeis):
+            raise FalhaOperacao(f"{arquivo.name} mistura fórmulas atual e anterior; arquivo preservado")
+        else:
+            print(f"Lote {pacote.lote_id}, {arquivo.name}: {len(compativeis)} resultados de outra fórmula "
+                  "preservados; não serão enviados nesta execução.", flush=True)
+    return atuais
+
+
+def enviar(raiz: Path, lote_id: str | None, limite: int | None,
+           cards_alvo: list[str] | None = None,
+           linhas_alvo: list[int] | None = None) -> int:
     operacao = pasta_operacao(raiz)
+    if lote_id is None and (operacao / "FILA-ATIVA.json").is_file():
+        selecao = ler_json(operacao / "FILA-ATIVA.json")
+        ativos = selecao.get("lotes")
+        if selecao.get("contrato") != "prioridade_orcamento_v1" or not isinstance(ativos, list) or not ativos:
+            raise FalhaOperacao("fila ativa inválida para envio")
+        if any(not isinstance(lote, str) or not lote for lote in ativos) or len(set(ativos)) != len(ativos):
+            raise FalhaOperacao("fila ativa contém lote inválido ou repetido")
+        encerrados = selecao.get("lotes_sem_pendentes", [])
+        if (not isinstance(encerrados, list)
+                or any(not isinstance(lote, str) for lote in encerrados)
+                or len(set(encerrados)) != len(encerrados)
+                or not set(encerrados).issubset(set(ativos))):
+            raise FalhaOperacao("lotes sem pendentes inválidos para envio")
+        if limite is not None:
+            raise FalhaOperacao("para limitar um envio de teste, informe também --lote")
+        for ativo in ativos:
+            if ativo in encerrados:
+                print(f"Lote {ativo} sem linhas elegíveis na fotografia atual; histórico local preservado.", flush=True)
+                continue
+            enviar(raiz, str(ativo), None, cards_alvo=cards_alvo, linhas_alvo=linhas_alvo)
+        return 0
     if lote_id:
         lotes = [str(lote_id)]
     else:
@@ -940,14 +1476,21 @@ def enviar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
         raise FalhaOperacao("há mais de uma saída local; informe o lote pelo parâmetro --lote")
     lote = lotes[0]
     estrutura = garantir_estrutura(pasta_saida(operacao, lote))
-    url, chave, config = _ler_config(raiz, operacao)
     enviados_nesta_execucao = 0
     with trava_exclusiva(estrutura["controle"] / "ENVIADOR.lock", "enviador"):
         arquivos = _arquivos_resultado(estrutura["pendentes"])
         if not arquivos:
             print("Não há JSON pronto aguardando envio.", flush=True)
             return 0
-        arquivos_enviados = _arquivos_resultado(estrutura["enviados"])
+        pacote = _mortar_pacote(raiz, operacao, lote)
+        pacote.validar_integridade()
+        arquivos = _arquivos_da_formula_atual(arquivos, pacote)
+        if not arquivos:
+            print("Não há JSON da fórmula atual aguardando envio.", flush=True)
+            return 0
+        ids_fila_ativa = {int(linha["linha_id"]) for linha in pacote.iter_linhas()}
+        url, chave, config = _ler_config(raiz, operacao)
+        arquivos_enviados = _arquivos_da_formula_atual(_arquivos_resultado(estrutura["enviados"]), pacote)
         for arquivo in [*arquivos_enviados, *arquivos]:
             envelope = _ler_envelope(arquivo)
             if str(envelope.get("lote_id")) != lote:
@@ -957,9 +1500,28 @@ def enviar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
         # mesma linha nunca são escolhidas por ordem de arquivo.
         _inventariar_resultados([*arquivos_enviados, *arquivos])
         decisoes_globais = _decisoes_globais(estrutura)
-        total_prontas = len(set(pendentes_unicos) - set(decisoes_globais))
-        falhas_total = len(list(estrutura["falhas_envio"].glob("linha-*.json")))
+        ids_cards_alvo = None
+        if cards_alvo:
+            cards_alvo_set = set(cards_alvo)
+            ids_cards_alvo = {
+                int(item["linha_id"])
+                for caminho in arquivos
+                for item in _ler_envelope(caminho)["itens"]
+                if str(item.get("card_id")) in cards_alvo_set
+            }
+        ids_linhas_alvo = set(linhas_alvo) if linhas_alvo else None
+        candidatas = set(pendentes_unicos) & ids_fila_ativa
+        if ids_cards_alvo is not None:
+            candidatas &= ids_cards_alvo
+        if ids_linhas_alvo is not None:
+            candidatas &= ids_linhas_alvo
+        total_prontas = len(candidatas - set(decisoes_globais))
+        falhas_total = sum(
+            1 for caminho in estrutura["falhas_envio"].glob("linha-*.json")
+            if int(ler_json(caminho).get("linha_id") or 0) in ids_fila_ativa
+        )
         ignoradas_nesta_execucao = 0
+        fora_fila_nesta_execucao = 0
         for arquivo in arquivos:
             envelope = _ler_envelope(arquivo)
             recibo = estrutura["recibos"] / (arquivo.stem + ".recibos.jsonl")
@@ -969,6 +1531,10 @@ def enviar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
                 raise FalhaOperacao(f"recibo contém linha fora do JSON: {arquivo.name}")
             for item in envelope["itens"]:
                 linha_id = int(item["linha_id"])
+                if cards_alvo and str(item.get("card_id")) not in set(cards_alvo):
+                    continue
+                if ids_linhas_alvo is not None and linha_id not in ids_linhas_alvo:
+                    continue
                 if linha_id in terminais:
                     continue
                 decisao_anterior = decisoes_globais.get(linha_id)
@@ -984,6 +1550,18 @@ def enviar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
                         flush=True,
                     )
                     continue
+                if linha_id not in ids_fila_ativa:
+                    decisao = _decisao_fora_fila_ativa(lote, item, arquivo)
+                    acrescentar_jsonl_duravel(recibo, decisao)
+                    terminais[linha_id] = decisao
+                    decisoes_globais[linha_id] = decisao
+                    fora_fila_nesta_execucao += 1
+                    print(
+                        f"Linha {linha_id} — {_carta_com_id(item)} pertence a uma fotografia anterior; "
+                        "o cálculo foi preservado e não foi enviado ao banco.",
+                        flush=True,
+                    )
+                    continue
                 inicio_envio = time.monotonic()
                 _mostrar_envio(
                     lote,
@@ -994,8 +1572,15 @@ def enviar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
                     inicio_envio,
                     repetidos_ignorados=repetidos_pendentes,
                 )
+                tentativas_banco_ocupado = 0
                 try:
-                    resposta = chamar_importacao(url, chave, lote, item)
+                    while True:
+                        try:
+                            resposta = chamar_importacao(url, chave, lote, item)
+                            break
+                        except BancoOcupado:
+                            tentativas_banco_ocupado += 1
+                            _aguardar_banco_ocupado(item, tentativas_banco_ocupado)
                 except LinhaJaConcluidaNoBanco as erro:
                     decisao = _decisao_conflito_banco(lote, item, erro, arquivo)
                     gravar_json_atomico(estrutura["conflitos_banco"] / f"linha-{linha_id}.json", {
@@ -1014,6 +1599,22 @@ def enviar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
                     print(
                         f"Linha {linha_id} — {_carta_com_id(item)} já tinha outro resultado no banco; "
                         "foi arquivada localmente e não será reenviada.",
+                        flush=True,
+                    )
+                    continue
+                except LinhaForaFilaNoBanco as erro:
+                    decisao = _decisao_fora_fila_no_banco(lote, item, erro, arquivo)
+                    acrescentar_jsonl_duravel(recibo, decisao)
+                    terminais[linha_id] = decisao
+                    decisoes_globais[linha_id] = decisao
+                    fora_fila_nesta_execucao += 1
+                    total_prontas -= 1
+                    falha_anterior = estrutura["falhas_envio"] / f"linha-{linha_id}.json"
+                    if falha_anterior.is_file() and falhas_total > 0:
+                        falhas_total -= 1
+                    print(
+                        f"Linha {linha_id} — {_carta_com_id(item)} foi retirada da fila no banco; "
+                        "o cálculo foi preservado e o envio continuará na próxima linha.",
                         flush=True,
                     )
                     continue
@@ -1066,7 +1667,7 @@ def enviar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
                 )
                 print(
                     f"Arquivo finalizado: {confirmadas_arquivo} confirmadas; "
-                    f"{ignoradas_arquivo} já tinham resultado no banco.",
+                    f"{ignoradas_arquivo} preservadas sem novo envio.",
                     flush=True,
                 )
         gravar_json_atomico(estrutura["controle"] / "ESTADO-ENVIO.json", {
@@ -1075,6 +1676,7 @@ def enviar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
             "atualizado_em_utc": agora_utc(),
             "confirmadas_nesta_execucao": enviados_nesta_execucao,
             "ignoradas_por_resultado_ja_existente": ignoradas_nesta_execucao,
+            "arquivadas_fora_da_fila_ativa": fora_fila_nesta_execucao,
             "jsons_ainda_pendentes": len(_arquivos_resultado(estrutura["pendentes"])),
         })
         _mostrar_envio(
@@ -1086,7 +1688,8 @@ def enviar(raiz: Path, lote_id: str | None, limite: int | None) -> int:
         )
         print(
             f"Envio terminou. Linhas confirmadas: {enviados_nesta_execucao}; "
-            f"já concluídas no banco: {ignoradas_nesta_execucao}.",
+            f"já concluídas no banco: {ignoradas_nesta_execucao}; "
+            f"fora da fila ativa: {fora_fila_nesta_execucao}.",
             flush=True,
         )
     return 0
@@ -1098,21 +1701,70 @@ def argumentos() -> argparse.Namespace:
     for nome in ("processar", "enviar"):
         comando = sub.add_parser(nome)
         comando.add_argument("--lote", help="UUID do lote local, se houver mais de um")
+        if nome == 'processar':
+            comando.add_argument('--processos', type=int, choices=range(1, 5), default=4,
+                                 help='processos de cálculo simultâneos (padrão: 4)')
         comando.add_argument("--limite", type=int, help="somente para teste: máximo de linhas nesta execução")
+        comando.add_argument(
+            "--cards", nargs="+",
+            help="processa ou envia somente estes IDs de carta, na ordem informada",
+        )
+        comando.add_argument(
+            "--linhas", nargs="+", type=int,
+            help="processa ou envia somente estes IDs exatos de linha, na ordem informada",
+        )
+    renovacao = sub.add_parser("renovar", help="renova somente fotografias de lotes pausados")
+    renovacao.add_argument("--lotes", nargs="+", required=True, help="UUIDs dos lotes que compartilharão a fila")
+    renovacao.add_argument("--preservar-ordem", action="store_true", help="mantem a lista e a prioridade da fila existente")
     return parser.parse_args()
 
 
 def main() -> int:
+    global PROCESSOS_CONFIGURADOS
+    # Nomes reais podem ter caracteres fora de cp1252, inclusive quando o
+    # console e redirecionado para log. Imprimir nao pode interromper o envio.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="backslashreplace")
     args = argumentos()
+    if args.comando == "renovar":
+        raiz = raiz_otimizador()
+        if str(raiz) not in sys.path:
+            sys.path.insert(0, str(raiz))
+        from renovar_pacotes_prioridade_v1 import renovar
+        return renovar(raiz, args.lotes, sys.modules[__name__], preservar_ordem=args.preservar_ordem)
     if args.limite is not None and args.limite <= 0:
         raise FalhaOperacao("--limite deve ser maior que zero")
+    if args.cards:
+        args.cards = [str(card_id).strip() for card_id in args.cards]
+        if any(not card_id.isdigit() for card_id in args.cards):
+            raise FalhaOperacao("--cards aceita somente IDs numéricos de carta")
+        if len(set(args.cards)) != len(args.cards):
+            raise FalhaOperacao("--cards não aceita ID de carta repetido")
+    if args.linhas:
+        if any(linha_id <= 0 for linha_id in args.linhas):
+            raise FalhaOperacao("--linhas aceita somente IDs positivos")
+        if len(set(args.linhas)) != len(args.linhas):
+            raise FalhaOperacao("--linhas não aceita ID repetido")
+    if args.cards and args.linhas:
+        raise FalhaOperacao("use somente um filtro: --cards ou --linhas")
     raiz = raiz_otimizador()
+    if str(raiz) not in sys.path:
+        sys.path.insert(0, str(raiz))
     if args.comando == "processar":
-        return processar(raiz, args.lote, args.limite)
-    return enviar(raiz, args.lote, args.limite)
+        PROCESSOS_CONFIGURADOS = args.processos
+        if args.lote:
+            if args.cards or args.linhas:
+                raise FalhaOperacao("use --cards/--linhas sem --lote para localizar na fila ativa")
+            with trava_exclusiva(pasta_operacao(raiz) / "PROCESSADOR-GLOBAL.lock", "processador global"):
+                return processar(raiz, args.lote, args.limite, processos=args.processos)
+        return processar_global(raiz, args.limite, args.cards, args.linhas, processos=args.processos)
+    return enviar(raiz, args.lote, args.limite,
+                  cards_alvo=args.cards, linhas_alvo=args.linhas)
 
 
 if __name__ == "__main__":
+    multiprocessing.freeze_support()
     try:
         raise SystemExit(main())
     except KeyboardInterrupt:

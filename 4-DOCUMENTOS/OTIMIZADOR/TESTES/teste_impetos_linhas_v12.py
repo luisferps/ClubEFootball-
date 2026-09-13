@@ -91,10 +91,10 @@ class ImpetosLinhasV12Test(unittest.TestCase):
         carta = {"arows": [[1, 12, 90]], "orc": 2}
         tecnicos = [{"boost": [1]}, {"boost": [1, 2]}, {"boost": [9]}]
         # 6 distribuições de barras x 2 ímpetos adicionais x 2 técnicos úteis
-        # x C(6,5) escolhas de habilidade = 144 builds possíveis.
+        # x soma C(6,k), k=0..5 = 63 escolhas: 1512 builds possiveis.
         self.assertEqual(
             runner._conta_builds_possiveis(carta, MotorFalso, tecnicos, list(range(6))),
-            144,
+            1512,
         )
 
     def test_comparadas_soma_avaliacoes_internas_e_nao_rodadas_grandes(self):
@@ -134,6 +134,9 @@ class ImpetosLinhasV12Test(unittest.TestCase):
         self.assertNotIn("join clube.", operacional.lower())
 
     def test_entrada_historica_esta_encerrada(self):
+        if not FILA_LEGADO.exists() and not LANCADOR_FILA_HISTORICA.exists():
+            self.assertFalse((OTIMIZADOR / "teste_fila_100.py").exists())
+            return  # O fluxo historico foi removido integralmente.
         worker = FILA_LEGADO.read_text(encoding="utf-8")
         lancador = LANCADOR_FILA_HISTORICA.read_text(encoding="utf-8")
         self.assertIn("frente de legado foi encerrada", worker)

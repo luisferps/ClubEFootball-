@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="escuro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ficha — ClubEfootball</title>
+  <meta name="description" content="Ficha pública de um card do ClubEfootball.">
+  <style>[hidden] { display: none !important; }</style>
+  <link rel="stylesheet" href="site-shell.css?v=2026091202">
+  <link rel="stylesheet" href="ficha.css?v=2026091203">
+  <script src="degrau.js?v=2026090702" defer></script>
+  <script src="site-theme.js?v=2026090701" defer></script>
+  <script src="search-api.js?v=2026090703" defer></script>
+  <script src="search.js?v=2026091202" defer></script>
+  <script src="ficha-editor-api.js?v=20260910-complemento-v14" defer></script>
+  <script src="ficha-editor.js?v=20260909-habilidades" defer></script>
+  <script src="ficha.js?v=2026091203" defer></script>
+</head>
+<body>
+  <a class="sn-skip" href="#ficha">Pular para a ficha</a>
+  <header class="sn-header">
+    <div class="sn-topbar">
+      <a aria-label='ClubEfootball — Início' class='sn-brand' href='/#inicio'>CLUB<span>e</span>FOOTBALL</a>
+      <nav class="sn-nav" aria-label="Navegação principal">
+        <a href='/#inicio'>Início</a>
+        <a href='/#elenco'>Elenco</a>
+        <a href='/#ranking'>Ranking</a>
+        <a href='/#boxes-em-andamento'>Boxes em andamento</a>
+        <a href='/#boxes'>Boxes cadastradas</a>
+        <a href='/#como-funciona'>Como funciona</a>
+      </nav>
+      <form class="sn-search" data-sn-global-search role="search">
+        <span class="sn-search-icon" aria-hidden="true">⌕</span>
+        <input name="busca" type="search" minlength="3" maxlength="120" autocomplete="off" placeholder="Buscar em todos os cards" aria-label="Buscar jogador em todos os cards" aria-controls="sn-search-popup" aria-expanded="false">
+        <button class="sn-search-submit" type="submit" aria-label="Buscar">Buscar</button>
+        <div id="sn-search-popup" class="sn-search-popup" data-sn-search-popup hidden></div>
+      </form>
+      <div class="sn-tools">
+        <div class="sn-degrau" role="group" aria-label="Degrau do ímpeto condicional" title="Degrau do Ímpeto condicional. O site inteiro passa a mostrar as notas calculadas nesse degrau: no 1 tudo aparece com o ímpeto no primeiro nível, no 2 no segundo, no 3 no máximo.">
+          <svg class="sn-degrau-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M9 3.5h14L30 16l-7 12.5H9L2 16Z"/><path d="M10.5 6h11L27 16l-5.5 10h-11L5 16Z" stroke-width="1"/><path d="M12 9.5h8l3.4 5.8H10.2l1.5-2.6h7.4l-.5-.9h-5.2Zm-3.4 7.2h13.2l-1.5 2.6h-7.4l.5.9h5.2L20 22.5h-8Z" fill="currentColor" stroke="none"/></svg>
+          <span class="sn-degrau-label">Ímpeto condicional</span>
+          <button type="button" data-sn-degrau="1" aria-pressed="false">1</button>
+          <button type="button" data-sn-degrau="2" aria-pressed="false">2</button>
+          <button type="button" data-sn-degrau="3" aria-pressed="true">3</button>
+        </div>
+        <button id="sn-theme" type="button" aria-label="Ativar tema claro">☀ Claro</button>
+      </div>
+    </div>
+  </header>
+  <main class="page">
+    <aside class="ad" aria-label="Espaço publicitário"></aside>
+
+    <section class="stage" aria-label="Ficha do jogador" aria-live="polite">
+      <article class="ficha layout-incomplete awaiting-data" id="ficha" aria-busy="true">
+        <p id="screen-message" class="screen-message">Consultando a Ficha…</p>
+        <noscript><p class="screen-message">Ative o JavaScript para carregar a Ficha.</p></noscript>
+
+        <div class="content" id="ficha-content" hidden>
+          <section class="block b1">
+            <div class="top">
+              <div class="panel identity">
+                <div id="card-photo" class="photo">sem imagem</div>
+                <div id="card-name" class="name">—</div>
+              </div>
+              <div class="score"><small>PONTUAÇÃO TOTAL</small><b id="score-top">—</b></div>
+              <div class="improve"><small>PODE MELHORAR</small><b id="improve-top" class="unavailable">—</b></div>
+              <div id="roster-action" class="roster" aria-disabled="true">ELENCO · INDISPONÍVEL</div>
+              <div class="native">
+                <span class="label">ESTILOS DE JOGO</span>
+                <div id="playstyle" class="playstyles">—</div>
+                <span class="label">POSIÇÃO NATIVA</span>
+                <strong id="native-position">—</strong>
+              </div>
+              <div class="panel positions">
+                <span class="label">POSIÇÕES</span>
+                <div id="pitch" class="pitch">
+                  <div class="pitch-row"><span class="pos absent">PTE</span><span class="pos absent">CA</span><span class="pos absent">PTD</span></div>
+                  <div class="pitch-row"><span class="pos absent">SA</span></div>
+                  <div class="pitch-row"><span class="pos absent">MLE</span><span class="pos absent">MAT</span><span class="pos absent">MLD</span></div>
+                  <div class="pitch-row"><span class="pos absent">MLG</span></div>
+                  <div class="pitch-row"><span class="pos absent">VOL</span></div>
+                  <div class="pitch-row"><span class="pos absent">LE</span><span class="pos absent">ZC</span><span class="pos absent">LD</span></div>
+                  <div class="pitch-row"><span class="pos absent">GO</span></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="build-workspace" aria-labelledby="build-workspace-title">
+            <header class="build-workspace-header">
+              <span id="build-workspace-title">COMPONENTES DA BUILD</span>
+            </header>
+
+            <section class="block b2">
+              <div class="modes">
+                <div id="selected-function" class="mode function mode-current">
+                  <span class="mode-kicker">BUILD EM EXIBIÇÃO</span>
+                  <strong id="selected-function-name">NENHUMA BUILD PUBLICADA</strong>
+                  <span id="selected-function-meta">—</span>
+                </div>
+                <button id="new-build-action" class="mode blue mode-action" type="button" disabled aria-disabled="true">
+                  <strong>CRIAR NOVA BUILD</strong>
+                  <span>COMEÇAR DO ZERO</span>
+                </button>
+                <button id="personalize-build-action" class="mode blue mode-action" type="button" disabled aria-disabled="true">
+                  <strong>EDITAR BUILD</strong>
+                  <span>ABRIR NO EDITOR</span>
+                </button>
+              </div>
+              <div class="panel builds-panel">
+                <div class="builds-header">
+                  <h2 id="builds-heading">BUILDS DESTE CARD</h2>
+                  <div id="builds-counts" class="builds-counts" role="group" aria-label="Quantidades de builds e posições"></div>
+                </div>
+                <p id="personal-builds-status" class="empty" role="status" hidden></p>
+                <div id="builds-list" class="builds">
+                  <span class="empty">nenhuma build publicada</span>
+                </div>
+                <div class="build-list-actions">
+                  <button id="more-builds-action" class="more" type="button" hidden>VER MAIS BUILDS</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="block b3">
+              <div class="attributes">
+                <div class="panel attributes-panel">
+                  <div id="attribute-columns" class="attribute-columns"></div>
+                </div>
+              </div>
+              <div class="main-grid">
+                <div class="left">
+                <div class="score score-wide">
+                  <div class="total"><small>PONTUAÇÃO TOTAL</small><b id="score-main">—</b></div>
+                  <div class="gain"><small>PODE<br>MELHORAR</small><b id="improve-main" class="unavailable">—</b></div>
+                </div>
+                <div class="panel distribution-panel">
+                  <div class="label row distribution-summary">
+                    <span>DISTRIBUIÇÃO DE PONTOS</span>
+                    <em id="budget-summary" title="Pontos restantes / total de pontos">—/—</em>
+                  </div>
+                  <div id="distribution" class="distribution">
+                    <div class="empty">sem distribuição publicada</div>
+                  </div>
+                </div>
+                <div class="panel technician-panel">
+                  <span class="label">TÉCNICO</span>
+                  <div class="select technician-choice">
+                    <span id="technician" class="technician-name">—</span>
+                    <span id="technician-boosts" class="technician-boosts">—</span>
+                  </div>
+                  <span class="label">TÉCNICOS SUBSTITUTOS (não altera nota)</span>
+                  <div id="suggested-technicians" class="suggestions suggestions-technicians" aria-live="polite"><span class="empty">nenhum técnico equivalente publicado</span></div>
+                </div>
+                </div>
+
+                <div class="right">
+                <div class="panel skills-panel">
+                  <div class="skills-grid">
+                    <div class="skills-fixed">
+                      <span class="label special-label">HABILIDADES ESPECIAIS</span>
+                      <div id="special-skills" class="chips one"><span class="empty">nenhuma</span></div>
+                      <span class="label native-label">HABILIDADES NATIVAS</span>
+                      <div id="native-skills" class="chips one"><span class="empty">nenhuma</span></div>
+                    </div>
+                    <div class="skills-build">
+                      <span id="added-skills-label" class="label">HABILIDADES ADICIONADAS · 0 DE 5</span>
+                      <div id="added-skills" class="chip-box"><span class="empty">nenhuma</span></div>
+                      <span class="label">HABILIDADES SUBSTITUTAS</span>
+                      <div id="suggested-skills" class="suggestions suggestions-skills" aria-live="polite"><span class="empty">nenhuma sugestão publicada para esta build</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="panel impulses-panel">
+                  <div class="label row">ÍMPETOS</div>
+                  <div id="impulses" class="impulse-grid">
+                    <div class="empty">sem ímpetos publicados</div>
+                  </div>
+                </div>
+              </div>
+              </div>
+
+            </section>
+          </section>
+
+          <section class="block b4">
+            <div class="footer-grid">
+              <div class="panel ia-panel">
+                <div class="label row">
+                  <span>ESTILO DE JOGO DA IA</span>
+                </div>
+                <div id="ia-styles" class="chips one"><span class="empty">nenhum</span></div>
+              </div>
+              <div class="panel physical-panel">
+                <span class="label">FÍSICO</span>
+                <div id="physical" class="chips two">
+                  <span class="chip">— cm</span><span class="chip">— kg</span>
+                  <span class="chip">— anos</span><span class="chip">Lesão: —</span>
+                </div>
+                <span class="label">PÉ</span>
+                <div id="foot" class="chips one foot-details"><span class="empty">sem dados</span></div>
+              </div>
+              <div class="panel measures-panel">
+                <span class="label">MEDIDAS DO CORPO</span>
+                <div id="body-measures" class="measure-columns">
+                  <div><div class="measure head"><span>Medida</span><b>No card</b></div></div>
+                  <div><div class="measure head"><span>Medida</span><b>No card</b></div></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </article>
+    </section>
+
+    <aside class="ad" aria-label="Espaço publicitário"></aside>
+  </main>
+  <dialog id="build-editor" class="build-editor" aria-labelledby="editor-title" aria-describedby="editor-limitations">
+    <header class="editor-header">
+      <div><h2 id="editor-title">Nova build</h2><p id="editor-context"></p></div>
+      <div class="editor-meta">
+        <div id="editor-function-slot"></div>
+        <label for="editor-name">Nome da minha build</label>
+        <input id="editor-name" maxlength="80" autocomplete="off" placeholder="Nome da minha build" title="Nome da minha build">
+      </div>
+      <button id="editor-close" type="button" class="action">Fechar</button>
+    </header>
+    <p id="editor-limitations" class="editor-notice">A avaliação é feita no servidor. Builds do sistema servem apenas como modelo; salvar cria uma cópia pessoal.</p>
+    <p id="editor-origin" class="editor-origin">A build original permanece intacta.</p>
+    <div id="editor-content" class="editor-content"></div>
+    <footer class="editor-footer">
+      <div class="editor-feedback">
+        <span id="editor-status" role="status">Rascunho não salvo</span>
+        <span id="editor-save-notice">A build do sistema permanece intacta.</span>
+      </div>
+      <div class="editor-account">
+        <span id="editor-account-name"></span>
+        <button id="editor-login-show" type="button" class="action" aria-controls="editor-auth" aria-expanded="false">Entrar / Criar conta</button>
+        <form id="editor-auth" class="editor-auth" aria-label="Entrar na conta (opcional)" hidden>
+          <label><span>E-mail</span><input id="editor-email" type="email" placeholder="E-mail" autocomplete="username" required></label>
+          <label><span>Senha</span><input id="editor-password" type="password" placeholder="Senha" autocomplete="current-password" minlength="6" required></label>
+          <button class="action primary" type="submit">Entrar</button>
+          <button id="editor-signup" class="action" type="button">Criar conta</button>
+          <button id="editor-auth-close" class="action" type="button" aria-label="Fechar acesso à conta" title="Fechar acesso à conta">×</button>
+          <span id="editor-auth-status" role="status"></span>
+        </form>
+        <button id="editor-logout" class="action" type="button" hidden>Sair</button>
+      </div>
+      <button id="editor-delete" type="button" class="action danger" hidden>Excluir Build</button>
+      <button id="editor-save-copy" type="button" class="action" hidden>Salvar uma cópia</button>
+      <button id="editor-clear" type="button" class="action">Limpar Pontos</button>
+      <button id="editor-save" type="button" class="action primary" disabled>Salvar Minha Build</button>
+    </footer>
+    <div id="editor-confirm" class="editor-confirm" hidden role="group" aria-labelledby="editor-confirm-message">
+      <p id="editor-confirm-message"></p>
+      <button id="editor-keep" type="button" class="action primary">Continuar editando</button>
+      <button id="editor-discard" type="button" class="action">Descartar alterações</button>
+    </div>
+  </dialog>
+</body>
+</html>

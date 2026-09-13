@@ -1,0 +1,250 @@
+{
+  "refila_hab_fast_prova": [
+    {
+      "total": 940,
+      "entrada_mesma_conta": 940,
+      "diferentes": []
+    }
+  ],
+  "refila_preflight_0": [
+    {
+      "total": 938,
+      "orcamento_igual": 938,
+      "divergentes": null
+    }
+  ],
+  "refila_preflight_1": [
+    {
+      "total": 772,
+      "prontas": 772,
+      "orcamentos_iguais": 772,
+      "divergentes": null
+    }
+  ],
+  "refila_preflight_2": [
+    {
+      "linha_anterior_id": 6371,
+      "linha_nova_id": 503701,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 6372,
+      "linha_nova_id": 503702,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 6373,
+      "linha_nova_id": 503703,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 6374,
+      "linha_nova_id": 503704,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 342339,
+      "linha_nova_id": 503713,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 342340,
+      "linha_nova_id": 503714,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 342341,
+      "linha_nova_id": 503715,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 342342,
+      "linha_nova_id": 503716,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 342343,
+      "linha_nova_id": 503717,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 342344,
+      "linha_nova_id": 503718,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 342345,
+      "linha_nova_id": 503719,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 342346,
+      "linha_nova_id": 503720,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 342347,
+      "linha_nova_id": 503721,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 342348,
+      "linha_nova_id": 503722,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 342349,
+      "linha_nova_id": 503723,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 342350,
+      "linha_nova_id": 503724,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 359388,
+      "linha_nova_id": 503740,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 359389,
+      "linha_nova_id": 503741,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 359390,
+      "linha_nova_id": 503742,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 359391,
+      "linha_nova_id": 503743,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 359392,
+      "linha_nova_id": 503744,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 359393,
+      "linha_nova_id": 503745,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 359400,
+      "linha_nova_id": 503752,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 359401,
+      "linha_nova_id": 503753,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 359402,
+      "linha_nova_id": 503754,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 359403,
+      "linha_nova_id": 503755,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 359404,
+      "linha_nova_id": 503756,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    },
+    {
+      "linha_anterior_id": 359405,
+      "linha_nova_id": 503757,
+      "estado_otimizador": "pendente",
+      "lote_producao_id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "tem_fila": true,
+      "apta": true
+    }
+  ]
+}

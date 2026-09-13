@@ -1,0 +1,2121 @@
+{
+  "first": {
+    "box": null,
+    "modo": "boxes",
+    "busca": "",
+    "itens": [
+      {
+        "box": "Catenaccio",
+        "cards": [
+          {
+            "nome": "Fabio Cannavaro",
+            "card_id": "88045755964133",
+            "overall": 88,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755964133.png",
+            "pontuacao_maxima": 104.65704545853444
+          },
+          {
+            "nome": "Paolo Maldini",
+            "card_id": "88045755960770",
+            "overall": 88,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755960770.png",
+            "pontuacao_maxima": 100.4713918354227
+          },
+          {
+            "nome": "Bryan Cristante",
+            "card_id": "105869601732640",
+            "overall": 80,
+            "posicao": "VOL",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105869601732640.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-24",
+        "data_rotulo": "24/08/2026",
+        "total_cards": 11,
+        "melhor_pontuacao": 104.65704545853444
+      },
+      {
+        "box": "Advertisement Reward 2027",
+        "cards": [
+          {
+            "nome": "Rodrigo De Paul",
+            "card_id": "105863964584785",
+            "overall": 82,
+            "posicao": "MLG",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105863964584785.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Alejandro Grimaldo",
+            "card_id": "105863964625602",
+            "overall": 81,
+            "posicao": "LE",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105863964625602.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Raphinha",
+            "card_id": "105863964635188",
+            "overall": 83,
+            "posicao": "PTE",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105863964635188.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 11,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "CAF Africa Cup of Nations Selection 13 Aug '26",
+        "cards": [
+          {
+            "nome": "Mohamed Salah",
+            "card_id": "105880691466019",
+            "overall": 82,
+            "posicao": "PTD",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105880691466019.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Sadio Mané",
+            "card_id": "105880691466200",
+            "overall": 81,
+            "posicao": "PTE",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105880691466200.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Ramy Bensebaïni",
+            "card_id": "105880691517588",
+            "overall": 80,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105880691517588.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 8,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "Chelsea B Selection 14 Aug '26",
+        "cards": [
+          {
+            "nome": "Eden Hazard",
+            "card_id": "88045755863174",
+            "overall": 88,
+            "posicao": "PTE",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755863174.png",
+            "pontuacao_maxima": 112.94404567477815
+          },
+          {
+            "nome": "Diego Costa",
+            "card_id": "88045487427597",
+            "overall": 87,
+            "posicao": "CA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045487427597.png",
+            "pontuacao_maxima": 110.61187459937814
+          },
+          {
+            "nome": "Benoît Badiashile",
+            "card_id": "105868528054502",
+            "overall": 79,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105868528054502.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 11,
+        "melhor_pontuacao": 112.94404567477815
+      },
+      {
+        "box": "Lamine Yamal Edition 2027",
+        "cards": [
+          {
+            "nome": "Bart Verbruggen",
+            "card_id": "105865306838492",
+            "overall": 83,
+            "posicao": "GO",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105865306838492.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Malo Gusto",
+            "card_id": "105865306842764",
+            "overall": 81,
+            "posicao": "LD",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105865306842764.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Andreas Schjelderup",
+            "card_id": "105865306845091",
+            "overall": 81,
+            "posicao": "PTE",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105865306845091.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 11,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "Leo Messi Edition 2027",
+        "cards": [
+          {
+            "nome": "Jordan Henderson",
+            "card_id": "105865038306663",
+            "overall": 81,
+            "posicao": "VOL",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105865038306663.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "James Rodríguez",
+            "card_id": "105865038307949",
+            "overall": 80,
+            "posicao": "MAT",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105865038307949.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Nicolás Tagliafico",
+            "card_id": "105865038307964",
+            "overall": 81,
+            "posicao": "LE",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105865038307964.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 11,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "Manager Pack 13 Aug '26",
+        "cards": [
+          {
+            "nome": "Pedro Neto",
+            "card_id": "105865575254367",
+            "overall": 82,
+            "posicao": "PTD",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105865575254367.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Marc Guiu",
+            "card_id": "105865575300328",
+            "overall": 80,
+            "posicao": "CA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105865575300328.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 2,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "Moroccan League Selection 13 Aug '26",
+        "cards": [
+          {
+            "nome": "Mounir Chouiar",
+            "card_id": "105861817154804",
+            "overall": 80,
+            "posicao": "MAT",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105861817154804.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Ramiro Vaca",
+            "card_id": "105861817157277",
+            "overall": 80,
+            "posicao": "MAT",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105861817157277.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Moussa Koné",
+            "card_id": "105861817160530",
+            "overall": 79,
+            "posicao": "CA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105861817160530.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 11,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "New Season Campaign 2027",
+        "cards": [
+          {
+            "nome": "Gavi",
+            "card_id": "105873628348195",
+            "overall": 94,
+            "posicao": "MLG",
+            "analises": [
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Meia de arranque",
+                "posicao": "MLG",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "9062",
+                "pontuacao": 104.80097114525444,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105873628348195.png",
+            "pontuacao_maxima": 104.80097114525444
+          },
+          {
+            "nome": "Frenkie de Jong",
+            "card_id": "105873628309622",
+            "overall": 94,
+            "posicao": "MLG",
+            "analises": [
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Meia de arranque",
+                "posicao": "MLG",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "9030",
+                "pontuacao": 101.86218608477716,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105873628309622.png",
+            "pontuacao_maxima": 102.86218608477716
+          },
+          {
+            "nome": "Jules Koundé",
+            "card_id": "105873628311744",
+            "overall": 95,
+            "posicao": "LD",
+            "analises": [
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Lateral defensivo",
+                "posicao": "LD",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "5895",
+                "pontuacao": 101.49329499442521,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105873628311744.png",
+            "pontuacao_maxima": 102.49329499442521
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 10,
+        "melhor_pontuacao": 104.80097114525444
+      },
+      {
+        "box": "Skill Up 2027",
+        "cards": [
+          {
+            "nome": "Declan Rice",
+            "card_id": "105866380552607",
+            "overall": 95,
+            "posicao": "MLG",
+            "analises": [
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Lateral ofensivo",
+                "posicao": "LD",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "5868",
+                "pontuacao": 100.00740552874068,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105866380552607.png",
+            "pontuacao_maxima": 100.20612463768116
+          },
+          {
+            "nome": "Lionel Messi",
+            "card_id": "106784966581591",
+            "overall": 84,
+            "posicao": "SA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106784966581591.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 2,
+        "melhor_pontuacao": 100.20612463768116
+      },
+      {
+        "box": "Starter Set 2027",
+        "cards": [
+          {
+            "nome": "Nicolò Barella",
+            "card_id": "105865843676422",
+            "overall": 82,
+            "posicao": "MLG",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105865843676422.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Michael Olise",
+            "card_id": "105865843702105",
+            "overall": 83,
+            "posicao": "MAT",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105865843702105.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Marc Guéhi",
+            "card_id": "105865843704022",
+            "overall": 84,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105865843704022.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 3,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "Step-up 2027",
+        "cards": [
+          {
+            "nome": "Frenkie de Jong",
+            "card_id": "105866648987766",
+            "overall": 82,
+            "posicao": "MLG",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105866648987766.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Reece James",
+            "card_id": "105866649005150",
+            "overall": 81,
+            "posicao": "LD",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105866649005150.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Jamal Musiala",
+            "card_id": "105866649017104",
+            "overall": 82,
+            "posicao": "MAT",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105866649017104.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 3,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "Summer Transfer 13 Aug '26",
+        "cards": [
+          {
+            "nome": "Alejandro Grimaldo",
+            "card_id": "105873091431106",
+            "overall": 82,
+            "posicao": "LE",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105873091431106.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Ibrahima Konaté",
+            "card_id": "105873091445023",
+            "overall": 82,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105873091445023.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Sandro Tonali",
+            "card_id": "105873091448219",
+            "overall": 83,
+            "posicao": "VOL",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105873091448219.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 8,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "Summer Transfer 17 Aug '26",
+        "cards": [
+          {
+            "nome": "Elliot Anderson",
+            "card_id": "106785772021264",
+            "overall": 86,
+            "posicao": "MLG",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106785772021264.png",
+            "pontuacao_maxima": 110.18582458319712
+          },
+          {
+            "nome": "Morgan Rogers",
+            "card_id": "106785772007373",
+            "overall": 86,
+            "posicao": "MAT",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106785772007373.png",
+            "pontuacao_maxima": 108.91806760955748
+          },
+          {
+            "nome": "Pascal Struijk",
+            "card_id": "105869333357110",
+            "overall": 77,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105869333357110.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 11,
+        "melhor_pontuacao": 110.18582458319712
+      },
+      {
+        "box": "Tactical Defence 13 Aug '26",
+        "cards": [
+          {
+            "nome": "Jordan Henderson",
+            "card_id": "105864769871207",
+            "overall": 77,
+            "posicao": "VOL",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105864769871207.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Unai Simón",
+            "card_id": "105864769937869",
+            "overall": 82,
+            "posicao": "GO",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105864769937869.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Mikel Oyarzabal",
+            "card_id": "105864769941508",
+            "overall": 81,
+            "posicao": "CA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105864769941508.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 8,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "Welcome Login Bonus 2027",
+        "cards": [
+          {
+            "nome": "Virgil van Dijk",
+            "card_id": "105866112053032",
+            "overall": 94,
+            "posicao": "ZC",
+            "analises": [
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Zagueiro de combate",
+                "posicao": "ZC",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "9015",
+                "pontuacao": 98.70459372114497,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105866112053032.png",
+            "pontuacao_maxima": 99.9813694980695
+          },
+          {
+            "nome": "Kylian Mbappé",
+            "card_id": "105866112118910",
+            "overall": 96,
+            "posicao": "CA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105866112118910.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Vitinha",
+            "card_id": "105866112143259",
+            "overall": 96,
+            "posicao": "MLG",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105866112143259.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 3,
+        "melhor_pontuacao": 99.9813694980695
+      },
+      {
+        "box": "eFootball™ League 2027 Rewards Phase 1",
+        "cards": [
+          {
+            "nome": "James Maddison",
+            "card_id": "106785235123572",
+            "overall": 84,
+            "posicao": "MAT",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106785235123572.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-19",
+        "data_rotulo": "19/08/2026",
+        "total_cards": 1,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "1-2 Cut-in A 23 Apr '26",
+        "cards": [
+          {
+            "nome": "Jamal Musiala",
+            "card_id": "106773155552016",
+            "overall": 86,
+            "posicao": "MLE",
+            "analises": [
+              {
+                "codigo": "pouco",
+                "funcao": "Meia de lado por fora",
+                "posicao": "MLE",
+                "etiqueta": "PAGAR POUCO",
+                "linha_id": null,
+                "pontuacao": 108.10619621342514,
+                "regua_versao": "HISTORICO_SEM_REGUA_COMPROVADA"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106773155552016.png",
+            "pontuacao_maxima": 108.54165232358004
+          },
+          {
+            "nome": "Viktor Gyökeres",
+            "card_id": "106773155540934",
+            "overall": 86,
+            "posicao": "CA",
+            "analises": [
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Centroavante móvel",
+                "posicao": "CA",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": null,
+                "pontuacao": 106.59103706545193,
+                "regua_versao": "HISTORICO_SEM_REGUA_COMPROVADA"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106773155540934.png",
+            "pontuacao_maxima": 103.0309077272236
+          },
+          {
+            "nome": "Robin Lod",
+            "card_id": "105839268507966",
+            "overall": 78,
+            "posicao": "MLE",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105839268507966.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-18",
+        "data_rotulo": "18/08/2026",
+        "total_cards": 12,
+        "melhor_pontuacao": 108.54165232358004
+      },
+      {
+        "box": "2024 J.LEAGUE AWARDS",
+        "cards": [
+          {
+            "nome": "Sasaki Sho",
+            "card_id": "105725988716738",
+            "overall": 79,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105725988716738.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Osako Yuya",
+            "card_id": "105725988739180",
+            "overall": 80,
+            "posicao": "CA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105725988739180.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Usami Takashi",
+            "card_id": "105725988757567",
+            "overall": 76,
+            "posicao": "SA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105725988757567.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-18",
+        "data_rotulo": "18/08/2026",
+        "total_cards": 13,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "2025 J.LEAGUE AWARDS",
+        "cards": [
+          {
+            "nome": "Léo Ceará",
+            "card_id": "106751949120936",
+            "overall": 82,
+            "posicao": "CA",
+            "analises": [
+              {
+                "codigo": "muito_pouco",
+                "funcao": "Centroavante móvel",
+                "posicao": "CA",
+                "etiqueta": "PAGAR MUITO POUCO",
+                "linha_id": null,
+                "pontuacao": 108.51421608726923,
+                "regua_versao": "HISTORICO_SEM_REGUA_COMPROVADA"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106751949120936.png",
+            "pontuacao_maxima": 106.14041545444721
+          },
+          {
+            "nome": "Koga Taiyo",
+            "card_id": "105787728976898",
+            "overall": 79,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105787728976898.png",
+            "pontuacao_maxima": 98.7739030276437
+          },
+          {
+            "nome": "Ueda Naomichi",
+            "card_id": "105787728871863",
+            "overall": 79,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105787728871863.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-18",
+        "data_rotulo": "18/08/2026",
+        "total_cards": 12,
+        "melhor_pontuacao": 106.14041545444721
+      },
+      {
+        "box": "30th Anniversary Elites 10 Jul '25",
+        "cards": [
+          {
+            "nome": "José María Giménez",
+            "card_id": "105770549044695",
+            "overall": 82,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105770549044695.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Mike Maignan",
+            "card_id": "105770549046303",
+            "overall": 84,
+            "posicao": "GO",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105770549046303.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "David Raya",
+            "card_id": "105770549087376",
+            "overall": 83,
+            "posicao": "GO",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105770549087376.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-18",
+        "data_rotulo": "18/08/2026",
+        "total_cards": 8,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "900 Million Downloads Campaign",
+        "cards": [
+          {
+            "nome": "Andreas Christensen",
+            "card_id": "105805445698981",
+            "overall": 80,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105805445698981.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Ferran Torres",
+            "card_id": "105805445711887",
+            "overall": 81,
+            "posicao": "PTE",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105805445711887.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Gavi",
+            "card_id": "105805445742371",
+            "overall": 82,
+            "posicao": "MLG",
+            "analises": [
+              {
+                "codigo": "muito_pouco",
+                "funcao": "Meia central de chegada",
+                "posicao": "MLG",
+                "etiqueta": "PAGAR MUITO POUCO",
+                "linha_id": null,
+                "pontuacao": 107.33153668954996,
+                "regua_versao": "HISTORICO_SEM_REGUA_COMPROVADA"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105805445742371.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-18",
+        "data_rotulo": "18/08/2026",
+        "total_cards": 5,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "AC Milan Pack 25-26",
+        "cards": [
+          {
+            "nome": "Luka Modrić",
+            "card_id": "105803835016498",
+            "overall": 82,
+            "posicao": "MLG",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105803835016498.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Adrien Rabiot",
+            "card_id": "105803835029451",
+            "overall": 82,
+            "posicao": "MLG",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105803835029451.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Mike Maignan",
+            "card_id": "105803835042847",
+            "overall": 84,
+            "posicao": "GO",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105803835042847.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-18",
+        "data_rotulo": "18/08/2026",
+        "total_cards": 11,
+        "melhor_pontuacao": null
+      },
+      {
+        "box": "AC Milan Pack 28 Nov '24",
+        "cards": [
+          {
+            "nome": "Álvaro Morata",
+            "card_id": "105719546292310",
+            "overall": 82,
+            "posicao": "CA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105719546292310.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Mike Maignan",
+            "card_id": "105719546309663",
+            "overall": 85,
+            "posicao": "GO",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105719546309663.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Ruben Loftus-Cheek",
+            "card_id": "105719546353938",
+            "overall": 81,
+            "posicao": "MLG",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105719546353938.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "data_oferta": "2026-08-18",
+        "data_rotulo": "18/08/2026",
+        "total_cards": 11,
+        "melhor_pontuacao": null
+      }
+    ],
+    "ordem": "recentes",
+    "regua": [
+      {
+        "codigo": "qualquer_preco",
+        "rotulo": "PAGAR QUALQUER PREÇO"
+      },
+      {
+        "codigo": "caro",
+        "rotulo": "PAGAR CARO"
+      },
+      {
+        "codigo": "pagar",
+        "rotulo": "PAGAR"
+      },
+      {
+        "codigo": "pouco",
+        "rotulo": "PAGAR POUCO"
+      },
+      {
+        "codigo": "muito_pouco",
+        "rotulo": "PAGAR MUITO POUCO"
+      },
+      {
+        "codigo": "nao_pagar",
+        "rotulo": "NÃO PAGAR"
+      }
+    ],
+    "total": 1022,
+    "degrau": 3,
+    "limite": 24,
+    "offset": 0,
+    "status": "pronto",
+    "versao": 1,
+    "contrato": "site-novo-boxes-v1",
+    "tem_mais": true,
+    "total_cards": 6698
+  },
+  "detail": {
+    "box": "Catenaccio",
+    "modo": "cards",
+    "busca": "",
+    "itens": [
+      {
+        "nome": "Fabio Cannavaro",
+        "card_id": "88045755964133",
+        "overall": 88,
+        "posicao": "ZC",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755964133.png",
+        "pontuacao_maxima": 104.65704545853444
+      },
+      {
+        "nome": "Paolo Maldini",
+        "card_id": "88045755960770",
+        "overall": 88,
+        "posicao": "ZC",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755960770.png",
+        "pontuacao_maxima": 100.4713918354227
+      },
+      {
+        "nome": "Bryan Cristante",
+        "card_id": "105869601732640",
+        "overall": 80,
+        "posicao": "VOL",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105869601732640.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Gianluca Mancini",
+        "card_id": "105869601775791",
+        "overall": 80,
+        "posicao": "ZC",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105869601775791.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "A. Buongiorno",
+        "card_id": "105869601784218",
+        "overall": 80,
+        "posicao": "ZC",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105869601784218.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Guglielmo Vicario",
+        "card_id": "105869601785602",
+        "overall": 80,
+        "posicao": "GO",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105869601785602.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Giovanni Di Lorenzo",
+        "card_id": "105869601786090",
+        "overall": 82,
+        "posicao": "LD",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105869601786090.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Raoul Bellanova",
+        "card_id": "105869601788271",
+        "overall": 79,
+        "posicao": "LD",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105869601788271.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Samuele Ricci",
+        "card_id": "105869601795690",
+        "overall": 79,
+        "posicao": "VOL",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105869601795690.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Andrea Cambiaso",
+        "card_id": "105869601809858",
+        "overall": 81,
+        "posicao": "LE",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105869601809858.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Alessandro Nesta",
+        "card_id": "88045755942057",
+        "overall": 86,
+        "posicao": "ZC",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755942057.png",
+        "pontuacao_maxima": null
+      }
+    ],
+    "ordem": "recentes",
+    "regua": [
+      {
+        "codigo": "qualquer_preco",
+        "rotulo": "PAGAR QUALQUER PREÇO"
+      },
+      {
+        "codigo": "caro",
+        "rotulo": "PAGAR CARO"
+      },
+      {
+        "codigo": "pagar",
+        "rotulo": "PAGAR"
+      },
+      {
+        "codigo": "pouco",
+        "rotulo": "PAGAR POUCO"
+      },
+      {
+        "codigo": "muito_pouco",
+        "rotulo": "PAGAR MUITO POUCO"
+      },
+      {
+        "codigo": "nao_pagar",
+        "rotulo": "NÃO PAGAR"
+      }
+    ],
+    "total": 11,
+    "degrau": 3,
+    "limite": 24,
+    "offset": 0,
+    "status": "pronto",
+    "versao": 1,
+    "contrato": "site-novo-boxes-v1",
+    "tem_mais": false,
+    "total_cards": 11
+  },
+  "active": {
+    "box": null,
+    "modo": "boxes",
+    "busca": "",
+    "itens": [
+      {
+        "box": "English League Selection Guardians 7 Sep '26",
+        "cards": [
+          {
+            "nome": "Petr Čech",
+            "card_id": "88045755829367",
+            "overall": null,
+            "posicao": "GO",
+            "analises": [
+              {
+                "codigo": "caro",
+                "funcao": "Goleiro ofensivo",
+                "posicao": "GO",
+                "etiqueta": "PAGAR CARO",
+                "linha_id": "403426",
+                "pontuacao": 108.56682396389003,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "caro",
+                "funcao": "Goleiro defensivo",
+                "posicao": "GO",
+                "etiqueta": "PAGAR CARO",
+                "linha_id": "403425",
+                "pontuacao": 106.69860480207657,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755829367.png",
+            "pontuacao_maxima": 108.56682396389003
+          },
+          {
+            "nome": "Claude Makélélé",
+            "card_id": "88045755964130",
+            "overall": null,
+            "posicao": "VOL",
+            "analises": [
+              {
+                "codigo": "qualquer_preco",
+                "funcao": "Volante de contenção",
+                "posicao": "VOL",
+                "etiqueta": "PAGAR QUALQUER PREÇO",
+                "linha_id": "379892",
+                "pontuacao": 109.45473826714802,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "pagar",
+                "funcao": "Volante de construção",
+                "posicao": "VOL",
+                "etiqueta": "PAGAR",
+                "linha_id": "379891",
+                "pontuacao": 109.54502203105329,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "pouco",
+                "funcao": "Meia de arranque",
+                "posicao": "MLG",
+                "etiqueta": "PAGAR POUCO",
+                "linha_id": "379890",
+                "pontuacao": 108.85794373978425,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Meia armador",
+                "posicao": "MLG",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "379889",
+                "pontuacao": 104.98332493765587,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755964130.png",
+            "pontuacao_maxima": 109.54502203105329
+          },
+          {
+            "nome": "Jaap Stam",
+            "card_id": "88045755964131",
+            "overall": null,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755964131.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "total_cards": 11
+      },
+      {
+        "box": "Italian League Selection Attackers 3 Sep '26",
+        "cards": [
+          {
+            "nome": "Andriy Shevchenko",
+            "card_id": "88045755964138",
+            "overall": null,
+            "posicao": "CA",
+            "analises": [
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Falso nove",
+                "posicao": "CA",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380371",
+                "pontuacao": 106.33222778558306,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Atacante driblador",
+                "posicao": "PTD",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380378",
+                "pontuacao": 105.15001543060825,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Atacante criador",
+                "posicao": "PTD",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380377",
+                "pontuacao": 104.50606728727747,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Ala cruzador",
+                "posicao": "MLD",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380376",
+                "pontuacao": 100.57854923390121,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Atacante infiltrador",
+                "posicao": "SA",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380373",
+                "pontuacao": 102.06635111876076,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Ala driblador",
+                "posicao": "MLD",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380375",
+                "pontuacao": 100.48417391771405,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Meia ofensivo",
+                "posicao": "SA",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380372",
+                "pontuacao": 96.25885403527525,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755964138.png",
+            "pontuacao_maxima": 106.33222778558306
+          },
+          {
+            "nome": "Francesco Totti",
+            "card_id": "88045755960771",
+            "overall": null,
+            "posicao": "CA",
+            "analises": [
+              {
+                "codigo": "pouco",
+                "funcao": "Falso nove",
+                "posicao": "SA",
+                "etiqueta": "PAGAR POUCO",
+                "linha_id": "380354",
+                "pontuacao": 110.47776743758781,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "pouco",
+                "funcao": "Atacante infiltrador",
+                "posicao": "SA",
+                "etiqueta": "PAGAR POUCO",
+                "linha_id": "380359",
+                "pontuacao": 109.70998278829605,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "muito_pouco",
+                "funcao": "Meia ofensivo",
+                "posicao": "SA",
+                "etiqueta": "PAGAR MUITO POUCO",
+                "linha_id": "380357",
+                "pontuacao": 108.54317210048103,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Meia armador",
+                "posicao": "MLG",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380360",
+                "pontuacao": 107.19344919519384,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Centroavante fixo",
+                "posicao": "CA",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380351",
+                "pontuacao": 106.92472494618512,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Atacante criador",
+                "posicao": "PTE",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380363",
+                "pontuacao": 107.71599161631009,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Atacante driblador",
+                "posicao": "PTE",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380365",
+                "pontuacao": 106.36574968379901,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755960771.png",
+            "pontuacao_maxima": 110.47776743758781
+          },
+          {
+            "nome": "Adriano",
+            "card_id": "88045755960841",
+            "overall": null,
+            "posicao": "CA",
+            "analises": [
+              {
+                "codigo": "pagar",
+                "funcao": "Centroavante fixo",
+                "posicao": "CA",
+                "etiqueta": "PAGAR",
+                "linha_id": "380379",
+                "pontuacao": 110.60460176991151,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Falso nove",
+                "posicao": "CA",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380383",
+                "pontuacao": 106.29940312331136,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Atacante infiltrador",
+                "posicao": "SA",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380385",
+                "pontuacao": 100.87136833046472,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Meia ofensivo",
+                "posicao": "SA",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380384",
+                "pontuacao": 99.51499513629075,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755960841.png",
+            "pontuacao_maxima": 110.60460176991151
+          }
+        ],
+        "total_cards": 11
+      },
+      {
+        "box": "Japanese Stars 31 Aug '26",
+        "cards": [
+          {
+            "nome": "Maeda Daizen",
+            "card_id": "106799999081317",
+            "overall": 85,
+            "posicao": "SA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106799999081317.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Tomiyasu Takehiro",
+            "card_id": "106799999081429",
+            "overall": 85,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106799999081429.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Morita Hidemasa",
+            "card_id": "106799999082154",
+            "overall": 86,
+            "posicao": "VOL",
+            "analises": [
+              {
+                "codigo": "muito_pouco",
+                "funcao": "Volante de construção",
+                "posicao": "VOL",
+                "etiqueta": "PAGAR MUITO POUCO",
+                "linha_id": "380166",
+                "pontuacao": 107.30066558959295,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "muito_pouco",
+                "funcao": "Volante de contenção",
+                "posicao": "VOL",
+                "etiqueta": "PAGAR MUITO POUCO",
+                "linha_id": "380167",
+                "pontuacao": 105.60055638139733,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Meia armador",
+                "posicao": "MLG",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "380164",
+                "pontuacao": 107.16346647018817,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106799999082154.png",
+            "pontuacao_maxima": 107.30066558959295
+          }
+        ],
+        "total_cards": 11
+      },
+      {
+        "box": "Brasileirão Betano Selection 3 Sep '26",
+        "cards": [
+          {
+            "nome": "Gabriel Mercado",
+            "card_id": "105887318451668",
+            "overall": null,
+            "posicao": "ZC",
+            "analises": [
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Zagueiro de saída",
+                "posicao": "ZC",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403294",
+                "pontuacao": 102.94762664092664,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Zagueiro de combate",
+                "posicao": "ZC",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403293",
+                "pontuacao": 100.7571514312096,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Lateral defensivo",
+                "posicao": "LE",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403287",
+                "pontuacao": 99.87832138372161,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Lateral ofensivo",
+                "posicao": "LE",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403289",
+                "pontuacao": 93.28132553751645,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Ala cruzador",
+                "posicao": "MLD",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403292",
+                "pontuacao": 84.21326809171757,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Ala driblador",
+                "posicao": "MLD",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403291",
+                "pontuacao": 78.1036507680739,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105887318451668.png",
+            "pontuacao_maxima": 102.94762664092664
+          },
+          {
+            "nome": "Willian Arão",
+            "card_id": "105887318455453",
+            "overall": null,
+            "posicao": "VOL",
+            "analises": [
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Volante de contenção",
+                "posicao": "VOL",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403298",
+                "pontuacao": 100.58786578891484,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Volante de construção",
+                "posicao": "VOL",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403297",
+                "pontuacao": 98.49627360469995,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Meia de arranque",
+                "posicao": "MLG",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403296",
+                "pontuacao": 96.97680469652391,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Meia armador",
+                "posicao": "MLG",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403295",
+                "pontuacao": 93.29677383813194,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105887318455453.png",
+            "pontuacao_maxima": 100.58786578891484
+          },
+          {
+            "nome": "Lucas Romero",
+            "card_id": "105887318457041",
+            "overall": null,
+            "posicao": "VOL",
+            "analises": [
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Volante de construção",
+                "posicao": "VOL",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403309",
+                "pontuacao": 102.23419173310953,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Meia de arranque",
+                "posicao": "MLG",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403306",
+                "pontuacao": 102.97753078348045,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Volante de contenção",
+                "posicao": "VOL",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403310",
+                "pontuacao": 100.24728916967508,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Ala cruzador",
+                "posicao": "MLD",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403308",
+                "pontuacao": 98.47249157827065,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Meia armador",
+                "posicao": "MLG",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403305",
+                "pontuacao": 100.49985230106552,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Ala driblador",
+                "posicao": "MLD",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403307",
+                "pontuacao": 97.4917391771404,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Atacante infiltrador",
+                "posicao": "MAT",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403304",
+                "pontuacao": 97.14965576592083,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              },
+              {
+                "codigo": "nao_pagar",
+                "funcao": "Meia ofensivo",
+                "posicao": "MAT",
+                "etiqueta": "NÃO PAGAR",
+                "linha_id": "403303",
+                "pontuacao": 96.45098027792625,
+                "regua_versao": "CONTRATACAO_V1_2026_09_02"
+              }
+            ],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105887318457041.png",
+            "pontuacao_maxima": 102.97753078348045
+          }
+        ],
+        "total_cards": 12
+      },
+      {
+        "box": "2026 PFA TOTY",
+        "cards": [
+          {
+            "nome": "Bruno Fernandes",
+            "card_id": "55072755084384",
+            "overall": null,
+            "posicao": "MAT",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/55072755084384.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "David Raya",
+            "card_id": "55072755125392",
+            "overall": null,
+            "posicao": "GO",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/55072755125392.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Declan Rice",
+            "card_id": "55072755132831",
+            "overall": null,
+            "posicao": "MLG",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/55072755132831.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "total_cards": 11
+      },
+      {
+        "box": "Daily Bonus 2027",
+        "cards": [
+          {
+            "nome": "Rui Costa",
+            "card_id": "88045755964125",
+            "overall": 85,
+            "posicao": "MAT",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755964125.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "P. E. Aubameyang",
+            "card_id": "88045755866499",
+            "overall": 82,
+            "posicao": "CA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755866499.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Samuel Eto'o",
+            "card_id": "88045755827674",
+            "overall": 83,
+            "posicao": "CA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755827674.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "total_cards": 11
+      },
+      {
+        "box": "English League Selection 13 Aug '26",
+        "cards": [
+          {
+            "nome": "Nordi Mukiele",
+            "card_id": "105873896745385",
+            "overall": 80,
+            "posicao": "LD",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105873896745385.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Caoimhin Kelleher",
+            "card_id": "105873896750438",
+            "overall": 83,
+            "posicao": "GO",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105873896750438.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Pau Torres",
+            "card_id": "105873896751326",
+            "overall": 80,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105873896751326.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "total_cards": 11
+      },
+      {
+        "box": "Madrid Chamartin B Selection 7 Sep '26",
+        "cards": [
+          {
+            "nome": "Thibaut Courtois",
+            "card_id": "105877117906271",
+            "overall": null,
+            "posicao": "GO",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105877117906271.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Bernardo Silva",
+            "card_id": "105877117966114",
+            "overall": null,
+            "posicao": "MLG",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105877117966114.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "T. Alexander-Arnold",
+            "card_id": "105877117975293",
+            "overall": null,
+            "posicao": "LD",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105877117975293.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "total_cards": 8
+      },
+      {
+        "box": "POTW 3 Sep '26",
+        "cards": [
+          {
+            "nome": "Lionel Messi",
+            "card_id": "52902454369623",
+            "overall": null,
+            "posicao": "PTD",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/52902454369623.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Eric Dier",
+            "card_id": "52902454409543",
+            "overall": null,
+            "posicao": "ZC",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/52902454409543.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Bruno Fernandes",
+            "card_id": "52902454422624",
+            "overall": null,
+            "posicao": "MAT",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/52902454422624.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "total_cards": 11
+      },
+      {
+        "box": "Ranking Event Rewards 2027",
+        "cards": [
+          {
+            "nome": "Mike Maignan",
+            "card_id": "106798388407327",
+            "overall": null,
+            "posicao": "GO",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106798388407327.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Manuel Locatelli",
+            "card_id": "106798388454829",
+            "overall": null,
+            "posicao": "VOL",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106798388454829.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Mikel Oyarzabal",
+            "card_id": "106798388457476",
+            "overall": null,
+            "posicao": "CA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/106798388457476.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "total_cards": 6
+      },
+      {
+        "box": "eFootball Webstore",
+        "cards": [
+          {
+            "nome": "Luis Suárez",
+            "card_id": "88045755861057",
+            "overall": 86,
+            "posicao": "CA",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755861057.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Thiago Alcantara",
+            "card_id": "88045755867302",
+            "overall": 81,
+            "posicao": "MLG",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755867302.png",
+            "pontuacao_maxima": null
+          },
+          {
+            "nome": "Iker Casillas",
+            "card_id": "88045755827028",
+            "overall": 85,
+            "posicao": "GO",
+            "analises": [],
+            "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755827028.png",
+            "pontuacao_maxima": null
+          }
+        ],
+        "total_cards": 6
+      }
+    ],
+    "regua": [
+      {
+        "codigo": "qualquer_preco",
+        "rotulo": "PAGAR QUALQUER PREÇO"
+      },
+      {
+        "codigo": "caro",
+        "rotulo": "PAGAR CARO"
+      },
+      {
+        "codigo": "pagar",
+        "rotulo": "PAGAR"
+      },
+      {
+        "codigo": "pouco",
+        "rotulo": "PAGAR POUCO"
+      },
+      {
+        "codigo": "muito_pouco",
+        "rotulo": "PAGAR MUITO POUCO"
+      },
+      {
+        "codigo": "nao_pagar",
+        "rotulo": "NÃO PAGAR"
+      }
+    ],
+    "total": 11,
+    "degrau": 3,
+    "limite": 24,
+    "offset": 0,
+    "status": "pronto",
+    "versao": 1,
+    "contrato": "site-novo-boxes-v1",
+    "tem_mais": false,
+    "total_cards": 109
+  },
+  "activeDetail": {
+    "box": "English League Selection Guardians 7 Sep '26",
+    "modo": "cards",
+    "busca": "",
+    "itens": [
+      {
+        "nome": "Claude Makélélé",
+        "card_id": "88045755964130",
+        "overall": null,
+        "posicao": "VOL",
+        "analises": [
+          {
+            "codigo": "qualquer_preco",
+            "funcao": "Volante de contenção",
+            "posicao": "VOL",
+            "etiqueta": "PAGAR QUALQUER PREÇO",
+            "linha_id": "379892",
+            "pontuacao": 109.45473826714802,
+            "regua_versao": "CONTRATACAO_V1_2026_09_02"
+          },
+          {
+            "codigo": "pagar",
+            "funcao": "Volante de construção",
+            "posicao": "VOL",
+            "etiqueta": "PAGAR",
+            "linha_id": "379891",
+            "pontuacao": 109.54502203105329,
+            "regua_versao": "CONTRATACAO_V1_2026_09_02"
+          },
+          {
+            "codigo": "pouco",
+            "funcao": "Meia de arranque",
+            "posicao": "MLG",
+            "etiqueta": "PAGAR POUCO",
+            "linha_id": "379890",
+            "pontuacao": 108.85794373978425,
+            "regua_versao": "CONTRATACAO_V1_2026_09_02"
+          },
+          {
+            "codigo": "nao_pagar",
+            "funcao": "Meia armador",
+            "posicao": "MLG",
+            "etiqueta": "NÃO PAGAR",
+            "linha_id": "379889",
+            "pontuacao": 104.98332493765587,
+            "regua_versao": "CONTRATACAO_V1_2026_09_02"
+          }
+        ],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755964130.png",
+        "pontuacao_maxima": 109.54502203105329
+      },
+      {
+        "nome": "Petr Čech",
+        "card_id": "88045755829367",
+        "overall": null,
+        "posicao": "GO",
+        "analises": [
+          {
+            "codigo": "caro",
+            "funcao": "Goleiro ofensivo",
+            "posicao": "GO",
+            "etiqueta": "PAGAR CARO",
+            "linha_id": "403426",
+            "pontuacao": 108.56682396389003,
+            "regua_versao": "CONTRATACAO_V1_2026_09_02"
+          },
+          {
+            "codigo": "caro",
+            "funcao": "Goleiro defensivo",
+            "posicao": "GO",
+            "etiqueta": "PAGAR CARO",
+            "linha_id": "403425",
+            "pontuacao": 106.69860480207657,
+            "regua_versao": "CONTRATACAO_V1_2026_09_02"
+          }
+        ],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755829367.png",
+        "pontuacao_maxima": 108.56682396389003
+      },
+      {
+        "nome": "Rodrigo Bentancur",
+        "card_id": "105870407080785",
+        "overall": null,
+        "posicao": "VOL",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105870407080785.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Ryan Sessegnon",
+        "card_id": "105870407089509",
+        "overall": null,
+        "posicao": "LE",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105870407089509.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Tyler Adams",
+        "card_id": "105870407098791",
+        "overall": null,
+        "posicao": "VOL",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105870407098791.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Ian Maatsen",
+        "card_id": "105870407107874",
+        "overall": null,
+        "posicao": "LE",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105870407107874.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Jarrad Branthwaite",
+        "card_id": "105870407113569",
+        "overall": null,
+        "posicao": "ZC",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105870407113569.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Conor Bradley",
+        "card_id": "105870407121949",
+        "overall": null,
+        "posicao": "LD",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105870407121949.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Murillo",
+        "card_id": "105870407129705",
+        "overall": null,
+        "posicao": "ZC",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105870407129705.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Abdukodir Khusanov",
+        "card_id": "105870407140364",
+        "overall": null,
+        "posicao": "ZC",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105870407140364.png",
+        "pontuacao_maxima": null
+      },
+      {
+        "nome": "Jaap Stam",
+        "card_id": "88045755964131",
+        "overall": null,
+        "posicao": "ZC",
+        "analises": [],
+        "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755964131.png",
+        "pontuacao_maxima": null
+      }
+    ],
+    "regua": [
+      {
+        "codigo": "qualquer_preco",
+        "rotulo": "PAGAR QUALQUER PREÇO"
+      },
+      {
+        "codigo": "caro",
+        "rotulo": "PAGAR CARO"
+      },
+      {
+        "codigo": "pagar",
+        "rotulo": "PAGAR"
+      },
+      {
+        "codigo": "pouco",
+        "rotulo": "PAGAR POUCO"
+      },
+      {
+        "codigo": "muito_pouco",
+        "rotulo": "PAGAR MUITO POUCO"
+      },
+      {
+        "codigo": "nao_pagar",
+        "rotulo": "NÃO PAGAR"
+      }
+    ],
+    "total": 11,
+    "degrau": 3,
+    "limite": 24,
+    "offset": 0,
+    "status": "pronto",
+    "versao": 1,
+    "contrato": "site-novo-boxes-v1",
+    "tem_mais": false,
+    "total_cards": 11
+  }
+}

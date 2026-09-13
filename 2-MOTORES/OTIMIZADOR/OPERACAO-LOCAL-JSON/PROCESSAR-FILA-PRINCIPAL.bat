@@ -1,8 +1,7 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-title Otimizador - Fila principal
-rem Existe mais de um pacote local nesta pasta. Sem o --lote o programa
-rem nao adivinha qual e o certo e para. Este atalho crava a fila principal.
-call "PROCESSAR-FILA.bat" --lote ddbcbc86-1ae7-4b95-b9f0-22601f41b61d
+title Otimizador - Fila global por prioridade
+rem FILA-ATIVA.json relaciona os pacotes conferidos, inclusive correcoes.
+call "PROCESSAR-FILA.bat" %*
 exit /b %ERRORLEVEL%

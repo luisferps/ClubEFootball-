@@ -406,7 +406,7 @@
       };
     }).filter((card) => {
       const id = BigInt(card.card_id);
-      return id !== 0n && id < (1n << 50n) && card.height >= 145 && card.height <= 210 && card.age >= 14 && card.age <= 47;
+      return id !== 0n && id < (1n << 50n) && card.height >= 145 && card.height <= 210 && card.age >= 10 && card.age <= 73;
     });
   }
   async function extractCardsFromCpkV46(bytes, plan, log = () => {}) {
@@ -417,9 +417,6 @@
       core.extractCardRelationsByContract(bytes, plan), core.extractCardBodiesByContract(bytes, plan)
     ]);
     for (const card of cards) {
-      // Box é uma observação separada do radar de lançamentos. Ela não entra
-      // na identidade canônica nem no destino de aplicação da carta.
-      card.box = null;
       const slot = slots.slots.get(card.card_id);
       if (!slot) throw new Error(`contrato não retornou slots para ${card.card_id}`);
       card.booster_primary = slot.slot1; card.booster_conditional = slot.slot2;
@@ -453,18 +450,18 @@
     return cards;
   }
 
-  function boxContractVerification(plan, sourceDescriptor = {}) {
+  function cardVariationContractVerification(plan, sourceDescriptor = {}) {
     const index = reader.requirePlan(plan);
     const roles = familyRoles(plan, 'cartas');
-    if (roles.length !== 1) throw new Error('radar de boxes exige uma única fonte contratada para Cartas');
+    if (roles.length !== 1) throw new Error('leitura de versões exige uma única fonte contratada para Cartas');
     const sourceRole = roles[0];
     if (sourceDescriptor.role && sourceDescriptor.role !== sourceRole) {
-      throw new Error(`radar de boxes recebeu ${sourceDescriptor.role}; o contrato de Cartas exige ${sourceRole}`);
+      throw new Error(`leitura de versões recebeu ${sourceDescriptor.role}; o contrato de Cartas exige ${sourceRole}`);
     }
     const cardId = field(plan, 'carta.id');
     const containerFile = fileById(plan, cardId.arquivo_id);
     if (containerFile.papel_fonte !== sourceRole) throw new Error('carta.id e a fonte de Cartas divergem no contrato ativo');
-    const declared = (plan.arquivos || []).filter((item) => item && item.arquivo === (core.BOX_RADAR_MEMBER || 'PlayerVariationDetail.bin'));
+    const declared = (plan.arquivos || []).filter((item) => item && item.arquivo === (core.CARD_VARIATION_MEMBER || 'PlayerVariationDetail.bin'));
     if (declared.length > 1) throw new Error('contrato ativo declara PlayerVariationDetail.bin mais de uma vez');
     if (declared.length === 1) {
       const member = declared[0];
@@ -479,7 +476,7 @@
       container_file: containerFile.cpk || null,
       canonical_anchor_file: containerFile.arquivo,
       canonical_anchor_field: 'carta.id',
-      member_file: core.BOX_RADAR_MEMBER || 'PlayerVariationDetail.bin',
+      member_file: core.CARD_VARIATION_MEMBER || 'PlayerVariationDetail.bin',
       member_declared_in_active_contract: declared.length === 1,
       member_contract_status: declared.length === 1 ? 'declarado_e_validado' : 'observacional_ate_migracao_do_contrato',
       identity_or_apply_destination_declared: false,
@@ -491,7 +488,7 @@
     rememberPlan(plan);
     if (!launchRadar) throw new Error('módulo radar-lancamentos.js não foi carregado');
     const sourceDescriptor = input.source_descriptor || {};
-    const verification = boxContractVerification(plan, sourceDescriptor);
+    const verification = cardVariationContractVerification(plan, sourceDescriptor);
     const containerValidation = await core.validateSourceByContract(bytes, plan, verification.source_role);
     verification.container_validation = {
       cpk_sha256: containerValidation.cpk_sha256,
@@ -514,7 +511,7 @@
       previous_artifact: input.previous_artifact_path || null,
       generated_at: input.generated_at
     });
-    log(`Radar de boxes: ${artifact.counts.boxes} box(es), ${artifact.counts.cards_mapped} card(s), ${artifact.counts.records_ignored} registro(s) isolado(s), comparação ${artifact.comparison.status}.`);
+    log(`Versões de cartas: ${artifact.counts.boxes} grupo(s) de versão, ${artifact.counts.cards_mapped} card(s), ${artifact.counts.records_ignored} registro(s) isolado(s), comparação ${artifact.comparison.status}.`);
     return artifact;
   }
 
@@ -767,6 +764,7 @@
       source_policy:'mesma lógica V4; referências físicas fornecidas por clube_novo',
       sources:sourceDescriptors, source_files:fileHashes,
       physical_contract:{ source:'clube_novo + contrato ativo', versao_contrato:plan.versao_contrato },
+      card_provenance:{source_role:cardRole,sha256:playerItem.hash,fonte_vinculos_jogo:cardRole==='dt870_updated'?'dt870_atualizacao':cardRole,cpk_vinculos_jogo:playerFile.cpk,arquivo_vinculos_jogo:playerFile.arquivo,contrato_vinculos_jogo:'clubef-card-dimensions-v2'},
       counts:{
         cards:cards.length, nationalities:nationalities.length, clubs:clubs.length, leagues:leagues.length, types:types.length,
         deleted_cards:cards.filter((c) => c.jogador_indisponivel).length,
@@ -787,7 +785,7 @@
     validateSourceByContract:validateSourceByContractV46,
     extractCardsFromCpk:extractCardsFromCpkV46,
     extractLaunchRadarFromCpk:extractLaunchRadarFromCpkV46,
-    inspectLaunchRadarContract:boxContractVerification,
+    inspectLaunchRadarContract:cardVariationContractVerification,
     extractCardDimensionsByFamily:extractCardDimensionsByFamilyV46,
     decodeBasicCardsByContract:decodeBasicCards
   });

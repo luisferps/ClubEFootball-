@@ -104,7 +104,7 @@ def _basic_component(card: dict[str, Any]) -> dict[str, Any]:
     ranges = {
         "height": (145, 210),
         "weight": (35, 150),
-        "age": (14, 47),
+        "age": (10, 73),  # Player.bin: campo de 6 bits, raw + 10
         "weak_foot_usage": (0, 3),
         "weak_foot_accuracy": (0, 3),
     }

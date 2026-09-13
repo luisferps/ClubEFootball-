@@ -44,6 +44,7 @@ FUNCOES_PURAS = {
     "bonus_do_pe_ruim",
     "_por_id",
     "bonus_do_estilo",
+    "bonus_do_estilo_componentes",
     "bonus_do_estilo_ia",
 }
 
@@ -112,14 +113,21 @@ class GatewayBonificador:
         try:
             with psycopg.connect(self.banco, connect_timeout=15) as conexao:
                 with conexao.cursor() as cursor:
-                    if nome == "bonificador_regua_v2":
-                        cursor.execute("select public.bonificador_regua_v2()")
+                    if nome == "bonificador_regua_v4":
+                        cursor.execute("select public.bonificador_regua_v4()")
                         return cursor.fetchone()[0]
-                    if nome == "bonificador_carta_v2":
-                        cursor.execute("select public.bonificador_carta_v2(%s)", ((corpo or {}).get("p_card_id"),))
+                    if nome == "bonificador_integral_status_v1":
+                        cursor.execute("select public.bonificador_integral_status_v1(%s::uuid)", ((corpo or {}).get("p_lote_id"),))
                         return cursor.fetchone()[0]
-                    if nome == "bonificador_contexto_fila_v5":
-                        cursor.execute("select * from public.bonificador_contexto_fila_v5(%s,%s)", (
+                    if nome == "bonificador_integral_reaproveitar_v1":
+                        cursor.execute("select public.bonificador_integral_reaproveitar_v1(%s::uuid,%s)",
+                                       ((corpo or {}).get("p_lote_id"), (corpo or {}).get("p_limite", 100)))
+                        return cursor.fetchone()[0]
+                    if nome == "bonificador_carta_v3":
+                        cursor.execute("select public.bonificador_carta_v3(%s)", ((corpo or {}).get("p_card_id"),))
+                        return cursor.fetchone()[0]
+                    if nome == "bonificador_contexto_fila_v7":
+                        cursor.execute("select * from public.bonificador_contexto_fila_v7(%s,%s)", (
                             (corpo or {}).get("p_limit", 1000), (corpo or {}).get("p_offset", 0)))
                         colunas = [d.name for d in cursor.description]
                         return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
@@ -131,38 +139,27 @@ class GatewayBonificador:
                             (corpo or {}).get("p_limit", 100), (corpo or {}).get("p_offset", 0)))
                         colunas = [d.name for d in cursor.description]
                         return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
-                    if nome == "bonificador_lote_controlar_v1":
-                        cursor.execute("select public.bonificador_lote_controlar_v1(%s)", ((corpo or {}).get("p_acao"),))
-                        resultado = cursor.fetchone()[0]
-                        conexao.commit()
-                        return resultado
-                    if nome == "bonificador_lote_assentar_parada_v1":
-                        cursor.execute("select public.bonificador_lote_assentar_parada_v1(%s::uuid,%s)", (
-                            (corpo or {}).get("p_lote_id"), (corpo or {}).get("p_modo")))
-                        resultado = cursor.fetchone()[0]
-                        conexao.commit()
-                        return resultado
                     if nome == "bonificador_resultados_v1":
                         cursor.execute("select * from public.bonificador_resultados_v1(%s,%s)", (
                             (corpo or {}).get("p_limit", 1000), (corpo or {}).get("p_offset", 0)))
                         colunas = [d.name for d in cursor.description]
                         return [dict(zip(colunas, linha)) for linha in cursor.fetchall()]
-                    cursor.execute("select public.gravar_build_bonificador_v4(%s::jsonb)", (json.dumps((corpo or {}).get("p_resultado")),))
+                    cursor.execute("select public.gravar_build_bonificador_v5(%s::jsonb)", (json.dumps((corpo or {}).get("p_resultado")),))
                     return cursor.fetchone()[0]
         except Exception as erro:
             raise ErroDaInterface(f"contrato local indisponível ({type(erro).__name__})", 503) from erro
 
     def rpc(self, nome: str, corpo: dict | None = None):
         if nome not in {
-            "bonificador_regua_v2",
-            "bonificador_carta_v2",
-            "bonificador_contexto_fila_v5",
+            "bonificador_regua_v4",
+            "bonificador_integral_status_v1",
+            "bonificador_integral_reaproveitar_v1",
+            "bonificador_carta_v3",
+            "bonificador_contexto_fila_v7",
             "bonificador_lote_status_v1",
             "bonificador_lote_listar_v1",
-            "bonificador_lote_controlar_v1",
-            "bonificador_lote_assentar_parada_v1",
             "bonificador_resultados_v1",
-            "gravar_build_bonificador_v4",
+            "gravar_build_bonificador_v5",
         }:
             raise ErroDaInterface("contrato não permitido", 403)
         if self.banco:
@@ -228,8 +225,8 @@ class ServicoBonificador:
         return self._gateway
 
     def regua(self) -> dict:
-        regua = self.gateway.rpc("bonificador_regua_v2") or {}
-        if regua.get("contrato") != "bonificador-regua-v2":
+        regua = self.gateway.rpc("bonificador_regua_v4") or {}
+        if regua.get("contrato") != "bonificador-regua-v4":
             raise ErroDaInterface("versão inesperada da régua", 503)
         return regua
 
@@ -247,7 +244,7 @@ class ServicoBonificador:
         """Lê a fila operacional do contrato, sem tabela direta nem escrita."""
         limite = max(1, min(int(limite), 5000))
         offset = max(0, int(offset))
-        bruto = self.gateway.rpc("bonificador_contexto_fila_v5", {
+        bruto = self.gateway.rpc("bonificador_contexto_fila_v7", {
             "p_limit": limite, "p_offset": offset,
         }) or []
         if not isinstance(bruto, list):
@@ -277,7 +274,7 @@ class ServicoBonificador:
                 "carta_fingerprint": dado.get("carta_fingerprint"),
             })
         return {
-            "contrato": "bonificador_contexto_fila_v5",
+            "contrato": "bonificador_contexto_fila_v7",
             "itens": itens,
             "total": len(itens),
             "total_exato": len(itens) < limite,
@@ -310,22 +307,13 @@ class ServicoBonificador:
         }
 
     def controlar_lote(self, acao: str) -> dict:
-        if acao not in {"iniciar", "pausar", "parar"}:
-            raise ErroDaInterface("ação de lote inválida")
-        lote = self.gateway.rpc("bonificador_lote_controlar_v1", {"p_acao": acao}) or {}
-        if not isinstance(lote, dict) or not lote.get("existe"):
-            raise ErroDaInterface("controle do lote não devolveu estado válido", 503)
-        return lote
+        raise ErroDaInterface(
+            "o lote V9 é somente histórico; use OPERACAO-CORRECAO-FISICA com lote V10 explícito",
+            409,
+        )
 
     def assentar_lote(self, lote_id: str, modo: str) -> dict:
-        if modo not in {"pausar", "parar"}:
-            raise ErroDaInterface("modo de assentamento inválido")
-        lote = self.gateway.rpc("bonificador_lote_assentar_parada_v1", {
-            "p_lote_id": lote_id, "p_modo": modo,
-        }) or {}
-        if not isinstance(lote, dict):
-            raise ErroDaInterface("assentamento do lote não devolveu estado válido", 503)
-        return lote
+        raise ErroDaInterface("assentamento do lote V9 foi desativado na V10", 409)
 
     def resultados_persistidos(self, limite: int = 5000) -> dict:
         """Lê resultados já confirmados por contrato próprio, sem depender da fila pendente."""
@@ -359,15 +347,18 @@ class ServicoBonificador:
             return None
         return mapa.get(str(chave), mapa.get(chave))
 
-    def simular(self, card_id: str, funcao_id: int) -> dict:
+    def simular(self, card_id: str, funcao_id: int, posicao_id: int | None = None) -> dict:
         if not CARD_ID_VALIDO.fullmatch(card_id):
             raise ErroDaInterface("card_id inválido")
         regua_original = self.regua()
         funcoes = {item["id"]: item for item in self.catalogo_funcoes(regua_original)}
         if funcao_id not in funcoes:
             raise ErroDaInterface("função não disponível na régua")
-        carta = self.gateway.rpc("bonificador_carta_v2", {"p_card_id": card_id}) or {}
+        carta = self.gateway.rpc("bonificador_carta_v3", {"p_card_id": card_id}) or {}
         regua = self._preparar_regua(regua_original)
+        posicao = carta.get("posicao_id") if posicao_id is None else posicao_id
+        if not isinstance(posicao, int) or isinstance(posicao, bool) or not 0 <= posicao <= 12:
+            raise ErroDaInterface("posição escolhida inválida")
 
         falhas = list(regua.get("falta_o_que") or []) + list(carta.get("falta_o_que") or [])
         apta = bool(regua.get("pode_rodar")) and bool(carta.get("pode_rodar"))
@@ -381,7 +372,7 @@ class ServicoBonificador:
         ) if apta else None
         estilo = self.funcoes["bonus_do_estilo"](
             regua, carta.get("slot1_id_jogo"), carta.get("slot2_id_jogo"),
-            funcao_id, carta.get("posicao_id"),
+            funcao_id, posicao,
         ) if apta else None
         ia = self.funcoes["bonus_do_estilo_ia"](
             par, carta.get("estilos_ia"),
@@ -391,17 +382,15 @@ class ServicoBonificador:
         falhas = list(dict.fromkeys([*falhas, *faltantes]))
         total = round(sum(componentes.values()), 4) if not falhas else None
 
-        posicao = carta.get("posicao_id")
-        slot_manda = self._por_id(regua.get("posicao_slot") or {}, posicao) or "ofensivo"
+        principal = self._por_id(regua['politica_estilo']['principal_por_funcao'], funcao_id)
+        slot_manda = "ofensivo" if principal == "ataque" else "defensivo"
         dono, outro = (
             (carta.get("slot1_id_jogo"), carta.get("slot2_id_jogo"))
-            if slot_manda == "ofensivo"
+            if principal == "ataque"
             else (carta.get("slot2_id_jogo"), carta.get("slot1_id_jogo"))
         )
-        if not dono:
-            dono, outro = outro, None
-        casa = self._por_id(self._por_id(regua.get("casa") or {}, dono) or {}, posicao)
-        liga = self._por_id(regua.get("liga") or {}, outro) or []
+        liga_dono = self._por_id(regua.get("liga") or {}, dono) or []
+        liga_outro = self._por_id(regua.get("liga") or {}, outro) or []
         molde = self._por_id(regua.get("molde_corpo") or {}, funcao_id) or {}
 
         gates = [
@@ -417,7 +406,7 @@ class ServicoBonificador:
                 "card_id": carta.get("card_id"), "nome": carta.get("nome"),
                 "corpo": carta.get("corpo"), "pe_ruim_uso": carta.get("pe_ruim_uso"),
                 "pe_ruim_precisao": carta.get("pe_ruim_precisao"),
-                "posicao": {"id": posicao, "codigo": carta.get("posicao_codigo"), "raw": carta.get("posicao_raw")},
+                "posicao": {"id": carta.get("posicao_id"), "codigo": carta.get("posicao_codigo"), "raw": carta.get("posicao_raw")},
                 "playstyles": [
                     {"slot": 1, "id": carta.get("slot1_id_jogo"), "nome": carta.get("slot1_nome")},
                     {"slot": 2, "id": carta.get("slot2_id_jogo"), "nome": carta.get("slot2_nome")},
@@ -439,7 +428,12 @@ class ServicoBonificador:
             "molde": molde,
             "regra_estilo": {
                 "slot_que_manda": slot_manda, "playstyle_dono": dono, "playstyle_complementar": outro,
-                "funcao_casa_id": casa, "complementar_ativa_na_posicao": posicao in liga,
+                "principal_ativa_na_posicao": posicao in liga_dono,
+                "complementar_ativa_na_posicao": posicao in liga_outro,
+                "ativacao_depende_da_funcao": False,
+                "principal_depende_da_funcao": True,
+                "posicao_escolhida_id": posicao,
+                "politica": regua.get("politica_estilo_fingerprint"),
             },
             "falhas": falhas,
         }
@@ -486,7 +480,7 @@ class PipelineBonificador:
             eventos.append(texto)
             self._estado["eventos"] = eventos[-30:]
 
-    def iniciar(self, lote_id: str) -> dict:
+    def iniciar(self, lote_id: str, integral: bool = False) -> dict:
         with self._lock:
             if self._processo is not None and self._processo.poll() is None:
                 return self.estado()
@@ -500,7 +494,9 @@ class PipelineBonificador:
                        "env": {**os.environ, "PYTHONUTF8": "1"}}
             arquivo_parada = Path(tempfile.gettempdir()) / ("clubef-bonificador-parar-" + uuid.uuid4().hex + ".flag")
             opcoes["env"]["CLUBEF_BONIFICADOR_STOP_FILE"] = str(arquivo_parada)
-            opcoes["env"]["CLUBEF_BONIFICADOR_LOTE_ID"] = str(lote_id)
+            for key in ("CLUBEF_BONIFICADOR_LOTE_ID", "CLUBEF_BONIFICADOR_CORRECAO_LOTE_ID", "CLUBEF_BONIFICADOR_INTEGRAL_LOTE_ID"):
+                opcoes["env"].pop(key, None)
+            opcoes["env"]["CLUBEF_BONIFICADOR_INTEGRAL_LOTE_ID" if integral else "CLUBEF_BONIFICADOR_LOTE_ID"] = str(lote_id)
             if ler_config()[2]:
                 opcoes["env"]["CLUBEF_BONIFICADOR_USAR_BANCO_DIRETO"] = "1"
             if os.name == "nt":
@@ -639,6 +635,21 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
                     raise ErroDaInterface("pedido local muito grande", 413)
                 if tamanho:
                     self.rfile.read(tamanho)
+                if caminho.path.startswith("/api/integral/"):
+                    parametros = urllib.parse.parse_qs(caminho.query)
+                    lote_id = str(uuid.UUID((parametros.get("lote_id") or [""])[0]))
+                    if caminho.path == "/api/integral/reaproveitar":
+                        if pipeline.estado().get("ativo"):
+                            raise ErroDaInterface("aguarde o cálculo em andamento", 409)
+                        resultado = servico.gateway.rpc("bonificador_integral_reaproveitar_v1", {"p_lote_id": lote_id, "p_limite": 100})
+                        return self.responder_json(200, {"ok": True, "resultado": resultado})
+                    if caminho.path == "/api/integral/calcular":
+                        lote = servico.gateway.rpc("bonificador_integral_status_v1", {"p_lote_id": lote_id}) or {}
+                        if not lote.get("pode_calcular"):
+                            raise ErroDaInterface("a conferência ainda não liberou as exceções deste lote", 409)
+                        return self.responder_json(200, {"ok": True, "pipeline": pipeline.iniciar(lote_id, integral=True)})
+                    if caminho.path == "/api/integral/parar":
+                        return self.responder_json(200, {"ok": True, "pipeline": pipeline.parar()})
                 if caminho.path == "/api/lote/iniciar":
                     lote = servico.controlar_lote("iniciar")
                     try:
@@ -672,10 +683,13 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
             parametros = urllib.parse.parse_qs(caminho.query)
             try:
                 if caminho.path == "/api/ping":
-                    return self.responder_json(200, {"ok": True, "aplicativo": "bonificador_clubefootball", "versao_interface": "20260902-lote-v1"})
+                    return self.responder_json(200, {"ok": True, "aplicativo": "bonificador_clubefootball", "versao_interface": "20260909-estilo-v12"})
+                if caminho.path == "/api/integral/status":
+                    lote = servico.gateway.rpc("bonificador_integral_status_v1") or {}
+                    return self.responder_json(200, {"ok": True, "lote": lote, "pipeline": pipeline.estado()})
                 if caminho.path == "/api/saude":
                     regua = servico.regua()
-                    return self.responder_json(200, {"ok": True, "aplicativo": "bonificador_clubefootball", "versao_interface": "20260902-lote-v1", "contrato": regua.get("contrato"), "pode_rodar": regua.get("pode_rodar"), "falta_o_que": regua.get("falta_o_que") or []})
+                    return self.responder_json(200, {"ok": True, "aplicativo": "bonificador_clubefootball", "versao_interface": "20260909-estilo-v12", "contrato": regua.get("contrato"), "pode_rodar": regua.get("pode_rodar"), "liberado_para_producao": regua.get("liberado_para_producao"), "falta_o_que": regua.get("falta_o_que") or []})
                 if caminho.path == "/api/funcoes":
                     return self.responder_json(200, {"ok": True, "funcoes": servico.catalogo_funcoes(servico.regua())})
                 if caminho.path == "/api/simular":
@@ -684,7 +698,12 @@ def criar_servidor(servico: ServicoBonificador | None = None, porta: int = 8766,
                         funcao_id = int((parametros.get("funcao_id") or [""])[0])
                     except ValueError as erro:
                         raise ErroDaInterface("funcao_id inválido") from erro
-                    return self.responder_json(200, servico.simular(card_id, funcao_id))
+                    posicao_bruta = (parametros.get("posicao_id") or [None])[0]
+                    try:
+                        posicao_id = None if posicao_bruta is None else int(posicao_bruta)
+                    except ValueError as erro:
+                        raise ErroDaInterface("posição escolhida inválida") from erro
+                    return self.responder_json(200, servico.simular(card_id, funcao_id, posicao_id))
                 if caminho.path == "/api/auditoria":
                     return self.responder_json(200, {"ok": True, "auditoria": servico.auditoria()})
                 if caminho.path == "/api/resultados":

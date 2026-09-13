@@ -122,7 +122,7 @@ _W = {}
 #  ⚠️ MUDOU A LOGICA DO CODIGO (nao um arquivo)? Suba o VERSAO_REGRAS. E o unico
 #     jeito de o sistema saber que a conta de ontem nao vale mais.
 # ============================================================================
-VERSAO_REGRAS = 8      # 8 = catálogo selado de Ímpeto adicional e vaga nunca vazia
+VERSAO_REGRAS = 9      # habilidades por funcao e somente com ganho marginal
 
 def _carimbo_das_regras():
     b = _W.get('INSUMOS_BASE') or {}
@@ -415,8 +415,8 @@ def _conta_builds_possiveis(c, M, tecnicos, pool_habilidades):
     )
     tecnicos_possiveis = max(1, tecnicos_possiveis)
     quantidade_habilidades = len(pool_habilidades or [])
-    escolhas_habilidades = (1 if quantidade_habilidades <= 5
-                             else math.comb(quantidade_habilidades, 5))
+    escolhas_habilidades = sum(math.comb(quantidade_habilidades, k)
+                               for k in range(min(5, quantidade_habilidades) + 1))
     return barras * impetos_adicionais * tecnicos_possiveis * escolhas_habilidades
 
 
@@ -509,9 +509,7 @@ def trabalha(r):
     #   Especialista em penalti  10/08. "nao pode vir como adicional".
     # Elas continuam indo para a lista de SUGESTAO, mais abaixo.
     VETADAS = {int(skill_id) for skill_id, h in M.HAB.items() if h.get('vetada')}
-    _forcar_sug = [h for h in VETADAS if h in c['falta']]
-    if _forcar_sug:
-        c['falta'] = [h for h in c['falta'] if h not in VETADAS]
+    c['falta'] = [h for h in c['falta'] if h not in VETADAS]
     _pool_universo = list(c['falta'])
 
     # ============== CORTE 10 — DOMINANCIA ENTRE HABILIDADES ==============
@@ -639,59 +637,13 @@ def trabalha(r):
                     neutras.append(cand); break
         _inc = (_W.get('FILA') or {}).get(fid) or {}
         neutras.sort(key=lambda h: (-_inc.get(h, 0), h))
-        if _forcar_sug:
-            neutras = list(_forcar_sug) + [h for h in neutras if h not in _forcar_sug]
-        neutras = neutras[:5]
+        bloqueadas = _W.setdefault('BLOQ', _bloqueio_por_funcao()).get(int(fid), set())
+        neutras = [h for h in neutras if h not in bloqueadas and h not in VETADAS][:5]
     except Exception:
         neutras = []
 
-    # ===== QUANTO A VETADA VALERIA (Luis, 10/08) =====
-    # "se voce vetar o super substituto e o especialista em penalti, como que a gente
-    #  vai saber que elas podem ser boas?"
-    # Sem isso, a vetada iria para a sugestao SEMPRE — viraria ruido, nao informacao.
-    # Aqui a gente mede, de graca: pega a build campea e troca cada uma das 5
-    # escolhidas pela vetada, MANTENDO barras, impeto e tecnico. A melhor troca vira
-    # o ganho dela. Nao roda DP nenhum — sao 5 contas de nota por vetada.
-    # O numero e um PISO: com as barras reotimizadas ela poderia render um pouco
-    # mais. Se ja der positivo aqui, e porque ela e boa de verdade.
+    # 09/09: nenhuma habilidade vetada e promovida a sugestao.
     vetada_vale = {}
-    try:
-        if _forcar_sug and b.get('lvl') is not None:
-            _fix = list(c.get('fab') or []) + list(c.get('raras') or [])
-            _esc = list(b.get('habilidades') or [])
-            _m = b.get('m') or 1.0
-            _impeto_add = b.get('impeto_add') or b.get('add')
-            _boost_add = b.get('boost_add') or [0] * 26
-            _n0 = b.get('nota')
-
-            def _nota_com(hs):
-                _bf = M.buff_de(hs)
-                _cd = M.Card(dict(c), m=_m, bf=(_bf or None))
-                return M.notaDe(_cd.vals_finais(b['lvl'], _impeto_add, _boost_add), _cd.arows)
-
-            _base = _nota_com(_fix + _esc)
-            for _v in _forcar_sug:
-                _melhor, _troca = None, None
-                for _h in _esc:
-                    _cand = [x for x in _esc if x != _h] + [_v]
-                    _d = _nota_com(_fix + _cand) - _base
-                    if _melhor is None or _d > _melhor:
-                        _melhor, _troca = _d, _h
-                if _melhor is not None:
-                    vetada_vale[_v] = {'ganho': round(float(_melhor), 2),
-                                       'no_lugar_de': _troca,
-                                       'seria_escolhida': bool(_melhor > 1e-9)}
-    except Exception as _e:
-        vetada_vale = {'ERRO': str(_e)}
-
-    # a sugestao so mostra a vetada quando ela REALMENTE valeria a pena
-    try:
-        for _v in list(_forcar_sug or []):
-            _info = vetada_vale.get(_v) or {}
-            if not _info.get('seria_escolhida'):
-                neutras = [h for h in neutras if h != _v]
-    except Exception:
-        pass
 
     # ===== TECNICO: os outros que dao a MESMA nota (Luis, 08/08) =====
     # "pode ter algum outro que tambem seja otimizado, so nao apareceu na tela."
@@ -772,6 +724,8 @@ def trabalha(r):
         # 4 "F. Beckenbauer". So o nome nao diz qual entrou na build.
         'tecnico_id': b.get('tecnico_id'),
         'habilidades': b.get('habilidades', []),
+        'politica_habilidades': b.get('politica_habilidades'),
+        'habilidades_sem_ganho_removidas': b.get('habilidades_sem_ganho_removidas', []),
         'neutras': neutras,
         'vetada_vale': vetada_vale,           # quanto a vetada valeria, e no lugar de quem
         'tecnicos_iguais': tecnicos_iguais,   # outro tecnico, mesma nota exata

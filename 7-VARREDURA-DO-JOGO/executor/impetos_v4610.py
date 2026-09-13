@@ -7,6 +7,9 @@ interromper as outras famílias do Extrator.
 from __future__ import annotations
 
 from collections import Counter
+import json
+import os
+import re
 from typing import Any
 
 CONTRACT = "clubef-impetos-physical-v1"
@@ -28,10 +31,6 @@ def _int_or_none(value: Any) -> int | None:
         return None if value is None else int(value)
     except (TypeError, ValueError):
         return None
-
-
-def _sample(values: list[int], limit: int = 50) -> list[int]:
-    return values[:limit]
 
 
 def _provenance(record: dict[str, Any] | None) -> dict[str, Any] | None:
@@ -70,6 +69,182 @@ def _catalog_link(row: dict[str, Any] | None) -> dict[str, Any] | None:
     }
 
 
+_COLUNAS_DO_CATALOGO = (
+    "tamanho_registro", "bit_codigo", "largura_codigo",
+    "registro_dt200", "registro_dt870_atualizacao",
+    "presente_dt200", "presente_dt870_atualizacao",
+)
+
+
+def _catalogo_fisico(code: int, record: dict[str, Any] | None, tamanho: Any, bit: Any, largura: Any,
+                     types: list[dict[str, Any]] | None = None) -> dict[str, Any] | None:
+    """O que o arquivo do jogo diz deste impeto, com o nome da coluna do banco.
+
+    Ordem do Luis (04/09/2026): o comparador entregava so a chave, e com um nome
+    que a tabela nao usa (codigo_impeto em vez de codigo_jogo). Sem destino e sem
+    valores, nenhum impeto do catalogo achava onde ser gravado e os 416 saiam como
+    "destino ausente ou ambiguo". Aqui ele entrega chave, destino e valores.
+    """
+    if not isinstance(record, dict):
+        return None
+    detalhes = record.get("source_details") or {}
+    dt200 = _first_detail(record, "dt200")
+    atualizado = _first_detail(record, "dt870_updated")
+    result = {
+        "codigo_jogo": code,
+        "tamanho_registro": _int_or_none(tamanho),
+        "bit_codigo": _int_or_none(bit),
+        "largura_codigo": _int_or_none(largura),
+        "registro_dt200": _int_or_none(dt200.get("record_index")),
+        "registro_dt870_atualizacao": _int_or_none(atualizado.get("record_index")),
+        "presente_dt200": bool(detalhes.get("dt200")),
+        "presente_dt870_atualizacao": bool(detalhes.get("dt870_updated")),
+    }
+    if atualizado and record.get("tipo_condicao_status") == "coletado":
+        raw = record.get("tipo_condicao_raw")
+        candidates = [item for item in types or [] if item.get("codigo_raw") == raw]
+        if len(candidates) != 1 or not isinstance(candidates[0].get("condicional_confirmado"), bool):
+            raise ValueError(f"ímpeto {code}: tipo ou comportamento sem referência canônica")
+        result.update({
+            "tipo_condicao_raw": raw, "condicional": candidates[0]["condicional_confirmado"],
+            "condicao_estado": "tipo_e_comportamento_comprovados",
+            "bit_condicao": _int_or_none(atualizado.get("tipo_bit")),
+            "largura_condicao": _int_or_none(atualizado.get("tipo_largura")),
+            "registro_condicao": _int_or_none(atualizado.get("record_index")),
+            "fonte_condicao": "dt870_atualizacao:PlayerBooster.bin",
+        })
+    return result
+
+
+def _catalogo_banco(database: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not isinstance(database, dict):
+        return None
+    saida: dict[str, Any] = {"codigo_jogo": _int_or_none(database.get("codigo_jogo"))}
+    for coluna in _COLUNAS_DO_CATALOGO:
+        valor = database.get(coluna)
+        saida[coluna] = bool(valor) if coluna.startswith("presente_") else _int_or_none(valor)
+    for coluna in ("tipo_condicao_raw", "condicional", "condicao_estado", "bit_condicao",
+                   "largura_condicao", "registro_condicao", "fonte_condicao"):
+        saida[coluna] = database.get(coluna)
+    return saida
+
+
+_REGRA_CONDICAO = (
+    "alvo_origem", "campo_alvo", "avaliacao_minima", "avaliacao_maxima",
+    "status_validacao", "falta_o_que", "chave_texto_hex", "rotina_condicao_va",
+    "transformacao_regra", "texto_regra_secao", "texto_regra_id", "texto_regra_offset",
+)
+
+
+def _regra_condicao(record: dict[str, Any], references: list[dict[str, Any]]) -> dict[str, Any]:
+    """Reutiliza a regra canônica comprovada, nunca a origem física de outro registro."""
+    candidates = [
+        {key: row.get(key) for key in _REGRA_CONDICAO}
+        for row in references
+        if row.get("tipo_raw") == record.get("tipo_condicao_raw")
+        and row.get("criterio_codigo") == record.get("criterio_codigo")
+    ]
+    signatures = {json.dumps(row, sort_keys=True, ensure_ascii=False) for row in candidates}
+    if len(signatures) != 1:
+        raise ValueError(f"condição {record.get('id')}: regra canônica ausente ou ambígua")
+    rule = candidates[0]
+    required = ("alvo_origem", "status_validacao", "falta_o_que", "chave_texto_hex",
+                "rotina_condicao_va", "transformacao_regra")
+    if any(not isinstance(rule[key], str) or not rule[key].strip() for key in required):
+        raise ValueError(f"condição {record.get('id')}: regra canônica incompleta")
+    return rule
+
+
+def _origem_pacote(contract: dict[str, Any]) -> dict[str, str]:
+    sources = {(row.get("template_caminho"), row.get("sha256_cpk"))
+               for row in contract.get("localizadores_fontes", [])
+               if row.get("papel_fonte") == "dt870_updated"}
+    if len(sources) != 1:
+        raise ValueError("origem DT870 atual ausente ou ambígua no contrato")
+    path, sha = sources.pop()
+    if not isinstance(path, str) or not path.strip() or not re.fullmatch(r"[0-9a-f]{64}", str(sha)):
+        raise ValueError("origem DT870 atual incompleta no contrato")
+    return {"pacote_origem": os.path.expandvars(path), "hash_pacote": sha}
+
+
+def _condicao_fisica(code: int, record: dict[str, Any] | None, tamanho: Any,
+                    references: list[dict[str, Any]] | None = None,
+                    contract: dict[str, Any] | None = None) -> dict[str, Any] | None:
+    """A condicao do impeto lida do jogo, com o nome das colunas da tabela.
+
+    Decisao do Luis em 04/09/2026: a lista de condicoes e dado do jogo, entao o
+    Extrator grava. Sem destino declarado, a chave codigo_impeto servia para seis
+    tabelas e os 208 sempre saiam como "destino ambiguo".
+    """
+    if not isinstance(record, dict):
+        return None
+    detalhe = _first_detail(record, "dt870_updated")
+    return {
+        **_regra_condicao(record, references or []),
+        **_origem_pacote(contract or {}),
+        "codigo_impeto": code,
+        "tipo_raw": _int_or_none(record.get("tipo_condicao_raw")),
+        "criterio_codigo": record.get("criterio_codigo"),
+        "bit_tipo": _int_or_none(detalhe.get("tipo_bit")),
+        "largura_tipo": _int_or_none(detalhe.get("tipo_largura")),
+        "bit_tipo_espelho": _int_or_none(detalhe.get("tipo_espelho_bit")),
+        "largura_tipo_espelho": _int_or_none(detalhe.get("tipo_espelho_largura")),
+        "indice_registro": _int_or_none(detalhe.get("record_index")),
+        "registro_sha256": detalhe.get("record_sha256"),
+        "arquivo_origem": "PlayerBooster.bin",
+        "tamanho_registro": _int_or_none(tamanho),
+    }
+
+
+def _condicao_banco(database: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not isinstance(database, dict):
+        return None
+    colunas = ("codigo_impeto", "tipo_raw", "criterio_codigo", "bit_tipo", "largura_tipo",
+               "bit_tipo_espelho", "largura_tipo_espelho", "indice_registro",
+               "registro_sha256", "arquivo_origem", "tamanho_registro")
+    return {coluna: database.get(coluna) for coluna in colunas}
+
+
+def _efeitos_classificados(snapshot: dict[str, Any], database: list[dict[str, Any]]) -> dict[str, list]:
+    """Compara efeitos por identidade; a contagem total não prova equivalência."""
+    result = {key: [] for key in ("new", "altered", "removed")}
+    stored = {(int(row["codigo_impeto"]), row["codigo_atributo"]): row for row in database}
+    seen = set()
+    for record in snapshot.get("records", []):
+        if record.get("preferred_source") != "dt870_updated" or record.get("tipo_condicao_status") != "coletado":
+            continue
+        code = int(record["id"])
+        detail = _first_detail(record, "dt870_updated")
+        used = {int(row["ordem"]) for key, row in stored.items() if key[0] == code}
+        for effect in record.get("efeitos", []):
+            key = (code, effect["codigo_atributo"])
+            if key in seen:
+                raise ValueError(f"efeito duplicado na fotografia: {key}")
+            seen.add(key)
+            before = stored.get(key)
+            order = int(before["ordem"]) if before else next(n for n in range(1, 100) if n not in used)
+            used.add(order)
+            index, bit, width = int(detail["record_index"]), int(effect["bit_delta"]), int(effect["largura_delta"])
+            physical = {"codigo_impeto": code, "codigo_atributo": key[1], "ordem": order,
+                        "delta": int(effect["delta"]), "bit_delta": bit, "largura_delta": width,
+                        "arquivo_origem": effect["arquivo_origem"], "fonte_origem": effect["fonte_origem"],
+                        "status_validacao": "comprovado_biblioteca_dt870",
+                        "registro_origem": index,
+                        "endereco_origem": f"registro {index} de {snapshot['record_size']} bytes; bit {bit}; largura {width}"}
+            kind = "new" if before is None else "altered"
+            if before is not None and all(before.get(k) == v for k, v in physical.items()):
+                continue
+            result[kind].append({"classificacao": "novo" if before is None else "alterado", "escopo": "efeitos",
+                "destino_tabela": "impeto_atributo_jogo", "chave_canonica": {"codigo_impeto": code, "codigo_atributo": key[1]},
+                "valor_fisico": physical, "valor_banco": before, "fonte_fisica": _provenance(record),
+                "fonte_fisica_comprovada": True})
+    for key, before in stored.items():
+        if key not in seen:
+            result["removed"].append({"classificacao": "removido", "escopo": "efeitos", "destino_tabela": "impeto_atributo_jogo",
+                "chave_canonica": {"codigo_impeto": key[0], "codigo_atributo": key[1]}, "valor_banco": before})
+    return result
+
+
 def _classified_item(
     status: str,
     code: int,
@@ -77,15 +252,33 @@ def _classified_item(
     database: dict[str, Any] | None,
     scope: str,
     allowed_roles: set[str],
+    fisico: dict[str, Any] | None = None,
+    banco: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    return {
+    do_catalogo = scope == "catalogo"
+    da_condicao = scope == "condicoes"
+    item: dict[str, Any] = {
         "classificacao": status,
         "escopo": scope,
-        "chave_canonica": {"codigo_impeto": code},
+        "chave_canonica": {"codigo_jogo": code} if do_catalogo else {"codigo_impeto": code},
         "procedencia_fisica": _provenance(record),
         "vinculo_banco": _catalog_link(database),
         "fonte_fisica_comprovada": _source_is_proven(record, allowed_roles) if record else False,
     }
+    if do_catalogo:
+        item["destino_tabela"] = "impeto_jogo"
+        item["valor_fisico"] = fisico
+        item["valor_banco"] = banco
+        # O aplicador procura a procedencia em "fonte_fisica". Entregar so em
+        # "procedencia_fisica" fazia os 207 impetos do catalogo cairem em
+        # "mudanca sem procedencia fisica persistida". Mesmo conteudo, o nome que ele le.
+        item["fonte_fisica"] = item["procedencia_fisica"]
+    if da_condicao:
+        item["destino_tabela"] = "impeto_condicao_jogo"
+        item["valor_fisico"] = fisico
+        item["valor_banco"] = banco
+        item["fonte_fisica"] = item["procedencia_fisica"]
+    return item
 
 
 def validate_impetos_v4610(snapshot: dict[str, Any], connection: Any, reading_contract: dict[str, Any]) -> dict[str, Any]:
@@ -107,6 +300,9 @@ def validate_impetos_v4610(snapshot: dict[str, Any], connection: Any, reading_co
     allowed_roles = {str(role) for role in family.get("papeis_fonte", []) if isinstance(role, str) and role}
     if not allowed_roles:
         raise ValueError("pedido canônico de Ímpetos não declarou fontes permitidas")
+    types = [row for catalog in reading_contract.get("catalogos", [])
+             if catalog.get("schema") == "clube_novo" and catalog.get("table") == "tipo_impeto_jogo"
+             for row in catalog.get("rows", [])]
 
     with connection.cursor() as cursor:
         cursor.execute("show transaction_read_only")
@@ -117,14 +313,16 @@ def validate_impetos_v4610(snapshot: dict[str, Any], connection: Any, reading_co
             cursor,
             "select codigo_jogo,tamanho_registro,bit_codigo,largura_codigo,"
             "registro_dt200,registro_dt870_steam,registro_dt870_atualizacao,"
-            "presente_dt200,presente_dt870_steam,presente_dt870_atualizacao "
+            "presente_dt200,presente_dt870_steam,presente_dt870_atualizacao,"
+            "tipo_condicao_raw,condicional,condicao_estado,bit_condicao,largura_condicao,registro_condicao,fonte_condicao "
             "from clube_novo.impeto_jogo order by codigo_jogo",
         )
         expected_conditions = _rows(
             cursor,
-            "select codigo_impeto,tipo_raw,indice_registro,registro_sha256 "
+            "select * "
             "from clube_novo.impeto_condicao_jogo order by codigo_impeto",
         )
+        expected_effects = _rows(cursor, "select * from clube_novo.impeto_atributo_jogo")
         requested_counts = _rows(
             cursor,
             "select "
@@ -239,7 +437,10 @@ def validate_impetos_v4610(snapshot: dict[str, Any], connection: Any, reading_co
             bool(expected.get("presente_dt200")),
             bool(expected.get("presente_dt870_atualizacao")),
         )
-        if source_signature != expected_signature:
+        physical_catalog = _catalogo_fisico(code, record, record_size, code_bit, code_width, types)
+        if source_signature != expected_signature or any(
+            expected.get(field) != value for field, value in physical_catalog.items()
+        ):
             changed_codes.append(code)
 
     current_records = {
@@ -317,9 +518,19 @@ def validate_impetos_v4610(snapshot: dict[str, Any], connection: Any, reading_co
     }
 
     classification = {
-        "new": [_classified_item("novo", code, by_code[code], None, "catalogo", allowed_roles) for code in extra_codes],
-        "removed": [_classified_item("removido", code, None, expected_by_code[code], "catalogo", allowed_roles) for code in missing_codes],
-        "altered": [_classified_item("alterado", code, by_code[code], expected_by_code[code], "catalogo", allowed_roles) for code in changed_codes],
+        "new": [
+            _classified_item("novo", code, by_code[code], None, "catalogo", allowed_roles,
+                             _catalogo_fisico(code, by_code[code], record_size, code_bit, code_width, types), None)
+            for code in extra_codes
+        ],
+        "removed": [_classified_item("removido", code, None, expected_by_code[code], "catalogo", allowed_roles,
+                                     None, _catalogo_banco(expected_by_code[code])) for code in missing_codes],
+        "altered": [
+            _classified_item("alterado", code, by_code[code], expected_by_code[code], "catalogo", allowed_roles,
+                             _catalogo_fisico(code, by_code[code], record_size, code_bit, code_width, types),
+                             _catalogo_banco(expected_by_code[code]))
+            for code in changed_codes
+        ],
         "repeated": [
             {
                 **_classified_item("repetido", code, by_code[code], expected_by_code.get(code), "catalogo", allowed_roles),
@@ -343,11 +554,25 @@ def validate_impetos_v4610(snapshot: dict[str, Any], connection: Any, reading_co
             for item in invalid_records
         ],
         "conditions": {
-            "new": [_classified_item("novo", code, current_records[code], None, "condicoes", allowed_roles) for code in extra_conditions],
-            "removed": [_classified_item("removido", code, None, expected_condition_by_code[code], "condicoes", allowed_roles) for code in missing_conditions],
-            "altered": [_classified_item("alterado", code, current_records[code], expected_condition_by_code[code], "condicoes", allowed_roles) for code in changed_conditions],
+            "new": [
+                _classified_item("novo", code, current_records[code], None, "condicoes", allowed_roles,
+                                 _condicao_fisica(code, current_records[code], record_size, expected_conditions, reading_contract), None)
+                for code in extra_conditions
+            ],
+            "removed": [
+                _classified_item("removido", code, None, expected_condition_by_code[code], "condicoes", allowed_roles,
+                                 None, _condicao_banco(expected_condition_by_code[code]))
+                for code in missing_conditions
+            ],
+            "altered": [
+                _classified_item("alterado", code, current_records[code], expected_condition_by_code[code], "condicoes", allowed_roles,
+                                 _condicao_fisica(code, current_records[code], record_size, expected_conditions, reading_contract),
+                                 _condicao_banco(expected_condition_by_code[code]))
+                for code in changed_conditions
+            ],
         },
         "historical_unresolved": historical_unresolved,
+        "effects": _efeitos_classificados(snapshot, expected_effects),
     }
     improper_sources = [
         _classified_item("invalido", code, record, expected_by_code.get(code), "catalogo", allowed_roles)
@@ -365,6 +590,9 @@ def validate_impetos_v4610(snapshot: dict[str, Any], connection: Any, reading_co
         + classification["conditions"]["removed"]
         + classification["conditions"]["altered"]
         + classification["historical_unresolved"]
+        + classification["effects"]["new"]
+        + classification["effects"]["altered"]
+        + classification["effects"]["removed"]
     )
     technical_failures = classification["repeated"] + classification["invalid"]
     snapshot_candidates = [

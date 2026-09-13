@@ -26,9 +26,12 @@ import review_html
 import card_completeness
 import motor_protection_installer
 import motor_protection_seed
+import boxes_runtime
+import card_levels_database
+import efhub_levels
 
 
-DESKTOP_WORKER_PROTOCOL_VERSION = "5.3.0"
+DESKTOP_WORKER_PROTOCOL_VERSION = "5.4.0"
 
 
 def _safe_database_connection_error(error: Exception) -> str:
@@ -604,7 +607,7 @@ def classify_catalogs(metadata: dict[str, Any], contract: dict[str, Any], family
     return {"classification_complete": True, "technical_integrity": technical, "exact_match": not any(buckets[k] for k in canonical_kinds), "classification": buckets, "coverage": coverage, "coverage_complete": not application_blockers, "application_eligible": not application_blockers, "application_blockers": application_blockers, "unresolved_pending_count": len(buckets["known_pending"]), "database_write": False}
 
 
-CLASSIFIED_CHANGE_KINDS = {"new", "removed", "altered", "repeated", "invalid", "known_pending", "historical_unresolved"}
+CLASSIFIED_CHANGE_KINDS = {"new", "removed", "altered", "repeated", "invalid", "known_pending", "historical_unresolved", "deferred"}
 
 
 def _iter_classified_entries(classification: Any, path: tuple[str, ...] = ()) -> Any:
@@ -715,9 +718,106 @@ def _target_hint(entry: dict[str, Any]) -> str | None:
     return None
 
 
+_FAMILIA_NA_TELA = {
+    "cartas": "CARTAS",
+    "relacoes": "DADOS DA CARTA",
+    "dimensoes": "CLUBE/LIGA/PAIS",
+    "impetos": "IMPETOS",
+    "tecnicos": "TECNICOS",
+    "catalogos": "CATALOGOS",
+    "textos": "TEXTOS",
+}
+
+_TIPO_NA_TELA = {"new": "NOVO", "altered": "ALTERADO", "removed": "SUMIU DO JOGO"}
+
+
 def _selection_description(family: str, table: str, identity: dict[str, Any]) -> str:
     identity_text = ", ".join(f"{key}={identity[key]}" for key in sorted(identity))
     return f"{family} | {table} | {identity_text}"
+
+
+def _nomes_das_cartas(run_dir: Any) -> dict[str, str]:
+    """Nome da carta para a tela de selecao, lido do artefato da propria rodada."""
+    caminho = run_dir / "cartas-fisicas.csv"
+    if not caminho.is_file():
+        return {}
+    nomes: dict[str, str] = {}
+    try:
+        with caminho.open("r", encoding="utf-8-sig", errors="replace", newline="") as arquivo:
+            for linha in csv.DictReader(arquivo):
+                identificador = str(linha.get("card_id") or "").strip()
+                nome = str(linha.get("nome") or "").strip()
+                if identificador and nome:
+                    nomes[identificador] = nome
+    except OSError:
+        return {}
+    return nomes
+
+
+def _rotular_selecao(application_status: dict[str, Any], application_payload: dict[str, Any], run_dir: Any) -> None:
+    """Troca "cartas | carta_jogo | card_id=100022" por algo que da para ler.
+
+    Ordem do Luis (04/09/2026): a janela ESCOLHER O QUE ENVIAR mostrava 30 mil
+    linhas de codigo cru. Agora cada linha diz a parte do jogo, se e novo ou
+    alterado, e o nome da carta. A ordem tambem muda: itens do mesmo bloco ficam
+    juntos, para marcar em sequencia.
+    """
+    nomes = _nomes_das_cartas(run_dir)
+    itens = application_status.get("selectable_items") or []
+    blocos: dict[str, dict[str, Any]] = {}
+    bloco_do_item: dict[str, str] = {}
+    for item in itens:
+        if not isinstance(item, dict):
+            continue
+        identidade = item.get("identidade") if isinstance(item.get("identidade"), dict) else {}
+        familia = _FAMILIA_NA_TELA.get(str(item.get("familia")), str(item.get("familia") or "?").upper())
+        tipos = item.get("tipos") if isinstance(item.get("tipos"), list) else []
+        tipo = "/".join(_TIPO_NA_TELA.get(str(t), str(t)) for t in tipos) or "SEM CLASSIFICACAO"
+        tabela = str(item.get("tabela") or "?")
+        bloco_id = runtime.sha256_json({"bloco": [str(item.get("familia")), tabela, tipo]})[:24]
+        bloco = blocos.setdefault(bloco_id, {
+            "selecao_id": bloco_id, "familia": item.get("familia"), "tabela": tabela,
+            "tipos": tipos, "familia_na_tela": familia, "tipo_na_tela": tipo,
+            "itens": 0, "cartas": set(), "exemplos": [],
+        })
+        bloco["itens"] += 1
+        carta = identidade.get("card_id")
+        if carta is not None:
+            bloco["cartas"].add(str(carta))
+            if len(bloco["exemplos"]) < 4:
+                nome = nomes.get(str(carta))
+                bloco["exemplos"].append(nome or f"carta {carta}")
+        elif len(bloco["exemplos"]) < 4:
+            bloco["exemplos"].append(", ".join(f"{k}={identidade[k]}" for k in sorted(identidade)))
+        chave = item.get("selecao_id")
+        if isinstance(chave, str):
+            bloco_do_item[chave] = bloco_id
+
+    linhas_da_tela: list[dict[str, Any]] = []
+    for bloco in blocos.values():
+        cartas = len(bloco["cartas"])
+        quanto = f"{bloco['itens']} linha(s)" + (f" em {cartas} carta(s)" if cartas else "")
+        exemplos = "; ".join(bloco["exemplos"][:4])
+        reticencia = "..." if bloco["itens"] > 4 else ""
+        linhas_da_tela.append({
+            "selecao_id": bloco["selecao_id"],
+            "descricao": f"{bloco['familia_na_tela']} · {bloco['tipo_na_tela']} · {quanto} · [{bloco['tabela']}] · ex: {exemplos}{reticencia}",
+            "familia": bloco["familia"],
+            "tabela": bloco["tabela"],
+            "tipos": bloco["tipos"],
+            "itens_no_bloco": bloco["itens"],
+            "cartas_no_bloco": cartas,
+        })
+    application_status["selectable_items"] = sorted(linhas_da_tela, key=lambda b: str(b["descricao"]))
+    application_status["selecao_por_bloco"] = True
+    application_status["itens_individuais"] = sum(b["itens_no_bloco"] for b in linhas_da_tela)
+    # O mapa fica no status, nunca dentro do envelope: o envelope e conferido por
+    # hash contra a comparacao fisica na hora de aplicar, e qualquer campo extra
+    # nele faria a conferencia falhar.
+    mapa: dict[str, list[str]] = {}
+    for item_id, bloco_id in bloco_do_item.items():
+        mapa.setdefault(bloco_id, []).append(item_id)
+    application_status["mapa_dos_blocos"] = {k: sorted(v) for k, v in mapa.items()}
 
 
 def _selection_coverage_observations(review_gate: dict[str, Any], reports: dict[str, Any]) -> dict[str, Any]:
@@ -798,11 +898,16 @@ def build_application_payload(contract: dict[str, Any], result: dict[str, Any]) 
     payload_by_family = {item["familia"]: item for item in payload_families}
     blockers: list[dict[str, Any]] = []
     not_selectable_items: list[dict[str, Any]] = []
+    deferred_items: list[dict[str, Any]] = []
+    blocked_families: dict[str, list[str]] = {}
     historical_warnings = 0
     unresolved_pending = 0
     changed_entries = 0
     eligible_changed_entries = 0
     envelope_index: dict[tuple[str, Any, str], dict[str, Any]] = {}
+    # Fora do envelope de proposito: o envelope e conferido por hash contra a
+    # comparacao fisica na hora de aplicar, e campo extra nele quebra a conferencia.
+    colunas_em_branco: dict[str, list[str]] = {}
     reports = result.get("comparison_reports")
     if not isinstance(reports, dict):
         reports = {}
@@ -822,6 +927,14 @@ def build_application_payload(contract: dict[str, Any], result: dict[str, Any]) 
                 continue
             if kind == "known_pending":
                 unresolved_pending += 1
+                continue
+            if kind == "deferred":
+                # Ordem do Luis (04/09/2026): item sem referencia canonica nesta
+                # rodada fica pendente e volta na proxima. Nao trava o lote.
+                deferred_items.append({
+                    "familia": family, "relatorio": str(report_key), "chave": identity_for_log,
+                    "motivo": str(entry.get("motivo") or "adiado para a proxima varredura"),
+                })
                 continue
             if kind in ("repeated", "invalid"):
                 not_selectable_items.append({"familia": family, "relatorio": str(report_key), "tipo": kind, "chave": identity_for_log, "motivo": "não selecionável: integridade técnica pendente"})
@@ -853,7 +966,22 @@ def build_application_payload(contract: dict[str, Any], result: dict[str, Any]) 
                     best = max((score for score, _ in scored), default=0)
                     candidates = [target for score, target in scored if score == best and score > 0]
             if len(candidates) != 1:
-                not_selectable_items.append({"familia": family, "relatorio": str(report_key), "tipo": kind, "chave": identity, "motivo": "não selecionável: destino ausente ou ambíguo para a mudança física"})
+                escopo = str(entry.get("escopo") or "")
+                if not family_targets:
+                    porque = "o contrato de escrita não declara nenhuma tabela de destino para a família " + family
+                elif hint and not any(t.get("tabela") == hint for t in family_targets):
+                    porque = "o comparador aponta a tabela " + str(hint) + ", que o contrato de escrita não declara"
+                elif not candidates:
+                    porque = ("nenhuma tabela do contrato tem exatamente a chave "
+                              + ", ".join(sorted(identity)) + (" (escopo " + escopo + ")" if escopo else ""))
+                else:
+                    porque = ("a chave " + ", ".join(sorted(identity)) + " serve para "
+                              + str(len(candidates)) + " tabelas do contrato: "
+                              + ", ".join(sorted(str(t.get("tabela")) for t in candidates)))
+                not_selectable_items.append({
+                    "familia": family, "relatorio": str(report_key), "tipo": kind, "chave": identity,
+                    "motivo": "não selecionável: " + porque,
+                })
                 continue
             target = candidates[0]
             keys = [str(column) for column in target.get("colunas_chave") or []]
@@ -879,15 +1007,41 @@ def build_application_payload(contract: dict[str, Any], result: dict[str, Any]) 
             values.update(canonical_identity)
             missing_keys = [column for column in keys if values.get(column) is None]
             required_for_new = [column for column in writable if column not in keys]
-            if missing_keys or (kind == "new" and any(column not in values for column in required_for_new)):
-                not_selectable_items.append({"familia": family, "relatorio": str(report_key), "tipo": kind, "chave": identity, "motivo": "não selecionável: faltam campos físicos exigidos para uma linha nova"})
+            # Ordem do Luis (04/09/2026): linha nova NAO exige toda coluna
+            # gravavel. Clube e liga, por exemplo, nao existem no arquivo do
+            # jogo - vem do servidor - e exigi-los recusava toda carta nova
+            # para sempre. Sem a chave nao da para criar; o resto que o jogo
+            # nao entrega nasce vazio e o relatorio diz quais ficaram em branco.
+            faltando_no_jogo = [column for column in required_for_new if column not in values]
+            # Ha destino cuja unica coluna gravavel E a propria chave - carta_estilo_ia_jogo
+            # e (card_id, bit_estilo_ia) e nada mais. Nesse caso a chave completa JA e a
+            # linha inteira; exigir "um campo alem da chave" recusava 278 estilos de IA de
+            # carta nova. Se nao existe coluna alem da chave, a chave basta.
+            if missing_keys or (kind == "new" and required_for_new and not any(column in values for column in required_for_new)):
+                if missing_keys:
+                    porque = "a leitura nao trouxe a chave: " + ", ".join(missing_keys)
+                else:
+                    porque = ("a leitura nao trouxe nenhum dos campos gravaveis de "
+                              + str(target.get("tabela")) + ": " + ", ".join(sorted(required_for_new)[:8]))
+                not_selectable_items.append({
+                    "familia": family, "relatorio": str(report_key), "tipo": kind, "chave": identity,
+                    "motivo": "não selecionável: " + porque,
+                })
                 continue
             if kind == "altered" and required_for_new and not any(column in values for column in required_for_new):
-                not_selectable_items.append({"familia": family, "relatorio": str(report_key), "tipo": kind, "chave": identity, "motivo": "não selecionável: diferença sem campo gravável no destino"})
+                not_selectable_items.append({
+                    "familia": family, "relatorio": str(report_key), "tipo": kind, "chave": identity,
+                    "motivo": "não selecionável: o comparador entregou campos que não existem em "
+                              + str(target.get("tabela")) + " (" + ", ".join(sorted(set(source_values) - set(allowed))[:6]) + ")",
+                })
                 continue
             provenance = _entry_provenance(entry)
             if target.get("exige_procedencia") and not provenance:
-                not_selectable_items.append({"familia": family, "relatorio": str(report_key), "tipo": kind, "chave": identity, "motivo": "não selecionável: mudança sem procedência física persistida"})
+                not_selectable_items.append({
+                    "familia": family, "relatorio": str(report_key), "tipo": kind, "chave": identity,
+                    "motivo": ("não selecionável: o destino " + str(target.get("tabela"))
+                               + " exige procedência (de qual arquivo e registro o dado veio) e o comparador não a entregou"),
+                })
                 continue
             serialized_identity = json.dumps(canonical_identity, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
             index_key = (family, target.get("destino_id"), serialized_identity)
@@ -904,6 +1058,7 @@ def build_application_payload(contract: dict[str, Any], result: dict[str, Any]) 
                     "origens_alteracao": [],
                 }
                 envelope_index[index_key] = envelope
+                colunas_em_branco[selection_id] = list(faltando_no_jogo)
                 payload_target = next(item for item in payload_by_family[family]["destinos"] if item.get("destino_id") == target.get("destino_id"))
                 payload_target["envelopes"].append(envelope)
                 eligible_changed_entries += 1
@@ -920,17 +1075,29 @@ def build_application_payload(contract: dict[str, Any], result: dict[str, Any]) 
                 continue
             envelope["valores"].update(values)
 
-    if not coverage["selection_scope_ready"]:
+    for familia_bloqueada, motivos in (coverage["fatal_family_reasons"] or {}).items():
+        blocked_families[str(familia_bloqueada)] = [str(m) for m in motivos]
+    if coverage["fatal_blockers"]:
         blockers.append({
             "familia": "contrato",
             "tipo": "coverage",
             "motivo": "há falha estrutural fora das pendências já mostradas no relatório",
-            "detalhes": {
-                "bloqueios": coverage["fatal_blockers"],
-                "familias": coverage["fatal_family_reasons"],
-            },
+            "detalhes": {"bloqueios": coverage["fatal_blockers"]},
         })
 
+    if blocked_families:
+        for family in payload_families:
+            if str(family["familia"]) not in blocked_families:
+                continue
+            for target in family["destinos"]:
+                for envelope in target["envelopes"]:
+                    not_selectable_items.append({
+                        "familia": family["familia"], "relatorio": str(target.get("tabela")),
+                        "tipo": "family_blocked", "chave": envelope.get("identidade"),
+                        "motivo": "não selecionável: " + "; ".join(blocked_families[str(family["familia"])]),
+                    })
+                    eligible_changed_entries = max(0, eligible_changed_entries - 1)
+                target["envelopes"] = []
     envelope_count = sum(len(target["envelopes"]) for family in payload_families for target in family["destinos"])
     selectable_items = sorted([
         {
@@ -939,6 +1106,11 @@ def build_application_payload(contract: dict[str, Any], result: dict[str, Any]) 
             "familia": family["familia"],
             "tabela": target.get("tabela"),
             "identidade": envelope["identidade"],
+            # Ordem do Luis (04/09/2026): o relatorio tem de separar carta nova de
+            # carta que ja existia e foi alterada. A classificacao ja vem em
+            # origens_alteracao; aqui ela deixa de ficar escondida.
+            "tipos": sorted({str(origem.get("tipo")) for origem in envelope["origens_alteracao"] if origem.get("tipo")}),
+            "colunas_em_branco": sorted(set(colunas_em_branco.get(envelope["selecao_id"]) or []) - set(envelope["valores"])),
         }
         for family in payload_families
         for target in family["destinos"]
@@ -965,10 +1137,14 @@ def build_application_payload(contract: dict[str, Any], result: dict[str, Any]) 
         "report_observations": coverage["observations"],
         "not_selectable_count": len(not_selectable_items),
         "not_selectable_items": not_selectable_items,
+        "deferred_count": len(deferred_items),
+        "deferred_items": deferred_items,
+        "blocked_family_count": len(blocked_families),
+        "blocked_families": blocked_families,
         "blockers": blockers,
-        "transaction_plan": "uma única transação; qualquer erro ou readback divergente executa rollback antes do commit",
-        "rollback_plan": "rollback automático antes do commit; nenhuma remoção é inferida por ausência",
-        "readback_plan": "SELECT independente de todas as colunas gravadas antes do commit e nova conexão somente leitura após o commit",
+        "transaction_plan": "commits por lote; conclusão somente após conferir todos os lotes e a leitura independente",
+        "rollback_plan": "falha reverte o lote ainda não confirmado; lotes já confirmados permanecem e permitem retomar o mesmo pacote; nenhuma remoção é inferida por ausência",
+        "readback_plan": "conferência de cada lote e leitura independente final, respeitando correções manuais; auditoria só fica aplicada após confirmação",
     }
     return payload, status
 
@@ -1550,6 +1726,7 @@ def run(args: argparse.Namespace) -> int:
         emit("complete", state="failed", result_path=str(result_path), database_write=False)
         return 4
     assert child.stdout is not None
+    source_update = None
     for line in child.stdout:
         cancelled(cancel_path)
         line = line.strip()
@@ -1561,11 +1738,17 @@ def run(args: argparse.Namespace) -> int:
             emit("log", message=line)
             continue
         event_type = str(event.pop("type", "log"))
+        if event_type == "source_update":
+            source_update = event
         emit(event_type, **event)
     code = child.wait()
     if code:
         state = "cancelled" if code == 130 or cancel_path.exists() else "failed"
-        write_json(result_path, {"database_write": False, "state": state, "reason": "worker físico encerrado: " + str(code), "families": {}})
+        if source_update:
+            state = "source_update_pending"
+        write_json(result_path, {"database_write": False, "state": state,
+            "reason": source_update["message"] if source_update else "worker físico encerrado: " + str(code),
+            "source_update": source_update, "families": {}})
         emit("complete", state=state, result_path=str(result_path), database_write=False)
         return code
 
@@ -1581,6 +1764,10 @@ def run(args: argparse.Namespace) -> int:
     canonical_cards_path = Path(str((physical.get("artifacts") or {}).get("cards_canonical", "")))
     dimensions_path = Path(str((physical.get("artifacts") or {}).get("dimensions", "")))
     metadata_path = Path(str((physical.get("artifacts") or {}).get("metadata", "")))
+    result["runtime_levels"] = card_levels_database.collect(
+        canonical_cards_path, run_dir, emit, lambda: cancelled(cancel_path)
+    )
+    result.setdefault("artifacts", {})["runtime_levels"] = result["runtime_levels"]["package_path"]
     persist_motor_readiness(
         root,
         run_dir,
@@ -1638,6 +1825,19 @@ def run(args: argparse.Namespace) -> int:
         "payload_sha256": runtime.sha256_json(application_payload),
     }
     write_json(application_plan_path, application_plan)
+    if metadata_path.is_file():
+        # Conferencia de insumos: habilidade, impeto, playstyle e tecnico lidos do
+        # jogo que ainda nao tem pontuacao, nome ou etiqueta em clube_novo.
+        try:
+            engine_inputs = runtime.current_engine_inputs_validation(json.loads(metadata_path.read_text(encoding="utf-8")), config)
+        except Exception as error:
+            engine_inputs = {"contract": "clubef-insumos-motores-v3", "erro": str(error)}
+        result["engine_inputs"] = engine_inputs
+        write_json(run_dir / "insumos-motores.json", engine_inputs)
+        if isinstance(result.get("artifacts"), dict):
+            result["artifacts"]["engine_inputs"] = str(run_dir / "insumos-motores.json")
+
+    _rotular_selecao(application_status, application_payload, run_dir)
     result["application_status"] = application_status
     if isinstance(result.get("artifacts"), dict):
         result["artifacts"]["application_plan"] = str(application_plan_path)
@@ -1656,7 +1856,17 @@ def run(args: argparse.Namespace) -> int:
     package = {"database_write": False, "pacote_revisao": review_package, "pacote_sha256": runtime.sha256_json(review_package)}
     package_path = run_dir / "pacote-revisao.json"
     write_json(package_path, package)
+    write_selection_preview(package_path, application_status)
     result["pacote_revisao"] = {"path": str(package_path), "pacote_sha256": package["pacote_sha256"], "database_write": False}
+    # A varredura geral não altera boxes. CmdGetMyclubAgentlist representa apenas
+    # as ofertas carregadas na sessão atual e não é fonte do acervo histórico.
+    result["boxes_sync"] = {
+        "state": "not_requested",
+        "database_write": False,
+        "reason": "O histórico vem do legado; boxes novas usam a atualização dedicada.",
+    }
+    write_json(run_dir / "boxes-resultado.json", result["boxes_sync"])
+    result["database_write"] = result["boxes_sync"].get("database_write")
     write_json(result_path, result)
     motor_protection: dict[str, Any]
     if application_status.get("state") == "no_changes":
@@ -1713,9 +1923,25 @@ def run(args: argparse.Namespace) -> int:
         historical_warning_count=application_status["historical_warning_count"],
         motor_protection_seed_ready=motor_protection["ready"],
         motor_protection_manifest_path=motor_protection.get("manifest_path"),
-        database_write=False,
+        boxes_sync=result["boxes_sync"],
+        runtime_levels_ready=result["runtime_levels"]["ready"],
+        runtime_levels_package_path=result["runtime_levels"]["package_path"],
+        runtime_levels_cards=result["runtime_levels"]["cards"],
+        database_write=result["database_write"],
     )
     return 0
+
+
+def write_selection_preview(package_path: Path, status: dict[str, Any]) -> None:
+    """Resumo da tela, vinculado ao arquivo completo por SHA-256; não autoriza carga."""
+    with package_path.open("rb") as stream:
+        digest = hashlib.file_digest(stream, "sha256").hexdigest()
+    choices = [{"selecao_id": item["selecao_id"], "descricao": item["descricao"]}
+               for item in status.get("selectable_items") or []]
+    write_json(package_path.with_name("selecao-disponivel.json"), {
+        "schema": "clubef-selecao-disponivel-v1", "arquivo_sha256": digest,
+        "selectable_items": choices, "database_write": False,
+    })
 
 
 def load_review_package(path: str) -> tuple[dict[str, Any], dict[str, Any], str]:
@@ -1767,6 +1993,15 @@ def build_selected_review_package(package: dict[str, Any], selected_ids: list[st
     selected = set(selected_ids)
     payload = copy.deepcopy(review.get("application_payload"))
     available = _payload_selection_index(payload)
+    # A janela lista BLOCOS, nao itens: marcar um bloco marca todos os envelopes
+    # dele. Um id que nao e bloco continua valendo como item avulso.
+    mapa_dos_blocos = status.get("mapa_dos_blocos") if isinstance(status.get("mapa_dos_blocos"), dict) else {}
+    blocos_marcados = {b for b in selected if b in mapa_dos_blocos}
+    if blocos_marcados:
+        expandidos = set(selected - blocos_marcados)
+        for bloco in blocos_marcados:
+            expandidos.update(str(i) for i in mapa_dos_blocos.get(bloco) or [])
+        selected = expandidos
     unknown = sorted(selected - set(available))
     if unknown:
         raise RuntimeError("seleção contém item que não pertence ao pacote: " + ", ".join(unknown))
@@ -1787,7 +2022,10 @@ def build_selected_review_package(package: dict[str, Any], selected_ids: list[st
         "excluded_by_operator_count": len(available) - len(selected),
         "selected_ids": sorted(selected),
         "envelope_count": len(selected_index),
-        "selectable_items": [item for item in status.get("selectable_items") or [] if item.get("selecao_id") in selected],
+        "selectable_items": [
+            item for item in status.get("selectable_items") or []
+            if item.get("selecao_id") in selected or item.get("selecao_id") in blocos_marcados
+        ],
     }
     selected_review = {
         **copy.deepcopy(review),
@@ -1833,7 +2071,22 @@ def validate_current_package(path: str, allow_controlled: bool = False) -> tuple
     package, review, supplied_sha = load_review_package(path)
     config = runtime.load_config(); contract = runtime.current_reading_contract(config)
     seal = runtime.reading_contract_seal(contract)
-    if review.get("reading_contract") != seal: raise RuntimeError("pacote desatualizado: contrato/fontes divergentes")
+    selo_do_pacote = review.get("reading_contract")
+    if selo_do_pacote != seal:
+        # A propria carga grava nos catalogos (impetos, tecnicos, clubes), entao o
+        # dedo do catalogo muda no meio de uma aplicacao em lote. Numa RETOMADA
+        # isso e esperado: o que nao pode mudar e o contrato e os arquivos do
+        # jogo. Quem confirma que e mesmo retomada e o apply_review, olhando os
+        # lotes ja confirmados deste pacote.
+        so_o_catalogo = (
+            isinstance(selo_do_pacote, dict)
+            and {k: v for k, v in selo_do_pacote.items() if k != "fingerprint_catalogos_sha256"}
+            == {k: v for k, v in seal.items() if k != "fingerprint_catalogos_sha256"}
+        )
+        if not so_o_catalogo:
+            raise RuntimeError("pacote desatualizado: contrato/fontes divergentes")
+        seal = dict(selo_do_pacote)
+        globals()["_CATALOGO_MUDOU_DESDE_O_PACOTE"] = True
     current_readiness = runtime.evaluate_sync_readiness(contract, review.get("contract_families") or {})
     missing = [role for role, item in sources(contract).items() if item.get("required", True) and not item.get("found")]
     if missing:
@@ -2017,52 +2270,261 @@ def validate_application_payload(contract: dict[str, Any], payload: Any) -> tupl
     return planned, audit
 
 
-def apply_declared_envelopes(connection: Any, sql: Any, planned: list[tuple[dict[str, Any], dict[str, Any], dict[str, Any]]]) -> dict[str, int]:
-    """UPSERT genérico: identificadores e colunas vêm apenas do contrato já validado."""
+def _blocos(itens: list[Any], tamanho: int):
+    """Fatia uma lista em pedacos do tamanho pedido."""
+    for inicio in range(0, len(itens), tamanho):
+        yield itens[inicio:inicio + tamanho]
+
+
+def _linhas_por_bloco(quantidade_de_colunas: int, total_de_linhas: int = 0) -> int:
+    """Quantas linhas cabem num comando sem estourar o limite de parametros.
+
+    Quando o grupo inteiro cabe num comando so, ele vai inteiro: renumeracao de
+    registro (o indice que anda de lugar quando o jogo insere um item no meio)
+    so fecha se as linhas do grupo entrarem juntas.
+    """
+    normal = max(1, min(200, 20000 // max(1, quantidade_de_colunas)))
+    inteiro = max(1, 20000 // max(1, quantidade_de_colunas))
+    if total_de_linhas and total_de_linhas <= min(500, inteiro):
+        return total_de_linhas
+    return normal
+
+
+def _grupos_por_destino(planned: list[tuple[dict[str, Any], dict[str, Any], dict[str, Any]]]):
+    """Percorre os destinos na ordem do contrato e junta linhas de mesmo formato."""
+    ordenado = sorted(planned, key=lambda item: (int(item[1].get("ordem_lote", 100)), str(item[1].get("destino_id"))))
+    inicio = 0
+    while inicio < len(ordenado):
+        destino = str(ordenado[inicio][1].get("destino_id"))
+        fim = inicio
+        grupos: dict[tuple[str, ...], list[dict[str, Any]]] = {}
+        ordem_dos_grupos: list[tuple[str, ...]] = []
+        alvo_do_grupo: dict[tuple[str, ...], dict[str, Any]] = {}
+        while fim < len(ordenado) and str(ordenado[fim][1].get("destino_id")) == destino:
+            _, target, envelope = ordenado[fim]
+            colunas = tuple(sorted(envelope["valores"]))
+            if colunas not in grupos:
+                grupos[colunas] = []
+                ordem_dos_grupos.append(colunas)
+                alvo_do_grupo[colunas] = target
+            grupos[colunas].append(envelope["valores"])
+            fim += 1
+        for colunas in ordem_dos_grupos:
+            yield destino, colunas, alvo_do_grupo[colunas], grupos[colunas]
+        inicio = fim
+
+
+def _upsert_do_grupo(sql: Any, target: dict[str, Any], colunas: tuple[str, ...], quantas_linhas: int) -> Any:
+    table = str(target["tabela"]); keys = [str(key) for key in target["colunas_chave"]]
+    updates = [coluna for coluna in colunas if coluna not in keys]
+    if updates:
+        update_clause = sql.SQL("update set {}").format(sql.SQL(", ").join(sql.SQL("{} = excluded.{}").format(sql.Identifier(c), sql.Identifier(c)) for c in updates))
+    else:
+        update_clause = sql.SQL("nothing")
+    return sql.SQL("insert into {}.{} ({}) values {} on conflict ({}) do {}").format(
+        sql.Identifier(str(target["schema"])), sql.Identifier(table),
+        sql.SQL(", ").join(sql.Identifier(c) for c in colunas),
+        sql.SQL(", ").join(sql.SQL("({})").format(sql.SQL(", ").join(sql.Placeholder() for _ in colunas)) for _ in range(quantas_linhas)),
+        sql.SQL(", ").join(sql.Identifier(k) for k in keys),
+        update_clause,
+    )
+
+
+def _manual_values(connection: Any) -> dict[str, list[tuple[dict, str, Any]]]:
+    grouped: dict[str, list[tuple[dict, str, Any]]] = {}
+    for table, key, column, value in connection.execute(
+        "select destino_tabela,chave,coluna,valor from clube_novo.valor_do_dono where destino_schema='clube_novo'"
+    ).fetchall():
+        grouped.setdefault(str(table), []).append((key, str(column), value))
+    return grouped
+
+
+def _effective_manual_values(table: str, values: dict, protections: dict) -> dict:
+    """Mantém o pacote físico intacto e confere o valor efetivo decidido pelo dono."""
+    expected = dict(values)
+    for key, column, value in protections.get(table, []):
+        if column in expected and all(k in values and values[k] == v for k, v in key.items()):
+            expected[column] = value
+    return expected
+
+
+def _confere_o_lote(connection: Any, sql: Any, target: dict[str, Any], colunas: tuple[str, ...], linhas: list[dict[str, Any]]) -> str:
+    """Rele por SELECT o lote recem gravado e compara valor por valor."""
+    protections = _manual_values(connection)
+    keys = [str(key) for key in target["colunas_chave"]]
+    colunas_lidas = tuple(sorted(set(colunas) | set(keys)))
+    lidas: dict[tuple[Any, ...], dict[str, Any]] = {}
+    with connection.cursor() as cursor:
+        # a releitura vai em pedacos pequenos: uma lista longa demais de chaves
+        # estoura o limite de profundidade do proprio banco
+        for pedaco in _blocos(linhas, 200):
+            query = sql.SQL("select {} from {}.{} where ({}) in ({})").format(
+                sql.SQL(", ").join(sql.Identifier(c) for c in colunas_lidas),
+                sql.Identifier(str(target["schema"])), sql.Identifier(str(target["tabela"])),
+                sql.SQL(", ").join(sql.Identifier(k) for k in keys),
+                sql.SQL(", ").join(sql.SQL("({})").format(sql.SQL(", ").join(sql.Placeholder() for _ in keys)) for _ in pedaco),
+            )
+            parametros: list[Any] = []
+            for valores in pedaco:
+                parametros.extend(valores[k] for k in keys)
+            for linha in cursor.execute(query, tuple(parametros)).fetchall():
+                observada = dict(zip(colunas_lidas, linha, strict=True))
+                lidas[tuple(observada[k] for k in keys)] = observada
+    digest = hashlib.sha256()
+    for valores in linhas:
+        observada = lidas.get(tuple(valores[k] for k in keys))
+        if observada is None:
+            raise RuntimeError(f"conferencia do lote nao encontrou a linha gravada em {target['destino_id']}")
+        observed = {c: observada[c] for c in colunas}
+        expected = _effective_manual_values(str(target["tabela"]), valores, protections)
+        diferencas = [c for c in colunas if observed[c] != expected[c]]
+        if diferencas:
+            raise RuntimeError(f"conferencia do lote divergiu em {target['destino_id']}: {', '.join(diferencas)}")
+        canonical = {"destino_id": target.get("destino_id"), "valores": observed}
+        digest.update(json.dumps(canonical, ensure_ascii=False, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8"))
+        digest.update(b"\n")
+    return digest.hexdigest()
+
+
+def _linhas_por_bloco(quantidade_de_colunas: int, total_de_linhas: int = 0) -> int:
+    """Quantas linhas cabem num comando sem estourar o limite de parametros.
+
+    Quando o grupo inteiro cabe num comando so, ele vai inteiro: renumeracao de
+    registro (o indice que anda de lugar quando o jogo insere um item no meio)
+    so fecha se as linhas do grupo entrarem juntas.
+    """
+    normal = max(1, min(200, 20000 // max(1, quantidade_de_colunas)))
+    inteiro = max(1, 20000 // max(1, quantidade_de_colunas))
+    if total_de_linhas and total_de_linhas <= min(500, inteiro):
+        return total_de_linhas
+    return normal
+
+
+def _lotes_ja_confirmados(connection: Any, pacote_sha256: str) -> set[tuple[str, str, int]]:
+    linhas = connection.execute(
+        "select destino_id, assinatura, bloco from clube_novo.aplicacao_lote_extrator where pacote_sha256 = %s",
+        (pacote_sha256,),
+    ).fetchall()
+    return {(str(a), str(b), int(c)) for a, b, c in linhas}
+
+
+def apply_declared_envelopes(connection: Any, sql: Any, planned: list[tuple[dict[str, Any], dict[str, Any], dict[str, Any]]], pacote_sha256: str = "") -> dict[str, int]:
+    """Grava em lote, confere cada lote e confirma cada lote de uma vez.
+
+    04/09/2026, ordem do Luis: a carga sobe em lote e retoma de onde parou. Cada
+    lote e gravado, relido linha a linha e confirmado na MESMA transacao. Se o
+    lote seguinte falhar, o que ja entrou continua no banco e a proxima
+    tentativa do mesmo pacote pula o que ja esta confirmado. As colunas
+    autorizadas e a ordem dos destinos continuam vindo so do contrato.
+    """
     applied: dict[str, int] = {}
-    for _, target, envelope in sorted(planned, key=lambda item: (int(item[1].get("ordem_lote", 100)), str(item[1].get("destino_id")))):
-        table = str(target["tabela"]); keys = [str(key) for key in target["colunas_chave"]]
-        values = envelope["valores"]
-        columns = sorted(values)
-        updates = [column for column in columns if column not in keys]
-        insert = sql.SQL("insert into {}.{} ({}) values ({}) on conflict ({}) do {}")
-        if updates:
-            update_clause = sql.SQL("update set {}").format(sql.SQL(", ").join(sql.SQL("{} = excluded.{}").format(sql.Identifier(column), sql.Identifier(column)) for column in updates))
-        else:
-            update_clause = sql.SQL("nothing")
-        query = insert.format(
-            sql.Identifier(str(target["schema"])), sql.Identifier(table),
-            sql.SQL(", ").join(sql.Identifier(column) for column in columns),
-            sql.SQL(", ").join(sql.Placeholder() for _ in columns),
-            sql.SQL(", ").join(sql.Identifier(key) for key in keys),
-            update_clause,
-        )
-        connection.execute(query, tuple(values[column] for column in columns))
-        applied[table] = applied.get(table, 0) + 1
+    ja_feitos = _lotes_ja_confirmados(connection, pacote_sha256) if pacote_sha256 else set()
+    total_planejado = len(planned)
+    feitas = 0
+    puladas = 0
+    for destino, colunas, target, linhas_do_grupo in _grupos_por_destino(planned):
+        table = str(target["tabela"]); keys = [str(k) for k in target["colunas_chave"]]
+        assinatura = hashlib.sha256(("|".join(colunas)).encode("utf-8")).hexdigest()[:16]
+        unicas: dict[tuple[Any, ...], dict[str, Any]] = {}
+        for valores in linhas_do_grupo:
+            unicas[tuple(valores[k] for k in keys)] = valores
+        linhas = list(unicas.values())
+        tamanho = _linhas_por_bloco(len(colunas), len(linhas))
+        blocos = [linhas[i:i + tamanho] for i in range(0, len(linhas), tamanho)]
+        for numero, bloco in enumerate(blocos, start=1):
+            if (destino, assinatura, numero) in ja_feitos:
+                puladas += len(bloco); feitas += len(bloco)
+                applied[table] = applied.get(table, 0) + len(bloco)
+                continue
+            query = _upsert_do_grupo(sql, target, colunas, len(bloco))
+            parametros: list[Any] = []
+            for valores in bloco:
+                parametros.extend(valores[c] for c in colunas)
+            with connection.cursor() as cursor:
+                # o banco precisa saber quais colunas ESTE comando escreve: so as
+                # de fora dessa lista herdam o que ja esta gravado na linha
+                cursor.execute("select set_config('clubef.colunas_do_comando', %s, true)", (",".join(colunas),))
+                cursor.execute(query, tuple(parametros))
+            conferencia = _confere_o_lote(connection, sql, target, colunas, bloco)
+            if pacote_sha256:
+                connection.execute(
+                    """insert into clube_novo.aplicacao_lote_extrator
+                       (pacote_sha256,destino_id,assinatura,bloco,linhas,conferencia_sha)
+                       values (%s,%s,%s,%s,%s,%s)
+                       on conflict (pacote_sha256,destino_id,assinatura,bloco) do nothing""",
+                    (pacote_sha256, destino, assinatura, numero, len(bloco), conferencia),
+                )
+            connection.commit()
+            feitas += len(bloco)
+            applied[table] = applied.get(table, 0) + len(bloco)
+            emit(
+                "progress",
+                stage="aplicacao",
+                tabela=table,
+                destino_id=destino,
+                bloco=numero,
+                blocos_do_grupo=len(blocos),
+                linhas_do_bloco=len(bloco),
+                linhas_confirmadas=feitas,
+                linhas_no_pacote=total_planejado,
+                percentual=round(100.0 * feitas / max(1, total_planejado), 2),
+            )
+    if puladas:
+        emit("progress", stage="retomada", linhas_puladas=puladas, motivo="lotes ja confirmados numa tentativa anterior deste mesmo pacote")
     return applied
 
 
 def readback_declared_envelopes(connection: Any, sql: Any, planned: list[tuple[dict[str, Any], dict[str, Any], dict[str, Any]]]) -> dict[str, Any]:
-    """Relê por SELECT todas as colunas gravadas e compara valor por valor."""
+    """Rele por SELECT todas as colunas gravadas e compara valor por valor.
+
+    04/09/2026: le em blocos. A ordem do resumo, a conferencia valor a valor e o
+    sha256 continuam exatamente os mesmos; muda so que as linhas vem muitas de
+    cada vez em vez de uma por ida ao banco.
+    """
+    protections = _manual_values(connection)
     digest = hashlib.sha256()
     rows_checked = 0
     by_table: dict[str, int] = {}
-    for _, target, envelope in sorted(planned, key=lambda item: (str(item[1].get("destino_id")), json.dumps(item[2].get("identidade"), sort_keys=True, default=str))):
+    ordenado = sorted(planned, key=lambda item: (str(item[1].get("destino_id")), json.dumps(item[2].get("identidade"), sort_keys=True, default=str)))
+
+    pedidos: dict[tuple[str, tuple[str, ...]], tuple[dict[str, Any], list[tuple[Any, ...]]]] = {}
+    for _, target, envelope in ordenado:
+        colunas = tuple(sorted(envelope["valores"]))
+        assinatura = (str(target.get("destino_id")), colunas)
+        if assinatura not in pedidos:
+            pedidos[assinatura] = (target, [])
+        keys = [str(key) for key in target["colunas_chave"]]
+        pedidos[assinatura][1].append(tuple(envelope["identidade"][key] for key in keys))
+
+    lidas: dict[tuple[str, tuple[str, ...], tuple[Any, ...]], dict[str, Any]] = {}
+    with connection.cursor() as cursor:
+        for (destino, colunas), (target, identidades) in pedidos.items():
+            keys = [str(key) for key in target["colunas_chave"]]
+            colunas_lidas = tuple(sorted(set(colunas) | set(keys)))
+            for bloco in _blocos(identidades, _linhas_por_bloco(len(keys))):
+                query = sql.SQL("select {} from {}.{} where ({}) in ({})").format(
+                    sql.SQL(", ").join(sql.Identifier(coluna) for coluna in colunas_lidas),
+                    sql.Identifier(str(target["schema"])), sql.Identifier(str(target["tabela"])),
+                    sql.SQL(", ").join(sql.Identifier(key) for key in keys),
+                    sql.SQL(", ").join(sql.SQL("({})").format(sql.SQL(", ").join(sql.Placeholder() for _ in keys)) for _ in bloco),
+                )
+                parametros: list[Any] = []
+                for identidade in bloco:
+                    parametros.extend(identidade)
+                for linha in cursor.execute(query, tuple(parametros)).fetchall():
+                    observada = dict(zip(colunas_lidas, linha, strict=True))
+                    lidas[(destino, colunas, tuple(observada[key] for key in keys))] = observada
+
+    for _, target, envelope in ordenado:
         table = str(target["tabela"]); keys = [str(key) for key in target["colunas_chave"]]
         values = envelope["valores"]
-        columns = sorted(values)
-        query = sql.SQL("select {} from {}.{} where {}")
-        query = query.format(
-            sql.SQL(", ").join(sql.Identifier(column) for column in columns),
-            sql.Identifier(str(target["schema"])),
-            sql.Identifier(table),
-            sql.SQL(" and ").join(sql.SQL("{} = {}").format(sql.Identifier(key), sql.Placeholder()) for key in keys),
-        )
-        rows = connection.execute(query, tuple(envelope["identidade"][key] for key in keys)).fetchall()
-        if len(rows) != 1:
+        colunas = tuple(sorted(values))
+        observada = lidas.get((str(target.get("destino_id")), colunas, tuple(values[key] for key in keys)))
+        if observada is None:
             raise RuntimeError(f"readback independente não encontrou uma linha única em {target['destino_id']}")
-        observed = dict(zip(columns, rows[0], strict=True))
-        differences = [column for column in columns if observed[column] != values[column]]
+        observed = {coluna: observada[coluna] for coluna in colunas}
+        expected = _effective_manual_values(table, values, protections)
+        differences = [coluna for coluna in colunas if observed[coluna] != expected[coluna]]
         if differences:
             raise RuntimeError(f"readback independente divergiu em {target['destino_id']}: {', '.join(differences)}")
         canonical = {"destino_id": target.get("destino_id"), "identidade": envelope["identidade"], "valores": observed}
@@ -2073,8 +2535,26 @@ def readback_declared_envelopes(connection: Any, sql: Any, planned: list[tuple[d
     return {"rows_checked": rows_checked, "tables": by_table, "sha256": digest.hexdigest()}
 
 
+def finalize_review_application(connection: Any, sql: Any, planned: list, application_id: int, package_sha256: str) -> dict:
+    """Só confirma o pacote depois da releitura integral em conexão independente."""
+    readback = readback_declared_envelopes(connection, sql, planned)
+    row = connection.execute(
+        """update clube_novo.aplicacao_pacote_revisao_extrator
+           set estado='aplicado', aplicado_em=now(),
+               auditoria_familias=auditoria_familias || %s::jsonb
+           where aplicacao_id=%s and pacote_sha256=%s
+             and estado='aguardando_conferencia'
+           returning estado""",
+        (json.dumps({"readback_independente": readback}, ensure_ascii=False), application_id, package_sha256),
+    ).fetchone()
+    if row != ("aplicado",):
+        raise RuntimeError("estado do pacote mudou antes da confirmação final")
+    connection.commit()
+    return readback
+
+
 def apply_review(args: argparse.Namespace) -> int:
-    """Aplica exclusivamente um pacote aprovado, numa única transação.
+    """Aplica exclusivamente um pacote aprovado em lotes retomáveis.
 
     Os dados de domínio ainda entram somente por envelopes tipados por família.
     Assim, pacote que contenha apenas relatório de comparação não pode causar
@@ -2110,24 +2590,66 @@ def apply_review(args: argparse.Namespace) -> int:
         family_audit["payload_sha256"] = runtime.sha256_json(payload)
         application = connection.execute(
             """insert into clube_novo.aplicacao_pacote_revisao_extrator
-               (idempotency_key,execucao_id,contrato_id,pacote_sha256,selo_contrato,manifesto_fontes,cobertura_familias,auditoria_familias,estado)
-               values (%s,%s,%s,%s,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,'aplicado') returning aplicacao_id""",
+               (idempotency_key,execucao_id,contrato_id,pacote_sha256,selo_contrato,manifesto_fontes,cobertura_familias,auditoria_familias,estado,aplicado_em)
+               values (%s,%s,%s,%s,%s::jsonb,%s::jsonb,%s::jsonb,%s::jsonb,'aplicando',null)
+               on conflict (idempotency_key) do update set estado='aplicando', aplicado_em=null returning aplicacao_id""",
             (idempotency_key, staged[0], contract["contrato_id"], supplied_sha, json.dumps(seal, ensure_ascii=False), json.dumps(source_manifest, ensure_ascii=False), json.dumps(readiness["families"], ensure_ascii=False), json.dumps(family_audit, ensure_ascii=False)),
         ).fetchone()
         readback = connection.execute("select pacote_sha256,contrato_id,estado from clube_novo.aplicacao_pacote_revisao_extrator where aplicacao_id=%s", (application[0],)).fetchone()
-        if readback != (supplied_sha, contract["contrato_id"], "aplicado"):
+        if readback != (supplied_sha, contract["contrato_id"], "aplicando"):
             raise RuntimeError("readback de auditoria de aplicação divergente")
         if controlled:
             connection.rollback()
             emit("complete", state="application_test_rolled_back", database_write=False, data_domain_write=False, package_sha256=supplied_sha, audit_readback=True, writers=writer_audit)
             return 0
-        applied = apply_declared_envelopes(connection, sql, planned)
-        precommit_readback = readback_declared_envelopes(connection, sql, planned)
         connection.commit()
+        emit("progress", stage="auditoria", state="pacote_selado", package_sha256=supplied_sha, linhas_no_pacote=len(planned))
+        # A carta nova nasce de dois envelopes, que agora caem em lotes diferentes.
+        # Durante a carga o banco nao veta a carta pela metade; a conferencia do
+        # vinculo fisico e feita aqui no fim, sobre a tabela inteira.
+        if globals().get("_CATALOGO_MUDOU_DESDE_O_PACOTE"):
+            ja_feitos = connection.execute(
+                "select count(*) from clube_novo.aplicacao_lote_extrator where pacote_sha256 = %s",
+                (supplied_sha,),
+            ).fetchone()
+            if not ja_feitos or not ja_feitos[0]:
+                raise RuntimeError(
+                    "pacote desatualizado: os catalogos do banco mudaram e este pacote ainda nao gravou nada"
+                )
+            emit("progress", stage="retomada", state="catalogo_mudou_pela_propria_carga", lotes_ja_confirmados=int(ja_feitos[0]))
+        connection.execute("set clubef.carga_extrator = 'on'")
+        connection.commit()
+        try:
+            applied = apply_declared_envelopes(connection, sql, planned, supplied_sha)
+            pendentes = connection.execute(
+                "select card_id, falta from clube_novo.cartas_com_vinculo_incompleto() limit 20"
+            ).fetchall()
+            if pendentes:
+                raise RuntimeError(
+                    "a carga terminou mas ficaram cartas com vinculo fisico incompleto: "
+                    + "; ".join(f"{card} ({falta})" for card, falta in pendentes)
+                )
+            emit("progress", stage="conferencia_final", state="vinculo_fisico_ok")
+            connection.execute(
+                "update clube_novo.aplicacao_pacote_revisao_extrator set estado='aguardando_conferencia' where aplicacao_id=%s",
+                (application[0],),
+            )
+            connection.commit()
+        finally:
+            try:
+                connection.execute("set clubef.carga_extrator = 'off'")
+                connection.commit()
+            except Exception:
+                pass
     with psycopg.connect(dsn, connect_timeout=20) as verify_connection:
-        postcommit_readback = readback_declared_envelopes(verify_connection, sql, planned)
-    if precommit_readback != postcommit_readback:
-        raise RuntimeError("readback pós-commit divergiu da conferência transacional")
+        postcommit_readback = finalize_review_application(verify_connection, sql, planned, application[0], supplied_sha)
+    # Aplicar cartas não altera boxes. O histórico vem do legado e novas boxes
+    # usam a atualização dedicada na tela principal do extrator.
+    box_result = {
+        "state": "not_requested",
+        "database_write": False,
+        "reason": "O histórico vem do legado; boxes novas usam a atualização dedicada.",
+    }
     emit(
         "complete",
         state="applied",
@@ -2136,6 +2658,7 @@ def apply_review(args: argparse.Namespace) -> int:
         audit_readback=True,
         envelopes_applied=applied,
         independent_readback=postcommit_readback,
+        boxes_sync=box_result,
     )
     return 0
 
@@ -2420,6 +2943,13 @@ def main() -> int:
     parser.add_argument("--protocol-version", required=True)
     parser.add_argument("--approve-review")
     parser.add_argument("--apply-review")
+    parser.add_argument("--apply-runtime-levels")
+    parser.add_argument("--extract-efhub-levels", action="store_true")
+    parser.add_argument("--extract-boxes", action="store_true")
+    parser.add_argument("--efhub-batch-size", type=int, default=100)
+    parser.add_argument("--efhub-total", type=int, default=0)
+    parser.add_argument("--efhub-all", action="store_true")
+    parser.add_argument("--skip-boxes-sync", action="store_true")
     parser.add_argument("--select-review")
     parser.add_argument("--selection-file")
     parser.add_argument("--reset-test-approval")
@@ -2458,6 +2988,37 @@ def main() -> int:
             return select_review(args)
         if args.approve_review: return approve_review(args)
         if args.apply_review: return apply_review(args)
+        if args.apply_runtime_levels:
+            if os.environ.get("CLUBEF_ENABLE_REAL_WRITE") != "1":
+                raise RuntimeError("Atualização de níveis não autorizada nesta execução. Use Atualizar níveis no extrator.")
+            return card_levels_database.apply_saved(args.apply_runtime_levels, args.run_dir, lambda: cancelled(Path(args.cancel)), emit)
+        if args.extract_efhub_levels:
+            if os.environ.get("CLUBEF_ENABLE_REAL_WRITE") != "1":
+                raise RuntimeError("Lote eFHUB não autorizado nesta execução. Use EFHUB: PRÓXIMO LOTE no extrator.")
+            if args.efhub_all:
+                outcome = efhub_levels.run_all(
+                    Path(args.run_dir).resolve(), runtime, emit,
+                    lambda: cancelled(Path(args.cancel)),
+                )
+            elif args.efhub_total:
+                outcome = efhub_levels.run_many(
+                    Path(args.run_dir).resolve(), runtime, emit, args.efhub_total,
+                    lambda: cancelled(Path(args.cancel)),
+                )
+            else:
+                outcome = efhub_levels.run_batch(
+                    Path(args.run_dir).resolve(), runtime, emit, args.efhub_batch_size,
+                    lambda: cancelled(Path(args.cancel)),
+                )
+            return 0 if outcome.get("ok") else 1
+        if args.extract_boxes:
+            if os.environ.get("CLUBEF_ENABLE_REAL_WRITE") != "1":
+                raise RuntimeError("Atualização de boxes não autorizada nesta execução. Use ATUALIZAR BOXES NOVAS no extrator.")
+            outcome = boxes_runtime.extract_only(
+                Path(args.root).resolve(), Path(args.run_dir).resolve(), runtime, emit,
+                lambda: cancelled(Path(args.cancel)),
+            )
+            return 0 if outcome.get("state") == "published" else 2
         if args.reset_test_approval: return reset_test_approval(args)
         return run(args)
     except Exception as error:
@@ -2465,8 +3026,8 @@ def main() -> int:
             "fatal",
             message=str(error),
             traceback=traceback.format_exc(),
-            database_write=bool(getattr(error, "database_write", False)),
-            commit_status=getattr(error, "commit_status", None),
+            database_write=getattr(error, "database_write", None if args.apply_review else False),
+            commit_status=getattr(error, "commit_status", "conferencia_necessaria_possivel_carga_parcial" if args.apply_review else None),
         )
         return 130 if str(error) == "cancelled_by_user" else 1
 

@@ -1,5 +1,13 @@
 # MANUAL TÉCNICO DO CLUBEFOOTBALL
 
+## Política vigente de habilidades — 09/09/2026
+
+A política `habilidades-funcao-20260909-v1` está aplicada no `clube_novo` e no runtime oficial da Máquina 1. A matriz vigente tem 325 pares habilidade/função. O motor conserva de zero a cinco adicionais úteis; não preenche vagas sem ganho. Todas as sugestões automáticas, inclusive gêmeas de builds antigas, respeitam os bloqueios atuais da função. A escolha manual do usuário e as habilidades nativas continuam livres desses vetos estratégicos.
+
+Banco, fontes, executável e fotografias locais foram sincronizados; lotes continuam pausados e na mesma ordem. A normalização da nota não mudou. A revisão local identificou 4.509 linhas para análise posterior; nenhum resultado antigo foi regravado ou despublicado nesta etapa. A instalação na Máquina 2 e a publicação do frontend são estados separados.
+
+Regra completa, matriz, migrações, testes e evidências: [Habilidades por função V12](OTIMIZADOR/HABILIDADES-0909/REGRA-APROVADA.md). Os registros anteriores abaixo conservam o contexto da época e não substituem esta revisão.
+
 **Atualizado em 27/08/2026.** Este documento tem três partes: **A — como está**,
 **B — como vai ficar**, **C — o que mudou e quando**. O que fica pronto sai da B e
 entra na A.
@@ -125,8 +133,13 @@ C:\ProgramData\KONAMI\eFootball\ST\Download\dt870_console_win.cpk
 ```
 Player.bin ................ 17.230.000 bytes → 43.075 registros físicos, 43.072 cartas válidas, registro de 400 bytes
 PlayerAppearance.bin ....... 2.739.584 → o CORPO (registro de 64 bytes, card_id no offset 0)
-PlayerVariationDetail.bin .. 2.246.160 → a BOX (registro de 168 bytes)
+PlayerVariationDetail.bin .. 2.246.160 → variação individual da carta (registro de 168 bytes; não é Box comercial)
 ```
+
+As Boxes comerciais não são deduzidas desses três arquivos. As ofertas novas
+vêm da resposta de sessão `CmdGetMyclubAgentlist`, lida pelo módulo específico
+do Extrator. O histórico fixo vem do acervo legado preservado e contém somente
+nome da Box, `card_id` dos participantes e data.
 
 **As 29 colunas:**
 `card_id · tipo · overall · roda_motor · nome · posicao · slot_ofensivo_id ·
@@ -345,7 +358,7 @@ proteção de verdade é sessão no servidor.
 | `0081` | **O corpo saiu do site**: `PlayerAppearance.bin`, 12 medidas na ordem do `corpo_ordem` |
 | `0082` | **`grupo_id` = `(card_id >> 38) & 255`** — level cap e orçamento derivados, 98,12% |
 | `0083` | **`clube.fila`** — 125.932 linhas, prioridade 0 para as que já rodaram |
-| `0084` | **Os motores leem e gravam no banco.** `fonte_unica.py` v2 · `roda_lote_v6.py` sem interruptor · `motor_bonus.py` v7 com bônus por função |
+| `0084` | **Os motores leem e gravam no banco.** `fonte_unica.py` v2 · `roda_lote_v6.py` sem interruptor · Bonificador V11 com bônus de estilo ativado por posição, independente da função/molde |
 | `0085` | `clube.build` truncada · fotografia em `clube.build_arquivo_2608` (17.798) |
 
 # PARTE D — COMO FUNCIONA DE AGORA EM DIANTE
@@ -383,3 +396,7 @@ public.regua_pacote() · carta_para_simular() · pool_da_funcao()   ← o avalia
 clube.estilo_jogo · clube.estilo_defensivo   ← os catálogos dos dois campos
 clube.carta_jogo                     ← o cadastro
 ```
+
+## 09/09/2026 — correcao pontual completa e refila V12
+
+Refila V12: recomposicao pontual entrega todos os campos do formatador oficial; as 26 etapas/atributos sao conferidas antes do envio e depois da persistencia. Prefixo em dois lotes, cauda inalterada, renovacao preserva lotes encerrados. Console UTF-8 evita parada por nomes Unicode. Ver `OTIMIZADOR/HABILIDADES-0909/CORRECAO-PONTUAL-E-REFILA.md`.

@@ -29,15 +29,16 @@ _Medido em 25/08/2026, carta por carta, com cartas que batem exato (card_id = PI
 
 Pendência: achar o campo de **tipo de crescimento** por carta → fecha overall/max/cap 100% na fonte.
 
-## C · NÃO estão no arquivo — medido ❌
+## C · NÃO estão nos arquivos estáticos — medido ❌
 | insumo | veredicto |
 |---|---|
-| **box_id** | procurado em u64 (LE/BE) e texto em 16 decifrados + cpk crus → **0 de 6**. É id do efootballdb, não da Konami. **FALTA.** |
+| **Box comercial** | A procura antiga nos `.bin` estava correta ao não encontrar a relação comercial. Ela fica na resposta de sessão `CmdGetMyclubAgentlist`, com `agent_id`, título, datas e participantes. `PlayerVariationDetail.bin` guarda variação de carta. |
+| **histórico de Boxes** | A resposta atual do jogo não recupera ofertas encerradas. O acervo histórico vem da cópia preservada do legado, somente com nome, participantes e data. |
 | tier / votos / preço | comunidade / mercado — nunca no jogo. **FALTA.** |
-| data de lançamento | hoje vem do efootballdb. **A CONFERIR** na variação. |
 
 ## D · O QUE FALTA (resumo)
-1. **box** — não está no arquivo (0/6). Continua do efootballdb.
+1. **Box** — novas ofertas vêm de `CmdGetMyclubAgentlist`; histórico vem do
+   acervo legado fixo. Não deduzir pelo rótulo da variação da carta.
 2. **tier, votos, preço** — comunidade/mercado, continuam do coletor web.
 3. **tipo de crescimento** — pra fechar overall/max/cap na fonte; caçável no Player.bin.
 

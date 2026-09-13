@@ -1,0 +1,504 @@
+{
+  "versao": "normalizacao-bonus-integral-20260909-v1",
+  "estado": "implantada_e_publicada",
+  "conferencia": "2026-09-09T11:42:11.771219+00:00",
+  "publicacoes": 55151,
+  "na_regra_atual": 55151,
+  "pendentes_normalizacao": 0,
+  "historico_registros": 55292,
+  "goleiros_exibidos": {
+    "defensivo": 160,
+    "ofensivo": 289,
+    "cruzados": 0
+  },
+  "auditoria_integridade": [
+    {
+      "total": 55151,
+      "divergencia_ponte_delta": 0,
+      "divergencia_soma": 0,
+      "divergencia_bruto": 0,
+      "divergencia_bonus": 0,
+      "divergencia_par": 0,
+      "divergencia_componentes": 0
+    }
+  ],
+  "editor_19_funcoes": [
+    {
+      "caso": {
+        "funcao": 1,
+        "linha_id": 364310,
+        "bonus_motor": 3.45,
+        "bruto_motor": 398.9,
+        "nota_editor": 111.3542550014243,
+        "bonus_editor": 3.45,
+        "bruto_editor": 398.9,
+        "nota_publicada": 111.3542550014243,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 2,
+        "linha_id": 364352,
+        "bonus_motor": 2.525,
+        "bruto_motor": 416.2,
+        "nota_editor": 111.79149801660554,
+        "bonus_editor": 2.525,
+        "bruto_editor": 416.2,
+        "nota_publicada": 111.79149801660554,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 3,
+        "linha_id": 34379,
+        "bonus_motor": 3.075,
+        "bruto_motor": 456.3,
+        "nota_editor": 111.62811007378436,
+        "bonus_editor": 3.075,
+        "bruto_editor": 456.3,
+        "nota_publicada": 111.62811007378436,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 4,
+        "linha_id": 36527,
+        "bonus_motor": 1.24,
+        "bruto_motor": 279.8,
+        "nota_editor": 110.79999999887724,
+        "bonus_editor": 1.24,
+        "bruto_editor": 279.8,
+        "nota_publicada": 110.79999999887724,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 5,
+        "linha_id": 2907,
+        "bonus_motor": 1.49,
+        "bruto_motor": 294.2,
+        "nota_editor": 110.82539794737939,
+        "bonus_editor": 1.49,
+        "bruto_editor": 294.2,
+        "nota_publicada": 110.82539794737939,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 6,
+        "linha_id": 32321,
+        "bonus_motor": 1.775,
+        "bruto_motor": 418.3,
+        "nota_editor": 111.59240899834556,
+        "bonus_editor": 1.775,
+        "bruto_editor": 418.3,
+        "nota_publicada": 111.59240899834556,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 7,
+        "linha_id": 34415,
+        "bonus_motor": 3.6286,
+        "bruto_motor": 459.3,
+        "nota_editor": 111.84781103738675,
+        "bonus_editor": 3.6286,
+        "bruto_editor": 459.3,
+        "nota_publicada": 111.84781103738675,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 8,
+        "linha_id": 363902,
+        "bonus_motor": 3.2071,
+        "bruto_motor": 457.1,
+        "nota_editor": 111.89244885765736,
+        "bonus_editor": 3.2071,
+        "bruto_editor": 457.1,
+        "nota_publicada": 111.89244885765736,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 9,
+        "linha_id": 30009,
+        "bonus_motor": 3.3875,
+        "bruto_motor": 465,
+        "nota_editor": 112.0370978972702,
+        "bonus_editor": 3.3875,
+        "bruto_editor": 465,
+        "nota_publicada": 112.0370978972702,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 10,
+        "linha_id": 36184,
+        "bonus_motor": 3.2577,
+        "bruto_motor": 434.4,
+        "nota_editor": 111.65115998988475,
+        "bonus_editor": 3.2577,
+        "bruto_editor": 434.4,
+        "nota_publicada": 111.65115998988475,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 11,
+        "linha_id": 2822,
+        "bonus_motor": 2.9,
+        "bruto_motor": 442.2,
+        "nota_editor": 110.89561991196373,
+        "bonus_editor": 2.9,
+        "bruto_editor": 442.2,
+        "nota_publicada": 110.89561991196373,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 12,
+        "linha_id": 30012,
+        "bonus_motor": 3.5125,
+        "bruto_motor": 462.5,
+        "nota_editor": 111.93117514867566,
+        "bonus_editor": 3.5125,
+        "bruto_editor": 462.5,
+        "nota_publicada": 111.93117514867566,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 13,
+        "linha_id": 34389,
+        "bonus_motor": 2.5333,
+        "bruto_motor": 412.3,
+        "nota_editor": 111.0057559971415,
+        "bonus_editor": 2.5333,
+        "bruto_editor": 412.3,
+        "nota_publicada": 111.0057559971415,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 14,
+        "linha_id": 30014,
+        "bonus_motor": 3.2375,
+        "bruto_motor": 466.8,
+        "nota_editor": 112.10565806196367,
+        "bonus_editor": 3.2375,
+        "bruto_editor": 466.8,
+        "nota_publicada": 112.10565806196367,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 15,
+        "linha_id": 30016,
+        "bonus_motor": 3.5482,
+        "bruto_motor": 438.1,
+        "nota_editor": 112.24819972960016,
+        "bonus_editor": 3.5482,
+        "bruto_editor": 438.1,
+        "nota_publicada": 112.24819972960016,
+        "atributos_jogo_iguais": false
+      }
+    },
+    {
+      "caso": {
+        "funcao": 16,
+        "linha_id": 36666,
+        "bonus_motor": 3.45,
+        "bruto_motor": 445.4,
+        "nota_editor": 111.31318800116766,
+        "bonus_editor": 3.45,
+        "bruto_editor": 445.4,
+        "nota_publicada": 111.31318800116766,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 17,
+        "linha_id": 379892,
+        "bonus_motor": 1.5125,
+        "bruto_motor": 449.4,
+        "nota_editor": 111.2002980192005,
+        "bonus_editor": 1.5125,
+        "bruto_editor": 449.4,
+        "nota_publicada": 111.2002980192005,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 18,
+        "linha_id": 34338,
+        "bonus_motor": 3.375,
+        "bruto_motor": 364,
+        "nota_editor": 111.7314460638392,
+        "bonus_editor": 3.375,
+        "bruto_editor": 364,
+        "nota_publicada": 111.7314460638392,
+        "atributos_jogo_iguais": true
+      }
+    },
+    {
+      "caso": {
+        "funcao": 19,
+        "linha_id": 34339,
+        "bonus_motor": 3,
+        "bruto_motor": 386.7,
+        "nota_editor": 111.999743000276,
+        "bonus_editor": 3,
+        "bruto_editor": 386.7,
+        "nota_publicada": 111.999743000276,
+        "atributos_jogo_iguais": true
+      }
+    }
+  ],
+  "idempotencia": [
+    {
+      "finalizacao": {
+        "ok": true,
+        "estado": "ja_publicada",
+        "linha_id": 2907,
+        "nota_final": 110.82539794737939,
+        "idempotente": true,
+        "normalizacao_versao": "normalizacao-bonus-integral-20260909-v1",
+        "publicacao_fingerprint": "30a82c43b9133cb9aceba90ba361af8d488b3dd007c115ad30f13b8618a02b5d"
+      }
+    }
+  ],
+  "netlify": {
+    "conferido_em": "2026-09-09T11:43:15.324163+00:00",
+    "deploy_id": "6aa145d2cc4c3074ca5b98fa",
+    "url": "https://imaginative-granita-ace1ca.netlify.app/",
+    "arquivos": [
+      {
+        "arquivo": "index.html",
+        "bytes": 3833,
+        "sha256": "d8ccd158bc3a71fd95cac689c82bec3b84b66e4d0bfc10076819d51add9ab62e",
+        "http": 200,
+        "sha256_publico": "d8ccd158bc3a71fd95cac689c82bec3b84b66e4d0bfc10076819d51add9ab62e",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "ficha.html",
+        "bytes": 15588,
+        "sha256": "746b51c7b16174b01d9d5df90ff74541c882061b07bf7893e7e37c1cbdca1c4e",
+        "http": 200,
+        "sha256_publico": "05cfc2aa3feec92420a68d5eeb628cab8e21253bc5e0e679c8184574e93b3295",
+        "igual": false,
+        "html_equivalente": true,
+        "conforme": true
+      },
+      {
+        "arquivo": "boxes-api.js",
+        "bytes": 3642,
+        "sha256": "542533cbec16fa11c3aa0b89067d0fbb20f6d317f9103be6aadc5f3af84a52c9",
+        "http": 200,
+        "sha256_publico": "542533cbec16fa11c3aa0b89067d0fbb20f6d317f9103be6aadc5f3af84a52c9",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "boxes.js",
+        "bytes": 10367,
+        "sha256": "06ae509d3258253e3483cdc52bb1c4559c10d329dafd37479fdc763500d533f5",
+        "http": 200,
+        "sha256_publico": "06ae509d3258253e3483cdc52bb1c4559c10d329dafd37479fdc763500d533f5",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "degrau.js",
+        "bytes": 1141,
+        "sha256": "91d721c8d0ea8913454bb68c05925822de2924347212c19cae847f45a3484556",
+        "http": 200,
+        "sha256_publico": "91d721c8d0ea8913454bb68c05925822de2924347212c19cae847f45a3484556",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "ficha-editor-api.js",
+        "bytes": 8951,
+        "sha256": "44f4f8b85b0e6b94ea3ada8a80c041f13599e09356ff795c5e2684bd346ffc95",
+        "http": 200,
+        "sha256_publico": "44f4f8b85b0e6b94ea3ada8a80c041f13599e09356ff795c5e2684bd346ffc95",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "ficha-editor.js",
+        "bytes": 28942,
+        "sha256": "45e6ee085573610e3edbb5ce95766674b92510bd05ace222df926d971f30a1f4",
+        "http": 200,
+        "sha256_publico": "45e6ee085573610e3edbb5ce95766674b92510bd05ace222df926d971f30a1f4",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "ficha.js",
+        "bytes": 55650,
+        "sha256": "6cd3eeb964ac08ed159b0976ec7588a6a31de414789515853a248e48e6049c54",
+        "http": 200,
+        "sha256_publico": "6cd3eeb964ac08ed159b0976ec7588a6a31de414789515853a248e48e6049c54",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "home.js",
+        "bytes": 7035,
+        "sha256": "a0ab5cd3f0b7af5a65da07b9c179c25ca56a233f68f1fbc44f3f9cdb757d32c5",
+        "http": 200,
+        "sha256_publico": "a0ab5cd3f0b7af5a65da07b9c179c25ca56a233f68f1fbc44f3f9cdb757d32c5",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "ranking-api.js",
+        "bytes": 3483,
+        "sha256": "80fcfde1609a8c4c635a923e0619539a856387d34c3f3f1c82f1e40c4f89936f",
+        "http": 200,
+        "sha256_publico": "80fcfde1609a8c4c635a923e0619539a856387d34c3f3f1c82f1e40c4f89936f",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "ranking.js",
+        "bytes": 13699,
+        "sha256": "ac4d69d938df5a606e9556a8e9eb1de47fc7ef4c953aab2bd6e50cb1c67ae6bd",
+        "http": 200,
+        "sha256_publico": "ac4d69d938df5a606e9556a8e9eb1de47fc7ef4c953aab2bd6e50cb1c67ae6bd",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "search-api.js",
+        "bytes": 2698,
+        "sha256": "a086577e8636167785dc2a2cd02b4e1db03386cffd9043bd3cb96b5575fe1487",
+        "http": 200,
+        "sha256_publico": "a086577e8636167785dc2a2cd02b4e1db03386cffd9043bd3cb96b5575fe1487",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "search.js",
+        "bytes": 7102,
+        "sha256": "127a25831bdcc11fb13827ed173fe12c176225da41b87917ea8ff8820a93a813",
+        "http": 200,
+        "sha256_publico": "127a25831bdcc11fb13827ed173fe12c176225da41b87917ea8ff8820a93a813",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "site-shell.js",
+        "bytes": 9897,
+        "sha256": "e14888b2e81221e22766f9aec18fabac1f946013f4afbc95f8041c0c281202b0",
+        "http": 200,
+        "sha256_publico": "e14888b2e81221e22766f9aec18fabac1f946013f4afbc95f8041c0c281202b0",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "site-theme.js",
+        "bytes": 880,
+        "sha256": "9dbc695819066cdbb0088f075eb00995bab15a3805e2f62690f070ce9692164b",
+        "http": 200,
+        "sha256_publico": "9dbc695819066cdbb0088f075eb00995bab15a3805e2f62690f070ce9692164b",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "boxes.css",
+        "bytes": 9522,
+        "sha256": "d9361d452a836a4ab8f1261c0601ebb3455a050358e8455e9ce878625761e79e",
+        "http": 200,
+        "sha256_publico": "d9361d452a836a4ab8f1261c0601ebb3455a050358e8455e9ce878625761e79e",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "ficha.css",
+        "bytes": 43368,
+        "sha256": "7fdab708574ea265918e9bdadc5aa9ee54028bede422e989b8de57b7925915d6",
+        "http": 200,
+        "sha256_publico": "7fdab708574ea265918e9bdadc5aa9ee54028bede422e989b8de57b7925915d6",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "ranking.css",
+        "bytes": 13486,
+        "sha256": "1474c356aded63f4607df49587f23e7d8aa93ba5d9ba114c82fa4510491b8fae",
+        "http": 200,
+        "sha256_publico": "1474c356aded63f4607df49587f23e7d8aa93ba5d9ba114c82fa4510491b8fae",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "site-shell.css",
+        "bytes": 16919,
+        "sha256": "595865a5519137fc5e8c37b8cd2236c9d49715153aa26f2c94929050de93931f",
+        "http": 200,
+        "sha256_publico": "595865a5519137fc5e8c37b8cd2236c9d49715153aa26f2c94929050de93931f",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "assets/playstyle-defensivo.svg",
+        "bytes": 320,
+        "sha256": "2aa65d7b9bd07ea1785608ffe69b456bcee67b272a3d2c2bec0d26cea11c4320",
+        "http": 200,
+        "sha256_publico": "2aa65d7b9bd07ea1785608ffe69b456bcee67b272a3d2c2bec0d26cea11c4320",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      },
+      {
+        "arquivo": "assets/playstyle-ofensivo.svg",
+        "bytes": 319,
+        "sha256": "3193aa775647fdbeca9743d4628e53ce9827b0c1fd173b431c08c6ec63121781",
+        "http": 200,
+        "sha256_publico": "3193aa775647fdbeca9743d4628e53ce9827b0c1fd173b431c08c6ec63121781",
+        "igual": true,
+        "html_equivalente": false,
+        "conforme": true
+      }
+    ]
+  }
+}

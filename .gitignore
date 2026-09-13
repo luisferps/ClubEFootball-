@@ -32,7 +32,6 @@ checkpoints/
 
 # artefatos compilados locais — o código-fonte é a referência.
 # O botão 4 apenas sincroniza arquivos; ele nunca compila o Extrator.
-7-VARREDURA-DO-JOGO/Extrator eFootball.exe
 7-VARREDURA-DO-JOGO/Extrator eFootball.novo.exe
 
 # arquivos de trabalho do motor — não existem mais desde 27/08,
@@ -64,3 +63,19 @@ __pycache__/
 # fotografia portátil oficial, já dividida em blocos de 1.000, fica em
 # 2-MOTORES/OTIMIZADOR/PACOTE-FILA-INTEGRAL e é propositalmente copiável.
 2-MOTORES/OTIMIZADOR/runtime/fila-local/
+
+# Distribuição GitHub: dados locais são baixados/produzidos pelos aplicativos.
+**/PACOTE-FILA-INTEGRAL/
+**/RESULTADOS-JSON/
+**/RENOVACOES/
+**/HISTORICO-RENOVACOES/
+**/FILA-ATIVA.json
+**/ESTADO-*.json
+*dpapi*
+*.log
+*.lock
+7-VARREDURA-DO-JOGO/artefatos/
+2-MOTORES/BONIFICADOR/fila-local/
+MANIFESTO-ENTREGA.csv
+# Executáveis atuais fazem parte da entrega operacional.
+!7-VARREDURA-DO-JOGO/Extrator eFootball.exe

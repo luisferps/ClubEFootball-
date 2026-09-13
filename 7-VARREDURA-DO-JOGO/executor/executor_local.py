@@ -34,6 +34,7 @@ from texto_do_jogo import (
 
 from card_relations import validate_card_relations
 from card_dimensions import validate_card_dimensions
+from insumos_motores import evaluate_engine_inputs
 from impetos_v4610 import validate_impetos_v4610
 from tecnicos_v4610 import validate_tecnicos_v4610
 from card_impetus import apply_canonical_slot_projection, readback_card_slots, validate_physical_slot_projection
@@ -56,7 +57,7 @@ METADATA_REFERENCE_ROOT = Path(os.environ.get("CLUBEF_METADATA_REFERENCE_ROOT", 
 METADATA_REFERENCE_VERSIONS = METADATA_REFERENCE_ROOT / "versoes"
 METADATA_REFERENCE_POINTER = METADATA_REFERENCE_ROOT / "referencia-vigente.json"
 CONTRACT = "clubef-extrator-v4"
-REFERENCE_CONTRACT = "clubef-card-reference-v1"
+REFERENCE_CONTRACT = "clubef-card-reference-v2"
 REFERENCE_POINTER_CONTRACT = "clubef-card-reference-pointer-v1"
 METADATA_REFERENCE_CONTRACT = "clubef-metadata-reference-v1"
 METADATA_REFERENCE_POINTER_CONTRACT = "clubef-metadata-reference-pointer-v1"
@@ -65,7 +66,7 @@ CARD_COLUMNS = [
     "slot_ofensivo_id", "slot_ofensivo_confirmado", "slot_defensivo_id",
     "slot_defensivo_confirmado", "pe", "altura", "peso", "idade",
     "nacionalidade", "pe_ruim_uso", "pe_ruim_precisao", "resistencia_lesao",
-    "forma", "impeto_s1", "impeto_s2_cond", "vaga_s1", "vaga_s2", "box",
+    "forma", "impeto_s1", "impeto_s2_cond", "vaga_s1", "vaga_s2",
     "atributos", "habilidades", "aptidoes", "estilos_ia", "corpo",
 ]
 INTEGER_COLUMNS = {
@@ -281,7 +282,7 @@ def validate_reference_csv(csv_text: str) -> dict[str, Any]:
     reader = csv.DictReader(io.StringIO(clean_text, newline=""))
     headers = reader.fieldnames or []
     if headers != CARD_COLUMNS:
-        raise ValueError("a carga extraída não possui os 29 campos esperados")
+        raise ValueError(f"a carga extraída não possui os {len(CARD_COLUMNS)} campos esperados")
     ids: set[str] = set()
     duplicate_ids: list[str] = []
     missing_by_field = {column: 0 for column in CARD_COLUMNS}
@@ -989,19 +990,21 @@ def evaluate_sync_readiness(contract: dict[str, Any], family_states: dict[str, A
     approvals: dict[str, dict[str, Any]] = {}
     required_keys: list[str] = []
     application_blockers: list[dict[str, Any]] = []
+    accepted_pendings: list[dict[str, Any]] = []
     catalog_state = family_states.get("catalogos") if isinstance(family_states.get("catalogos"), dict) else {}
     for check in (catalog_state.get("comparison_checks") or {}).values():
         if not isinstance(check, dict):
             continue
-        blockers = check.get("application_blockers") or []
-        if not isinstance(blockers, list):
-            raise RuntimeError("comparação de catálogos devolveu bloqueios inválidos")
-        for blocker in blockers:
-            if (not isinstance(blocker, dict) or not isinstance(blocker.get("catalogo"), str)
-                    or not isinstance(blocker.get("familias_impactadas"), list)
-                    or not all(isinstance(item, str) and item for item in blocker["familias_impactadas"])):
-                raise RuntimeError("comparação de catálogos devolveu bloqueio sem identidade canônica")
-            application_blockers.append(blocker)
+        for key, destination in (("application_blockers", application_blockers), ("accepted_pendings", accepted_pendings)):
+            entries = check.get(key) or []
+            if not isinstance(entries, list):
+                raise RuntimeError("comparação de catálogos devolveu bloqueios inválidos")
+            for entry in entries:
+                if (not isinstance(entry, dict) or not isinstance(entry.get("catalogo"), str)
+                        or not isinstance(entry.get("familias_impactadas"), list)
+                        or not all(isinstance(item, str) and item for item in entry["familias_impactadas"])):
+                    raise RuntimeError("comparação de catálogos devolveu bloqueio sem identidade canônica")
+                destination.append(entry)
     for family in contract.get("familias", []):
         if not isinstance(family, dict) or family.get("obrigatoria") is False:
             continue
@@ -1060,6 +1063,7 @@ def evaluate_sync_readiness(contract: dict[str, Any], family_states: dict[str, A
         "required_families": required_keys,
         "families": approvals,
         "application_blockers": application_blockers,
+        "accepted_pendings": accepted_pendings,
         "structural_coverage_complete": structural_coverage_complete,
         "read_results_available": True,
         "result_return_enabled": True,
@@ -1156,6 +1160,23 @@ def current_impetos_validation(snapshot: dict[str, Any], config: dict[str, Any],
             cursor.execute('show transaction_read_only')
             if cursor.fetchone()[0]!='on': raise RuntimeError('a validação de Ímpetos não ficou protegida')
         return validate_impetos_v4610(snapshot, connection, reading_contract)
+
+
+def current_engine_inputs_validation(metadata: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
+    """Confere, em READ ONLY, se cada insumo lido do jogo já tem valoração nossa."""
+    assert_card_target(config)
+    dsn = connection_string()
+    if not dsn:
+        raise RuntimeError("a conexão segura com clube_novo não está disponível")
+    psycopg, _, _ = import_psycopg()
+    with psycopg.connect(dsn, connect_timeout=20) as connection:
+        connection.read_only = True
+        with connection.cursor() as cursor:
+            cursor.execute("set statement_timeout = '10min'")
+            cursor.execute("show transaction_read_only")
+            if cursor.fetchone()[0] != "on":
+                raise RuntimeError("a conferência de insumos não ficou protegida")
+        return evaluate_engine_inputs(metadata, connection, "clube_novo")
 
 
 def current_tecnicos_validation(snapshot: dict[str, Any], config: dict[str, Any], reading_contract: dict[str, Any]) -> dict[str, Any]:

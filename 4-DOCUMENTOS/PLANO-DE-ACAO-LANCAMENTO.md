@@ -25,6 +25,12 @@ existe no banco e nas coletas feitas.
 | 6 | tela = VIEW da build · topos religados · medianas MEDIDAS por função (a MED duplicada de 18/08 morre aqui) | build |
 | 7 | **PROVA DOS NOVE**: contagens por função = builds; top-10 por função; Neymar 87 com 441,4 visível; 100 cartas campo a campo; % topo ≤ 100 | tudo |
 
+> **Atualização de fonte das Boxes em 07/09/2026:** a referência a 2.014 Boxes
+> do efootballdb no passo 2 registra o plano de 25/08 e não é mais o contrato
+> operacional. O acervo histórico canônico contém 1.023 Boxes e 6.708 vínculos,
+> copiados do legado somente com nome, participantes e data. Novas ofertas são
+> lidas do jogo por `CmdGetMyclubAgentlist`.
+
 ## 1B · O sistema arrumado (junto com o banco)
 - O site passa a consultar a casa nova: por CÓDIGO, mostrando rótulo; a carga
   vira consulta à view (paginada, assíncrona, com erro recuperável — fim da tela

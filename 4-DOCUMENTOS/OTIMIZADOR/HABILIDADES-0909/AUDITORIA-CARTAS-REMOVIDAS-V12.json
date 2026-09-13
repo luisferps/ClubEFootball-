@@ -1,0 +1,90 @@
+[
+  {
+    "id": 379929,
+    "card_id": "8562459",
+    "nome": "Imad Jasem",
+    "tipo_carta_id": "player_delete_list",
+    "estado": "pendente",
+    "estado_otimizador": "pendente",
+    "build_otimizador_id": null,
+    "tem_publicacao": false,
+    "publicacao_otimizador": null
+  },
+  {
+    "id": 379930,
+    "card_id": "8562459",
+    "nome": "Imad Jasem",
+    "tipo_carta_id": "player_delete_list",
+    "estado": "pendente",
+    "estado_otimizador": "concluido",
+    "build_otimizador_id": 59047,
+    "tem_publicacao": false,
+    "publicacao_otimizador": null
+  },
+  {
+    "id": 379931,
+    "card_id": "8562459",
+    "nome": "Imad Jasem",
+    "tipo_carta_id": "player_delete_list",
+    "estado": "pendente",
+    "estado_otimizador": "concluido",
+    "build_otimizador_id": 59048,
+    "tem_publicacao": false,
+    "publicacao_otimizador": null
+  },
+  {
+    "id": 379932,
+    "card_id": "8562459",
+    "nome": "Imad Jasem",
+    "tipo_carta_id": "player_delete_list",
+    "estado": "pendente",
+    "estado_otimizador": "concluido",
+    "build_otimizador_id": 59049,
+    "tem_publicacao": false,
+    "publicacao_otimizador": null
+  },
+  {
+    "id": 379933,
+    "card_id": "8562459",
+    "nome": "Imad Jasem",
+    "tipo_carta_id": "player_delete_list",
+    "estado": "pendente",
+    "estado_otimizador": "concluido",
+    "build_otimizador_id": 59050,
+    "tem_publicacao": false,
+    "publicacao_otimizador": null
+  },
+  {
+    "id": 379937,
+    "card_id": "8562459",
+    "nome": "Imad Jasem",
+    "tipo_carta_id": "player_delete_list",
+    "estado": "pendente",
+    "estado_otimizador": "pendente",
+    "build_otimizador_id": null,
+    "tem_publicacao": false,
+    "publicacao_otimizador": null
+  },
+  {
+    "id": 379947,
+    "card_id": "8556091",
+    "nome": "Rasul Luay",
+    "tipo_carta_id": "player_delete_list",
+    "estado": "pendente",
+    "estado_otimizador": "concluido",
+    "build_otimizador_id": 59064,
+    "tem_publicacao": false,
+    "publicacao_otimizador": null
+  },
+  {
+    "id": 379953,
+    "card_id": "8560087",
+    "nome": "Sattar Ezzeddin",
+    "tipo_carta_id": "player_delete_list",
+    "estado": "pendente",
+    "estado_otimizador": "concluido",
+    "build_otimizador_id": 59070,
+    "tem_publicacao": false,
+    "publicacao_otimizador": null
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "schema": "clubef-boxes-historicas-legado-v1",
+  "origem": "SITE-ATUAL-EXATO-2026-08-24",
+  "arquivo": "boxes-historicas-legado.json",
+  "sha256": "ec5aaaef830ea03fbea3983037b4eaa9ab1014d25f6a7f082336d59d9255bbae",
+  "boxes": 1023,
+  "vinculos": 6708,
+  "politica": "Base histórica fixa. CmdGetMyclubAgentlist reconhece as atuais e acrescenta somente boxes novas.",
+  "campos_copiados": [
+    "box_nome",
+    "card_id",
+    "data_oferta"
+  ],
+  "data_origem": "visto"
+}

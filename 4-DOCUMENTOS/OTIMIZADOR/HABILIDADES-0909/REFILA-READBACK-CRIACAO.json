@@ -1,0 +1,50 @@
+[
+  {
+    "lote_id": "c48f3425-d717-4e30-b64a-bf10effa3148",
+    "detalhe": {
+      "motor": 3522,
+      "cartas": 772,
+      "linhas": 4458,
+      "rapidas": 936,
+      "contrato": "correcao_habilidades_0909_v12",
+      "ordem_prefixo": 1,
+      "worker_iniciado": false,
+      "fila_anterior_md5": "6cfcc4ec768270e4bfbdcb5d9b395407",
+      "aguardam_orcamento": 6,
+      "publicacoes_preservadas": 55151,
+      "ancestrais_ja_substituidas": 28
+    },
+    "estado": "pausado",
+    "motor_versao": "otimizador-fila-producao-v3-local-20260909-habilidades-v12",
+    "formula_fingerprint": "a1cc830af3366e2d0c9ac12138d892058b3e57ed216e43d68242d105b33cb9d2",
+    "cards": 772,
+    "linhas": 4458,
+    "pendentes": 4458,
+    "reservadas": 0,
+    "publicadas_total": 55151
+  },
+  {
+    "lote_id": "3554c09c-1dbc-48e5-921a-6b45d56b2c26",
+    "detalhe": {
+      "motor": 15,
+      "cartas": 4,
+      "linhas": 17,
+      "rapidas": 2,
+      "contrato": "correcao_habilidades_0909_v12",
+      "ordem_prefixo": 2,
+      "worker_iniciado": false,
+      "fila_anterior_md5": "6cfcc4ec768270e4bfbdcb5d9b395407",
+      "aguardam_orcamento": 6,
+      "publicacoes_preservadas": 55151,
+      "ancestrais_ja_substituidas": 28
+    },
+    "estado": "pausado",
+    "motor_versao": "otimizador-fila-producao-v3-local-20260909-habilidades-v12",
+    "formula_fingerprint": "a1cc830af3366e2d0c9ac12138d892058b3e57ed216e43d68242d105b33cb9d2",
+    "cards": 4,
+    "linhas": 17,
+    "pendentes": 17,
+    "reservadas": 0,
+    "publicadas_total": 55151
+  }
+]

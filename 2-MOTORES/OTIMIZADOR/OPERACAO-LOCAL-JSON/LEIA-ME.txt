@@ -1,3 +1,20 @@
+COMPLEMENTO V14: ver ../COMPLEMENTO-LOCAL-V14/LEIA-ME.txt.
+Os botoes habituais continuam; calculos novos incluem o complemento.
+Para corrigir as builds anteriores, seguir a ordem de envio antigo e correcao.
+
+ATUALIZACAO V12 — HABILIDADES POR FUNCAO — 09/09/2026
+Motor: otimizador-fila-producao-v3-local-20260909-habilidades-v12
+
+Bloqueios atuais por funcao; de zero a cinco adicionais com ganho no motor.
+Fotografias V11 nao servem para novo processamento. Os atalhos de processar
+e enviar continuam os mesmos. A fila e suas prioridades mantem a ordem.
+Dois lotes sem pendencias permanecem listados, mas sao ignorados ao processar.
+Para atualizar fotografias sem mudar a ordem, a entrega usa renovar
+--preservar-ordem. Esse comando so le o banco e nao inicia o processador.
+Historicos em RENOVACOES e resultados/recibos em RESULTADOS-JSON sao preservados.
+A atualizacao nao recalcula nem envia resultados antigos automaticamente.
+Regra completa: 4-DOCUMENTOS/OTIMIZADOR/HABILIDADES-0909/REGRA-APROVADA.md
+
 OPERACAO LOCAL EM JSON
 =======================
 
@@ -13,15 +30,17 @@ enviadas, problemas e a linha que esta sendo tratada. A linha atual aparece
 com nome da carta, ID da carta junto do nome, funcao, posicao e tempo gasto.
 Nenhum ID fica solto na tela.
 
-1. PROCESSAR-FILA.bat
+1. PROCESSAR-FILA-PRINCIPAL.bat
    - trabalha sem internet;
-   - le a fotografia pronta em PACOTE-FILA-INTEGRAL;
+   - le FILA-ATIVA.json e combina as fotografias prontas em
+     PACOTE-FILA-INTEGRAL;
    - calcula uma linha por vez;
    - guarda resultados em RESULTADOS-JSON\<lote>\PENDENTES, em arquivos de
      ate 100 resultados. Um jornal duravel protege cada linha ate o arquivo
      final ficar pronto.
 
-2. ENVIAR-RESULTADOS.bat
+2. ENVIAR-FILA-PRINCIPAL.bat
+   - vigia continuamente os JSONs prontos ate o operador pressionar Ctrl+C;
    - le apenas os JSONs ja prontos;
    - manda uma linha por vez;
    - so marca a linha como enviada depois da confirmacao do banco;
@@ -29,7 +48,13 @@ Nenhum ID fica solto na tela.
      hora oficial devolvida pelo banco.
    - se uma linha ja tinha outro resultado no banco, nao tenta sobrescrever:
      registra o caso em CONFLITOS-NO-BANCO e arquiva o JSON em
-     ARQUIVADOS-COM-CONFLITO. O proximo resultado continua normalmente.
+     ARQUIVADOS-COM-CONFLITO. O proximo resultado continua normalmente;
+   - quando ainda nao existem 100 resultados fechados, aguarda cinco segundos
+     e consulta novamente, sem depender do arquivo de trava do processador.
+
+PROCESSAR-FILA.bat e ENVIAR-RESULTADOS.bat permanecem como atalhos genericos de
+uma unica operacao. Na fila oficial com varios lotes, use os dois atalhos
+terminados em FILA-PRINCIPAL.
 
 Pode abrir os dois batches ao mesmo tempo: o segundo espera apenas pelos JSONs
 completos. Para interromper qualquer um, use Ctrl+C na janela dele. Nada que
@@ -55,7 +80,7 @@ Copie a pasta OPERACAO-LOCAL-JSON completa, incluindo bin e
 PACOTE-FILA-INTEGRAL. Ela abre sozinha no destino: nao precisa instalar Python,
 nao baixa a fila novamente e nao precisa levar o painel antigo. No destino,
 ponha o config.txt local com a chave daquele computador antes de executar
-ENVIAR-RESULTADOS.bat.
+ENVIAR-FILA-PRINCIPAL.bat.
 
 A pasta bin desta versao contem somente OperacaoLocalJson.exe. Nao existe
 uma pasta _internal para copiar. Se aparecer o erro "No module named
@@ -68,33 +93,84 @@ feche o batch, substitua somente bin\OperacaoLocalJson.exe pela versao nova e
 abra PROCESSAR-FILA.bat de novo. Esse resumo e um recibo; a versao nova o
 ignora. Nao apague nem mova JSON algum.
 
-CORRECAO DE IMPETOS V8 — 37 LINHAS
-----------------------------------
+Se aparecer "importacao JSON recusada: selo divergente", nao apague nem mova os
+JSONs. O fingerprint agregado do lote pode ter mudado depois que essas linhas
+foram calculadas. A V68 confere os selos canonicos imutaveis guardados na propria
+linha e mantem o fingerprint agregado declarado no fingerprint integral e na
+auditoria, sem exigir o historico incompleto do lote. A V68 foi aplicada e
+confirmada no banco operacional em 04/09/2026. Feche a tela antiga e rode de novo
+o mesmo botao de envio. O programa local nao precisou ser trocado.
 
-Existe um pacote separado para a correcao. Ele nao substitui nem mistura os
-pacotes antigos. Para levar somente esta correcao a outro computador, com o
-processamento parado, copie estes quatro itens para a mesma pasta
-OPERACAO-LOCAL-JSON do outro computador:
+Se o banco devolver 55P03 por lock timeout, existe outra operacao usando a mesma
+tabela naquele instante. O enviador do codigo em disco nao encerra nem cria falha
+para esse caso transitorio: conserva a mesma linha pendente, mostra a espera na
+tela e tenta novamente em 5, 10, 20 e depois 30 segundos ate receber a confirmacao
+oficial ou o operador usar Ctrl+C. Outros erros continuam falhando fechados.
 
-    1. bin\OperacaoLocalJson.exe              (substitui somente esse arquivo)
-    2. PROCESSAR-FILA.bat                     (substitui somente esse arquivo)
-    3. PROCESSAR-CORRECAO-IMPETOS-V8.bat      (arquivo novo)
-    4. ENVIAR-RESULTADOS.bat                  (substitui somente esse arquivo)
-    5. ENVIAR-CORRECAO-IMPETOS-V8.bat         (arquivo novo)
-    6. PACOTE-FILA-INTEGRAL\5fbe90c8-8e98-4a02-bd41-e8b3272c37f4
-       (pasta nova inteira)
+FILA GLOBAL POR NIVEL COMPROVADO — 06/09
+---------------------------------------
 
-Nao copie nem apague config.txt, RESULTADOS-JSON ou as outras pastas ja
-existentes em PACOTE-FILA-INTEGRAL. Para calcular apenas as 37 linhas da
-correcao, abra PROCESSAR-CORRECAO-IMPETOS-V8.bat. Ele calcula uma por vez e
-grava os resultados em uma pasta separada desse mesmo lote. Nao use o
-PROCESSAR-FILA.bat comum para essa correcao.
+PROCESSAR-FILA-PRINCIPAL.bat e PROCESSAR-FILA.bat usam FILA-ATIVA.json.
+O atalho PROCESSAR-CORRECAO-IMPETOS-V8.bat tambem entra nessa fila global.
+Primeiro rodam especiais evolutivos; depois especiais de nivel 1; cartas
+base ficam por ultimo. Dentro de cada grupo, maior overall primeiro;
+cartas novas com overall ausente ficam antes dos overalls conhecidos. Nivel 0
+significa nivel ainda nao coletado: a carta fica pendente e nao entra no motor.
+O tipo fisico 3 (POTW/POTM/POTS) pertence sempre ao segundo grupo: nivel 1,
+orcamento 0. Resposta positiva do eFHUB para esse tipo e conservada apenas
+como bruto de auditoria e nao entra no pacote.
 
-Quando a tela do processamento mostrar 37 concluidas e 0 pendentes, feche
-somente aquela janela e abra ENVIAR-CORRECAO-IMPETOS-V8.bat. Esse segundo
-batch envia somente as 37 linhas da correcao, uma por vez, e deixa todos os
-JSONs antigos intocados. Ele exige o config.txt valido, pois esta e a etapa
-que conversa com o banco.
+O pacote precisa trazer prioridade_orcamento_v1, identificacao da captura,
+nivel maximo e orcamento conferido. Pacotes anteriores sao recusados.
+FILA-ATIVA.json relaciona somente as fotografias renovadas. A ordem combina
+as linhas de todos os lotes ativos, incluindo correcoes. Cada resultado e
+recibo permanece em RESULTADOS-JSON do seu lote original.
+
+ENVIAR-FILA-PRINCIPAL.bat e ENVIAR-RESULTADOS.bat enviam os lotes ativos.
+Nenhum preparo inicia processamento ou envio automaticamente.
+
+ENVIAR-FILA-PRINCIPAL.bat vigia continuamente as pastas PENDENTES ate o operador
+pressionar Ctrl+C. Se ainda nao houver um JSON fechado, aguarda cinco segundos
+e consulta novamente. Cada grupo de 100 resultados e enviado assim que fica
+pronto, sem depender do arquivo de trava do processador. ENVIAR-RESULTADOS.bat
+permanece como envio generico de uma unica rodada.
+
+Para renovar na maquina de preparacao, com os lotes pausados, o executavel
+oferece "renovar --lotes <UUID principal> <UUID corretivo> ...". Essa acao
+le somente as tres RPCs de fotografia. Confere todos os pacotes em staging,
+preserva os anteriores em RENOVACOES e depois atualiza FILA-ATIVA.json.
+RESULTADOS-JSON e config.txt permanecem preservados. A rotina nao calcula,
+nao reserva e nao publica. Para transportar, leve o EXE atualizado,
+FILA-ATIVA.json, os atalhos e os pacotes indicados no arquivo.
+
+CORRECAO TIPO 3 — 07/09
+-----------------------
+
+O lote 5c9614ce-55a2-4f9d-9ead-435e703e9058 contem 441 linhas de 26 cards,
+todas no grupo 2 e com entrada nivel 1/orcamento 0. A fila oficial combina esse
+lote com os quatro lotes anteriores. Resultado novo substitui atomicamente a
+publicacao antiga; 117 publicacoes permanecem visiveis enquanto aguardam a
+substituicao e 324 linhas antigas sem publicacao ja foram invalidadas.
+
+CONTAGEM APOS RENOVACAO — 07/09
+------------------------------
+
+Uma renovacao preserva os resultados locais das linhas que sairam do pacote.
+Esses arquivos continuam disponiveis para auditoria, mas nao pertencem mais ao
+denominador da fotografia atual. O painel cruza cada resultado pelo linha_id e
+conta em "Concluidas", "Prontos", "Enviadas" e "Pendentes" somente os IDs que
+ainda existem no pacote carregado. O remetente pode trabalhar em paralelo; as
+contagens de prontos e enviados sao relidas periodicamente.
+
+Antes de calcular uma fotografia renovada, o processador confere conjuntamente
+os selos de lote, formula e contrato de cada resultado local. Arquivos de uma
+fotografia anterior sao preservados em HISTORICO-RENOVACOES e deixam de bloquear
+ou marcar como concluida uma linha que precisa ser refeita. Se um unico arquivo
+misturar duas fotografias, o processamento para sem altera-lo.
+
+Na fila principal, essa reconciliacao ocorre lote a lote antes do inventario
+global de resultados. Assim, uma linha reutilizada por uma fotografia renovada
+nao entra em conflito com o resultado historico antes que ele seja preservado.
 
 NAO APAGUE
 ----------
@@ -102,3 +178,54 @@ NAO APAGUE
 RESULTADOS-JSON, especialmente PENDENTES, RECIBOS e ENVIADOS, sao o historico
 recuperavel da rodada. FALHAS-CALCULO e FALHAS-ENVIO guardam o motivo exato de
 uma linha que precisou de revisao.
+
+
+HISTORICO - VOLTA PARA MARCAR - 08/09/2026
+------------------------------
+O pacote vigente inclui os dez bloqueios estrategicos da habilidade 56.
+O executavel atualizado recusa fotografias anteriores antes de calcular.
+A regra e exclusiva do Otimizador: nao limita escolhas pessoais na Ficha.
+Copie apenas os itens do CONTROLE-COPIA-MAQUINA-2-VOLTA-0809.md da raiz.
+Preserve config.txt e RESULTADOS-JSON da maquina 2. A atualizacao nao inicia
+calculo nem envio. A correcao esta preparada na frente da fila existente:
+1.220 linhas aptas; outras duas aguardam prova de orcamento. Os seis lotes
+anteriores continuam na mesma ordem, depois da correcao.
+Resultados locais do contrato anterior permanecem no historico; nao devem
+ser enviados como calculos da nova regra. O processador reconcilia os selos
+quando for iniciado pelo operador com o pacote renovado.
+
+
+Correção de retomada — histórico repetido — 08/09/2026
+
+O erro o histórico da renovação já contém resultado-000001.json ocorria porque
+renovações sucessivas reutilizavam o mesmo destino. Cada passagem agora arquiva
+em HISTORICO-RENOVACOES/<selo>/passagem-<identificador>/, conservando envelopes,
+recibos e resumos associados, sem substituir o histórico já existente.
+Dois testes específicos e os 21 testes do protocolo local passaram.
+O ajuste não muda banco, pacotes, FILA-ATIVA.json ou a ordem da fila.
+Entrega de reparo no clipboard: bin, programas e LEIA-ME.txt, para colar
+dentro de OPERACAO-LOCAL-JSON da máquina 2 e substituir os arquivos correspondentes.
+Depois, abrir o mesmo PROCESSAR-FILA-PRINCIPAL. RESULTADOS-JSON fica preservado.
+
+09/09 - REFILA DE HABILIDADES V12
+Dois lotes corretivos foram acrescentados antes dos oito lotes existentes.
+938 correcoes pontuais ja foram confirmadas no banco, com todas as etapas
+e os 26 atributos; 933 publicacoes atualizadas e cinco aguardando Bonificador.
+3537 linhas exigem busca integral na Maquina 2 e ficaram na frente das
+126318 linhas anteriores, cuja ordem foi conferida e preservada.
+O pacote novo e ATUALIZACAO-OTIMIZADOR-REFILA-V12.zip. Substitui o pacote
+anterior de habilidades. Atualiza 19 arquivos e renova as fotografias sem
+reordenar a fila antiga. Preserva configuracao, resultados e recibos.
+Atalhos permanecem PROCESSAR-FILA-PRINCIPAL e ENVIAR-FILA-PRINCIPAL.
+Confira o comprovante de envio no banco; pacote pronto nao significa instalado.
+
+
+## Enviador e critério de encerramento V12 — 09/09/2026
+
+O critério aprovado é terminar com toda linha vigente correta e gravada em `clube_novo`, reaproveitando o que já está correto e refazendo somente o necessário. Não declarar encerramento a partir de instalação, JSON local ou ausência de linhas elegíveis de um lote. Preservar históricos, antecessores e a ordem existente. A normalização permanece inalterada.
+
+O operador confirmou a instalação do reparo anterior `REPARO-MOTORES-V12` (backup `motores-retomada-v12-9866126a7fa84046b2e713e53878ce31`). O **novo REPARO-ENVIADOR-V12** corrige a leitura de fotografias antigas e preserva JSONs de outra fórmula sem enviá-los. Atualiza fonte e EXE com backup; mesmos BATs. 44 testes e instalador/EXE conferidos. A instalação deste novo reparo na Máquina 2 ainda não foi confirmada.
+
+Correção de terminologia dos registros anteriores: `lotes_sem_pendentes` significa **sem linhas elegíveis na fotografia atual**, não necessariamente lote inteiro concluído. Dos 1.220 IDs antigos, 1.138 têm resultado e 82 já estão no prefixo. Os demais seis lotes têm 126.318 elegíveis esperando V12. Os 28 antecessores com bloqueios já têm substitutas V12; as seis exclusões anteriores por falta de evidência são cartas removidas, sem publicação. Não reabrir antecessores nem inventar entradas de cartas removidas.
+
+Detalhes e limites da conferência: `4-DOCUMENTOS/OTIMIZADOR/HABILIDADES-0909/AUDITORIA-ENVIO-E-COBERTURA-V12.md`. Esta auditoria foi somente leitura; não declara que a produção ou o envio terminaram.

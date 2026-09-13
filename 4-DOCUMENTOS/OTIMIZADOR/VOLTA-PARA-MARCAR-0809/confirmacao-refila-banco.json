@@ -1,0 +1,20 @@
+{
+  "lotes_correcao": [
+    {
+      "id": "0789ae01-111c-41f1-98ef-7b4311f2de0d",
+      "estado": "pausado",
+      "linhas": 7,
+      "contrato_fingerprint": "710861714b7c7bf520ee9278a04ea170727488e729aa56df02e1dafd750fcda7"
+    },
+    {
+      "id": "57071c55-9ebc-4ad1-b7d8-bf8729b4ae56",
+      "estado": "pausado",
+      "linhas": 1215,
+      "contrato_fingerprint": "710861714b7c7bf520ee9278a04ea170727488e729aa56df02e1dafd750fcda7"
+    }
+  ],
+  "linhas_reabertas": 1222,
+  "eventos_historico": 1222,
+  "publicacoes_restantes": 53859,
+  "builds_otimizador_preservados": 1222
+}

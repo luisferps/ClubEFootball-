@@ -369,10 +369,17 @@ mantém todos os destinos de domínio fechados nesta fase.
 
 ## Radar de lançamentos e prontidão dos motores V5.2 — 31/08/2026
 
-- O Extrator ganhou um radar diário, somente leitura, que liga `card_id` ao
-  nome físico da box em `PlayerVariationDetail.bin`. A primeira leitura vira
-  referência; as seguintes separam box nova, já conhecida e conteúdo alterado.
-  Esse radar não decide publicação nem grava box no banco sozinho.
+> **Correção de contrato em 07/09/2026:** o radar descrito originalmente abaixo
+> confundia variação de carta com Box comercial e não é fonte válida de Box.
+> `PlayerVariationDetail.bin` descreve a variação individual da carta. O acervo
+> histórico foi copiado do legado somente com nome, participantes e data. Boxes
+> novas são lidas da resposta `CmdGetMyclubAgentlist` pelo botão separado
+> **ATUALIZAR BOXES NOVAS**. A primeira captura dessa resposta não transforma
+> variações em Boxes e não reconstrói o histórico.
+
+- O radar antigo ligava `card_id` ao rótulo de variação de
+  `PlayerVariationDetail.bin`. Esse rótulo não é nome, identidade nem composição
+  de Box comercial e não pode ser publicado como tal.
 - Publicação e uso nos motores permanecem decisões independentes. Um card pode
   ser enviado ao banco e mostrado no site mesmo quando está bloqueado para
   Otimizador/Bonificador. A revisão **REVISAR USO NOS MOTORES** começa sem

@@ -1,0 +1,74 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
+const base=path.resolve(__dirname,'..'),window={};
+const css=fs.readFileSync(path.join(base,'boxes.css'),'utf8');
+assert.match(css,/\.nb-preview\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/,'prévia compartilhada das boxes em três colunas');
+assert.match(css,/\.nb-active \.nb-preview\{min-height:202px/,'altura das molduras menores preservada');
+assert.match(css,/\.nb-active\.nb-firstpage \.nb-box:nth-child\(-n\+2\) \.nb-preview\{min-height:280px\}/,'altura das duas molduras maiores preservada');
+assert.match(css,/\.nb-preview \.nb-rated-player img[^\{]*\{width:90px;height:127px\}/,'artes maiores nas prévias das boxes');
+assert.match(css,/\.nb-active\.nb-firstpage \.nb-box:nth-child\(-n\+2\) \.nb-rated-player img[^\{]*\{width:120px;height:169px\}/,'artes ampliadas nas duas boxes em destaque');
+assert.match(css,/\.nb-card-grid img[^\{]*\{width:110px;height:155px\}/,'artes maiores na grade interna das boxes cadastradas');
+assert.match(css,/\.nb-card-grid \.nb-rated-player img[^\{]*\{width:110px;height:155px\}/,'artes maiores na grade interna das boxes');
+vm.runInNewContext(fs.readFileSync(path.join(base,'boxes-api.js'),'utf8'),{window,fetch,URL,Number,Set});
+(async()=>{
+const req={p_box:null,p_busca:'',p_limite:24,p_offset:0};
+const first=await window.SiteNovoBoxesAPI.read(req),second=await window.SiteNovoBoxesAPI.read({...req,p_offset:24});
+assert.equal(first.total,second.total);assert.equal(new Set([...first.itens,...second.itens].map(b=>b.box)).size,48);
+const chosen=first.itens[0];const detail=await window.SiteNovoBoxesAPI.read({...req,p_box:chosen.box});
+assert.equal(detail.total,chosen.total_cards);assert.equal(detail.itens[0].card_id,chosen.cards[0].card_id);
+const empty=await window.SiteNovoBoxesAPI.read({...req,p_busca:'__box_inexistente_743851__'});assert.equal(empty.status,'vazio');
+const living=await window.SiteNovoBoxesAPI.read({...req,p_box:'Living Legends 2026'});
+assert.equal(living.total,17);for(const id of ['89138556575063','89138556572074'])assert.ok(living.itens.some(c=>c.card_id===id),'Messi e Cristiano na mesma oferta');
+assert.equal(living.regua.length,6);const registeredAnalyzed=living.itens.find(c=>c.analises.length);assert.ok(registeredAnalyzed,'snapshot cadastrado exposto');
+assert.ok(registeredAnalyzed.analises[0].etiqueta);assert.ok(!('percentual_topo' in registeredAnalyzed.analises[0]));
+const catenaccio=await window.SiteNovoBoxesAPI.read({...req,p_box:'Catenaccio'});
+assert.equal(catenaccio.total,11);for(const id of ['88045755942057','88045755960770','88045755964133'])assert.ok(catenaccio.itens.some(c=>c.card_id===id));
+const phantom=await window.SiteNovoBoxesAPI.read({...req,p_busca:'Big Time Argentina'});assert.equal(phantom.total,0,'rotulo fisico nao cria box');
+const active=await window.SiteNovoBoxesAPI.read(req,undefined,true);
+const scored=await window.SiteNovoBoxesAPI.read({...req,p_ordem:'pontuacao'});
+const scoredDetail=await window.SiteNovoBoxesAPI.read({...req,p_ordem:'pontuacao',p_box:scored.itens[0].box});
+assert.equal(first.ordem,'recentes');assert.equal(scored.ordem,'pontuacao');
+const dated=[...first.itens,...second.itens];for(let i=1;i<dated.length;i++)assert.ok((dated[i-1].data_oferta||'')>=(dated[i].data_oferta||''));
+for(let i=1;i<scored.itens.length;i++)assert.ok((scored.itens[i-1].melhor_pontuacao??-Infinity)>=(scored.itens[i].melhor_pontuacao??-Infinity));
+assert.equal(scored.itens[0].melhor_pontuacao,scoredDetail.itens[0].pontuacao_maxima);
+assert.ok(first.itens.every(b=>!active.itens.some(a=>a.box===b.box)));
+const activeBox=active.itens.find(b=>b.cards.some(c=>c.analises.length));assert.ok(activeBox);
+const activeDetail=await window.SiteNovoBoxesAPI.read({...req,p_box:activeBox.box},undefined,true);
+assert.ok(active.total>0);assert.equal(activeDetail.total,activeBox.total_cards);assert.ok(activeDetail.itens.some(c=>c.analises.length));
+if(active.total<=req.p_limite){assert.equal(active.itens.length,active.total);assert.equal(active.itens.reduce((n,b)=>n+b.total_cards,0),active.total_cards);}
+assert.equal(active.regua.length,6);
+for(const response of [first,second,living,active,activeDetail])assert.doesNotMatch(JSON.stringify(response),/percentual_topo|percentual_minimo|melhor_percentual/,'percentuais ausentes do contrato público');
+for(const b of active.itens)assert.equal(new Set(b.cards.map(c=>c.card_id)).size,b.cards.length,'previa sem cards duplicados');
+const divergent=activeDetail.itens.find(c=>c.analises.length&&c.pontuacao_maxima>c.analises[0].pontuacao)||activeDetail.itens.find(c=>c.analises.length);
+for(const c of activeDetail.itens)for(const a of c.analises)assert.ok(c.pontuacao_maxima>=a.pontuacao);
+for(const mutate of [d=>d.itens[0].cards[0].card_id=123,d=>d.total=null,d=>d.itens[0].cards[0].overall='95',d=>d.itens[0].cards=[],d=>d.versao=2]){const d=structuredClone(first);mutate(d);assert.throws(()=>window.SiteNovoBoxesAPI.validate(d,req));}
+{const d=structuredClone(living);d.itens.find(c=>c.analises.length).analises[0].percentual_topo='99';assert.throws(()=>window.SiteNovoBoxesAPI.validate(d,{...req,p_box:'Living Legends 2026'}));}
+// O teste confere dados vivos; o snapshot histórico não é sobrescrito.
+const handlers=new Map(),pending=[];
+const root={innerHTML:'',contains:()=>true,scrollIntoView(){},addEventListener(k,f){handlers.set(k,f);},removeEventListener(k){handlers.delete(k);}};
+window.SiteNovoBoxesAPI={read:(r,signal,active)=>new Promise((resolve,reject)=>pending.push({r,signal,active,resolve,reject}))};
+vm.runInNewContext(fs.readFileSync(path.join(base,'boxes.js'),'utf8'),{window,URL,AbortController,setTimeout,clearTimeout,document:{createElement:()=>({})}});
+const tick=()=>new Promise(r=>setImmediate(r));
+function click(attr,value=''){const key=attr.replace(/^data-/,'').replace(/-([a-z])/g,(_,c)=>c.toUpperCase());const t={dataset:{[key]:value},closest(){return this;},hasAttribute:k=>k===attr};handlers.get('click')({target:t});}
+const start=window.SiteNovoBoxes.mount(root);pending.at(-1).resolve(first);await start;assert.match(root.innerHTML,/nb-box/);
+assert.match(root.innerHTML,/Ordenar por/);
+assert.doesNotMatch(root.innerHTML,/>OVR</);assert.match(root.innerHTML,/Legenda das estrelas de contratação/);assert.doesNotMatch(root.innerHTML,/nb-score|class="nb-player"/);
+handlers.get('change')({target:{matches:()=>true,value:'pontuacao'}});assert.equal(pending.at(-1).r.p_ordem,'pontuacao');assert.equal(pending.at(-1).r.p_offset,0);pending.at(-1).resolve(scored);await tick();
+const registeredPreview=scored.itens.flatMap(b=>b.cards).find(c=>c.analises.length);assert.ok(registeredPreview);const registeredBest=registeredPreview.analises[0];
+assert.ok(root.innerHTML.includes(registeredBest.etiqueta));
+assert.doesNotMatch(root.innerHTML,/Topo da build:|%/);assert.ok(root.innerHTML.includes('Contratação: '+registeredBest.estrelas+' de 5 estrelas'));
+click('data-nb-box',scored.itens[0].box);assert.equal(pending.at(-1).r.p_ordem,'pontuacao');pending.at(-1).resolve(scoredDetail);await tick();
+const registeredDetailAnalysis=scoredDetail.itens.find(c=>c.analises.length)?.analises[0];assert.ok(registeredDetailAnalysis);assert.ok(root.innerHTML.includes(registeredDetailAnalysis.etiqueta));if(registeredDetailAnalysis.linha_id)assert.ok(root.innerHTML.includes('&amp;linha='+registeredDetailAnalysis.linha_id));
+click('data-nb-back');assert.equal(pending.at(-1).r.p_ordem,'pontuacao');pending.at(-1).resolve(scored);await tick();
+handlers.get('change')({target:{matches:()=>true,value:'recentes'}});pending.at(-1).resolve(first);await tick();
+click('data-nb-page','2');assert.equal(pending.at(-1).r.p_offset,24);pending.at(-1).resolve(second);await tick();
+click('data-nb-box',chosen.box);assert.equal(pending.at(-1).r.p_box,chosen.box);pending.at(-1).resolve(detail);await tick();assert.match(root.innerHTML,new RegExp('card='+detail.itens[0].card_id));
+click('data-nb-back');assert.equal(pending.at(-1).r.p_offset,24);assert.equal(pending.at(-1).r.p_box,null);pending.at(-1).resolve(second);await tick();
+click('data-nb-page','3');const older=pending.at(-1);click('data-nb-clear');const newer=pending.at(-1);assert.equal(older.signal.aborted,true);newer.resolve(first);await tick();const html=root.innerHTML;older.resolve(second);await tick();assert.equal(root.innerHTML,html);
+click('data-nb-page','2');const late=pending.at(-1),beforeUnmount=root.innerHTML;window.SiteNovoBoxes.unmount();assert.ok(late.signal.aborted);late.resolve(second);await tick();assert.equal(root.innerHTML,beforeUnmount);assert.equal(handlers.size,0);
+const again=window.SiteNovoBoxes.mount(root);pending.at(-1).reject(new Error('Falha de teste'));await again;assert.match(root.innerHTML,/Tentar novamente/);assert.doesNotMatch(root.innerHTML,/class="nb-box"/);window.SiteNovoBoxes.unmount();
+const ongoing=window.SiteNovoBoxes.mount(root,true);assert.equal(pending.at(-1).active,true);assert.equal(pending.at(-1).r.p_box,null);pending.at(-1).resolve(active);await ongoing;assert.match(root.innerHTML,/Boxes em andamento/);assert.match(root.innerHTML,/Análise ainda não publicada/);
+assert.doesNotMatch(root.innerHTML,/cards com análise publicada|Análise incompleta|nb-coverage|Topo da build:|%/);assert.doesNotMatch(root.innerHTML,/Recomendação:/);
+assert.doesNotMatch(root.innerHTML,/Ver outras funções|<details|nb-analysis/);
+click('data-nb-box','POTW');pending.at(-1).resolve(activeDetail);await tick();const a=activeDetail.itens.find(c=>c.analises.length).analises[0];assert.ok(root.innerHTML.includes(a.etiqueta));assert.ok(root.innerHTML.includes('&amp;linha='+a.linha_id));assert.match(root.innerHTML,/Legenda das estrelas de contratação/);assert.doesNotMatch(root.innerHTML,/>OVR</);assert.ok(root.innerHTML.includes(divergent.pontuacao_maxima.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})));window.SiteNovoBoxes.unmount();
+console.log(JSON.stringify({ok:true,boxes:first.total,cards:first.total_cards,emAndamento:active.total,relacoes:active.total_cards,checks:'HTTP publico, contrato, paginas, detalhe, retorno, cancelamento, erro, analises e linha exata'}));
+})().catch(e=>{console.error(e);process.exitCode=1;});

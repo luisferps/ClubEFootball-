@@ -1,13 +1,11 @@
 'use strict';
 
 /**
- * Radar observacional de boxes físicas.
+ * Inventário observacional das versões/variações físicas das cartas.
  *
- * PlayerVariationDetail.bin liga card_id ao nome físico da box, mas esse
- * dado ainda não pertence ao contrato de escrita de clube_novo. Por isso o
- * radar gera um artefato local separado: ele nunca entra na identidade da
- * carta, nunca entra no pacote de aplicação e não decide publicação nem uso
- * no motor.
+ * PlayerVariationDetail.bin liga card_id ao rótulo da versão da carta. Esse
+ * rótulo não é o nome da box comercial. O artefato permanece local e nunca
+ * alimenta o catálogo nem a relação box-card.
  */
 (function installLaunchRadar(global) {
   const core = global.CLUBEF_CORE;
@@ -95,7 +93,7 @@
         });
         continue;
       }
-      assert(!(emptyId && !emptyName), `PlayerVariationDetail.bin registro ${recordIndex}: existe nome de box sem card_id; a relação física não pode ser comprovada.`);
+      assert(!(emptyId && !emptyName), `PlayerVariationDetail.bin registro ${recordIndex}: existe versão sem card_id; a relação física não pode ser comprovada.`);
       const numericId = BigInt(cardId);
       assert(numericId > 0n && numericId < MAX_CARD_ID, `PlayerVariationDetail.bin registro ${recordIndex}: card_id fora do domínio físico.`);
       assert(!seenCardIds.has(cardId), `PlayerVariationDetail.bin contém card_id duplicado: ${cardId}.`);
@@ -166,7 +164,7 @@
       parser: { version: PARSER_VERSION, record_size: RECORD_SIZE, name_offset: NAME_OFFSET, encoding: 'utf-8-nul' },
       source: sanitizeSource(metadata?.source),
       member: {
-        file: core.BOX_RADAR_MEMBER || 'PlayerVariationDetail.bin',
+        file: core.CARD_VARIATION_MEMBER || 'PlayerVariationDetail.bin',
         packed_bytes: metadata?.member?.packed_bytes ?? null,
         packed_sha256: metadata?.member?.packed_sha256 || null,
         raw_bytes: raw.length,
@@ -205,7 +203,7 @@
     assert(radar.parser?.version === PARSER_VERSION && radar.parser?.record_size === RECORD_SIZE, 'Artefato anterior usa outro layout físico de boxes.');
     assert(Array.isArray(radar.boxes), 'Artefato anterior não contém lista de boxes.');
     assert(radar.provenance?.source?.role, 'Artefato anterior não informa o papel da fonte.');
-    assert(radar.provenance?.member?.file === (core.BOX_RADAR_MEMBER || 'PlayerVariationDetail.bin'), 'Artefato anterior não veio de PlayerVariationDetail.bin.');
+    assert(radar.provenance?.member?.file === (core.CARD_VARIATION_MEMBER || 'PlayerVariationDetail.bin'), 'Artefato anterior não veio de PlayerVariationDetail.bin.');
     assert(Array.isArray(radar.ignored_records), 'Artefato anterior não preserva os registros físicos ignorados.');
     const identities = new Set();
     const allCards = new Set();

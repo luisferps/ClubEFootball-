@@ -3,7 +3,7 @@ MOTOR — O EXECUTOR. A unica peca que AGE.
 
 Manda neste arquivo: NAO-MEXER-formula-do-molde-e-do-motor.md, partes 2.6 e 2.7
 
-Ele escolhe QUATRO coisas ao mesmo tempo — barras, impeto, tecnico e as 5 habilidades —
+Ele escolhe QUATRO coisas ao mesmo tempo — barras, impeto, tecnico e ate 5 habilidades —
 para BATER OU PASSAR o molde, sem violar a equacao, guiado pela bussola.
 
 Ele nunca ve o alvo direto: ve nota. As tres leis (equacao, molde, regua) nao fazem
@@ -455,6 +455,37 @@ def build_mult(card_base, TECS, bf=None, tab=None, grupos=None, TU=None, piso_gl
     return best
 
 
+POLITICA_HABILIDADES = 'habilidades-funcao-20260909-v1'
+
+
+def habilidades_minimas(habilidades, pontuar, incidencias=None):
+    """Menor subconjunto que preserva a nota do motor, examinando ate 32 casos.
+
+    A limpeza e conjunta: duas habilidades redundantes nao podem ser removidas
+    independentemente e acabar eliminando todo o ganho. Nativas nao entram aqui.
+    Em empate de quantidade, prevalece a incidencia e depois o ID.
+    """
+    hs = list(habilidades)
+    if len(hs) > 5 or len(set(hs)) != len(hs):
+        raise ValueError('adicionais invalidas na limpeza de habilidades')
+    alvo = float(pontuar(hs))
+    if not math.isfinite(alvo):
+        raise ValueError('nota nao finita na limpeza de habilidades')
+    inc = incidencias or {}
+    for quantidade in range(len(hs) + 1):
+        equivalentes = []
+        for subset in itertools.combinations(hs, quantidade):
+            nota = float(pontuar(list(subset)))
+            if not math.isfinite(nota) or nota > alvo + 1e-7:
+                raise ValueError('efeito nao monotono na limpeza de habilidades')
+            if abs(nota - alvo) <= 1e-7:
+                equivalentes.append(subset)
+        if equivalentes:
+            return list(min(equivalentes, key=lambda ss:
+                (-sum(inc.get(h, 0) for h in ss), tuple(sorted(ss)))))
+    raise ValueError('nenhum subconjunto preservou a nota do motor')
+
+
 def build_completo2(c, TECS, fila_incid=None):
     """OTIMO EXATO sobre barras x impeto x tecnico x habilidades.
 
@@ -470,7 +501,7 @@ def build_completo2(c, TECS, fila_incid=None):
         v = POR_ID.get(int(h))
         return bool(v and v['efeito'] and any(int(i) in pes for i in v['efeito']))
     cand = [h for h in (c.get('falta') or []) if util(h)]
-    outros = [h for h in (c.get('falta') or []) if not util(h)]
+    # Vagas sao um limite, nao uma meta. Peso zero nunca preenche vaga.
     # ===== REGRA DO EMPATE (Luis, 08/08) =====
     # "no caso de empate utiliza a que e mais utilizada pela comunidade. E as outras
     #  que empatam com ela vao pra sugestao."
@@ -630,21 +661,38 @@ def build_completo2(c, TECS, fila_incid=None):
         # o buff JA esta dentro de r['vals'] e de r['nota'] — o otimizador inteiro
         # passou a pontuar o objetivo final. Nao reaplicar.
         vf = r['vals']; n = r['nota']
-        vagas = 5 - len(esc); extra = []
-        if vagas > 0 and outros:
-            key = (lambda h: -fila_incid.get(h, 0)) if fila_incid else (lambda h: 0)
-            extra = sorted(outros, key=key)[:vagas]
         _melhor = (best is None or n > best['nota'] or
                    (n == best['nota'] and
-                    _pop(list(esc) + extra) > _pop(best.get('habilidades') or [])))
+                    _pop(list(esc)) > _pop(best.get('habilidades') or [])))
         if _melhor:
             best = dict(r); best['nota'] = n; best['vals'] = vf
-            best['habilidades'] = list(esc) + extra; best['buff'] = bf
+            best['habilidades'] = list(esc); best['buff'] = bf
             # as TRES PROFUNDIDADES da mesma build, para conferir contra o jogo:
             cd = Card(c, m=r.get('m', 1.0), bf=bf)
             best['vals_carta'] = cd.base_barras(r['lvl'])          # so base + barrinhas
             best['vals_tela']  = cd.aplicar(r['lvl'], r['impeto_add'], r['boost_add'])
             # best['vals'] ja e a EQUACAO 2 = com as habilidades
+    if best is not None:
+        # A busca encontra a maior nota com ate cinco vagas. Como todos os
+        # efeitos sao nao negativos, preencher os conjuntos durante a busca
+        # nao perde o maximo. Depois retiramos redundancias por teto/ceil/nota,
+        # sem alterar barras, tecnico, impetos ou a nota vencedora.
+        antes = list(best['habilidades'])
+        def valores(hs):
+            buff = buff_de(fab + list(hs))
+            return [aplica_buff(v, *buff.get(i, (0, 0)),
+                                ref=best['vals_carta'][i])
+                    for i, v in enumerate(best['vals_tela'])]
+        def pontuar(hs):
+            return notaDe(valores(hs), c['arows'])
+        if abs(pontuar(antes) - best['nota']) > 1e-7:
+            raise ValueError('reconstrucao da nota divergiu antes da limpeza')
+        best['habilidades'] = habilidades_minimas(antes, pontuar, _inc)
+        best['buff'] = buff_de(fab + best['habilidades'])
+        best['vals'] = valores(best['habilidades'])
+        best['habilidades_sem_ganho_removidas'] = [h for h in antes
+                                                 if h not in best['habilidades']]
+        best['politica_habilidades'] = POLITICA_HABILIDADES
     return best
 
 

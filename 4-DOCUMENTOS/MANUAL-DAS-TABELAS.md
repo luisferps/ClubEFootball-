@@ -1,4 +1,184 @@
+## Extrator: prioridade manual e conclusão de carga, 12/09/2026
+
+`valor_do_dono` aceita correções também em campos físicos do jogo. O registro
+aplica o valor atomicamente e grava `valor_do_dono_historico`; 33 tabelas
+têm proteção, incluindo todos os destinos ativos do Extrator. Detalhes e
+limites em [Prioridade manual](EXTRATOR/PRIORIDADE-CORRECOES-MANUAIS.md).
+
+`aplicacao_pacote_revisao_extrator.estado` distingue `aplicando`,
+`aguardando_conferencia` e `aplicado`. Novas cargas só recebem `aplicado_em`
+após leitura independente completa. Históricos não foram recertificados.
+
+O contrato de leitura recebeu os hashes da fonte observada em 12/09 com
+`carga_autorizada=false`, aguardando comparação. A atualização da referência
+da fonte não equivale à importação dos dados novos.
+
+## Fechamento do complemento — conferido em 10/09/2026
+
+Instalacao da maquina2 e rodada corretiva concluidas: 751 linhas analisadas,
+560 corrigidas, 191 sem candidata elegivel. As560 possuem publicacao ativa;
+524 exibiveis e36 ocultas corretamente pela separacao dos estilos de goleiro.
+Atributos, notas, etapas e adicionais foram conferidos em todas as560.
+
+O editor site_novo_editor_avaliar_v1 chama build_editor.avaliar_v1, o mesmo
+avaliador usado pelo writer corretivo para validar cada resultado. Runtime e
+corretor coincidiram nos casos36564 e34628. Writers locais e v3/v6 validam e
+persistem origem complementar. Frontend publicado conferido: chip discretamente
+mais claro e hover Complementar; escolhas manuais nao sao preenchidas sozinhas.
+
+O usuario informou retomada do otimizador/enviador. Na leitura deste fechamento,
+ainda nao havia resultado novo em build_complemento_v14; isso nao desfaz as560
+correcoes, guardadas em complemento_recibo_v14. Confirmacao da retomada pelo
+usuario nao e prova de chegada do primeiro JSON novo ao banco.
+
+Regras e evidencia: 4-DOCUMENTOS/OTIMIZADOR/COMPLEMENTO-1009/ENCERRAMENTO-RODADA.md.
+Os registros de instalacao/correcao pendentes abaixo sao historicos.
+
+## Complemento de habilidades V14 — vigente em 10/09/2026
+
+Regra e operacao: [REGRA-APROVADA](OTIMIZADOR/COMPLEMENTO-1009/REGRA-APROVADA.md).
+A busca mantem a limpeza de habilidades sem ganho; depois uma etapa separada
+preenche vagas por incidencia nativa >=10%, respeitando bloqueios, elegibilidade
+e o limite5. Gemea presente NAO exclui candidata. Super substituto/Especialista
+em penalti entram depois, nas funcoes com os atributos aprovados de peso7ou12.
+Todos os efeitos/etapas/nota sao recompostos e conferidos com o editor. Nao sao
+habilidades de pontuacao artificialmente zero. Contexto proprio selado e origem
+persistida; formula da busca, normalizacao e Bonificador permanecem intactos.
+Pacote pronto nao significa correcao em massa concluida. Enviar JSONs antigos
+antes da fotografia corretiva, com processador parado; ver ordem no documento.
+
+## Altura e IA V13 — 10/09/2026
+
+Política ativa nos writers e executor seletivo iniciado. [Contrato e operação](BONIFICADOR/ALTURA-0909/EXECUTOR-ALTURA-IA-V13.md). IA 0,1 por estilo até 0,5; altura independente em sete funções; demais parcelas preservadas. Não confundir execução iniciada com concluída.
+
+## Altura independente — etapa estrutural 09/09/2026
+
+Leia [BONIFICADOR/ALTURA-0909/REGRA-APROVADA.md](BONIFICADOR/ALTURA-0909/REGRA-APROVADA.md). Altura separada sem redistribuir pontos das demais medidas. Regra aprovada em sete funções, direção positiva; preparada no banco, ainda sem alterar notas. Não confundir separação neutra com recálculo aplicado. O registro V10 abaixo é a base histórica preservada.
+
 # MANUAL DAS TABELAS — ClubEFootball
+
+## Normalização e estrelas — decisão de 09/09/2026
+
+Regra vigente: [NORMALIZACAO-0909/REGRA-APROVADA.md](NORMALIZACAO-0909/REGRA-APROVADA.md). Novos objetos em `clube_novo`: `normalizacao_regra_v3` (versão, JSON e hash), `normalizacao_publicacao_historico_v3` (campos anteriores), conversores/finalizador descritos no documento e views privadas de exibição de goleiros. `regua_contratacao_faixa_v1.estrelas` é `smallint NOT NULL`, de 0 a 5. Etiquetas, limites e snapshots preservados. APIs de Boxes expõem a equivalência; não calcular na tela. Ponte/delta passam a receber motor convertido pela curva aprovada mais bônus integral. Campos da linha só mudam se ela ainda corresponde ao par publicado. Nenhuma tabela de resultado dos motores é recalculada por esta entrega. Os registros anteriores de normalização continuam históricos.
+
+## Enviador e critério de encerramento V12 — 09/09/2026
+
+O critério aprovado é terminar com toda linha vigente correta e gravada em `clube_novo`, reaproveitando o que já está correto e refazendo somente o necessário. Não declarar encerramento a partir de instalação, JSON local ou ausência de linhas elegíveis de um lote. Preservar históricos, antecessores e a ordem existente. A normalização permanece inalterada.
+
+O operador confirmou a instalação do reparo anterior `REPARO-MOTORES-V12` (backup `motores-retomada-v12-9866126a7fa84046b2e713e53878ce31`). O **novo REPARO-ENVIADOR-V12** corrige a leitura de fotografias antigas e preserva JSONs de outra fórmula sem enviá-los. Atualiza fonte e EXE com backup; mesmos BATs. 44 testes e instalador/EXE conferidos. A instalação deste novo reparo na Máquina 2 ainda não foi confirmada.
+
+Correção de terminologia dos registros anteriores: `lotes_sem_pendentes` significa **sem linhas elegíveis na fotografia atual**, não necessariamente lote inteiro concluído. Dos 1.220 IDs antigos, 1.138 têm resultado e 82 já estão no prefixo. Os demais seis lotes têm 126.318 elegíveis esperando V12. Os 28 antecessores com bloqueios já têm substitutas V12; as seis exclusões anteriores por falta de evidência são cartas removidas, sem publicação. Não reabrir antecessores nem inventar entradas de cartas removidas.
+
+Detalhes e limites da conferência: `4-DOCUMENTOS/OTIMIZADOR/HABILIDADES-0909/AUDITORIA-ENVIO-E-COBERTURA-V12.md`. Esta auditoria foi somente leitura; não declara que a produção ou o envio terminaram.
+
+
+## Reparo de retomada HTTP 403 e encerramento — 09/09/2026
+
+A execução na Máquina 2 expôs uma permissão ausente na consulta da carta V3, após a preparação já validada. Corrigido o acesso restrito ao catálogo no banco; HTTP e gravação testados. A única falha 488143 foi recuperada, com prioridade preservada. Bonificador agora retorna código 2 em falha e não anuncia conclusão indevida. Novo pacote único `REPARO-MOTORES-V12` inclui também a correção de prioridade do Otimizador; instalar em `2-MOTORES` por `APLICAR.cmd`, preservando os BATs anteriores. Ver `4-DOCUMENTOS/BONIFICADOR/REPARO-RETOMADA-403-V12.md`. Os registros de prontidão anteriores descrevem a conferência parcial daquela etapa.
+
+
+## Retomada V12 conferida — 09/09/2026
+
+Pacote do Bonificador completo validado (15 arquivos). Retomada, controle e primeira reserva passaram em transação revertida; lote continua pausado, com 14.107 pendentes. Corrigidos no banco o filtro da auditoria e as restrições de versão do lote, agora compatíveis com os conjuntos coerentes V11/V12. Usar o mesmo `OPERACAO-CORRECAO-FISICA/INICIAR-REPROCESSAMENTO.bat`. Nenhuma nova cópia necessária por esses ajustes. Detalhes em `4-DOCUMENTOS/BONIFICADOR/RETOMADA-CONFERIDA-0909.md`.
+
+
+## Encerramento confirmado em 09/09/2026
+
+A correção seletiva dos bônus de estilo terminou: **67.795 resultados e 7.455 publicações concluídos, zero pendências e erros nessa operação**. O banco e o painel confirmaram o encerramento em 2026-09-09T08:13:50.106412+00:00. As nove publicações finais foram conferidas no contrato da Ficha, preservando a revisão de habilidades do Otimizador e a ordem dos lotes. A falha do UPDATE de encerramento foi corrigida no banco e no SQL oficial.
+
+Evidência e alcance: [Conclusão dos bônus de estilo](BONIFICADOR/CONCLUSAO-BONUS-ESTILOS-0909.md). A produção geral do Bonificador e as execuções do Otimizador têm estados próprios; este encerramento não significa que seus lotes foram executados. Os registros de andamento abaixo são históricos.
+
+## Política vigente de habilidades — 09/09/2026
+
+A política `habilidades-funcao-20260909-v1` está aplicada no `clube_novo` e no runtime oficial da Máquina 1. A matriz vigente tem 325 pares habilidade/função. O motor conserva de zero a cinco adicionais úteis; não preenche vagas sem ganho. Todas as sugestões automáticas, inclusive gêmeas de builds antigas, respeitam os bloqueios atuais da função. A escolha manual do usuário e as habilidades nativas continuam livres desses vetos estratégicos.
+
+Banco, fontes, executável e fotografias locais foram sincronizados; lotes continuam pausados e na mesma ordem. A normalização da nota não mudou. A revisão local identificou 4.509 linhas para análise posterior; nenhum resultado antigo foi regravado ou despublicado nesta etapa. A instalação na Máquina 2 e a publicação do frontend são estados separados.
+
+Regra completa, matriz, migrações, testes e evidências: [Habilidades por função V12](OTIMIZADOR/HABILIDADES-0909/REGRA-APROVADA.md). Os registros anteriores abaixo conservam o contexto da época e não substituem esta revisão.
+
+## Retomada futura na Máquina 2 — arquivos preparados
+
+Os arquivos V12 do Bonificador completo estão preparados para cópia direta.
+O operador usa o mesmo INICIAR-REPROCESSAMENTO.bat após terminar a correção de
+estilos. Antes disso, o comando não inicia nem reserva linhas. A versão do lote
+e a política geral só serão atualizadas no início solicitado pelo operador.
+Detalhes: [Entrega da Máquina 2](BONIFICADOR/ENTREGA-MAQUINA-2-V12.md). Os registros anteriores abaixo são históricos.
+
+## Operação atual — correção seletiva de estilos V12
+
+O executor autônomo foi instalado e iniciado na máquina oficial. Corrige somente
+os estilos de 67.795 resultados e atualiza 7.455 publicações, mantendo as notas
+anteriores disponíveis até cada troca ser confirmada. Não declarar conclusão
+antes do readback final do banco. Apenas o schema clube_novo é operacional.
+A fila geral permanece pausada; a Máquina 2 será atualizada depois.
+Código/EXE V12 estão preparados localmente. A política permanece com implantação
+geral pendente; a execução seletiva já aplica a regra.
+Fonte operacional: [Executor de estilos V12](BONIFICADOR/EXECUTOR-ESTILOS-V12.md).
+Os registros anteriores abaixo descrevem etapas históricas.
+
+## Adendo de 09/09/2026 — política aprovada dos bônus de estilo
+
+Autoridade da decisão: `clube_novo.bonificador_politica_estilo`, chave `versao`.
+Versão `estilos-funcao-20260909-v1`, estado conferido
+`aprovada_implantacao_pendente`, fingerprint SHA-256
+`7ed53bbab831180cde9d247782dd133fe072acadb69bd34871c3f83f28773dc5`.
+
+O JSON `politica` registra as 19 funções, os pontos principal 1,0/secundário 0,5,
+as duas exceções e os quatro estilos pendentes. O checksum é validado pelo banco;
+gatilhos impedem sobrescrever a regra da mesma versão ou apagar seu histórico.
+Uma nova decisão deve ser registrada em nova versão.
+
+O mapa de ativação permanece em `clube_novo.bonificador_regra_playstyle`
+(`playstyle_id`, `posicao_id`, `da_bonus`), ligado a `posicao_jogo`. A nova tabela
+não duplica essa relação: ela guarda a política de pontuação e suas pendências.
+`bonificador_posicao_slot` permanece como entrada da operação V11; não representa
+a classificação por função aprovada em 09/09. Também não se deve sobrescrever
+`funcao_sistema.familia` para implantar a nova política.
+
+`clube_novo.conferir_bonus_estilo_0909_v1(funcao,posicao,ataque,defesa)` é uma
+calculadora interna de leitura para conferir a decisão, sem ligação com writers
+ou publicação. Recebe os estilos efetivos de ataque/defesa e devolve pendência,
+sem nota, para os quatro estilos ainda sem definição. O consumidor V11 continua
+separado e não foi migrado pelo registro desta decisão.
+
+Regra completa: [Bonificação de estilos aprovada em 09/09](BONIFICADOR/REGRA-ESTILOS-APROVADA-0909.md).
+Migração registrada: `registrar_politica_bonus_estilos_funcao_20260909_v1`.
+Fonte SQL e validação: `BONIFICADOR/SQL/APLICAR-POLITICA-ESTILOS-0909-V1.sql` e
+`BONIFICADOR/SQL/VALIDAR-POLITICA-ESTILOS-0909-V1.sql`.
+
+## Adendo de 08/09/2026 — bloqueio de Volta para marcar
+
+Autoridade: `clube_novo.habilidade_funcao_bloqueio_otimizador`, chave composta
+`(skill_id, funcao_id)`. Foram inseridos dez pares para `skill_id=56`, funções
+`1,2,6,7,10,11,16,17,18,19`, por decisão de Luis. A origem registra a decisão.
+Não é veto global em `habilidade_jogo`: o bloqueio exclui candidatos adicionais
+por função e não remove habilidades nativas. O pool `otimizador_pool_habilidades_v3`
+e a régua `otimizador_regua_v2` foram conferidos após a gravação. Pacotes locais
+anteriores precisam de nova régua antes de processar sob essa decisão.
+Na atualização completa de 08/09, seis `otimizador_lote_producao_v3.regua_snapshot`
+receberam os dez bloqueios; `contrato_fingerprint` foi recalculado por
+`otimizador_producao_contrato_fingerprint_v3`. Apenas o selo esperado das linhas
+ainda pendentes foi alinhado. Estados, ordem, builds concluídas e publicação
+foram preservados nessa atualização da régua. A refila autorizada depois está descrita abaixo. O estado anterior está
+em `OTIMIZADOR/VOLTA-PARA-MARCAR-0809/lotes-antes-atualizacao.json`.
+
+Após a autorização para antepor a correção, as 1.222 linhas foram reabertas,
+preservando os 1.222 Builds antigos e seus vínculos em eventos de auditoria.
+As 1.201 publicações afetadas foram retiradas; restam 53.859 publicações ativas.
+A correção usa dois lotes pausados para conservar os IDs e os contextos de
+sete linhas anteriores à fila integral, sem fundir registros históricos:
+`57071c55-9ebc-4ad1-b7d8-bf8729b4ae56` (1.215 linhas) e
+`0789ae01-111c-41f1-98ef-7b4311f2de0d` (7 linhas).
+As 1.220 linhas aptas ficam à frente. As linhas 379929 e 379937, de Imad Jasem
+(8562459), continuam pendentes no banco, sem orçamento físico na prioridade;
+não foram liberadas artificialmente. Os seis lotes anteriores conservam sua ordem.
+`FILA-ATIVA.json.lotes_prioritarios` define somente o prefixo corretivo;
+o processador faz uma partição estável e preserva a sequência restante.
+Nenhum motor foi iniciado.
+
+**Fronteira obrigatória:** esta tabela governa o Otimizador, não a permissão de
+treino do usuário no editor da Ficha. Não usá-la para filtrar o catálogo pessoal
+ou recusar a avaliação/salvamento de uma escolha pessoal legal no jogo.
 
 **Aberto em 27/08/2026; atualizado em 28/08/2026.** Diz, assunto por assunto, **qual é a tabela oficial**.
 
@@ -52,10 +232,11 @@ referência sem texto e oito FKs compostas validadas. Fingerprint do readback:
 ## MODELO NOVO — SCHEMA `clube_novo`
 
 Esta é a fronteira oficial e fisicamente materializada do modelo novo. O schema
-`clube_novo` nasceu com 21 tabelas e contém agora **42 tabelas** após as migrações
-canônicas de Técnicos, Textos, tipos/condições de Ímpetos e Dimensões das Cartas.
-A view derivada de principal/gêmeas não conta como tabela; índices, sequências,
-gatilhos e funções auxiliares também não são tabelas adicionais.
+`clube_novo` nasceu com 21 tabelas e atingiu **42 tabelas** no checkpoint das
+migrações canônicas de Técnicos, Textos, tipos/condições de Ímpetos e Dimensões
+das Cartas. Ampliações operacionais posteriores continuaram acrescentando
+estruturas; por isso 42 é contagem histórica, não total atual. Views, índices,
+sequências, gatilhos e funções auxiliares não entram nessa contagem de tabelas.
 
 **Status em 27/08/2026: cópia paralela aplicada.** A migração
 `20260827183648_criar_clube_novo_copia_paralela_21_tabelas` criou e carregou
@@ -69,7 +250,9 @@ O schema novo continua privado: a conferência de 28/08/2026 mostrou que `anon`,
 `authenticated`, `authenticator` e `service_role` não têm `USAGE` nem grants de
 tabela em `clube_novo`. Na fotografia atual, 15 tabelas têm RLS habilitado e 27
 não têm; isso não autoriza exposição pela Data API enquanto o schema continuar
-sem `USAGE` e sem grants. RLS/policies não foram alteradas nesta documentação.
+sem `USAGE` e sem grants. Esses números são o checkpoint de 28/08. Em 06/09, a
+nova `estado_slot_impeto_cor_visual_jogo` foi criada com RLS, revogação de todos
+os privilégios diretos e política explícita de bloqueio total.
 
 | grupo | tabela | finalidade | chave primária | relações principais |
 |---|---|---|---|---|
@@ -83,6 +266,8 @@ sem `USAGE` e sem grants. RLS/policies não foram alteradas nesta documentação
 | catálogo | `habilidade_jogo` | catálogo das 72 habilidades pelo id da Konami | `skill_id` | destino de `carta_habilidade_jogo` |
 | catálogo | `impeto_jogo` | catálogo de ímpetos publicado nos arquivos do jogo | `codigo_jogo` | destino de `carta_impeto_jogo` |
 | catálogo | `tipo_impeto_jogo` | tipos físicos, comportamento de ativação e estado do rótulo oficial | `codigo_raw` | destino da FK `impeto_jogo.tipo_condicao_raw` |
+| apresentação | `tipo_impeto_cor_visual_jogo` | cor dos cinco tipos físicos aplicados, com asset, hex e endereço reproduzível no UTOC/UCAS | `tipo_raw` | FK para `tipo_impeto_jogo`; enriquecimento da Ficha |
+| apresentação | `estado_slot_impeto_cor_visual_jogo` | cor dos estados de slot que não são tipos de Ímpeto | `estado_codigo` | uma linha canônica para a vaga 136/raw4; sem FK para `tipo_impeto_jogo` |
 | procedência | `tipo_impeto_evidencia_jogo` | âncoras reproduzíveis carta→ímpeto→tipo, com registro/bit/largura | (`codigo_raw`, `ordem`) | FKs para tipo e ímpeto |
 | regra | `impeto_condicao_jogo` | uma condição canônica por código atual de ímpeto | `codigo_impeto` | FKs para `impeto_jogo` e `tipo_impeto_jogo` |
 | alvo | `impeto_condicao_nacionalidade_jogo` | alvo físico de nacionalidade/região | `codigo_impeto` | FK para `impeto_condicao_jogo`; o código-alvo ainda não tem FK de dimensão |
@@ -444,6 +629,57 @@ condição e faixa não duplicam atributos nem deltas.
 tipo: o código 136 é a sentinela `vaga_de_slot`. O relatório de procedência registra
 `raw3 → Especial` como convenção autorizada de apresentação; o rótulo, sozinho,
 não deve ser usado como se fosse prova física da ligação.
+
+## Cores oficiais e endereço das texturas — 06/09/2026
+
+As cores deixaram de depender somente da comparação visual de cartas. Os seis
+ícones foram extraídos diretamente da instalação atual e decodificados como
+texturas `PF_BC7` de 104 × 104 pixels. O manifesto vigente é `2026090301`, para
+o aplicativo `6.0.0`. Os pacotes de atualização `pc9242` a `pc9256` foram
+indexados e não substituem `CmnIconBooster`; por isso a fonte visual efetiva
+continua no pacote-base atual `pc1000_console_win`.
+
+Arquivos físicos:
+
+```
+C:\Program Files (x86)\Steam\steamapps\common\eFootball\pak\pc1000_console_win.utoc
+C:\Program Files (x86)\Steam\steamapps\common\eFootball\pak\pc1000_console_win.ucas
+```
+
+Prefixo interno comum:
+
+```
+../../../PesConsole/Content/Assets/ui/Data/Widget/Parts/Icon/CmnIconBooster/Tex1080/
+```
+
+| raw/estado | tipo oficial | asset | cor física medida | hex dominante | UserData | offset no UCAS | Zlib/export | início do payload BC7 |
+|---|---|---|---|---|---:|---:|---:|---:|
+| `raw0` | Normal | `CmnIconBooster_1` | ciano/turquesa | `#00FFFF` | 84866 | 2213242880 | 5851/11941 B | +1101 |
+| `raw1` | Conexão ao vivo | `CmnIconBooster_2` | verde | `#00FF00` | 84867 | 2213249024 | 5523/11941 B | +1101 |
+| `raw2` | Conexão com o time | `CmnIconBooster_3` | laranja/âmbar | `#FFA42E` | 84868 | 2213255168 | 6828/11941 B | +1101 |
+| `raw3` | Especial | `CmnIconBooster_4` | magenta/roxo | `#FF20FF` | 84869 | 2213263360 | 6486/11941 B | +1101 |
+| `raw5` | Vantagem | `CmnIconBooster_5` | amarelo | `#FFE650` | 84870 | 2213271552 | 6722/11941 B | +1101 |
+| vaga 136 / marcador `raw4` | não é tipo | `CmnIconBooster_Empty` | cinza escuro | `#4C4C4C` | 84871 | 2213279744 | 5769/11957 B | +1117 |
+
+Cada payload BC7 tem 10.816 bytes. O hexadecimal é o pixel luminoso dominante,
+não uma promessa de preenchimento uniforme: os arquivos contêm gradiente,
+brilho, preto, transparência e sombras.
+
+`tipo_impeto_cor_visual_jogo` preserva `cor_visual` como token compatível com a
+Ficha já publicada (`azul`, `verde`, `amarelo`, `roxo`, `dourado`) e registra a
+descrição física precisa em `cor_nome_jogo`, `cor_hex_dominante`,
+`textura_asset`, `endereco_origem` e `detalhe_endereco`. O JSON de endereço
+guarda também versão, caminho interno, índice, offset, tamanhos, formato,
+dimensões, SHA-256 do export e a confirmação de ausência de override nos
+pacotes `dt880` atuais.
+
+`estado_slot_impeto_cor_visual_jogo` mantém a vaga separada, com uma única linha
+`estado_codigo='vaga'`, `codigo_slot=136` e `tipo_raw_tecnico=4`. Essa separação
+é obrigatória: cinza representa slot vazio e não cria um sexto tipo em
+`tipo_impeto_jogo`. A tabela tem RLS habilitada e privilégios diretos revogados;
+uma política explícita `USING (false)`/`WITH CHECK (false)` conserva o bloqueio
+total. Nenhum consumidor foi ligado ou teve regra de cálculo alterada por esta
+carga.
 
 `impeto_jogo.tipo_condicao_raw` agora é FK para `tipo_impeto_jogo`. Os 407
 registros cujo tipo é coletável no layout atual estão tipados; 33 registros sem
@@ -910,15 +1146,16 @@ derivado do cadastro atual de `clube_novo`:
 
 | View | Consumidor | Grão e responsabilidade |
 |---|---|---|
-| `public.frontend_boxes_v1` | Boxes cadastradas | Uma linha por `card_id` com Box válida, posição, tipo, overall, total da Box e `rank_box_overall`. |
+| `public.frontend_boxes_v1` | Boxes cadastradas | Uma linha por vínculo comercial comprovado do acervo histórico ou de uma oferta cadastrada, com posição, tipo, overall, total da Box e `rank_box_overall`. Uma Box histórica com o mesmo título de uma oferta em andamento fica fora desta tela enquanto a oferta estiver ativa. |
 | `public.frontend_home_v1` | Home | No máximo três cards da Box destaque, já ordenados e contados pelo banco. |
 | `public.frontend_busca_v1` | Busca global | Uma linha cadastral por card. `busca_documento` é o `tsvector` prefixável indexado; os playstyles do resultado são agregados por `LATERAL` somente depois do recorte. |
 | `public.frontend_ficha_v1` | Ficha cadastral | Uma linha por `card_id`, com identidade, dados físicos e grupos JSON de atributos, posições, habilidades, IA, pés, playstyles e ímpetos. |
 | `clube_novo.build_pontuacao_final_v1` | Projeção interna de Build final | Liga uma linha canônica à Build candidata e ao resultado do Bonificador, com IDs, selos, estado, motivo, elegibilidade, score final e proveniência. Não é exposta ao navegador. |
 | `public.frontend_build_publicada_v1` | RPC de Build para Ranking/Elenco/Ficha | Leitura limitada e somente de Builds já publicadas e seladas. Retorna a pontuação final pronta; o front-end não soma parcelas nem acessa `clube_novo`. |
 
-`frontend_busca_v1` pesquisa somente campos mantidos na própria
-`carta_jogo` (`card_id`, nome, Box, posição, estilo e nacionalidade). Tipo,
+`frontend_busca_v1` pesquisa somente campos cadastrais da carta. Vínculos de
+Box vêm das relações comerciais normalizadas e nunca de um rótulo físico da
+variação armazenado na linha da carta. Tipo,
 posição principal e playstyles continuam no resultado, mas não entram no
 documento indexado. Isso mantém a view sempre atual sem tabela-espelho nem
 trigger. O índice é
@@ -946,3 +1183,165 @@ Migração e retorno estrutural:
 `4-DOCUMENTOS/INTEGRACAO-DE-SISTEMAS/MIGRACAO-VIEWS-FRONTEND-POR-TELA-V1.sql`
 e
 `4-DOCUMENTOS/INTEGRACAO-DE-SISTEMAS/ROLLBACK-VIEWS-FRONTEND-POR-TELA-V1.sql`.
+
+## Nível máximo físico e orçamento — atualização de 06/09/2026
+
+A fonte comprovada do nível máximo é a memória do eFootball, vinculada à versão/hash do executável. O nível não foi localizado em Player.bin. Não atribuir o offset de um objeto de sessão ao registro desse arquivo.
+
+| Tabela | Contrato |
+|---|---|
+| `clube_novo.contrato_leitura_nivel_runtime_v1` | EXE aprovado, versão do leitor, raiz e coleções de memória, cobertura e prova. |
+| `clube_novo.contrato_leitura_campo_runtime_v1` | Campo, offset, bit, largura, transformação e destino. |
+| `clube_novo.nivel_runtime_captura_v1` | Captura imutável por UUID, manifesto, versão/hash e horário. |
+| `clube_novo.carta_nivel_evidencia_v1` | Nível máximo e orçamento comprovados por ID; captura e proveniência. A fonte categorial `tipo_carta_fisico` prevalece sobre eFHUB para o tipo físico 3. |
+| `clube_novo.carta_nivel_historico_v1` | Valores anteriores e novos por captura; preservação para auditoria. |
+| `clube_novo.orcamento_revisao_linha_v1` | Vínculo entre execução antiga e nova, entrada anterior, publicação anterior e estado da correção. |
+| `clube_novo.efhub_nivel_lote_v1` | Estado e totais de cada lote de até 1.000 cartas; comparação cadastral e confirmação independente. O reparo da fila ocorre depois da cobertura completa. |
+| `clube_novo.efhub_nivel_lote_item_v1` | Ordem, valor anterior, resposta, valor novo, erro ou conflito por `card_id`. |
+| `clube_novo.efhub_nivel_atual_v1` | Última resposta eFHUB validada, separada da prova física da memória. |
+| `clube_novo.carta_nivel_pendente_v1` | Lista dinâmica de cards elegíveis que ainda não têm nível comprovado; nunca entram no Otimizador enquanto permanecerem nessa lista. |
+
+`carta_jogo.level_cap` e `carta_jogo.orcamento` recebem os valores comprovados; `cap_estimado=false` só descreve essa aplicação, não comprova valores históricos sem evidência. `carta_jogo.sem_evolucao` é gerado por `level_cap=1 AND orcamento=0`. `level_cap=0` significa nível não coletado: o card aparece em `carta_nivel_pendente_v1`, fica fora da fila e não recebe orçamento. A trigger `tg_cap_do_id` protege níveis comprovados contra sobrescrita por estimativa e deixou de preencher nível ausente pela moda de um grupo ou por 33.
+
+Para EXE 6.0.0.0 / SHA256 `a6911e9613750df33d10598d6493db629b03195c3ec1d011704cd1e853d8c6e4`:
+- `G=[base+0x86c9fc0]`; `A=[G+0x28]`.
+- Coleção própria `[A+0x08]`, registro de 0xf0 bytes.
+- Boxes `B=[A+0x20]`, agente de 0x238 bytes, listas +0xe8/+0x200/+0x218.
+- Recrutamento no mesmo B: vetor +0x380, registro de 0xf0; total +0x398, página +0x3d0, índice +0x3d4.
+- No objeto da carta: ID +0x08/64 bits; nível atual +0x28/32 bits; máximo +0x2c, bit352, largura32.
+- Os níveis usam a representação XOR do escalar, validada pelo leitor; a máscara não é persistida.
+- Orçamento máximo = `2 * nível máximo - 2`. Nível1 implica orçamento0. Nível não observado permanece desconhecido.
+- O código físico `Player.bin` `tipo=3` (subtipos 0 e 1) identifica a família POTW/POTM/POTS sem evolução: nível máximo1, orçamento0, sem pontos de progresso, Ímpeto adicional ou habilidade adicional. O contrato categorial é `clubef-player-type3-sem-evolucao-v1`, vinculado ao SHA-256 de `Player.bin` `2afe17a686bef320dce3c4096355ba99b56bfb8a42b08018f0ae2fe444b05853`.
+
+As RPCs `public.extrator_contrato_niveis_runtime_v1()` e `public.extrator_aplicar_niveis_runtime_v1(jsonb,jsonb)` usam a conexão protegida já configurada no Extrator. Aplicação valida versão, identidade, integridade, fórmula, ordem de captura, grava histórico e confere o cadastro. Lotes acima de 1000 usam identificadores idempotentes separados. As tabelas não concedem leitura/escrita a anon ou authenticated.
+
+## Boxes comerciais na memória do jogo — atualização de 07/09/2026
+
+Box comercial vem da resposta `CmdGetMyclubAgentlist`; o texto de
+`PlayerVariationDetail.bin` é somente a variação individual da carta. O leitor
+canônico é `boxes-cmd-get-myclub-agentlist-v1`, vinculado ao EXE 6.0.0.0 e ao
+SHA-256 `a6911e9613750df33d10598d6493db629b03195c3ec1d011704cd1e853d8c6e4`.
+
+| Tabela | Contrato |
+|---|---|
+| `clube_novo.box_leitor_endereco_jogo_v1` | Endereço/offset, largura, derivação e validação de cada campo usado pelo extrator. |
+| `clube_novo.box_captura_jogo_v1` | Payload imutável, hash, horário, estado anterior e resultado da aplicação. |
+| `clube_novo.box_agente_captura_jogo_v1` | `agent_id`, título comercial e datas por captura. |
+| `clube_novo.box_agente_card_captura_jogo_v1` | Cards vinculados ao agente e ordem retornada pelo jogo. |
+| `clube_novo.box_acervo_legado_v1` | Manifesto do acervo histórico fixo copiado do legado, com arquivo, hash, quantidades esperadas e a lista fechada dos campos copiados. |
+| `clube_novo.box_contexto_contratacao_v1` | Registro comercial da Box. O histórico usa fonte preservada do legado; nas ofertas novas lidas do jogo, `agente_jogo_id` é a chave física estável. |
+| `clube_novo.box_card_em_andamento_v1` | Relação oficial entre Box e `card_id`. O nome da tabela é anterior à separação do acervo, mas ela contém vínculos históricos e atuais. |
+| `clube_novo.carta_box_oferta_v1` | Leitura interna unificada dos registros comerciais com fonte comprovada. Não lê `carta_jogo.box`. |
+| `public.frontend_boxes_v1` | Contrato público `SELECT-only` da tela Boxes cadastradas. O dono isolado lê diretamente as duas relações oficiais; `anon` não recebe acesso às tabelas internas. |
+
+Endereços: `G=[base+0x86c9fc0]`, `A=[G+0x28]`, `B=[A+0x20]`; vetor de
+agentes `B+0/B+8/B+0x10`, stride `0x238`; `agent_id +0x08` UInt64; título
+`+0x68` como `std::string` MSVC; início `+0x1c` UInt32; fim `+0x24` UInt32.
+Listas: `pickup +0xe8` stride `0xf8`, banner A `+0x200` stride `0xf0`, banner
+C `+0x218` stride `0xf0`; em todas, `card_id +0x08` UInt64. O parser da
+resposta é `0x1457eb210` e o conversor para esses objetos é `0x1445d7d70`.
+O detalhamento operacional está em
+`7-VARREDURA-DO-JOGO/DOCUMENTACAO/MAPEAMENTO-BOXES-RUNTIME.md`.
+
+`clube_novo.sincronizar_boxes_jogo_v1(jsonb)` valida o contrato inteiro,
+grava captura e relações normalizadas em uma transação e só então substitui a
+oferta corrente pertencente à própria fonte `jogo:CmdGetMyclubAgentlist`. Uma
+oferta atual já cadastrada por outra fonte é reconhecida pelo título e não é
+alterada. A view `carta_box_oferta_v1` reúne as relações comerciais comprovadas,
+inclusive o acervo histórico; `carta_jogo.box` permanece fora desse contrato e
+não deve ser repovoada.
+
+O acervo fixo `boxes-historicas-legado-v1` foi copiado somente com
+`box_nome`, `card_id` dos participantes e `data_oferta`. O manifesto confirma
+1.023 Boxes e 6.708 vínculos. Em 07/09/2026, a relação atual preservada continha
+11 Boxes e 109 vínculos. Depois da correção editorial comprovada da coleção
+`Big Time & Epic: France 1998`, com Marcel Desailly, Lilian Thuram e Patrick
+Vieira, a tela pública expõe 1.022 títulos e 6.698 linhas. Três títulos
+históricos continuam ocultos enquanto há oferta em andamento com o mesmo nome.
+Esses totais são readback da migração e da view, não limites de cardinalidade.
+
+A coleção France 1998 é uma relação comercial suplementar e rastreada; não foi
+inventada a partir de `carta_jogo.box`. Os registros antigos `Big Time France`
+continuam sem `oferta_fonte` e fora da leitura pública porque descrevem a
+variação física da carta, não o nome da Box. A busca de Boxes usa texto sem
+acento e, para termos com pelo menos cinco caracteres, tolera erro curto de
+digitação. Assim `desaily` encontra `Desailly` sem importar a rotina do legado.
+
+Para cobertura eFHUB, `public.extrator_efhub_planejar_lote_v1(integer)` escolhe
+o próximo lote na ordem do motor;
+`public.extrator_efhub_aplicar_lote_v1(uuid,text,jsonb)` compara e grava o
+antes/depois; e `public.extrator_efhub_finalizar_lote_v1(uuid,jsonb)` sela o
+resultado do reparo. As três RPCs são restritas a `service_role`. Um lote
+`planejado` é devolvido novamente até ser consumido, permitindo retomada sem
+criar uma segunda seleção.
+
+A reextração de 06/09 releu 43.448 fichas físicas; 46 IDs tinham nível disponível nas coleções carregadas, sem conflito. Esses totais são observações, não limites do leitor. Vetor de recrutamento vazio não prova ausência de cartas. O eFHUB fornece a cobertura do catálogo em tabela separada; quando existir prova física da memória do jogo ou a regra categorial do tipo físico 3, essa evidência prevalece em conflito. O bruto do eFHUB permanece em `efhub_nivel_atual_v1` para auditoria e não pode sobrescrever a regra categorial.
+
+### Execuções, publicação e fila
+
+Atualizar o cadastro não altera entradas de execução já fotografadas. As revisões criam linhas novas com orçamento/fingerprint atualizados. Linhas antigas sem publicação são invalidadas no preparo; uma publicação antiga permanece visível enquanto a correção está em `aguardando_substituicao`. Quando a linha nova recebe Otimizador e Bonificador compatíveis e é publicada, `tg_substituir_publicacao_revisao_orcamento_v1` remove atomicamente a publicação antiga, invalida a linha anterior e marca a revisão como `substituida`. Assim a tela não fica vazia entre a correção e a republicação.
+
+A extração eFHUB prioriza: (1) cards com publicação ativa; (2) demais cards já concluídos pelo Otimizador; (3) cards ainda não otimizados. Dentro de cada faixa, a prioridade da fila é: evolutivos não-base, não-base sem evolução/orçamento e base/Normal; depois overall decrescente, NULL por último e desempates estáveis. A condição de base prevalece. Nível sem evidência não vira orçamento zero e não é liberado para cálculo. Após o comparativo, a mesma ordem por evolução e overall é aplicada na fila persistida e no pacote consumido pela máquina dedicada.
+
+Em 07/09, a auditoria encontrou 3.524 cards do tipo físico 3: 3.498 já estavam em 1/0 e 26 tinham recebido nível/orçamento positivo do eFHUB. Esses 26 cards correspondiam a 441 linhas ativas. Foi criado o lote corretivo `5c9614ce-55a2-4f9d-9ead-435e703e9058`: 324 linhas antigas sem publicação foram invalidadas e 117 publicações antigas ficaram ativas até a substituição. Todas as 441 entradas novas estão no grupo 2, em nível1/orçamento0 e ordenadas por overall decrescente. Também foram encontrados 84 pares sem publicação duplicados entre linhas legadas sem lote e o lote principal; são uma duplicidade histórica separada, sem orçamento divergente e sem republicação corretiva.
+
+Após renovar um pacote, os resultados locais preservados de linhas que já saíram da fotografia não entram nas contagens do painel. `Concluídas`, `Resultados únicos prontos para envio`, `Enviadas` e `Pendentes` são calculadas pela interseção dos `linha_id` locais com os IDs do pacote carregado. Isso preserva a auditoria em `RESULTADOS-JSON` sem exibir um restante artificialmente menor durante a continuação da fila.
+
+A máquina oficial conserva o código do extrator e dos motores. A dedicada recebe somente o pacote de execução atualizado; a atualização preserva configuração, recibos e resultados e não inicia o motor.
+
+## Bonificador V11 — estilo por posição e publicação por linha — 07/09/2026
+
+O resultado vigente do Bonificador usa motor
+`v11-0709-estilo-posicao-oficial-v1` e fórmula
+`2e80a07d51f2bc8f456f9710c82717d38e3142cb3d52fd325b7b587c58ed2879`.
+O bônus de estilo é decidido pela relação entre `playstyle_id` e `posicao_id` em
+`clube_novo.bonificador_regra_playstyle`; `funcao_id` não decide se o estilo ativa.
+Os moldes permanecem entradas do Otimizador e da parcela corporal, sem alteração.
+
+| Objeto | Responsabilidade vigente |
+|---|---|
+| `clube_novo.bonificador_regra_playstyle` | Relação oficial playstyle × posição; `da_bonus` liga ou desliga a parcela. |
+| `clube_novo.bonificador_posicao_slot` | Informa qual slot é dominante em cada posição. |
+| `clube_novo.build_bonificador` | Resultado imutável com as parcelas dos dois slots, `b_estilo`, total, motor e fórmula. |
+| `clube_novo.bonificador_correcao_lote_v1` | Identidade, estado e snapshot do lote corretivo integral. |
+| `clube_novo.bonificador_correcao_item_v1` | Estado por linha: pendente, processando, preparado ou falha. |
+| `clube_novo.build_finalizacao_fila_v1` | Finalização durável por `linha_id`, sem exigir ordem entre os dois motores. |
+| `clube_novo.build_publicacao_linha_ativa_v1` | Ponte ativa publicada; só troca depois de a nova composição fechar. |
+
+O motor lê `public.bonificador_regua_v3()`, `public.bonificador_carta_v2()`,
+`public.bonificador_contexto_fila_v6()` e grava por
+`public.gravar_build_bonificador_v5(jsonb)` ou, no lote explícito, por
+`public.gravar_build_bonificador_correcao_v1(uuid,jsonb)`. A finalização usa
+`clube_novo.finalizar_publicar_linha_v1(bigint,text)` e o cron
+`public.finalizacao_publica_tick_v1(100)`.
+
+Resultados V10 existentes puderam ser reaproveitados sem recalcular corpo, pé
+ruim ou IA: a migração V11 criou novos resultados imutáveis somente com a parcela
+de estilo e os selos derivados reconciliados. Publicações antigas permaneceram
+visíveis até a troca atômica. Em 07/09, o readback confirmou zero publicação com
+valor de estilo diferente da V11 e zero item prioritário dessa correção em espera
+ou erro.
+
+O aplicativo separado `7-VARREDURA-DO-JOGO/Extrator Niveis eFHUB.exe` chama o
+planejador repetidamente até cobrir as cartas elegíveis para o Otimizador, em
+blocos de até 1.000.
+Cada bloco possui `lote_id`, manifesto, comparação, commit e readback próprios.
+O próximo bloco nunca começa antes da confirmação do anterior. Nessa fase a
+aplicação não prepara revisões, não reorganiza fila e não despublica linhas. O
+comparativo e a remontagem da fila ocorrem depois da cobertura completa.
+O comparativo cria revisão somente quando o orçamento fotografado na entrada
+histórica divergir do orçamento comprovado. Linhas já otimizadas com orçamento
+coincidente não voltam para a fila e conservam seus resultados e publicações.
+
+## 09/09/2026 — correcao pontual completa e refila V12
+
+A migration 20260909072123 reabriu seletivamente 4.475 linhas em dois lotes pausados, preservando Builds O/B e publicacoes. Os eventos `arquivo_linha_antes_habilidades_0909_v12` guardam o estado completo anterior. O importador grava um novo O; atributos fisicos/internos e arows novos alimentam a finalizacao atomica. Nao editar somente habilidades_adicionais. Linhas sem Bonificador confirmado aguardam o contrato completo. Nenhuma tabela do schema clube participa. Detalhes em `OTIMIZADOR/HABILIDADES-0909/CORRECAO-PONTUAL-E-REFILA.md`.
+
+
+## Revisão das fotografias de Boxes — 09/09/2026
+
+Autorização posterior: atualizar as avaliações congeladas para a normalização vigente, não apenas o desenho das estrelas. `clube_novo.box_avaliacao_revisao_0909` guarda nova fotografia por box/card/degrau, consumida por `site_novo_box_card_analise_snapshot_v1`; o leitor original e os 2.621 snapshots antigos permanecem preservados. Esta revisão substitui a orientação anterior de manter exclusivamente a avaliação antiga na tela.
+
+Foram capturadas 20.094 fotografias (6.698 vínculos de cards, 1.022 boxes, três degraus), contendo 44.827 análises. Cards sem publicação elegível ficam sem avaliação; nenhuma nota foi inventada. As faixas de contratação e os motores permanecem iguais. Não há atualização contínua dessa fotografia: nova revisão exige decisão própria. Fontes: publicações exibíveis vigentes, melhor linha por função/degrau e topo global da função, como na régua de contratação existente.
+
+Readback: zero divergências de identidade, nota, degrau ou estrelas inválidas. Cristiano Ronaldo `89138556572074`, Living Legends 2026, degrau 3: Centroavante fixo, linha 364310, nota 111,3542550014243, cinco estrelas. SQL de implantação: `4-DOCUMENTOS/NORMALIZACAO-0909/06-RENOVAR-AVALIACOES-BOXES.sql`. A correção é no banco e já é consumida pelo site publicado; não exige novo deploy nem pacote para a Máquina 2.

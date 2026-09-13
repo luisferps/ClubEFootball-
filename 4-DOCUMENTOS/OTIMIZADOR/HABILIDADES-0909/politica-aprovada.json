@@ -1,0 +1,1569 @@
+{
+  "versao": "habilidades-funcao-20260909-v1",
+  "motor_versao": "otimizador-fila-producao-v3-local-20260909-habilidades-v12",
+  "formula_fingerprint": "a1cc830af3366e2d0c9ac12138d892058b3e57ed216e43d68242d105b33cb9d2",
+  "permitidas": {
+    "34": [
+      6,
+      7,
+      12,
+      13,
+      14,
+      15
+    ],
+    "46": [
+      6,
+      7,
+      12,
+      13,
+      14,
+      15
+    ],
+    "19": [
+      1,
+      2,
+      3
+    ],
+    "37": [
+      1,
+      2,
+      3,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "15": [
+      1,
+      2,
+      3,
+      6,
+      16,
+      17,
+      18,
+      19
+    ]
+  },
+  "exigidos": {
+    "0": [
+      4,
+      5,
+      6,
+      17,
+      18,
+      19
+    ],
+    "1": [
+      4,
+      5,
+      6,
+      17,
+      18,
+      19
+    ],
+    "2": [
+      4,
+      5,
+      6,
+      17,
+      18,
+      19
+    ],
+    "3": [
+      4,
+      5,
+      6,
+      17,
+      18,
+      19
+    ],
+    "4": [
+      4,
+      5,
+      6,
+      12,
+      13,
+      17,
+      18,
+      19
+    ],
+    "5": [
+      4,
+      5,
+      6,
+      17,
+      18,
+      19
+    ],
+    "6": [
+      4,
+      5,
+      6,
+      17,
+      18,
+      19
+    ],
+    "7": [
+      4,
+      5,
+      6,
+      17,
+      18,
+      19
+    ],
+    "10": [
+      4,
+      5,
+      6,
+      17,
+      18,
+      19
+    ],
+    "15": [
+      4,
+      5,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15
+    ],
+    "19": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "27": [
+      4,
+      5,
+      17
+    ],
+    "34": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      8,
+      9,
+      10,
+      11,
+      16,
+      17,
+      18,
+      19
+    ],
+    "37": [
+      4,
+      5,
+      6,
+      7,
+      16,
+      17,
+      18,
+      19
+    ],
+    "38": [
+      4,
+      5,
+      17,
+      18,
+      19
+    ],
+    "46": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      8,
+      9,
+      10,
+      11,
+      16,
+      17,
+      18,
+      19
+    ],
+    "55": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      9,
+      14,
+      15
+    ],
+    "56": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      7,
+      10,
+      11,
+      16,
+      17,
+      18,
+      19
+    ]
+  },
+  "slots_minimos": 0,
+  "slots_maximos": 5,
+  "preencher_sem_ganho": false,
+  "nativas_preservadas": true,
+  "editor_livre": true,
+  "normalizacao_alterada": false,
+  "fila_reordenada": false,
+  "dribles": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    10
+  ],
+  "desbloqueios_aprovados": [
+    [
+      0,
+      16
+    ],
+    [
+      2,
+      16
+    ],
+    [
+      4,
+      16
+    ]
+  ],
+  "bloqueios": [
+    {
+      "skill_id": 34,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 46,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 55,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 56,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 57,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 58,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 60,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 64,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 1
+    },
+    {
+      "skill_id": 34,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 46,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 55,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 56,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 57,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 58,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 60,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 64,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 2
+    },
+    {
+      "skill_id": 34,
+      "funcao_id": 3
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 3
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 3
+    },
+    {
+      "skill_id": 46,
+      "funcao_id": 3
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 3
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 3
+    },
+    {
+      "skill_id": 55,
+      "funcao_id": 3
+    },
+    {
+      "skill_id": 57,
+      "funcao_id": 3
+    },
+    {
+      "skill_id": 58,
+      "funcao_id": 3
+    },
+    {
+      "skill_id": 60,
+      "funcao_id": 3
+    },
+    {
+      "skill_id": 64,
+      "funcao_id": 3
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 3
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 3
+    },
+    {
+      "skill_id": 0,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 1,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 2,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 3,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 4,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 5,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 6,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 7,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 10,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 15,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 17,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 20,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 21,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 22,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 23,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 26,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 27,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 28,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 34,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 36,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 37,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 38,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 46,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 48,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 54,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 55,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 56,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 57,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 58,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 59,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 60,
+      "funcao_id": 4
+    },
+    {
+      "skill_id": 0,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 1,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 2,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 3,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 4,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 5,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 6,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 7,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 10,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 15,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 17,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 20,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 21,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 22,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 23,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 26,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 27,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 28,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 34,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 36,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 37,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 38,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 46,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 48,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 54,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 55,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 56,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 57,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 58,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 59,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 60,
+      "funcao_id": 5
+    },
+    {
+      "skill_id": 0,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 1,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 2,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 3,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 4,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 5,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 6,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 7,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 10,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 20,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 37,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 56,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 6
+    },
+    {
+      "skill_id": 15,
+      "funcao_id": 7
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 7
+    },
+    {
+      "skill_id": 20,
+      "funcao_id": 7
+    },
+    {
+      "skill_id": 37,
+      "funcao_id": 7
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 7
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 7
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 7
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 7
+    },
+    {
+      "skill_id": 56,
+      "funcao_id": 7
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 7
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 7
+    },
+    {
+      "skill_id": 15,
+      "funcao_id": 8
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 8
+    },
+    {
+      "skill_id": 34,
+      "funcao_id": 8
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 8
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 8
+    },
+    {
+      "skill_id": 46,
+      "funcao_id": 8
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 8
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 8
+    },
+    {
+      "skill_id": 60,
+      "funcao_id": 8
+    },
+    {
+      "skill_id": 64,
+      "funcao_id": 8
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 8
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 8
+    },
+    {
+      "skill_id": 15,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 34,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 46,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 55,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 57,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 58,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 60,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 64,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 9
+    },
+    {
+      "skill_id": 15,
+      "funcao_id": 10
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 10
+    },
+    {
+      "skill_id": 34,
+      "funcao_id": 10
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 10
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 10
+    },
+    {
+      "skill_id": 46,
+      "funcao_id": 10
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 10
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 10
+    },
+    {
+      "skill_id": 56,
+      "funcao_id": 10
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 10
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 10
+    },
+    {
+      "skill_id": 15,
+      "funcao_id": 11
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 11
+    },
+    {
+      "skill_id": 34,
+      "funcao_id": 11
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 11
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 11
+    },
+    {
+      "skill_id": 46,
+      "funcao_id": 11
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 11
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 11
+    },
+    {
+      "skill_id": 56,
+      "funcao_id": 11
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 11
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 11
+    },
+    {
+      "skill_id": 4,
+      "funcao_id": 12
+    },
+    {
+      "skill_id": 15,
+      "funcao_id": 12
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 12
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 12
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 12
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 12
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 12
+    },
+    {
+      "skill_id": 64,
+      "funcao_id": 12
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 12
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 12
+    },
+    {
+      "skill_id": 4,
+      "funcao_id": 13
+    },
+    {
+      "skill_id": 15,
+      "funcao_id": 13
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 13
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 13
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 13
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 13
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 13
+    },
+    {
+      "skill_id": 64,
+      "funcao_id": 13
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 13
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 13
+    },
+    {
+      "skill_id": 15,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 55,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 57,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 58,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 59,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 60,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 64,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 14
+    },
+    {
+      "skill_id": 15,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 55,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 57,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 58,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 59,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 60,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 64,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 15
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 16
+    },
+    {
+      "skill_id": 26,
+      "funcao_id": 16
+    },
+    {
+      "skill_id": 34,
+      "funcao_id": 16
+    },
+    {
+      "skill_id": 37,
+      "funcao_id": 16
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 16
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 16
+    },
+    {
+      "skill_id": 46,
+      "funcao_id": 16
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 16
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 16
+    },
+    {
+      "skill_id": 56,
+      "funcao_id": 16
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 16
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 16
+    },
+    {
+      "skill_id": 0,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 1,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 2,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 3,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 4,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 5,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 6,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 7,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 10,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 26,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 27,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 34,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 37,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 38,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 46,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 56,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 17
+    },
+    {
+      "skill_id": 0,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 1,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 2,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 3,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 4,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 5,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 6,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 7,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 10,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 17,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 20,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 21,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 22,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 23,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 26,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 28,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 34,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 37,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 38,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 46,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 54,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 56,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 18
+    },
+    {
+      "skill_id": 0,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 1,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 2,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 3,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 4,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 5,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 6,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 7,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 10,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 17,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 19,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 20,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 21,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 22,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 23,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 26,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 28,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 34,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 37,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 38,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 44,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 45,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 46,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 47,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 49,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 54,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 56,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 1716,
+      "funcao_id": 19
+    },
+    {
+      "skill_id": 2101,
+      "funcao_id": 19
+    }
+  ],
+  "sugestoes_respeitam_bloqueios": true
+}

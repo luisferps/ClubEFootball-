@@ -1,7 +1,7 @@
 ﻿function Obter-Node {
   param([Parameter(Mandatory = $true)][string]$PastaFerramenta)
 
-  $nodeCodex = 'C:\Users\Luis Fernando\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe'
+  $nodeCodex = Join-Path $env:USERPROFILE '.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe'
   $npmCodex = Join-Path (Split-Path -Parent $nodeCodex) 'npm.cmd'
   if ((Test-Path -LiteralPath $nodeCodex) -and (Test-Path -LiteralPath $npmCodex)) { return $nodeCodex }
 

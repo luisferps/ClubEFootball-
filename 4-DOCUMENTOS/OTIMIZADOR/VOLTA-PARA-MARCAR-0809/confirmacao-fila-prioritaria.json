@@ -1,0 +1,24 @@
+{
+  "lotes_anteriores": [
+    "ddbcbc86-1ae7-4b95-b9f0-22601f41b61d",
+    "7581b184-dccb-4a4b-9ad9-c767d4f4947c",
+    "c5e38fd5-877c-416e-8063-977e24d229db",
+    "b02cf0df-d271-4659-8e42-64a8b88b0134",
+    "1833e4d0-1707-4ea2-8ba3-3733b5101310",
+    "5c9614ce-55a2-4f9d-9ead-435e703e9058"
+  ],
+  "lotes_correcao": [
+    "57071c55-9ebc-4ad1-b7d8-bf8729b4ae56",
+    "0789ae01-111c-41f1-98ef-7b4311f2de0d"
+  ],
+  "linhas_correcao_no_banco": 1222,
+  "linhas_correcao_aptas": 1220,
+  "linhas_aguardando_orcamento": [
+    379929,
+    379937
+  ],
+  "linhas_fila_anterior": 126418,
+  "ordem_anterior_preservada": true,
+  "sha256_ordem_anterior": "edea6ba4e05249f4aea65e08146f1ec6b6a2eb41879ad6a6490fe710813e6884",
+  "worker_iniciado": false
+}

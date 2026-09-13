@@ -1,0 +1,307 @@
+{
+  "desktop": {
+    "legend": [
+      {
+        "text": "PAGAR QUALQUER PREÇO",
+        "stars": 5,
+        "filled": 5,
+        "empty": 0
+      },
+      {
+        "text": "PAGAR CARO",
+        "stars": 4,
+        "filled": 4,
+        "empty": 1
+      },
+      {
+        "text": "PAGAR",
+        "stars": 3,
+        "filled": 3,
+        "empty": 2
+      },
+      {
+        "text": "PAGAR POUCO",
+        "stars": 2,
+        "filled": 2,
+        "empty": 3
+      },
+      {
+        "text": "PAGAR MUITO POUCO",
+        "stars": 1,
+        "filled": 1,
+        "empty": 4
+      },
+      {
+        "text": "NÃO PAGAR",
+        "stars": 0,
+        "filled": 0,
+        "empty": 5
+      }
+    ],
+    "cards": [
+      {
+        "text": "110,10Contratação",
+        "stars": "4"
+      },
+      {
+        "text": "111,20Contratação",
+        "stars": "5"
+      },
+      {
+        "text": "109,83Contratação",
+        "stars": "3"
+      },
+      {
+        "text": "111,45Contratação",
+        "stars": "4"
+      },
+      {
+        "text": "110,62Contratação",
+        "stars": "3"
+      },
+      {
+        "text": "109,72Contratação",
+        "stars": "3"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "109,11Contratação",
+        "stars": "3"
+      },
+      {
+        "text": "103,04Contratação",
+        "stars": "0"
+      },
+      {
+        "text": "101,36Contratação",
+        "stars": "0"
+      },
+      {
+        "text": "101,55Contratação",
+        "stars": "0"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      }
+    ],
+    "overflow": false
+  },
+  "mobile": {
+    "legend": [
+      {
+        "text": "PAGAR QUALQUER PREÇO",
+        "stars": 5,
+        "filled": 5,
+        "empty": 0
+      },
+      {
+        "text": "PAGAR CARO",
+        "stars": 4,
+        "filled": 4,
+        "empty": 1
+      },
+      {
+        "text": "PAGAR",
+        "stars": 3,
+        "filled": 3,
+        "empty": 2
+      },
+      {
+        "text": "PAGAR POUCO",
+        "stars": 2,
+        "filled": 2,
+        "empty": 3
+      },
+      {
+        "text": "PAGAR MUITO POUCO",
+        "stars": 1,
+        "filled": 1,
+        "empty": 4
+      },
+      {
+        "text": "NÃO PAGAR",
+        "stars": 0,
+        "filled": 0,
+        "empty": 5
+      }
+    ],
+    "cards": [
+      {
+        "text": "110,10Contratação",
+        "stars": "4"
+      },
+      {
+        "text": "111,20Contratação",
+        "stars": "5"
+      },
+      {
+        "text": "109,83Contratação",
+        "stars": "3"
+      },
+      {
+        "text": "111,45Contratação",
+        "stars": "4"
+      },
+      {
+        "text": "110,62Contratação",
+        "stars": "3"
+      },
+      {
+        "text": "109,72Contratação",
+        "stars": "3"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "109,11Contratação",
+        "stars": "3"
+      },
+      {
+        "text": "103,04Contratação",
+        "stars": "0"
+      },
+      {
+        "text": "101,36Contratação",
+        "stars": "0"
+      },
+      {
+        "text": "101,55Contratação",
+        "stars": "0"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      },
+      {
+        "text": "Análise ainda não publicada"
+      }
+    ],
+    "overflow": false
+  },
+  "errors": []
+}

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="escuro">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ClubEfootball: navegue por cards, ranking, elenco e boxes.">
+  <title>Início — ClubEfootball</title>
+  <link rel="stylesheet" href="site-shell.css?v=2026091202">
+  <link rel="stylesheet" href="ranking.css?v=2026091202">
+  <link rel="stylesheet" href="boxes.css?v=2026091202">
+  <script src="degrau.js?v=2026090702" defer></script>
+  <script src="site-theme.js?v=2026090701" defer></script>
+  <script src="search-api.js?v=2026090703" defer></script>
+  <script src="search.js?v=2026091202" defer></script>
+  <script src="boxes-api.js?v=2026090901" defer></script>
+  <script src="boxes.js?v=2026091202" defer></script>
+  <script src="ranking-api.js?v=2026091008" defer></script>
+  <script src="ranking.js?v=2026091202" defer></script>
+  <script src="home.js?v=2026090802" defer></script>
+  <script src="site-shell.js?v=2026090901" defer></script>
+</head>
+<body>
+  <a class="sn-skip" href="#conteudo">Pular para o conteúdo</a>
+  <header class="sn-header">
+    <div class="sn-topbar">
+      <a class="sn-brand" href="#inicio" aria-label="ClubEfootball — Início">CLUB<span>e</span>FOOTBALL</a>
+      <nav class="sn-nav" aria-label="Navegação principal">
+        <a href="#inicio" data-route="inicio">Início</a>
+        <a href="#elenco" data-route="elenco">Elenco</a>
+        <a href="#ranking" data-route="ranking">Ranking</a>
+        <a href="#boxes-em-andamento" data-route="boxes-em-andamento">Boxes em andamento</a>
+        <a href="#boxes" data-route="boxes">Boxes cadastradas</a>
+        <a href="#como-funciona" data-route="como-funciona">Como funciona</a>
+      </nav>
+      <form class="sn-search" data-sn-global-search role="search">
+        <span class="sn-search-icon" aria-hidden="true">⌕</span>
+        <input name="busca" type="search" minlength="3" maxlength="120" autocomplete="off" placeholder="Buscar em todos os cards" aria-label="Buscar jogador em todos os cards" aria-controls="sn-search-popup" aria-expanded="false">
+        <button class="sn-search-submit" type="submit" aria-label="Buscar">Buscar</button>
+        <div id="sn-search-popup" class="sn-search-popup" data-sn-search-popup hidden></div>
+      </form>
+      <div class="sn-tools"><div class="sn-degrau" role="group" aria-label="Degrau do ímpeto condicional" title="Degrau do Ímpeto condicional. O site inteiro passa a mostrar as notas calculadas nesse degrau: no 1 tudo aparece com o ímpeto no primeiro nível, no 2 no segundo, no 3 no máximo."><svg class="sn-degrau-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d="M9 3.5h14L30 16l-7 12.5H9L2 16Z"/><path d="M10.5 6h11L27 16l-5.5 10h-11L5 16Z" stroke-width="1"/><path d="M12 9.5h8l3.4 5.8H10.2l1.5-2.6h7.4l-.5-.9h-5.2Zm-3.4 7.2h13.2l-1.5 2.6h-7.4l.5.9h5.2L20 22.5h-8Z" fill="currentColor" stroke="none"/></svg><span class="sn-degrau-label">Ímpeto condicional</span><button type="button" data-sn-degrau="1" aria-pressed="false">1</button><button type="button" data-sn-degrau="2" aria-pressed="false">2</button><button type="button" data-sn-degrau="3" aria-pressed="true">3</button></div><button id="sn-theme" type="button" aria-label="Ativar tema claro">☀ Claro</button></div>
+    </div>
+  </header>
+  <main id="conteudo" class="sn-main" tabindex="-1">
+    <noscript><h1>ClubEfootball</h1><p>Ative o JavaScript para navegar nesta prévia local. Os módulos ainda não conectados não exibem dados.</p></noscript>
+  </main>
+  <footer class="sn-footer"><span>CLUBEFOOTBALL</span><span>Ranking, Boxes e Fichas conectados às builds publicadas</span><a href="#como-funciona">Como funciona</a></footer>
+</body>
+</html>
+

@@ -343,6 +343,10 @@ async function main() {
 
 main().catch((error) => {
   const message = String(error && error.message ? error.message : error);
+  if (error.source_update) {
+    const candidate = writeJson('atualizacao-fonte.json', error.source_update);
+    emit('source_update', { message, candidate_path: candidate, database_write: false });
+  }
   emit('fatal', { message, database_write: false });
   process.exitCode = message === 'cancelled_by_user' ? 130 : 1;
 });

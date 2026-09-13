@@ -1,0 +1,53 @@
+{
+  "lotes": [
+    {
+      "id": "1833e4d0-1707-4ea2-8ba3-3733b5101310",
+      "estado": "pausado",
+      "contrato": "c0c8cfc57c5d608eb8df40d80bed623a42521f24440e0f2f7706f20763a8d6e0",
+      "bloqueios": 10
+    },
+    {
+      "id": "b02cf0df-d271-4659-8e42-64a8b88b0134",
+      "estado": "pausado",
+      "contrato": "c0c8cfc57c5d608eb8df40d80bed623a42521f24440e0f2f7706f20763a8d6e0",
+      "bloqueios": 10
+    },
+    {
+      "id": "c5e38fd5-877c-416e-8063-977e24d229db",
+      "estado": "pausado",
+      "contrato": "c0c8cfc57c5d608eb8df40d80bed623a42521f24440e0f2f7706f20763a8d6e0",
+      "bloqueios": 10
+    },
+    {
+      "id": "5c9614ce-55a2-4f9d-9ead-435e703e9058",
+      "estado": "pausado",
+      "contrato": "c0c8cfc57c5d608eb8df40d80bed623a42521f24440e0f2f7706f20763a8d6e0",
+      "bloqueios": 10
+    },
+    {
+      "id": "ddbcbc86-1ae7-4b95-b9f0-22601f41b61d",
+      "estado": "pausado",
+      "contrato": "c0c8cfc57c5d608eb8df40d80bed623a42521f24440e0f2f7706f20763a8d6e0",
+      "bloqueios": 10
+    },
+    {
+      "id": "7581b184-dccb-4a4b-9ad9-c767d4f4947c",
+      "estado": "pausado",
+      "contrato": "c0c8cfc57c5d608eb8df40d80bed623a42521f24440e0f2f7706f20763a8d6e0",
+      "bloqueios": 10
+    }
+  ],
+  "bloqueios": [
+    1,
+    2,
+    6,
+    7,
+    10,
+    11,
+    16,
+    17,
+    18,
+    19
+  ],
+  "publicadas": 55060
+}

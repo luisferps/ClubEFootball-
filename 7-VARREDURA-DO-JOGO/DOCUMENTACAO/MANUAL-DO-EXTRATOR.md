@@ -1,6 +1,66 @@
 # Manual do Extrator eFootball
 
-**Versão operacional:** 5.3.0 · 31 de agosto de 2026
+## Atualização dos arquivos do jogo, versão 5.4.0.2
+
+Se o CPK local tiver hash diferente do contrato, a varredura abre seus membros
+obrigatórios, verifica a presença e a divisibilidade pelos tamanhos de registro
+contratados e salva `atualizacao-fonte.json`. Esse diagnóstico contém os hashes
+anteriores e observados e as contagens por arquivo. A janela identifica a
+atualização e mantém o envio bloqueado. Estrutura compatível não comprova ainda
+o significado de todos os campos: `validacao_semantica_concluida=false`.
+
+A fonte nova só pode participar da comparação e da aplicação após a revisão
+do contrato. Não substituir o hash antigo cegamente nem remover a verificação.
+
+## Correções manuais do usuário
+
+O valor registrado em `clube_novo.valor_do_dono` prevalece inclusive quando
+o jogo informa outro valor. A conferência do envio respeita essa decisão;
+outros campos continuam atualizáveis. O relatório mostra os campos protegidos.
+Consulte [Prioridade das correções manuais](../../4-DOCUMENTOS/EXTRATOR/PRIORIDADE-CORRECOES-MANUAIS.md).
+
+## Carga retomável e confirmação de conclusão, versão 5.4.0.1
+
+Cada lote é gravado, relido e confirmado separadamente. Se a carga falhar,
+os lotes já confirmados permanecem no banco. Preserve o mesmo pacote para a
+retomada. Uma falha não significa que nenhuma escrita ocorreu.
+
+O registro `clube_novo.aplicacao_pacote_revisao_extrator` passa por três estados:
+
+- `aplicando`: carga em andamento ou interrompida antes de completar os lotes.
+- `aguardando_conferencia`: lotes concluídos, confirmação independente pendente.
+- `aplicado`: leitura integral por nova conexão passou e a conclusão foi gravada.
+
+`aplicado_em` fica vazio durante a execução nova e só recebe a data após a
+conferência. A evidência fica em `auditoria_familias.readback_independente`.
+Os registros anteriores permanecem históricos; esta correção não certifica
+retroativamente cargas antigas. A tela informa a possibilidade de carga parcial
+quando não consegue confirmar a conclusão.
+
+Esta seção substitui descrições históricas de transação única para a aplicação
+integral de cartas. Níveis, boxes e instalação de proteção têm fluxos próprios.
+
+## Registro de 09/09/2026 — estilos aguardando definição
+
+Pressão recuada (87), Marcador forte (95), Defensor recuado (96) e Goleiro
+construtor (34) permanecem pendentes de posições de ativação. Na auditoria de
+09/09, tinham zero cartas vinculadas no banco, estavam inativos no catálogo e
+não apareceram nas 43.451 cartas da extração examinada. Isso não garante o
+mesmo estado em versões futuras.
+
+Quando uma extração futura fornecer a definição, preservar arquivo, registro,
+campo e versão de origem; validar as posições antes de completar
+`clube_novo.bonificador_regra_playstyle`. Uma carta com o estilo não comprova
+sozinha a lista completa de ativação. Não inferir posições pelo nome, não
+registrar uma lista vazia como se significasse incompatibilidade confirmada.
+
+A decisão está em `clube_novo.bonificador_politica_estilo`, versão
+`estilos-funcao-20260909-v1`. Consulte
+[Regra aprovada e pendências](../../4-DOCUMENTOS/BONIFICADOR/REGRA-ESTILOS-APROVADA-0909.md).
+Este registro documental não implementa monitoramento automático nem altera o
+executável do Extrator. A versão operacional abaixo permanece a mesma.
+
+**Versão operacional:** 5.4.0.2 (protocolo desktop 5.4.0)
 
 **Estado:** aplicativo desktop autônomo; varredura somente leitura; envio de dados e proteção dos motores são ações explícitas, separadas e conferidas
 
@@ -10,6 +70,63 @@ As seções marcadas como V4.6 ou V5.1 abaixo preservam o histórico de como o
 contrato e os leitores foram validados. Elas não descrevem os cliques atuais.
 Para o uso diário, siga **Operação autônoma diária** e **Revisão manual e
 sequência de cliques**.
+
+## Níveis máximos e orçamentos — V5.3.0.2
+
+O botão **EFHUB: PRÓXIMO LOTE** funciona com o jogo fechado. Ele pede ao banco
+até 100 `card_id` ainda não conferidos, abre a sessão do próprio site e consulta
+`https://efhub.com/api/public/players/{card_id}`. A resposta só é aceita quando
+`id`, `playerId` e o ID pedido são iguais e `levelCap` é um inteiro de 1 a 99.
+
+Cada lote guarda o nível e o orçamento anteriores, a resposta validada, URL,
+hash, horário e o valor novo. O orçamento gravado é sempre
+`2 * levelCap - 2`. Valores já existentes também são comparados e reescritos
+quando divergirem; a operação não se limita a campos vazios. Uma evidência da
+memória do jogo prevalece: se o eFHUB divergir dela, o item vira
+`conflito_fisico` e o cadastro não é sobrescrito.
+
+Depois da comparação, entradas antigas do Otimizador que fotografaram outro
+orçamento são substituídas no lote corretivo. Publicações dessas linhas são
+retiradas somente depois de a linha nova existir. O mesmo clique grava o resumo
+do reparo e faz uma leitura independente do banco. Falhas de rede ficam no
+checkpoint; nenhuma falha é convertida em nível 1.
+
+A ordem do catálogo é: cartas especiais atualmente classificadas como
+evolutivas, especiais atualmente classificadas sem evolução e cartas base.
+Dentro de cada grupo, overall decrescente. Cartas que já possuem entradas ou
+resultados do motor vêm antes das demais para que erros publicados sejam
+corrigidos cedo. O nível confirmado pelo lote passa a determinar a classificação
+real da fila seguinte.
+
+O lançador continua sendo `ABRIR-EXTRATOR.cmd`, que abre `Extrator eFootball.exe`.
+Com o jogo aberto e suas coleções carregadas, use **INICIAR VARREDURA**. A família
+**Níveis reais** localiza automaticamente o processo, a base do executável e os
+vetores registrados no contrato. A leitura não escreve no jogo.
+
+Em **VER RESULTADO**, abra **Conferir níveis e orçamentos por carta**. O relatório
+mostra o máximo observado, o orçamento correspondente e os valores do cadastro.
+**ATUALIZAR NÍVEIS** grava somente os IDs capturados e cadastrados, depois de
+reconferir contrato, executável, provas e identidades. O botão só fica disponível
+após uma captura válida. A gravação é transacional e a confirmação usa outra
+conexão ao banco. A credencial protegida já configurada no aplicativo é reutilizada.
+
+O orçamento é `2 * nível máximo - 2`: máximo 1 produz orçamento **0**, sem valor
+substituto. O nível atual pertence à instância e não substitui o máximo da carta.
+Uma carta não observada continua **pendente**; ausência não significa nível 1 nem
+ausência de evolução. A frase da tela “Impossível desenvolver mais” isolada não
+classifica uma carta, pois também aparece quando o saldo de pontos está zerado.
+
+A leitura dos arquivos físicos abrange o cadastro, enquanto a coleta de níveis
+abrange somente os vetores carregados na sessão: cartas próprias, listas das boxes
+e lista de recrutamento StandardDraft/Procurable. A captura guarda contagens,
+total informado e índice de página; não presume cobertura completa por esses
+valores. Jogo fechado, versão não reconhecida, mudança da sessão ou contrato
+incompatível deixam essa família pendente e preservam as demais leituras.
+
+Artefatos da rodada: `niveis-runtime.json`, `niveis-runtime-pacote.json`,
+`niveis-runtime.html` e, após gravação confirmada, `niveis-runtime-aplicacao.json`.
+O [mapeamento físico de níveis](MAPEAMENTO-NIVEIS-RUNTIME.md) descreve origem,
+offsets, contrato, cobertura e verificações. O nível não é atribuído a `Player.bin`.
 
 ## Regra estrutural
 
@@ -547,8 +664,10 @@ dependência não íntegra é `inválido` no resultado normalizado.
 coluna de destino para cada campo de Carta. O executor cria um baseline interno
 somente leitura com essas colunas e compara por `card_id`; FKs de clube, liga,
 nacionalidade, tipo e indisponibilidade são lidas de `dimensoes-fisicas.json`.
-`box`, títulos e rótulos legíveis não participam de identidade nem de carga;
-continuam no CSV público apenas para apresentação. A migração e rollback
+Títulos e rótulos legíveis não participam de identidade nem de carga. O rótulo
+físico de `PlayerVariationDetail.bin` também não entra no CSV de cartas: ele é
+somente uma prova auxiliar da variação individual da carta e nunca vira box ou
+vínculo de oferta. A migração e rollback
 cumulativos estão em `4-DOCUMENTOS/EXTRATOR/SQL/APLICAR-CATALOGO-FISICO-CONTRATO-V1.sql`
 e `ROLLBACK-CATALOGO-FISICO-CONTRATO-V1.sql`.
 
@@ -808,51 +927,25 @@ nem que a lista física completa de Estilos de IA foi localizada; afirma que as
 partes cobertas e comparadas nessa rodada correspondiam ao estado salvo em
 `clube_novo`.
 
-## Radar diário V2, cards pré-carregados e uso nos motores — V5.3 — 31/08/2026
+## Inventário diário de variações de carta — V5.4 — 07/09/2026
 
-A varredura deve ser executada diariamente quando o objetivo for descobrir
-lançamentos antes da tela do jogo. A Konami pode pré-carregar cards e boxes
-antes dos horários públicos. Nos horários de liberação conhecidos — domingo às
-23h e quarta-feira de madrugada — o operador primeiro abre o jogo e espera a
-atualização terminar; somente depois abre o Extrator. Fora desses horários, uma
-varredura diária continua útil porque uma pré-carga pode aparecer a qualquer
-momento.
+A varredura diária pode detectar cartas pré-carregadas antes da liberação
+pública. O módulo `radar-lancamentos.js` lê `PlayerVariationDetail.bin` e
+preserva a relação física entre `card_id` e **rótulo da variação individual da
+carta**. Esse texto não identifica uma box comercial e nunca entra em
+`box_contexto_contratacao_v1`, `box_card_em_andamento_v1` nem no pacote de
+publicação das boxes.
 
-O radar lê `PlayerVariationDetail.bin` no DT870 atualizado e liga cada
-`card_id` ao nome físico da box. Ele grava `radar-lancamentos.json` com origem,
-hash, índice do registro e comparação com a rodada anterior. A primeira rodada
-é apenas a referência local e não chama todas as boxes de novas. A partir da
-segunda rodada comparável, o relatório separa box nova, box já conhecida,
-cards acrescentados e cards que deixaram de aparecer. O radar não confirma que
-a box já foi liberada na tela, não decide publicação e não entra sozinho no
-pacote do banco.
+O artefato `radar-lancamentos.json` continua sendo uma comparação local entre
+rodadas do arquivo: registra origem, hash, índice e rótulos adicionados ou
+removidos. Os nomes internos antigos do contrato são mantidos apenas para ler
+artefatos já produzidos. Nenhum resultado desse radar cria, renomeia, agrupa ou
+finaliza uma box.
 
-Alguns registros físicos podem trazer um `card_id` válido e deixar inteiramente
-vazio o espaço reservado ao nome da box. Isso não comprova uma box e também não
-é motivo para derrubar todas as outras relações válidas. Nessa situação, o
-Radar isola o registro em `ignored_records`, guarda índice, offset e hash da
-prova física e mostra um aviso em linguagem simples. O registro isolado:
-
-- não é chamado de lançamento;
-- não recebe nome de box por tentativa;
-- não entra nas boxes, no pacote ou no banco;
-- não bloqueia outras mudanças comprovadas;
-- volta a ser avaliado em toda nova varredura e entra normalmente no Radar se
-  uma atualização futura preencher o nome.
-
-O arquivo também pode conservar uma relação card/box completa para um
-`card_id` que já não aparece no `Player.bin` atual. Quando a conferência usa os
-dois arquivos da mesma rodada, essa relação é classificada como referência
-física antiga e fica fora das boxes atuais, da publicação e do pacote. Ela não
-derruba o Radar e não autoriza recriar ou trocar o identificador do card. A
-prova preserva nome da box, `card_id`, índice, offset e hash do registro.
-
-O comportamento continua fechado para casos realmente ambíguos. Nome de box
-sem `card_id`, bytes residuais em um registro aparentemente vazio, identidade
-duplicada e UTF-8 inválido continuam interrompendo o Radar e aparecem como
-problema técnico. Somente situações fisicamente inequívocas são isoladas sem
-inventar dados: card sem nome de box, registro totalmente vazio e relação
-completa cujo card não pertence mais ao `Player.bin` atual.
+Registros vazios, bytes residuais, UTF-8 inválido e relações com cartas ausentes
+da referência física ficam isolados ou bloqueiam a comparação conforme o
+contrato do radar. Essas validações dizem respeito somente ao inventário de
+variações de carta.
 
 ### Como reconhecer sucesso, aviso acompanhado e falha real
 
@@ -1042,3 +1135,117 @@ fecha essa porta de forma explícita e recuperável, sem redirecionar a gravaç�
 e instala o escritor novo para `clube_novo.build_bonificador` dentro da mesma
 transação do gate e do seed. O uso produtivo do escritor continua condicionado
 ao readback final. A interface local de consulta continua somente leitura.
+
+### Habilidade especial Chute súbito (05/09/2026)
+
+O contrato físico ativo reconhece `carta.habilidade.2457` em `Player.bin`, bit
+`639`, largura `1`. O bit foi confirmado exatamente nos cards Francesco Totti
+`88045755960771`, Adriano `88045755960841` e Andriy Shevchenko
+`88045755964138`. A relação normalizada usa ordem `35`; o catálogo registra a
+habilidade como especial, somente de linha e não fabricável.
+
+O texto funcional confirmado na tela do jogo é que o jogador executa o chute
+mais rapidamente, reduzindo o tempo até o contato com a bola. Essa descrição
+manual não é apresentada como texto fisicamente extraído: o localizador físico
+do texto continua separado da prova do bit. Para o motor, a regra aprovada é
+`Finalização +5%`. A carga e o rollback versionados ficam em
+`4-DOCUMENTOS/EXTRATOR/SQL/APLICAR-HABILIDADE-CHUTE-SUBITO-BIT639-V1.sql` e
+`ROLLBACK-HABILIDADE-CHUTE-SUBITO-BIT639-V1.sql`.
+
+## Boxes comerciais — legado fixo e atualização de novas boxes — 07/09/2026
+
+O acervo histórico foi copiado do legado e preservado em
+`dados/boxes-historicas-legado.json`. O manifesto ao lado fixa a origem, o
+SHA-256 `ec5aaaef830ea03fbea3983037b4eaa9ab1014d25f6a7f082336d59d9255bbae`,
+1.023 boxes e 6.708 vínculos. Essa base não é reconstruída por
+`PlayerVariationDetail.bin`; o texto desse arquivo é versão da carta. O escopo
+da cópia é fechado: nome da Box, `card_id` dos participantes e data preservada
+em `visto`. Nenhum cálculo, rótulo, percentual, função ou rotina do legado foi
+importado.
+
+A ação dedicada **ATUALIZAR BOXES NOVAS** lê somente a resposta
+`CmdGetMyclubAgentlist` mantida na memória do eFootball. A varredura principal e
+a aplicação geral de cartas não alteram boxes. Ao receber uma captura, o banco
+reconhece pelo título normalizado as boxes atuais que já estavam cadastradas,
+preserva fonte, cartas, estado e datas desses registros e cria apenas títulos
+novos. Capturas posteriores atualizam ou encerram somente boxes que nasceram da
+própria fonte `jogo:CmdGetMyclubAgentlist`.
+
+O leitor parte de `G=[base+0x86c9fc0]`, `A=[G+0x28]`, `B=[A+0x20]`, percorre
+o vetor de agentes de stride `0x238` e lê `agent_id`, título comercial, datas e
+as três listas de cards. O contrato integral, inclusive parser, conversor,
+offsets, larguras e validações, está em `DOCUMENTACAO/MAPEAMENTO-BOXES-RUNTIME.md`
+e na tabela `clube_novo.box_leitor_endereco_jogo_v1`.
+
+Cada captura recebe UUID e hash, é preservada em `box_captura_jogo_v1` e tem
+agentes/cards normalizados em `box_agente_captura_jogo_v1` e
+`box_agente_card_captura_jogo_v1`. O readback confere a captura recebida, mesmo
+quando todas as boxes já eram conhecidas e nenhuma linha pública precisou ser
+criada. Jogo fechado, área de contratos ainda não carregada, versão desconhecida,
+título vazio, vetor instável ou card sem cadastro físico bloqueiam a captura.
+
+Arquivos da rodada: `boxes-jogo-captura.json`, `boxes-jogo-envio.json` e
+`boxes-resultado.json`.
+
+No banco, `box_acervo_legado_v1` guarda o manifesto; os registros comerciais
+ficam em `box_contexto_contratacao_v1` e os participantes em
+`box_card_em_andamento_v1`. Apesar do nome histórico da segunda relação, ela
+contém vínculos finalizados e atuais. `carta_box_oferta_v1` é a leitura interna
+unificada. A tela consulta somente `public.frontend_boxes_v1`, que exclui da
+listagem cadastrada um título histórico enquanto existir oferta em andamento
+com o mesmo título. `carta_jogo.box` permanece fora do contrato.
+
+## Extrator separado de níveis e orçamento eFHUB — 06/09/2026
+
+O aplicativo dedicado fica em `7-VARREDURA-DO-JOGO/Extrator Niveis eFHUB.exe`
+e abre por `ABRIR-EXTRATOR-NIVEIS-EFHUB.cmd`. Ele não executa a varredura do
+jogo e não pede quantidade: **EXTRAIR CARTAS DO OTIMIZADOR** continua até o banco
+informar que não existe mais carta elegível para o Otimizador pendente.
+
+A seleção começa pelos cards com publicação ativa, continua por todos os cards
+que já possuem resultado concluído do Otimizador e só depois alcança os ainda
+não otimizados. Dentro de cada faixa, a prioridade é: cartas evolutivas
+não-base, cartas não-base sem evolução/orçamento e cartas base; em cada grupo,
+overall decrescente e desempate estável por `card_id`. A cobertura permanece
+restrita aos elegíveis ao Otimizador, identificados por `roda_motor is not
+false`. Registros da
+`player_delete_list` são marcadores de remoção e não são tratados como cards.
+
+A execução percorre somente cards com `roda_motor is not false`, em lotes
+independentes de no máximo 1.000. Para cada lote, consulta e valida os IDs no
+eFHUB, grava nível/orçamento e o antes/depois no `clube_novo`, faz a leitura de
+volta e somente então inicia o lote seguinte. Nesta fase não clona linhas do
+Otimizador, não reorganiza a fila e não altera publicações. Cancelar durante um
+lote não o aplica; todos os lotes anteriores já confirmados permanecem
+gravados. O comparativo, a devolução das cartas divergentes à fila e a nova
+ordenação são uma etapa posterior. Uma carta já otimizada só recebe nova linha
+quando o orçamento da entrada histórica for diferente do orçamento comprovado;
+orçamento coincidente preserva resultado, linha e publicação atuais. Os relatórios ficam em
+`artefatos/efhub-niveis/run-*/`.
+
+Desde 07/09, cards com `codigo_tipo_carta_fisico=3` não são enviados ao eFHUB.
+O código físico 3, subtipos 0 e 1, cobre POTW/POTM/POTS e determina nível
+máximo1/orçamento0. A evidência `tipo_carta_fisico` prevalece sobre a resposta
+bruta do eFHUB, que continua armazenada apenas para auditoria. A trigger do
+cadastro impede uma resposta eFHUB futura de reintroduzir nível positivo nessa
+família. Cards com nível0 continuam pendentes; não são convertidos em nível1.
+
+A correção categorial de 07/09 criou 441 entradas para 26 cards no bloco de
+cartas sem evolução. Publicações antigas continuam visíveis até a publicação
+compatível da nova linha, quando a troca ocorre na mesma transação. O extrator
+sempre cria um UUID corretivo novo; nunca reaproveita o maior lote corretivo.
+Prévia das boxes: os três cards seguem a ordem da home eFHUB guardada na sincronização, inclusive quando não têm análise publicada. O contrato público existente resolve essa ordem no banco; a tela apenas exibe.
+# Atualização de 12/09: Sobreposição e valores manuais
+
+Sobreposição usa Coach.bin bit 192/largura 7. O endereço 135 foi rejeitado
+por comparação dos 65 técnicos já conferidos: 192 acertou 65/65 e 135, 0/65.
+Conte tem 69. Evidência completa em
+`4-DOCUMENTOS/EXTRATOR/SOBREPOSICAO-192-1209.md` na raiz do projeto.
+
+Use nova varredura após atualizar o contrato. Um pacote da leitura antiga
+não pode ser aplicado com o contrato novo. A varredura compara; a aplicação
+é feita pelo pacote selecionado. Boxes e níveis têm fluxos próprios.
+
+Na atualização de níveis, a prova conserva o valor coletado. O cadastro
+conserva a correção manual registrada, quando houver. A conferência aceita
+essa diferença somente para a carta e o campo protegidos.

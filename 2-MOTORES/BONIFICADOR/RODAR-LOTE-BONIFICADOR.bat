@@ -1,12 +1,11 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-set "PROCESSADOR=OPERACAO-LOCAL-LOTE\PROCESSAR-FILA-BONIFICADOR.bat"
-if not exist "%PROCESSADOR%" (
-  echo ERRO DE INSTALACAO: PROCESSAR-FILA-BONIFICADOR.bat nao foi encontrado.
-  echo Mantenha a pasta OPERACAO-LOCAL-LOTE completa dentro de 2-MOTORES\BONIFICADOR.
+chcp 65001 >nul
+if not exist "Bonificador ClubEfootball.exe" (
+  echo Aplicativo do Bonificador nao encontrado nesta pasta.
   if /i not "%CLUBEF_SEM_PAUSA%"=="1" pause
-  exit /b 1
+  exit /b 2
 )
-call "%PROCESSADOR%" %*
-exit /b %ERRORLEVEL%
+start "" "Bonificador ClubEfootball.exe"
+exit /b 0

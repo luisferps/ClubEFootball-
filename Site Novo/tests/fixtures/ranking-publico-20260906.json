@@ -1,0 +1,805 @@
+{
+  "modo": "card",
+  "itens": [
+    {
+      "box": "The Football Festival Campaign 2026",
+      "nome": "Neymar Jr",
+      "setor": "meio",
+      "funcao": "Meia ofensivo",
+      "card_id": "105853227146656",
+      "posicao": "MAT",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105853227146656.png",
+      "linha_id": "5852",
+      "funcao_id": "8",
+      "jogador_id": "40352",
+      "nota_final": 114.823086424372,
+      "posicao_id": 8,
+      "publicada_em": "2026-09-05T13:47:12.149169-03:00",
+      "classificacao": 1
+    },
+    {
+      "box": "NARUTO SHIPPUDEN Collaboration Campaign 2026",
+      "nome": "Neymar Jr",
+      "setor": "meio",
+      "funcao": "Meia ofensivo",
+      "card_id": "105838463196576",
+      "posicao": "MAT",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105838463196576.png",
+      "linha_id": "5765",
+      "funcao_id": "8",
+      "jogador_id": "40352",
+      "nota_final": 114.53447071084982,
+      "posicao_id": 8,
+      "publicada_em": "2026-09-05T13:46:07.451494-03:00",
+      "classificacao": 2
+    },
+    {
+      "box": "NARUTO SHIPPUDEN Collaboration Campaign 2026",
+      "nome": "Luka Modrić",
+      "setor": "meio",
+      "funcao": "Meia armador",
+      "card_id": "105840879109426",
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105840879109426.png",
+      "linha_id": "13720",
+      "funcao_id": "10",
+      "jogador_id": "34098",
+      "nota_final": 113.33383903876673,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-05T20:17:06.058533-03:00",
+      "classificacao": 3
+    },
+    {
+      "box": "The Football Festival Campaign 2026",
+      "nome": "Maximo Perrone",
+      "setor": "meio",
+      "funcao": "Meia de arranque",
+      "card_id": "105852690376604",
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105852690376604.png",
+      "linha_id": "13745",
+      "funcao_id": "11",
+      "jogador_id": "141212",
+      "nota_final": 111.51049344012205,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-05T20:17:29.750621-03:00",
+      "classificacao": 4
+    },
+    {
+      "box": "The Football Festival Campaign 2026",
+      "nome": "Samu Aghehowa",
+      "setor": "ataque",
+      "funcao": "Centroavante fixo",
+      "card_id": "105852958836100",
+      "posicao": "CA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105852958836100.png",
+      "linha_id": "13771",
+      "funcao_id": "1",
+      "jogador_id": "165252",
+      "nota_final": 111.09950370724707,
+      "posicao_id": 12,
+      "publicada_em": "2026-09-05T20:17:54.047126-03:00",
+      "classificacao": 5
+    },
+    {
+      "box": "NARUTO SHIPPUDEN Collaboration Campaign 2026",
+      "nome": "Rafael Leão",
+      "setor": "ataque",
+      "funcao": "Centroavante móvel",
+      "card_id": "105840879194481",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105840879194481.png",
+      "linha_id": "5819",
+      "funcao_id": "2",
+      "jogador_id": "119153",
+      "nota_final": 111.04457676816111,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-05T13:46:48.080012-03:00",
+      "classificacao": 6
+    },
+    {
+      "box": "NARUTO SHIPPUDEN Collaboration Campaign 2026",
+      "nome": "Martin Ødegaard",
+      "setor": "meio",
+      "funcao": "Meia armador",
+      "card_id": "105841416049644",
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105841416049644.png",
+      "linha_id": "9012",
+      "funcao_id": "10",
+      "jogador_id": "103404",
+      "nota_final": 111.03960353661301,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-05T15:42:47.944623-03:00",
+      "classificacao": 7
+    },
+    {
+      "box": "The Football Festival Campaign 2026",
+      "nome": "Nahuel Molina",
+      "setor": "defesa",
+      "funcao": "Lateral ofensivo",
+      "card_id": "105852690346488",
+      "posicao": "LE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105852690346488.png",
+      "linha_id": "13736",
+      "funcao_id": "7",
+      "jogador_id": "111096",
+      "nota_final": 110.93010447564721,
+      "posicao_id": 2,
+      "publicada_em": "2026-09-05T20:17:20.863087-03:00",
+      "classificacao": 8
+    },
+    {
+      "box": null,
+      "nome": "Andriy Shevchenko",
+      "setor": "ataque",
+      "funcao": "Centroavante móvel",
+      "card_id": "88045755964138",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755964138.png",
+      "linha_id": "379896",
+      "funcao_id": "2",
+      "jogador_id": "137962",
+      "nota_final": 110.8290229441381,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T00:18:54.309893-03:00",
+      "classificacao": 9
+    },
+    {
+      "box": "European Club Championship 16 Jun '22",
+      "nome": "Mohamed Salah",
+      "setor": "ataque",
+      "funcao": "Atacante criador",
+      "card_id": "351852310880035",
+      "posicao": "PTD",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/351852310880035.png",
+      "linha_id": "13916",
+      "funcao_id": "14",
+      "jogador_id": "57123",
+      "nota_final": 110.78558223093255,
+      "posicao_id": 10,
+      "publicada_em": "2026-09-05T20:20:20.282598-03:00",
+      "classificacao": 10
+    },
+    {
+      "box": null,
+      "nome": "Francesco Totti",
+      "setor": "ataque",
+      "funcao": "Falso nove",
+      "card_id": "88045755960771",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755960771.png",
+      "linha_id": "379876",
+      "funcao_id": "3",
+      "jogador_id": "134595",
+      "nota_final": 110.52099666054252,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T00:18:39.124296-03:00",
+      "classificacao": 11
+    },
+    {
+      "box": "NARUTO SHIPPUDEN Collaboration Campaign 2026",
+      "nome": "Robert Lewandowski",
+      "setor": "ataque",
+      "funcao": "Centroavante fixo",
+      "card_id": "105841147550786",
+      "posicao": "CA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105841147550786.png",
+      "linha_id": "8988",
+      "funcao_id": "1",
+      "jogador_id": "40002",
+      "nota_final": 110.49641832097585,
+      "posicao_id": 12,
+      "publicada_em": "2026-09-05T15:42:27.860839-03:00",
+      "classificacao": 12
+    },
+    {
+      "box": "The Football Festival Campaign 2026",
+      "nome": "Aymeric Laporte",
+      "setor": "defesa",
+      "funcao": "Zagueiro de saída",
+      "card_id": "105852958718370",
+      "posicao": "ZC",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105852958718370.png",
+      "linha_id": "13753",
+      "funcao_id": "19",
+      "jogador_id": "47522",
+      "nota_final": 110.3124528957529,
+      "posicao_id": 1,
+      "publicada_em": "2026-09-05T20:17:37.578519-03:00",
+      "classificacao": 13
+    },
+    {
+      "box": "NARUTO SHIPPUDEN Collaboration Campaign 2026",
+      "nome": "Alexis Saelemaekers",
+      "setor": "meio",
+      "funcao": "Ala cruzador",
+      "card_id": "105840879197592",
+      "posicao": "MLE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105840879197592.png",
+      "linha_id": "8982",
+      "funcao_id": "13",
+      "jogador_id": "122264",
+      "nota_final": 110.3121385299475,
+      "posicao_id": 6,
+      "publicada_em": "2026-09-05T15:42:22.97377-03:00",
+      "classificacao": 14
+    },
+    {
+      "box": "The Football Festival Campaign 2026",
+      "nome": "Pablo Fornals",
+      "setor": "meio",
+      "funcao": "Meia armador",
+      "card_id": "105852958781287",
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105852958781287.png",
+      "linha_id": "13760",
+      "funcao_id": "10",
+      "jogador_id": "110439",
+      "nota_final": 110.24557372477896,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-05T20:17:44.015869-03:00",
+      "classificacao": 15
+    },
+    {
+      "box": "Brazil 2014",
+      "nome": "Neymar Jr",
+      "setor": "ataque",
+      "funcao": "Centroavante móvel",
+      "card_id": "88044145253792",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88044145253792.png",
+      "linha_id": "379955",
+      "funcao_id": "2",
+      "jogador_id": "40352",
+      "nota_final": 110.14925902661233,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-05T01:08:46.676708-03:00",
+      "classificacao": 16
+    },
+    {
+      "box": null,
+      "nome": "Adriano",
+      "setor": "ataque",
+      "funcao": "Centroavante móvel",
+      "card_id": "88045755960841",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755960841.png",
+      "linha_id": "379920",
+      "funcao_id": "2",
+      "jogador_id": "134665",
+      "nota_final": 109.92408316950372,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T00:19:05.140326-03:00",
+      "classificacao": 17
+    },
+    {
+      "box": "FC Barcelona 18-19（Limited）",
+      "nome": "Lionel Messi",
+      "setor": "ataque",
+      "funcao": "Atacante criador",
+      "card_id": "17592722922839",
+      "posicao": "PTE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/17592722922839.png",
+      "linha_id": "9122",
+      "funcao_id": "14",
+      "jogador_id": "7511",
+      "nota_final": 109.16356089063096,
+      "posicao_id": 9,
+      "publicada_em": "2026-09-05T15:44:19.795773-03:00",
+      "classificacao": 18
+    },
+    {
+      "box": null,
+      "nome": "Jaap Stam",
+      "setor": "defesa",
+      "funcao": "Zagueiro de saída",
+      "card_id": "88045755964131",
+      "posicao": "ZC",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755964131.png",
+      "linha_id": "379894",
+      "funcao_id": "19",
+      "jogador_id": "137955",
+      "nota_final": 109.06065521235521,
+      "posicao_id": 1,
+      "publicada_em": "2026-09-05T17:53:32.414714-03:00",
+      "classificacao": 19
+    },
+    {
+      "box": "The Football Festival Campaign 2026",
+      "nome": "David Raya",
+      "setor": "goleiro",
+      "funcao": "Goleiro ofensivo",
+      "card_id": "105852958772368",
+      "posicao": "GO",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105852958772368.png",
+      "linha_id": "5831",
+      "funcao_id": "5",
+      "jogador_id": "101520",
+      "nota_final": 109.03329093147312,
+      "posicao_id": 0,
+      "publicada_em": "2026-09-05T13:46:56.79983-03:00",
+      "classificacao": 20
+    },
+    {
+      "box": "FC Barcelona 18-19（Limited）",
+      "nome": "Lionel Messi",
+      "setor": "ataque",
+      "funcao": "Atacante criador",
+      "card_id": "299067699633495",
+      "posicao": "PTE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/299067699633495.png",
+      "linha_id": "9138",
+      "funcao_id": "14",
+      "jogador_id": "7511",
+      "nota_final": 108.74982034950187,
+      "posicao_id": 9,
+      "publicada_em": "2026-09-05T15:44:33.423142-03:00",
+      "classificacao": 21
+    },
+    {
+      "box": null,
+      "nome": "Petr Čech",
+      "setor": "goleiro",
+      "funcao": "Goleiro ofensivo",
+      "card_id": "88045755829367",
+      "posicao": "GO",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755829367.png",
+      "linha_id": "379918",
+      "funcao_id": "5",
+      "jogador_id": "3191",
+      "nota_final": 108.56805498563808,
+      "posicao_id": 0,
+      "publicada_em": "2026-09-05T19:18:50.481529-03:00",
+      "classificacao": 22
+    },
+    {
+      "box": null,
+      "nome": "Claude Makélélé",
+      "setor": "meio",
+      "funcao": "Volante de construção",
+      "card_id": "88045755964130",
+      "posicao": "VOL",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88045755964130.png",
+      "linha_id": "379891",
+      "funcao_id": "16",
+      "jogador_id": "137954",
+      "nota_final": 108.54502203105329,
+      "posicao_id": 4,
+      "publicada_em": "2026-09-05T17:53:31.065457-03:00",
+      "classificacao": 23
+    },
+    {
+      "box": "FC Barcelona 16-17",
+      "nome": "Lionel Messi",
+      "setor": "ataque",
+      "funcao": "Atacante criador",
+      "card_id": "17592186051927",
+      "posicao": "PTE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/17592186051927.png",
+      "linha_id": "13886",
+      "funcao_id": "14",
+      "jogador_id": "7511",
+      "nota_final": 108.34696771734988,
+      "posicao_id": 9,
+      "publicada_em": "2026-09-05T20:19:47.335373-03:00",
+      "classificacao": 24
+    },
+    {
+      "box": "POTW 6 Feb '25",
+      "nome": "Pedri",
+      "setor": "meio",
+      "funcao": "Meia de arranque",
+      "card_id": "52880711223333",
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/52880711223333.png",
+      "linha_id": "344411",
+      "funcao_id": "11",
+      "jogador_id": "133157",
+      "nota_final": 107.35497512258908,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-05T14:18:59.827463-03:00",
+      "classificacao": 25
+    },
+    {
+      "box": null,
+      "nome": "Bernardo Silva",
+      "setor": "meio",
+      "funcao": "Meia armador",
+      "card_id": "105877117966114",
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105877117966114.png",
+      "linha_id": "379018",
+      "funcao_id": "10",
+      "jogador_id": "104226",
+      "nota_final": 107.19127222851961,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-05T01:09:07.548828-03:00",
+      "classificacao": 26
+    },
+    {
+      "box": "POTD International Cup Day 5",
+      "nome": "Pedri",
+      "setor": "meio",
+      "funcao": "Meia de arranque",
+      "card_id": "56161797802021",
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/56161797802021.png",
+      "linha_id": "342659",
+      "funcao_id": "11",
+      "jogador_id": "133157",
+      "nota_final": 107.11775162907269,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-05T13:37:00.667471-03:00",
+      "classificacao": 27
+    },
+    {
+      "box": "POTW 12 Feb '26",
+      "nome": "Allan Saint-Maximin",
+      "setor": "ataque",
+      "funcao": "Centroavante móvel",
+      "card_id": "52897891019910",
+      "posicao": "SA",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/52897891019910.png",
+      "linha_id": "359384",
+      "funcao_id": "2",
+      "jogador_id": "60550",
+      "nota_final": 107.11449966434908,
+      "posicao_id": 11,
+      "publicada_em": "2026-09-06T00:16:19.986526-03:00",
+      "classificacao": 28
+    },
+    {
+      "box": "POTW 1 May '25",
+      "nome": "Pedri",
+      "setor": "meio",
+      "funcao": "Meia de arranque",
+      "card_id": "52885543061541",
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/52885543061541.png",
+      "linha_id": "341546",
+      "funcao_id": "11",
+      "jogador_id": "133157",
+      "nota_final": 107.00627729105372,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-05T01:19:47.327228-03:00",
+      "classificacao": 29
+    },
+    {
+      "box": null,
+      "nome": "Tyler Adams",
+      "setor": "defesa",
+      "funcao": "Lateral ofensivo",
+      "card_id": "105870407098791",
+      "posicao": "LE",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/105870407098791.png",
+      "linha_id": "378983",
+      "funcao_id": "7",
+      "jogador_id": "123303",
+      "nota_final": 106.68425638437911,
+      "posicao_id": 2,
+      "publicada_em": "2026-09-05T01:09:07.164091-03:00",
+      "classificacao": 30
+    }
+  ],
+  "setor": "geral",
+  "total": 1935,
+  "limite": 30,
+  "offset": 0,
+  "status": "pronto",
+  "versao": 1,
+  "catalogo": {
+    "estilos": [
+      {
+        "id": 260,
+        "nome": "Ala Produtivo"
+      },
+      {
+        "id": 270,
+        "nome": "Armador Criativo"
+      },
+      {
+        "id": 257,
+        "nome": "Artilheiro"
+      },
+      {
+        "id": 269,
+        "nome": "Atacante Pivô"
+      },
+      {
+        "id": 266,
+        "nome": "Atacante Surpresa"
+      },
+      {
+        "id": 256,
+        "nome": "Básico"
+      },
+      {
+        "id": 261,
+        "nome": "Clássico Nº 10"
+      },
+      {
+        "id": 349,
+        "nome": "Cobertura"
+      },
+      {
+        "id": 271,
+        "nome": "Defensor Criativo"
+      },
+      {
+        "id": 347,
+        "nome": "Defensor Participativo"
+      },
+      {
+        "id": 96,
+        "nome": "Defensor Recuado"
+      },
+      {
+        "id": 291,
+        "nome": "Goleiro Adiantado"
+      },
+      {
+        "id": 34,
+        "nome": "Goleiro Construtor"
+      },
+      {
+        "id": 337,
+        "nome": "Goleiro Defensivo"
+      },
+      {
+        "id": 336,
+        "nome": "Goleiro Ofensivo"
+      },
+      {
+        "id": 353,
+        "nome": "Goleiro-Líbero"
+      },
+      {
+        "id": 259,
+        "nome": "Homem De Área"
+      },
+      {
+        "id": 348,
+        "nome": "Interceptador De Passe"
+      },
+      {
+        "id": 262,
+        "nome": "Jogador De Infiltração"
+      },
+      {
+        "id": 345,
+        "nome": "Ladrão No Ataque"
+      },
+      {
+        "id": 277,
+        "nome": "Lateral Atacante"
+      },
+      {
+        "id": 268,
+        "nome": "Lateral Defensivo"
+      },
+      {
+        "id": 274,
+        "nome": "Lateral Móvel"
+      },
+      {
+        "id": 267,
+        "nome": "Lateral Ofensivo"
+      },
+      {
+        "id": 95,
+        "nome": "Marcador Forte"
+      },
+      {
+        "id": 391,
+        "nome": "Meia Versátil"
+      },
+      {
+        "id": 350,
+        "nome": "Mestre Da Linha Alta"
+      },
+      {
+        "id": 329,
+        "nome": "O Destruidor"
+      },
+      {
+        "id": 276,
+        "nome": "Orquestrador"
+      },
+      {
+        "id": 275,
+        "nome": "Perito Em Cruzamento"
+      },
+      {
+        "id": 278,
+        "nome": "Pivô"
+      },
+      {
+        "id": 344,
+        "nome": "Pressão No Ataque"
+      },
+      {
+        "id": 87,
+        "nome": "Pressão Recuada"
+      },
+      {
+        "id": 392,
+        "nome": "Primeiro Volante"
+      },
+      {
+        "id": 258,
+        "nome": "Puxa Marcação"
+      },
+      {
+        "id": 346,
+        "nome": "Saída Ofensiva"
+      }
+    ],
+    "funcoes": [
+      {
+        "id": "1",
+        "nome": "Centroavante fixo",
+        "setor": "ataque"
+      },
+      {
+        "id": "2",
+        "nome": "Centroavante móvel",
+        "setor": "ataque"
+      },
+      {
+        "id": "3",
+        "nome": "Falso nove",
+        "setor": "ataque"
+      },
+      {
+        "id": "4",
+        "nome": "Goleiro defensivo",
+        "setor": "goleiro"
+      },
+      {
+        "id": "5",
+        "nome": "Goleiro ofensivo",
+        "setor": "goleiro"
+      },
+      {
+        "id": "6",
+        "nome": "Lateral defensivo",
+        "setor": "defesa"
+      },
+      {
+        "id": "7",
+        "nome": "Lateral ofensivo",
+        "setor": "defesa"
+      },
+      {
+        "id": "8",
+        "nome": "Meia ofensivo",
+        "setor": "meio"
+      },
+      {
+        "id": "9",
+        "nome": "Atacante infiltrador",
+        "setor": "meio"
+      },
+      {
+        "id": "10",
+        "nome": "Meia armador",
+        "setor": "meio"
+      },
+      {
+        "id": "11",
+        "nome": "Meia de arranque",
+        "setor": "meio"
+      },
+      {
+        "id": "12",
+        "nome": "Ala finalizador",
+        "setor": "meio"
+      },
+      {
+        "id": "13",
+        "nome": "Ala cruzador",
+        "setor": "meio"
+      },
+      {
+        "id": "14",
+        "nome": "Atacante criador",
+        "setor": "ataque"
+      },
+      {
+        "id": "15",
+        "nome": "Atacante finalizador",
+        "setor": "ataque"
+      },
+      {
+        "id": "16",
+        "nome": "Volante de construção",
+        "setor": "meio"
+      },
+      {
+        "id": "17",
+        "nome": "Volante de contenção",
+        "setor": "defesa"
+      },
+      {
+        "id": "18",
+        "nome": "Zagueiro de combate",
+        "setor": "defesa"
+      },
+      {
+        "id": "19",
+        "nome": "Zagueiro de saída",
+        "setor": "defesa"
+      }
+    ],
+    "posicoes": [
+      {
+        "id": 0,
+        "nome": "Goleiro",
+        "codigo": "GO"
+      },
+      {
+        "id": 1,
+        "nome": "Zagueiro central",
+        "codigo": "ZC"
+      },
+      {
+        "id": 2,
+        "nome": "Lateral esquerdo",
+        "codigo": "LE"
+      },
+      {
+        "id": 3,
+        "nome": "Lateral direito",
+        "codigo": "LD"
+      },
+      {
+        "id": 4,
+        "nome": "Volante",
+        "codigo": "VOL"
+      },
+      {
+        "id": 5,
+        "nome": "Meia de ligação",
+        "codigo": "MLG"
+      },
+      {
+        "id": 6,
+        "nome": "Meia esquerda",
+        "codigo": "MLE"
+      },
+      {
+        "id": 7,
+        "nome": "Meia direita",
+        "codigo": "MLD"
+      },
+      {
+        "id": 8,
+        "nome": "Meia atacante",
+        "codigo": "MAT"
+      },
+      {
+        "id": 9,
+        "nome": "Ponta esquerda",
+        "codigo": "PTE"
+      },
+      {
+        "id": 10,
+        "nome": "Ponta direita",
+        "codigo": "PTD"
+      },
+      {
+        "id": 11,
+        "nome": "Segundo atacante",
+        "codigo": "SA"
+      },
+      {
+        "id": 12,
+        "nome": "Centroavante",
+        "codigo": "CA"
+      }
+    ]
+  },
+  "contrato": "site-novo-ranking-v1",
+  "tem_mais": true
+}

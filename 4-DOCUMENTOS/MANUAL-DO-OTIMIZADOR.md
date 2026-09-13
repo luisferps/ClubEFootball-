@@ -1,6 +1,95 @@
+## Fechamento do complemento — conferido em 10/09/2026
+
+Instalacao da maquina2 e rodada corretiva concluidas: 751 linhas analisadas,
+560 corrigidas, 191 sem candidata elegivel. As560 possuem publicacao ativa;
+524 exibiveis e36 ocultas corretamente pela separacao dos estilos de goleiro.
+Atributos, notas, etapas e adicionais foram conferidos em todas as560.
+
+O editor site_novo_editor_avaliar_v1 chama build_editor.avaliar_v1, o mesmo
+avaliador usado pelo writer corretivo para validar cada resultado. Runtime e
+corretor coincidiram nos casos36564 e34628. Writers locais e v3/v6 validam e
+persistem origem complementar. Frontend publicado conferido: chip discretamente
+mais claro e hover Complementar; escolhas manuais nao sao preenchidas sozinhas.
+
+O usuario informou retomada do otimizador/enviador. Na leitura deste fechamento,
+ainda nao havia resultado novo em build_complemento_v14; isso nao desfaz as560
+correcoes, guardadas em complemento_recibo_v14. Confirmacao da retomada pelo
+usuario nao e prova de chegada do primeiro JSON novo ao banco.
+
+Regras e evidencia: 4-DOCUMENTOS/OTIMIZADOR/COMPLEMENTO-1009/ENCERRAMENTO-RODADA.md.
+Os registros de instalacao/correcao pendentes abaixo sao historicos.
+
+## Complemento de habilidades V14 — vigente em 10/09/2026
+
+Regra e operacao: [REGRA-APROVADA](OTIMIZADOR/COMPLEMENTO-1009/REGRA-APROVADA.md).
+A busca mantem a limpeza de habilidades sem ganho; depois uma etapa separada
+preenche vagas por incidencia nativa >=10%, respeitando bloqueios, elegibilidade
+e o limite5. Gemea presente NAO exclui candidata. Super substituto/Especialista
+em penalti entram depois, nas funcoes com os atributos aprovados de peso7ou12.
+Todos os efeitos/etapas/nota sao recompostos e conferidos com o editor. Nao sao
+habilidades de pontuacao artificialmente zero. Contexto proprio selado e origem
+persistida; formula da busca, normalizacao e Bonificador permanecem intactos.
+Pacote pronto nao significa correcao em massa concluida. Enviar JSONs antigos
+antes da fotografia corretiva, com processador parado; ver ordem no documento.
+
 # Manual do Otimizador — ClubEfootball
 
-**Versão 2.7 · 02/09/2026**
+## Política vigente de habilidades — 09/09/2026
+
+A política `habilidades-funcao-20260909-v1` está aplicada no `clube_novo` e no runtime oficial da Máquina 1. A matriz vigente tem 325 pares habilidade/função. O motor conserva de zero a cinco adicionais úteis; não preenche vagas sem ganho. Todas as sugestões automáticas, inclusive gêmeas de builds antigas, respeitam os bloqueios atuais da função. A escolha manual do usuário e as habilidades nativas continuam livres desses vetos estratégicos.
+
+Banco, fontes, executável e fotografias locais foram sincronizados; lotes continuam pausados e na mesma ordem. A normalização da nota não mudou. A revisão local identificou 4.509 linhas para análise posterior; nenhum resultado antigo foi regravado ou despublicado nesta etapa. A instalação na Máquina 2 e a publicação do frontend são estados separados.
+
+Regra completa, matriz, migrações, testes e evidências: [Habilidades por função V12](OTIMIZADOR/HABILIDADES-0909/REGRA-APROVADA.md). Os registros anteriores abaixo conservam o contexto da época e não substituem esta revisão.
+
+**Versão 2.9 · 08/09/2026**
+
+### Adendo de 08/09/2026 — Volta para marcar
+
+Por decisão de Luis, a habilidade 56 (Volta para marcar) está proibida como
+adicional nas funções 1, 2, 6, 7, 10, 11, 16, 17, 18 e 19: centroavantes fixo
+e móvel, laterais defensivo e ofensivo, meia armador e de arranque, volantes de
+construção e contenção, zagueiros de combate e de saída. A regra canônica está em
+`clube_novo.habilidade_funcao_bloqueio_otimizador`; o pool v3 e a régua v2 já a
+retornam. É uma decisão de seleção do ClubEfootball, não uma afirmação sobre
+ativação da habilidade no jogo. Habilidades nativas, efeitos e moldes não mudam.
+
+Esta proibição é exclusiva da seleção automática do Otimizador. O editor pessoal
+da Ficha não consome esses vetos estratégicos: o usuário pode adicionar Volta
+para marcar, escolher outra habilidade treinável ou deixar de zero a cinco vagas
+ocupadas. O avaliador pessoal calcula a escolha; não exige a escolha ótima.
+
+Falso nove (3), Meia ofensivo (8), Atacante infiltrador (9), Alas (12 e 13) e
+Atacantes criador/driblador (14 e 15) permanecem elegíveis quanto a esta regra.
+
+Os seis lotes pausados receberam somente os dez novos bloqueios em suas réguas,
+com novo contrato calculado pela função canônica. Os selos esperados das 135.857
+linhas ainda pendentes foram alinhados. A refila autorizada em seguida está descrita abaixo.
+`fila_local_v1.py` recusa pacotes sem os dez bloqueios antes do cálculo, e o
+executável `OperacaoLocalJson.exe` foi recompilado. As portas de conclusão V3/V6
+e importação JSON recusam novas escolhas automáticas proibidas, preservando
+recibos idempotentes antigos. Fórmula, pesos, alvos e habilidades nativas permanecem
+iguais. Pacotes anteriores ficam preservados no histórico de renovação.
+Consulte `CONTROLE-COPIA-MAQUINA-2-VOLTA-0809.md` na raiz para a entrega vigente.
+
+A conferência de 08/09 às 17h46 encontrou 1.222 linhas com resultado a refazer:
+1.201 publicadas e 21 ainda não publicadas. Outras 439 já inválidas ficam fora
+dessa soma.
+
+Após a autorização para antepor a correção, as 1.222 linhas foram reabertas,
+preservando os 1.222 Builds antigos e seus vínculos em eventos de auditoria.
+As 1.201 publicações afetadas foram retiradas; restam 53.859 publicações ativas.
+A correção usa dois lotes pausados para conservar os IDs e os contextos de
+sete linhas anteriores à fila integral, sem fundir registros históricos:
+`57071c55-9ebc-4ad1-b7d8-bf8729b4ae56` (1.215 linhas) e
+`0789ae01-111c-41f1-98ef-7b4311f2de0d` (7 linhas).
+As 1.220 linhas aptas ficam à frente. As linhas 379929 e 379937, de Imad Jasem
+(8562459), continuam pendentes no banco, sem orçamento físico na prioridade;
+não foram liberadas artificialmente. Os seis lotes anteriores conservam sua ordem.
+`FILA-ATIVA.json.lotes_prioritarios` define somente o prefixo corretivo;
+o processador faz uma partição estável e preserva a sequência restante.
+Nenhum motor foi iniciado.
+O novo resultado passa a ser ativo após processamento e validação canônica para publicação.
 
 ## 1. Finalidade e nome
 
@@ -992,7 +1081,7 @@ de seleção também não foram alterados.
 | ficha de carta, atributos, corpo, pé, posições, IA, habilidades, dimensões e Ímpetos físicos | public.otimizador_carta_v3 / otimizador_cartas_v3 | card_id, IDs físicos/FKs | recusa contrato diferente; não há fallback |
 | pool de habilidades por função | public.otimizador_pool_habilidades_v3 | card_id + funcao_id | somente skill_id; gate da carta e da função |
 | régua, 19 moldes, técnicos, pesos e multiplicadores | public.otimizador_regua_v2 + tabelas clube_novo.otimizador_* | funcao_id, tecnico_id, índice de atributo | régua selada; nenhum rótulo decide cálculo |
-| compatibilidade função/posição usada para gerar linhas | clube_novo.otimizador_funcao_posicao | funcao_id + posicao_id | 30 pares, 19 funções, 2 FKs, RLS ativo |
+| compatibilidade função/posição usada para gerar linhas | clube_novo.otimizador_funcao_posicao | funcao_id + posicao_id | 28 pares ativos, 19 funções, 2 FKs, RLS ativo |
 | fila e resultados de teste | clube_novo.build_linha_card + clube_novo.build_otimizador | IDs da linha, carta, função e posição | teste/não publicado; gravação atômica selada |
 | textos de tela | RPCs de apresentação V1 | IDs já resolvidos | não retornam ao cálculo |
 
@@ -1002,9 +1091,11 @@ bloqueando. A prova é a carta 105647068843182: V2 devolvia
 clube_bloqueado + liga_bloqueada; V3 devolve gate apto. Uma carta com vínculo físico
 inválido (105553116303042) continua recusada.
 
-V17 faz as três fábricas de amostra selarem a ficha V3. V18 materializou a tradução
-já comprovada dos 30 pares de posição dos 19 moldes em FKs; depois da migração, a
-geração consulta somente funcao_id + posicao_id, e não codigo_pt/rótulo. V19/V20
+V17 faz as três fábricas de amostra selarem a ficha V3. V18 materializou inicialmente
+30 pares de posição dos 19 moldes em FKs. Em 07/09/2026 foram retirados os pares
+`Centroavante móvel + Segundo atacante` e `Meia de arranque + Segundo atacante`,
+restando 28 pares ativos. A geração consulta somente funcao_id + posicao_id, e não
+codigo_pt/rótulo. V19/V20
 retiraram do service_role as portas históricas de clube.fila, clube.build,
 gravar_build e pool_da_funcao. Elas foram preservadas apenas para recuperação,
 mas o Otimizador não consegue chamá-las.
@@ -2081,8 +2172,11 @@ Tudo que o operador precisa fica em:
 
 ```text
 2-MOTORES/OTIMIZADOR/OPERACAO-LOCAL-JSON/
+  PROCESSAR-FILA-PRINCIPAL.bat
+  ENVIAR-FILA-PRINCIPAL.bat
   PROCESSAR-FILA.bat
   ENVIAR-RESULTADOS.bat
+  FILA-ATIVA.json
   bin/OperacaoLocalJson.exe
   PACOTE-FILA-INTEGRAL/
   RESULTADOS-JSON/
@@ -2118,19 +2212,23 @@ ao lado do nome da carta.
 
 ### Fluxo de trabalho
 
-1. Abra `PROCESSAR-FILA.bat`. Ele calcula **uma linha por vez**, sem rede e sem
-   reserva aberta no banco.
+1. Abra `PROCESSAR-FILA-PRINCIPAL.bat`. Ele combina os lotes de
+   `FILA-ATIVA.json` na prioridade global e calcula **uma linha por vez**, sem
+   rede e sem reserva aberta no banco.
 2. Cada cálculo é anexado e sincronizado no jornal local. Ao completar até 100
    resultados, o programa fecha um JSON em `RESULTADOS-JSON/<lote>/PENDENTES/`.
-3. Depois do primeiro JSON pronto, abra `ENVIAR-RESULTADOS.bat` em outra janela.
-   Ele envia e confirma **uma linha por vez**, mesmo que o arquivo tenha 100.
+3. Abra `ENVIAR-FILA-PRINCIPAL.bat` em outra janela, inclusive antes do primeiro
+   JSON ficar pronto. Ele vigia continuamente `PENDENTES`, aguarda cinco segundos
+   quando não há arquivo fechado e envia **uma linha por vez** assim que cada JSON
+   de até 100 resultados aparece. A vigília termina somente com `Ctrl+C` ou erro.
 4. O banco só considera enviada uma linha depois de responder positivamente. O
    recibo local registra `calculado_em_utc` e `enviado_em_utc`; a segunda data é
    a hora oficial devolvida pelo banco.
 
-Os dois batches podem ficar abertos ao mesmo tempo. Se o enviador for aberto
-antes de existir JSON completo, ele informa que ainda não há arquivo pronto;
-basta executá-lo de novo após o primeiro lote de até 100 resultados.
+Os dois batches principais podem ficar abertos ao mesmo tempo. O enviador não
+depende de `PROCESSADOR-GLOBAL.lock` para permanecer ativo. `PROCESSAR-FILA.bat`
+e `ENVIAR-RESULTADOS.bat` continuam disponíveis para uma operação genérica de
+uma única rodada, mas não são o fluxo diário da fila global.
 
 `Ctrl+C` interrompe com segurança a janela em questão. Cálculo já gravado fica
 no jornal; envio já confirmado fica no recibo. Não apague `RESULTADOS-JSON/`,
@@ -2166,6 +2264,94 @@ de auditoria. Sem essa permissão, o banco recusava a confirmação com o erro
 Depois de aplicar V66, o mesmo JSON permanece em `PENDENTES/` e pode ser enviado
 novamente: a linha que havia sido recusada não foi gravada, nem apagada.
 
+### Correção V67 — selo estável por linha (04/09/2026)
+
+O lote principal é incremental. Quando o preparador acrescenta ou remove cartas,
+o fingerprint agregado do lote muda mesmo que uma linha que já estava fotografada
+continue idêntica. A porta de importação comparava o resultado local com esse valor
+agregado atual e, por isso, passou a recusar com `selo divergente` Builds legítimas
+que já estavam calculadas no disco. A mesma comparação também impedia repetir uma
+confirmação idempotente depois de uma ampliação posterior da fila.
+
+`MIGRACAO-OPERACAO-LOCAL-JSON-V67-SELO-POR-LINHA.sql` corrige somente essa porta.
+Ela confere fórmula, contrato e versão do motor pelos campos `*_esperado` imutáveis
+da própria `build_linha_card`, além da identidade, do fingerprint de entrada da
+linha, do Ímpeto condicional e do fingerprint integral do resultado. O fingerprint
+agregado que veio no JSON continua obrigatório e só é aceito se constar em um
+evento `preparo_integral_concluido` do próprio lote. Ele entra no fingerprint do
+resultado e fica no evento de auditoria, mas não invalida uma linha estável só
+porque outras cartas entraram depois no lote. Os mesmos selos por linha são os
+valores persistidos em `build_otimizador`.
+
+A migração preserva `SECURITY DEFINER`, `search_path` vazio, execução exclusiva de
+`service_role`, lote integral pausado e `pode_publicar=false`. Não inicia motor, não
+recalcula, não publica e não toca schema legado. O rollback isolado é
+`ROLLBACK-OPERACAO-LOCAL-JSON-V67-SELO-POR-LINHA.sql`; o readback sem escrita é
+`VALIDAR-OPERACAO-LOCAL-JSON-V67-SELO-POR-LINHA.sql`.
+
+Na implantação de 04/09, a V67 foi aplicada e o readback estrutural passou, mas o
+teste físico da Máquina 2 expôs que o histórico tinha somente seis fingerprints e
+não continha o fingerprint do pacote que já havia enviado mais de 50 mil linhas.
+A linha `367908` passou por identidade, fórmula, contrato, motor, entrada, Ímpeto
+condicional e formato do fingerprint; foi recusada somente pela exigência histórica
+sem prova completa. A V67 não ficou como contrato final.
+
+### Correção V68 — selo canônico da linha (04/09/2026)
+
+`MIGRACAO-OPERACAO-LOCAL-JSON-V68-SELO-CANONICO-POR-LINHA.sql` remove somente a
+consulta ao histórico incompleto. O fingerprint agregado declarado pelo pacote
+continua obrigatório, precisa ser hexadecimal de 64 caracteres e participa do
+fingerprint integral do resultado e do evento de auditoria. Ele não é usado como
+selo canônico porque seus valores antigos não foram preservados por linha.
+
+A integridade permanece fail-closed pelos dados imutáveis realmente preservados:
+identidade, fórmula esperada, contrato esperado, motor esperado, fingerprint de
+entrada da linha, Ímpeto condicional e conteúdo integral do resultado. O rollback
+`ROLLBACK-OPERACAO-LOCAL-JSON-V68-SELO-CANONICO-POR-LINHA.sql` restaura a V67; o
+readback é `VALIDAR-OPERACAO-LOCAL-JSON-V68-SELO-CANONICO-POR-LINHA.sql`.
+
+A V68 foi aplicada no projeto Supabase operacional e confirmada por readback. A
+linha `367908` permaneceu pendente e sem Build gravado; o lote permaneceu integral,
+pausado e com `pode_publicar=false`. O botão real da Máquina 2 é
+`TEMPORÁRIOS/MAQUINA2-ENVIAR-DO-DISCO.bat`; nenhum arquivo local precisa ser
+substituído para essa correção do banco.
+
+### Correção local V69 — espera de trava transitória (04/09/2026)
+
+Depois da V68, a mesma linha atravessou todos os selos e chegou à gravação, mas uma
+migração concorrente do Bonificador segurava `clube_novo.build_linha_card`. O
+Postgres cancelou a tentativa pelo `lock_timeout` com SQLSTATE `55P03`. Isso não é
+recusa do resultado e a transação cancelada não confirma a linha.
+
+O arquivo chamado diretamente pelo botão da Máquina 2,
+`OPERACAO-LOCAL-JSON/programas/operacao_local_json.py`, agora reconhece exatamente
+`55P03` no corpo JSON do PostgREST. Ele mantém a mesma linha pendente, não grava
+recibo nem falha terminal e repete a chamada com espera visível de 5, 10, 20 e
+depois 30 segundos. A espera de 30 segundos permanece até a outra operação liberar
+a tabela; `Ctrl+C` continua preservando JSONs e recibos. Recusas de contrato,
+conflitos e respostas inválidas continuam falhando fechadas.
+
+### Operação vigente — fotografias renovadas e envio contínuo (07/09/2026)
+
+Uma fotografia renovada pode reutilizar um `linha_id` que já possui cálculo local
+de uma fotografia anterior. Antes de o inventário global decidir quais linhas estão
+concluídas, o processador compara conjuntamente os fingerprints de lote, fórmula e
+contrato de cada resultado com o manifesto atual. Arquivos inteiramente antigos,
+seus recibos, resumos e diagnósticos são preservados em
+`RESULTADOS-JSON/<lote>/HISTORICO-RENOVACOES/<prefixo-do-lote-atual>/`. Eles deixam
+de bloquear ou marcar como concluída a linha que precisa ser refeita. Nada é apagado.
+
+Essa reconciliação ocorre lote a lote **antes** de a fila global procurar IDs
+repetidos. Se um único arquivo misturar resultados atuais e antigos, o processo para
+sem escolher nem mover o arquivo. O relatório da última separação fica em
+`CONTROLE/ULTIMA-RECONCILIACAO-RENOVACAO.json`.
+
+O atalho diário de envio é `ENVIAR-FILA-PRINCIPAL.bat`. Ele procura continuamente
+novos JSONs em `PENDENTES`, aguarda cinco segundos entre consultas vazias e envia
+cada arquivo de até 100 resultados assim que ele fecha. A vigília não depende de
+`PROCESSADOR-GLOBAL.lock` e permanece aberta até `Ctrl+C` ou erro real. O atalho
+`ENVIAR-RESULTADOS.bat` executa somente uma rodada genérica.
+
 ### Levar para outro computador
 
 Copie a pasta `OPERACAO-LOCAL-JSON` inteira, incluindo `bin/`,
@@ -2192,12 +2378,12 @@ fila levada, o trabalho já salvo e a chave privada daquele computador.
 Se aparecer `contrato de resultado desconhecido: resultado-XXXXXX.resumo.json`,
 o executável anterior confundiu um recibo de resumo com um resultado. Feche a
 janela, substitua somente `bin/OperacaoLocalJson.exe` pela versão nova e abra
-`PROCESSAR-FILA.bat` novamente. Não apague nem mova nenhum JSON; a versão nova
+`PROCESSAR-FILA-PRINCIPAL.bat` novamente. Não apague nem mova nenhum JSON; a versão nova
 ignora os resumos e retoma a próxima linha ainda pendente.
 
 No computador de destino, não abra `Otimizador ClubEfootball.exe`, não clique
 em **Retomar** no painel antigo e não copie somente o `.exe`. Use exclusivamente
-os dois `.bat` desta seção.
+`PROCESSAR-FILA-PRINCIPAL.bat` e `ENVIAR-FILA-PRINCIPAL.bat`.
 
 ### Estado conferido nesta implantação
 
@@ -2213,3 +2399,432 @@ cópia isolada: o executável calculou uma linha com a pasta operacional copiada
 sem painel antigo e sem Python instalado. Quatro resultados de validação ficam
 somente no jornal local da origem; ainda não foram enviados ao banco e serão
 aproveitados normalmente quando o processamento continuar.
+
+### Chute súbito — habilidade especial 2457 (05/09/2026)
+
+`Chute súbito` é uma habilidade especial de fábrica, não fabricável. A prova
+física vigente é `Player.bin`, bit `639`, largura `1`, e sua incidência exata é
+Francesco Totti `88045755960771`, Adriano `88045755960841` e Andriy Shevchenko
+`88045755964138`. A régua do Otimizador aplica `Finalização +5%` e nenhum bônus
+de força do chute.
+
+A inclusão mudou tanto o fingerprint da régua quanto a entrada das três cartas.
+O lote integral principal já estava fotografado em outra máquina; por isso ele
+não foi alterado. A correção `APLICAR-REFILA-CHUTE-SUBITO-V1.sql` preserva os
+Builds anteriores como histórico, retira apenas suas publicações ativas e move
+as 36 linhas afetadas para o lote corretivo pausado
+`7b1d16ea-012a-45a6-b3f6-639f8565f76c`, em ordem `1..36`. O pacote portátil
+leva a régua nova dentro do manifesto e pode ser calculado pelo mesmo motor V11.
+O rollback só aceita o lote ainda totalmente pendente, sem reserva ou resultado.
+
+### Prioridade das cartas novas sem overall coletado (07/09/2026)
+
+`overall = NULL` significa que a carta nova ainda não recebeu essa coleta
+cadastral. Não significa overall zero nem carta fraca. Dentro de cada um dos três
+blocos da fila, a ordem vigente é:
+
+1. cartas com overall ainda não coletado;
+2. cartas com overall conhecido, do maior para o menor;
+3. desempate estável por card, função, posição, condição e linha.
+
+Os blocos permanecem: especiais que evoluem, especiais sem evolução e cartas
+base. O executável local aplica essa ordem global mesmo quando há vários lotes
+ativos. A migração `APLICAR-CARTAS-NOVAS-PRIMEIRO-V1.sql` atualiza o preparo do
+banco e o planejamento do extrator eFHUB, mas não reordena silenciosamente um
+lote já em execução.
+
+### Relações retiradas, recuperação do lote principal e painel local (07/09/2026)
+
+As relações `Centroavante móvel` (`funcao_id=2`) + `Segundo atacante`
+(`posicao_id=11`) e `Meia de arranque` (`funcao_id=11`) + `Segundo atacante`
+(`posicao_id=11`) não pertencem mais ao contrato vigente. O lote principal não
+estava sendo executado durante a correção; por isso sua fotografia oficial é uma
+prova independente da alteração: passou de 22.319 para 19.924 linhas pendentes,
+uma retirada de 2.395 linhas. No trecho do card 106784966581591, a exportação
+atual pula as ordens antigas 225153 e 225157 e mantém todas as relações válidas
+vizinhas.
+
+O runtime local trata um resultado antigo dessas relações como uma decisão
+terminal sem confirmação. O JSON calculado permanece em
+`ARQUIVADOS-FORA-DA-FILA-ATIVA`, com recibo e motivo, e não é enviado novamente
+nem publicado. Uma fotografia renovada já não contém essas linhas.
+
+O painel do processador usa os seguintes rótulos literais:
+
+- `Cartas neste pacote`: quantidade de cards do manifesto local;
+- `Linhas com cálculo local salvo`: união dos resultados finais e do jornal
+  durável, limitada aos IDs que ainda pertencem ao pacote;
+- `Resultados locais aguardando envio`: resultados em `PENDENTES` que ainda não
+  receberam decisão terminal;
+- `Linhas com envio já encerrado`: resultados movidos para `ENVIADOS`; esse total
+  não é chamado de confirmado porque o envelope pode conter confirmação,
+  resultado já existente ou linha retirada da fila;
+- `Linhas ainda sem cálculo local`: total do manifesto menos os cálculos locais
+  salvos;
+- `Falhas de cálculo registradas`: arquivos presentes em `FALHAS-CALCULO`.
+
+A seleção oficial lida de volta após a recuperação contém seis lotes. Antes da
+fotografia final, as 29.363 linhas pendentes do lote principal foram reordenadas
+pelo contrato `prioridade_orcamento_v1`: primeiro grupo 1 (especiais que
+evoluem), depois grupo 2 (especiais sem evolução) e por fim grupo 3 (base), com
+cartas de overall ainda não coletado primeiro, depois overall conhecido em ordem
+decrescente dentro de cada grupo e desempates estáveis. A fotografia do
+lote `ddbcbc86-1ae7-4b95-b9f0-22601f41b61d` contém somente as entradas já aptas
+ao cálculo: 2.857 cartas e 19.924 linhas. Sua leitura local confirmou uma única
+transição 1 -> 2 -> 3, nenhuma inversão da chave de prioridade e nenhuma das
+duas relações retiradas. Os cinco lotes que já estavam ativos foram preservados.
+A renovação não iniciou worker, não reservou linha, não calculou resultado, não
+enviou ao banco e não publicou.
+
+
+### Correção de retomada — histórico repetido — 08/09/2026
+
+O erro `o histórico da renovação já contém resultado-000001.json` ocorria porque
+renovações sucessivas reutilizavam o mesmo destino. Cada passagem agora arquiva
+em `HISTORICO-RENOVACOES/<selo>/passagem-<identificador>/`, conservando envelopes,
+recibos e resumos associados, sem substituir o histórico já existente.
+Dois testes específicos e os 21 testes do protocolo local passaram.
+O ajuste não muda banco, pacotes, FILA-ATIVA.json ou a ordem da fila.
+Entrega de reparo no clipboard: `bin`, `programas` e `LEIA-ME.txt`, para colar
+dentro de OPERACAO-LOCAL-JSON da máquina 2 e substituir os arquivos correspondentes.
+Depois, abrir o mesmo PROCESSAR-FILA-PRINCIPAL. RESULTADOS-JSON fica preservado.
+
+## 09/09/2026 — correcao pontual completa e refila V12
+
+A correcao pontual aprovada reconstroi a saida completa com `correcao_pontual_habilidades_v12.py` e o formatador oficial, sem nova busca. A igualdade do escore nao dispensa atualizar os 26 atributos, etapas, distribuicao, pool/sugestoes, contadores e finalizacao. Revalidar toda a entrada e elegibilidade; falha encaminha para o motor. 938 pontuais e 3.537 buscas; demais 34 registros separados por antecessao/orcamento. Contrato, lotes e provas: `OTIMIZADOR/HABILIDADES-0909/CORRECAO-PONTUAL-E-REFILA.md`.
+
+## 12/09/2026 — fila integral unica 1209: como foi montada e o que travava a fotografia
+
+### O lote
+`12090000-0000-4000-8000-000000001209`, tipo `integral`, motor
+`otimizador-fila-producao-v3-local-20260909-habilidades-v12`, formula
+`a1cc830af3366e2d0c9ac12138d892058b3e57ed216e43d68242d105b33cb9d2`,
+`pode_publicar = false`. Os 15 lotes integrais anteriores foram aposentados em
+`clube_novo.otimizador_lote_aposentado_v1`; nada foi apagado.
+
+Numeros finais da fila selada: 20.602 candidatas preparadas, 20.601 cartas com
+linha, 205.231 linhas criadas, **19.030 cartas e 192.276 linhas pendentes**, das
+quais 35.856 com Impeto condicional por degrau.
+
+### Ordem da fila (regra vigente)
+Bloco 1 = cartas com `orcamento > 0`; bloco 2 = cartas com `orcamento = 0`
+(inclui 1/1 e 0/1). Dentro de cada bloco, overall decrescente, desempate por
+`card_id collate "C"`, depois funcao, posicao e degrau condicional.
+A prioridade de lancamento foi retirada: nao existe carta de lancamento hoje.
+A view `clube_novo.otimizador_prioridade_orcamento_v1` foi reescrita para essa
+regra de dois grupos (o grupo 3 e a logica de `tipo_carta_id`/`sem_evolucao`
+sairam).
+
+### O que travava a fotografia (HTTP 400 no renovador local)
+`public.otimizador_producao_pacote_local_manifesto_v2` exige
+`estado in ('pausado','concluido')`. O lote saia do preparo em `parado`, e o
+renovador recebia `fotografia recusada pelo banco: HTTP 400`.
+`public.otimizador_producao_importar_json_local_v1` — o enviador de resultados —
+exige o mesmo `estado = 'pausado'`. Portanto **`pausado` e o estado operacional
+do ciclo local inteiro**, tanto para baixar o pacote quanto para enviar.
+
+Caminho oficial para sair de `parado`:
+`otimizador_producao_controlar_lote_v3(lote,'iniciar')` e em seguida
+`otimizador_producao_controlar_lote_v3(lote,'pausar')` — com zero linhas em
+`processando`, `pausar` grava `pausado` direto. Nao usar UPDATE cru na coluna.
+
+### Tres exclusoes encontradas e o que foi feito
+
+**1. 1.571 cartas sem evidencia fisica de nivel (12.955 linhas retiradas).**
+`otimizador_prioridade_orcamento_v1` exige linha em
+`clube_novo.carta_nivel_evidencia_v1` com `nivel_maximo >= 1` e
+`orcamento_real = 2 * (nivel_maximo - 1)`. Essas 1.571 cartas nao tem captura
+comprovada — 1.561 delas sao `tipo_carta_id = 'player_delete_list'`. O criador
+do lote as aceitou como candidatas, mas a view de prioridade (e portanto a
+fotografia) as exclui: o lote ficaria com 12.955 pendentes eternas e nunca
+concluiria. As linhas foram marcadas `estado_otimizador = 'interrompido'` com
+`erro_otimizador = 'retirada da fila 1209: carta sem evidencia fisica de
+nivel/orcamento em carta_nivel_evidencia_v1'`. Nenhuma tinha publicacao ativa.
+
+**2. 131.938 linhas pendentes presas em lotes aposentados.**
+Distribuidas em 7 lotes ja `concluido`. Como a maquina 2 processa somente o lote
+vivo, essas linhas nunca rodariam. 124.504 eram gemeas exatas (mesma carta,
+funcao, posicao e degrau) de linhas da fila nova — o preparo cria linhas novas,
+nao reaproveita as antigas. Foram retiradas com
+`erro_otimizador = 'retirada: linha equivalente vive na fila integral
+12090000-...-1209'`. Nenhuma tinha build nem publicacao.
+
+**3. 1.184 cartas de Impeto condicional que o criador exclui por contrato.**
+`otimizador_producao_criar_lote_integral_v6` (herdado da v5) filtra
+`not exists (carta_impeto_jogo where condicional)` e conta o resto em
+`excluidas_impeto_condicional`. Mas o contrato do pacote v2 ja declara
+`impetos_condicionais = 'por_degrau'`, `preparar_fatia_v5` ja sabe multiplicar a
+carta por 3 degraus, e o banco ja tem 29.511 linhas condicionais concluidas com
+27.430 publicadas. Deixa-las fora significaria manter 27.430 linhas marcadas
+"Regua antiga" para sempre. As 1.184 cartas (todas com evidencia fisica
+coerente) foram inseridas em `otimizador_lote_producao_candidata_v5`,
+`preparo_total` somou 1.184, o lote voltou a `preparando` e o preparo rodou ate
+20.602/20.602. As 7.434 linhas condicionais pendentes dos lotes velhos foram
+retiradas pelo mesmo motivo de gemea.
+
+Conferencia final: **nenhuma linha `estado_otimizador = 'pendente'` fora do lote
+1209 em todo o banco.**
+
+### Renumeracao da ordem_fila
+O aditivo condicional entrou depois de 156.420 linhas ja numeradas, o que jogaria
+as condicionais para o fim e quebraria a regra de dois blocos por overall. Toda a
+`ordem_fila` do lote foi renumerada pela chave canonica, usando offset temporario
+`+100000000` por causa do `UNIQUE (lote_id, ordem_fila)`, e conferida com
+`count(*) where ordem_fila > offset = 0`. Depois o `fingerprint` do lote foi
+recalculado pela mesma formula do preparo e o lote voltou a `pausado`.
+`ordem_fila 1` = Lionel Messi, grupo 1, overall 94, orcamento 16.
+
+### Preparo em lotes grandes: como rodar sem estourar o timeout
+`otimizador_producao_preparar_fatia_v5` ordena por
+`candidata.ordem_candidata` (a versao anterior fazia subconsulta por carta na
+view de prioridade e estourava). Indice de apoio:
+`otimizador_candidata_v5_fila_idx on (lote_id, estado, ordem_candidata)`.
+O preparo completo nao cabe em uma chamada por causa do timeout de 2 minutos do
+statement. Padrao que funciona: uma PROCEDURE com `COMMIT` dentro do laco,
+agendada em `pg_cron` de minuto a minuto, e `cron.unschedule` ao terminar.
+`COMMIT` e ilegal dentro de bloco PL/pgSQL que tenha `EXCEPTION` — a procedure
+nao pode ter handler.
+
+### Checagens rapidas do lote
+```sql
+-- estado e preparo
+select estado, preparo_concluido, preparo_total, cards, linhas, falha
+from clube_novo.otimizador_lote_producao_v3
+where id = '12090000-0000-4000-8000-000000001209';
+
+-- a fotografia passa?
+with m as (select public.otimizador_producao_pacote_local_manifesto_v2(
+  '12090000-0000-4000-8000-000000001209') j)
+select j->>'cartas_total', j->>'linhas_total', j->>'linhas_condicionais',
+       j->>'impetos_condicionais' from m;
+
+-- sobrou alguma pendente fora da fila?
+select coalesce(lote_producao_id::text,'sem lote'), count(*)
+from clube_novo.build_linha_card
+where estado_otimizador = 'pendente' and estado <> 'invalida'
+group by 1;
+```
+
+### Pendencia deixada em aberto
+`otimizador_producao_criar_lote_integral_v6` continua excluindo cartas
+condicionais na criacao. Enquanto isso nao for corrigido no corpo da funcao,
+toda fila integral nova precisa do aditivo manual descrito acima.
+
+## 12/09/2026 (noite) — a REGUA por dentro: o teto de 9 e o peso que vem da fila
+
+Duas regras que estavam no codigo e nao no manual. Elas explicam praticamente
+todo comportamento estranho do motor que aparece como "ele nao investe nesse
+atributo".
+
+### O teto de ganho no 9o ponto acima do alvo
+
+De `2-MOTORES/OTIMIZADOR/regua.py`:
+
+```python
+DEG = [1, .88, .76, .64, .52, .40, .28, .16, .04]   # nove degraus
+TETO_PUN = 9    # a punicao tambem para no 9o ponto abaixo
+```
+
+- Acima do alvo o atributo ganha `DEG[k] * peso` no k-esimo ponto.
+  **Do 10o ponto acima em diante o ganho e ZERO.**
+- Abaixo do alvo pune, com teto no 9o ponto.
+- Peso 1 (acessorio) NAO pune: `if peso == 1: t[v] = 0.0`.
+
+**Consequencia operacional.** Quando um card esta 9 pontos acima do alvo, o
+motor PARA de investir naquele atributo — o ponto seguinte nao vale nada, nem
+com peso 3 nem com peso 12. Quem destrava e o ALVO, que move a janela de
+ganho. O PESO so multiplica o que ja existe.
+
+Foi assim que se descobriu por que a habilidade Curva descendente nao ativava
+no Meia Ofensivo: James, Neymar e Ronaldinho estavam com Finalizacao interna
+94–95 contra alvo 86 — exatamente 8 a 9 acima, colados no teto.
+
+### O peso nao se escolhe: ele cai da posicao do alvo na fila
+
+Regra do metodo (skill `truefootball-peso`), por funcao:
+
+```
+alvo arredondado PARA CIMA
+alvo >= 80 -> entra na fila, do MAIOR alvo para o menor:
+    5 primeiros -> peso 12  (Indispensavel)
+    4 seguintes -> peso  7  (Desejavel)
+    4 seguintes -> peso  3  (Util)
+    resto       -> peso  1  (Acessorio)
+alvo == 79 -> peso 1  ;  alvo < 79 -> peso 0
+Cobranca de falta -> teto 1, SEMPRE
+```
+
+Desempate observado: por `indice_otimizador` crescente.
+
+Portanto **mudar o alvo muda o peso junto**, e mexer no peso a mao sem mexer no
+alvo e criar excecao cravada. As excecoes que existem hoje: Goleiro Salto 7→3;
+Goleiro Passe rasteiro, Passe alto e Potencia de chute 0→1; Cobranca de falta
+teto 1. **Nunca recalcular o peso de todas as funcoes por script** — isso
+apagaria as excecoes do goleiro.
+
+### Valor interno x valor de tela
+
+`build_otimizador.atributos_internos` e o valor COM a valoracao das
+habilidades (passa de 99). `atributos_finais` e o numero que a tela do
+videogame mostra. **A regua mede o INTERNO.** Por isso um card pode ter
+Finalizacao 95 interna e 85 na tela: a diferenca sao os bonus das habilidades
+nativas (Precisao a distancia +10%, Chute de primeira +5%, Efeito de longe
++2%). A Ficha agora mostra as duas colunas, JOGO e FINAL.
+
+### Habilidade nativa x adicional
+
+`carta_habilidade_jogo` = nativa, de fabrica, nao ocupa slot.
+`build_otimizador.habilidades_adicionais` = escolhidas pelo motor, ocupam slot.
+O interno embute as duas. Confundir isso leva a concluir que o motor "nao usa"
+uma habilidade que o card ja tem de berco.
+
+### A nota da tela ja e normalizada entre funcoes
+
+Medido em 12/09: o topo de cada familia chega quase ao mesmo aproveitamento
+sobre o proprio teto — MEIO 97,8%, DEFESA 97,2%, ATAQUE 97,0%, GOLEIRO 93,8%.
+O que separa as familias no ranking geral e a MEDIANA: MEIO −25,0,
+ATAQUE −36,8, DEFESA −58,0, GOLEIRO −80,1. Defesa aparece com 13 cards no top
+100 e goleiro com zero **porque a massa esta longe dos proprios alvos**, nao
+porque a formula seja injusta. Assunto de molde por funcao, em aberto.
+
+### Diagnostico rapido de "o motor nao investe nesse atributo"
+
+```sql
+-- quantos cards da funcao ja estao no teto (9+ acima do alvo)?
+with molde as (
+  select a.indice_otimizador idx, m.alvo, m.peso
+  from clube_novo.otimizador_molde m
+  join clube_novo.atributo_ordem_otimizador a on a.codigo_atributo=m.codigo_atributo
+  where m.versao=(select max(versao) from clube_novo.otimizador_molde)
+    and m.funcao_id=<FUNCAO>
+),
+vals as (
+  select g.idx, (b.atributos_internos->>g.idx)::numeric v
+  from clube_novo.build_publicacao_exibivel_v3 pv
+  join clube_novo.build_linha_card l on l.id=pv.linha_id
+  join clube_novo.build_otimizador b on b.id=pv.build_otimizador_id
+  cross join generate_series(0,25) g(idx)
+  where l.funcao_id=<FUNCAO> and b.atributos_internos is not null
+)
+select at.nome_pt, m.peso, m.alvo,
+  round(avg(v.v),1) entregue,
+  round(100*avg(case when v.v - m.alvo >= 9 then 1.0 else 0 end),0) pct_no_teto,
+  round((percentile_cont(0.9) within group (order by v.v))::numeric,0) p90,
+  round((percentile_cont(0.9) within group (order by v.v))::numeric - m.alvo,1) distancia_do_p90
+from molde m join vals v on v.idx=m.idx
+join clube_novo.atributo_ordem_otimizador a on a.indice_otimizador=m.idx
+join clube_novo.atributo_jogo at on at.codigo=a.codigo_atributo
+where m.peso > 0 group by 1,2,3 order by m.peso desc, m.alvo desc;
+```
+
+Leitura: `pct_no_teto` alto = o motor nao tem mais o que ganhar ali, o alvo
+esta baixo demais. `distancia_do_p90` muito diferente do resto da funcao (o
+padrao sadio fica entre −3 e −7) = alvo desalinhado com a elite da funcao.
+
+## 12/09/2026 (noite) — MOLDE v6: Meia Ofensivo e Meia Armador
+
+Duas alteracoes de alvo, decididas pelo Luis a partir das medicoes acima.
+
+### Meia Ofensivo (funcao_id 8)
+
+| Atributo | codigo | Alvo v5 → v6 | Peso v5 → v6 |
+|---|---|---|---|
+| Finalizacao | `PB:530:6` | 86 → **89** | 3 → **7** |
+| Aceleracao | `PB:486:6` | 89 (igual) | 7 → **3** |
+
+Motivo: destravar a habilidade Curva descendente, que exige ~89 de Finalizacao
+na tela. Com alvo 89 a janela de ganho vai ate 98 interno, que com o +10% da
+Precisao a distancia da 89 na tela. O peso muda sozinho pela regra da fila.
+
+**Efeito medido** (6.117 linhas, barras congeladas): a nota media **SOBE +6,4**.
+A Finalizacao interna media da funcao e 91,9 e 4.236 das 6.117 linhas ja estao
+acima de 89 — subir o peso premia a maioria.
+
+### Meia Armador (funcao_id 10)
+
+| Atributo | codigo | Alvo v5 → v6 | Peso v5 → v6 |
+|---|---|---|---|
+| Velocidade | `PB:434:6` | 81 → **85** | 3 → **7** |
+| Aceleracao | `PB:486:6` | 82 → **85** | 3 (igual) |
+| Curva | `PB:428:6` | 83 (igual) | 7 → **3** |
+| Equilibrio | `PB:504:6` | 86 (igual) | 7 — preservado |
+
+Motivo: eram os unicos atributos com alvo ABAIXO do que a posicao entrega
+(medias 84,8 e 84,5) — davam ponto de graca. Contra o p90 o molde todo fica de
+−3 a −7; esses estavam a −10 e −9.
+
+**Por que 85 e nao 86:** em 86 a Aceleracao tambem sobe para 7 e empurra o
+Equilibrio para 3. O Luis definiu que Equilibrio importa no Meia Armador e
+Curva nao. Em 85 a Velocidade sobe, a Curva desce e o Equilibrio fica.
+
+**Efeito medido** (1.756 cards): p99 405,3 → **388,3**; topo 434,4 → **426,5**;
+media **−12,3**; 689 cards nao perdem nada. Andrea Pirlo sai de 1o geral para
+10o, e a melhor funcao dele passa a ser Volante de Construcao. Pedri vira Meia
+De Arranque. Nenhum Meia Armador fica no top 5.
+
+### O que foi avaliado e RECUSADO
+
+- **Falso Nove, Curva 84,5 → 90 ou 92.** A Curva interna media da funcao e 81,4
+  e 4.670 das 5.668 linhas ficam ABAIXO do alvo novo. Subir o peso de 3 para 7
+  mais que dobra a punicao de quem ja vai mal: a queda salta de −10,6 (so alvo)
+  para −43,8 (alvo + peso), mediana −55,7. Puniria 4.670 linhas para destravar
+  34 cards, dos quais 14 ja ativam. O Falso Nove, como populacao, nao e uma
+  funcao de curva.
+- **Atacante Infiltrador.** Decisao de jogo: ele finaliza de dentro da area,
+  onde a Curva descendente nao e efetiva. Alem disso, subir a Curva para 92 ali
+  REBAIXARIA a Finalizacao de 7 para 3 (a fila reordena), o oposto do objetivo.
+- **Drible do Meia Armador 89 → 94.** Custaria −55,0 de media (3x mais) para
+  ganhar 1,7 ponto no p99, e o promoveria a peso 12 — passaria a exigir drible
+  de todo meia armador, o que o Pirlo nao e.
+- **Curva do Meia Ofensivo.** Alvo 94 peso 12 ja funciona: 92 dos 110 cards com
+  a habilidade passam do alvo (interna media 97,4) e NENHUM chega ao teto de
+  103. Nao ha ponto de graca nem travamento.
+- **Atributos defensivos no Meia Armador.** Desarme, Dedicacao defensiva e
+  Agressividade seguem com peso 0: o meia armador nao marca. (O Meia De
+  Arranque, mesma posicao MLG, e cobrado nos tres — e e ali que ele perde.)
+- **Obrigar Precisao a distancia (23) e Efeito de longe (17).** Dos 93 cards com
+  a Curva descendente, 83 ja tem as duas de fabrica; depois da otimizacao o
+  motor completa o pacote sozinho em 89 dos 93. Sobram 19 linhas de 519, em 4
+  cards: Gareth Bale (falta a 17), Chiesa, Rafa Silva e Zico (falta a 23).
+
+### Registro de excecao ao metodo
+
+Estes alvos NAO vieram do metodo do molde (que parte da elite da funcao).
+Vieram de medicao de frouxidao e de necessidade de jogo. **E excecao autorizada
+pelo Luis em 12/09/2026**, e entra na mesma lista das outras tres (goleiro
+Salto, goleiro Passe/Potencia, Cobranca de falta).
+
+### Como aplicar o v6
+
+O molde e versionado: **INSERT de uma versao nova, nunca UPDATE na v5**. A
+regua (`public.otimizador_regua_v2()`) le `max(versao)` e adota sozinha.
+
+```sql
+insert into clube_novo.otimizador_molde (versao, funcao_id, codigo_atributo, alvo, peso)
+select 6, funcao_id, codigo_atributo, alvo, peso
+from clube_novo.otimizador_molde where versao = 5;
+
+update clube_novo.otimizador_molde set alvo=89, peso=7
+ where versao=6 and funcao_id=8  and codigo_atributo='PB:530:6';
+update clube_novo.otimizador_molde set peso=3
+ where versao=6 and funcao_id=8  and codigo_atributo='PB:486:6';
+update clube_novo.otimizador_molde set alvo=85, peso=7
+ where versao=6 and funcao_id=10 and codigo_atributo='PB:434:6';
+update clube_novo.otimizador_molde set alvo=85, peso=3
+ where versao=6 and funcao_id=10 and codigo_atributo='PB:486:6';
+update clube_novo.otimizador_molde set peso=3
+ where versao=6 and funcao_id=10 and codigo_atributo='PB:428:6';
+```
+
+⚠️ **`public.complemento_contexto_v14()` tem `where m.versao=5` escrito fixo no
+corpo**, enquanto a regua usa `max(versao)`. Sem trocar por
+`(select max(versao) from clube_novo.otimizador_molde)` o complemento fica com
+os pesos velhos. Sao as UNICAS duas funcoes do banco que leem `otimizador_molde`.
+
+Depois: atualizar `clube_novo.regua_vigente_v1` com o contrato novo (e o que
+acende o selo "Regua antiga" na tela), aposentar a fila em curso, criar e
+preparar a fila nova. **O motor local nao tem copia do molde** —
+`fonte_unica.py` le tudo da regua do banco e sela no pacote; nenhum .py muda.
+
+O passo a passo completo esta em
+`CONTEXTO-E-PLANO-1209-MOLDE-V6.md`, na mesma pasta.
