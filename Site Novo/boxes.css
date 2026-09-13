@@ -1,13 +1,13 @@
-.nb-boxes{--nb-card:#0f1512;--nb-card-header:#121a16;--nb-card-border:rgba(175,215,191,.22);font-family:Calibri,Carlito,'Segoe UI',sans-serif}
-html[data-theme=claro] .nb-boxes{--nb-card:#edf1ee;--nb-card-header:#e5ebe7;--nb-card-border:rgba(24,70,48,.20)}
+.nb-boxes{--nb-box-border:#52685b;--nb-box-heading:#25372d;--nb-card:#0f1512;--nb-card-header:#121a16;--nb-card-border:rgba(175,215,191,.22);font-family:Calibri,Carlito,'Segoe UI',sans-serif}
+html[data-theme=claro] .nb-boxes{--nb-box-border:#80988a;--nb-box-heading:#cfddd4;--nb-card:#edf1ee;--nb-card-header:#e5ebe7;--nb-card-border:rgba(24,70,48,.20)}
 .nb-heading{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:20px}
 .nb-heading h1{font-size:19px;margin:0;overflow-wrap:anywhere}.nb-heading p{font-size:12px;color:var(--sn-muted);margin:5px 0 0}
 .nb-heading form{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
 .nb-boxes button,.nb-boxes input{font:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--sn-line);border-radius:9px;background:var(--sn-surface);color:var(--sn-ink)}
 .nb-boxes button{cursor:pointer}.nb-boxes button:hover{border-color:var(--sn-green)}.nb-boxes input{max-width:100%}
-.nb-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;grid-auto-rows:1fr}
-.nb-box{display:flex;flex-direction:column;border:1px solid var(--nb-card-border);border-radius:15px;overflow:hidden;background:var(--nb-card);box-shadow:0 7px 20px rgba(0,0,0,.15)}
-.nb-box header{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--nb-card-border);min-height:64px;background:var(--nb-card-header)}
+.nb-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;grid-auto-rows:1fr}
+.nb-box{display:flex;flex-direction:column;border:2px solid var(--nb-box-border);border-radius:15px;overflow:hidden;background:var(--nb-card);box-shadow:0 7px 20px rgba(0,0,0,.15)}
+.nb-box header{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--nb-card-border);min-height:64px;background:var(--nb-box-heading)}
 .nb-box h2{font-size:15px;line-height:1.25;margin:0;flex:1;overflow-wrap:anywhere}.nb-box header>span{white-space:nowrap;font-size:11px;color:var(--sn-muted)}
 .nb-preview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;min-height:212px;padding:12px 13px}
 .nb-no-photo{width:42px;height:56px;object-fit:contain;border-radius:6px;background:var(--sn-soft)}
