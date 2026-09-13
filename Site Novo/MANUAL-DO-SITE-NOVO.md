@@ -82,8 +82,7 @@ as antigas curvas molde 100/teto 110 não são a regra atual.
 
 O selo de régua do Ranking é calculado na página selecionada, não para todo o universo
 antes de paginar. [SQL da correção](SQL-RANKING-SELO-PAGINA.sql).
-Boxes podem usar fotografias de avaliação: não prometer atualização contínua nem
-inventar avaliação para carta sem publicação elegível.
+Boxes exibem a melhor linha publicada disponível no grau selecionado. Não inventar avaliação para carta sem publicação elegível.
 
 Nas duas abas de Boxes, cards seguem estrelas de contratação decrescentes e,
 no empate, a pontuação exibida decrescente. Sem análise fica depois das categorias
@@ -97,12 +96,7 @@ três amarelo, duas laranja e uma vermelho. Estrelas vazias têm contorno na cor
 A legenda de contratação é texto discreto, sem fundo, borda ou aparência de botão.
 
 Prévias e detalhes compartilham o padrão: foto ampla, nome e número destacados;
-posição apenas pela sigla (VOL, MAT), sem etiqueta. Estilo de Jogo e
-Especialidade mantêm etiquetas discretas. Estilos correspondem à posição avaliada.
-Estilo de Jogo e Especialidade ocupam blocos iguais, com fundo sutil e borda fina,
-sem ação própria de botão nem cores diferentes entre os dois blocos.
-O contrato de identidade está em SQL-BOXES-IDENTIDADE.sql; ordenação das cadastradas
-em SQL-BOXES-CADASTRADAS-ORDEM-CONTRATACAO.sql. Não altera notas nem categorias.
+posição nativa apenas pela sigla (VOL, MAT), sem etiqueta; estilo cadastral em bloco discreto. Especialidade/build não aparece. Nota, estrelas e clique correspondem à linha de maior pontuação publicada. Contrato vigente: SQL-BOXES-MELHOR-LINHA.sql.
 
 Capitalização em todas as telas: inicial maiúscula nas palavras, artigos e
 preposições minúsculos no meio das expressões (Estilo de Jogo). Siglas preservadas.
@@ -126,4 +120,4 @@ O interior das boxes usa cards verticais nas duas abas: classificação no canto
 
 Nas duas listagens, cada box tem borda externa reforçada e cabeçalho contrastante; divisórias entre jogadores permanecem discretas para destacar o agrupamento da coleção.
 
-A análise principal é selecionada por estrelas decrescentes e, no empate, nota decrescente. Especialidade, posição, nota e estrelas do card vêm integralmente dessa análise; pontuacao_maxima cadastral nunca substitui sua nota. Históricas preservam a avaliação registrada; atuais usam a avaliação de contratação vigente da oferta. O desempate entre cards usa essa mesma nota.
+Nas duas abas, a análise principal é a linha publicada de maior nota no grau selecionado, com desempate pelo ID da linha. Nota, estrelas e link da ficha correspondem a ela. A tela mostra posição nativa e estilo cadastral, sem especialidade/build. Os cards são ordenados por estrelas e depois pela nota dessa linha. Snapshots históricos permanecem armazenados, mas não são usados para escolher a linha exibida. Contrato: SQL-BOXES-MELHOR-LINHA.sql.

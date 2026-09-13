@@ -10,7 +10,7 @@ function ordered(cards){for(let i=1;i<cards.length;i++){const a=cards[i-1],b=car
  for(const mode of ['andamento','recentes','pontuacao']){
  ongoing=mode==='andamento';order=ongoing?'recentes':mode;
  for(const degree of [1,2,3]){
-  const list=await read(null,degree);
+  console.log(mode,degree);const list=await read(null,degree);
   for(const box of ongoing?list.itens:list.itens.slice(0,3)){
    ordered(box.cards);
    const detail=await read(box.box,degree);ordered(detail.itens);
