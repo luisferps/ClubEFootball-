@@ -1,3 +1,10 @@
+## Pasta oficial de trabalho — decisão de Luis em 13/09/2026
+
+A pasta oficial neste computador é `C:\Users\Luis Fernando\Downloads\ClubEfootball-Maquina-2`.
+O repositório oficial é `https://github.com/luisferps/ClubEFootball-.git`, branch `main`.
+Esta decisão substitui referências anteriores ao checkout `ClubEFootball--main`.
+Filas, resultados e credenciais permanecem locais e não são versionados.
+
 ## Implementação principal: critérios atuais de Luis
 
 Conferir banco, código dos aplicativos, documentação/manuais e tela em cada
