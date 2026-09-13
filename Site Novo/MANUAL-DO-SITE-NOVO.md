@@ -15,6 +15,7 @@ No Ranking, POR CARD / POR JOGADOR / MIX ficam no topo e centralizados. Abaixo v
 Posição / Estilo de jogo / Especialidade. Estilos em ordem alfabética; especialidades
 na sequência do campo. Botões de estilos/especialidades têm largura pelo texto.
 Busca acima dos resultados, paginação apenas no rodapé. Rótulos vêm do catálogo.
+O estilo Básico não aparece como opção de filtro; os demais estilos são preservados.
 
 O filtro de posição usa a posição da linha publicada, antes do agrupamento.
 O filtro de estilo exige vínculo à carta e ativação na posição da linha. Não usar

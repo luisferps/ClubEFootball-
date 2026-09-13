@@ -67,7 +67,7 @@
    // Ordem visual do campo; nomes e IDs continuam vindos do catalogo.
    const ordemCampo = ['4','5','18','19','6','7','17','16','10','11','12','13','8','9','14','15','3','2','1'];
    const lista = state.eixo === 'posicao' ? (catalog.posicoes||[]) : state.eixo === 'estilo'
-    ? [...(catalog.estilos||[])].sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR'))
+    ? (catalog.estilos||[]).filter(s=>s.nome.normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase()!=='basico').sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR'))
     : [...(catalog.funcoes||[])].sort((a,b)=>{
      const ia=ordemCampo.indexOf(String(a.id)),ib=ordemCampo.indexOf(String(b.id));
      return (ia<0?Infinity:ia)-(ib<0?Infinity:ib)||a.nome.localeCompare(b.nome,'pt-BR');
