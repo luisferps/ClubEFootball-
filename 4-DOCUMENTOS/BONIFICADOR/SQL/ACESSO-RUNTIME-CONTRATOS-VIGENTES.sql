@@ -1,0 +1,2 @@
+grant execute on function public.bonificador_integral_status_v1(uuid), public.bonificador_integral_reaproveitar_v1(uuid,integer), public.bonificador_contexto_lote_integral_v1(uuid,integer,integer), public.bonificador_regua_v4(), public.bonificador_carta_v3(text), public.bonificador_contexto_fila_v7(integer,integer), public.gravar_build_bonificador_v6(jsonb), clube_novo.carta_estilos_efetivos_v12(text) to bonificador_runtime;
+grant select(id_jogo,nome_pt) on clube_novo.playstyle to bonificador_runtime;

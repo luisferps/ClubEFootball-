@@ -60,3 +60,9 @@ composta. [Estado único da implantação](ESTADO-ATUAL.md).
 Os demais painéis de lote, fila de resultados, teste de carta e auditoria servem ao
 acompanhamento e diagnóstico. Não iniciar executores corretivos históricos por causa
 de uma contagem antiga num documento. Configuração e credenciais permanecem locais.
+
+A conexão local usa `bonificador_runtime`. Os contratos vigentes de status,
+reaproveitamento, fila integral, régua, carta e gravação devem ter EXECUTE para
+esse papel. A carta V3 também requer a função de estilos efetivos e leitura de
+`id_jogo`/`nome_pt` no catálogo de estilos. Não conceder acesso geral às tabelas.
+Contrato de permissões: `BONIFICADOR/SQL/ACESSO-RUNTIME-CONTRATOS-VIGENTES.sql`.
