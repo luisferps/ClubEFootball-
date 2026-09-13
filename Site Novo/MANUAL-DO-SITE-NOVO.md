@@ -85,23 +85,22 @@ antes de paginar. [SQL da correção](SQL-RANKING-SELO-PAGINA.sql).
 Boxes podem usar fotografias de avaliação: não prometer atualização contínua nem
 inventar avaliação para carta sem publicação elegível.
 
-Nas Boxes em andamento, cards seguem estrelas de contratação decrescentes e,
+Nas duas abas de Boxes, cards seguem estrelas de contratação decrescentes e,
 no empate, a pontuação exibida decrescente. Sem análise fica depois das categorias
 avaliadas. A prévia contém os três primeiros cards da mesma ordem do detalhe;
 ordenação ocorre no banco antes de limitar/paginar, inclusive após buscas.
 Contrato: `SQL-BOXES-ORDEM-CONTRATACAO.sql`. Regressão:
 `tests/boxes-hiring-order.test.cjs` compara prévia e detalhe nos três degraus.
 
-Categorias de contratação: 5 estrelas douradas com brilho, 4 verdes, 3 azuis,
-2 âmbar, 1 laranja e 0 cinza. Cada carta mostra também o significado da categoria,
-lido da régua pública. Estrelas vazias discretas; paleta adaptada aos temas claro
-e escuro. Esta apresentação não muda notas, estrelas ou ordem dos cards.
+Categorias de contratação usam escala neutra: cinco estrelas brancas com brilho,
+quatro a uma em cinzas progressivos e zero apagado. Tema claro adapta o contraste.
+A legenda de contratação é texto discreto, sem fundo, borda ou aparência de botão.
 
-Nas prévias e detalhes das duas telas de Boxes, cada carta apresenta Posição,
-Estilo de jogo e Especialidade com etiquetas pequenas e valores legíveis sem
-truncamento. Posição e especialidade correspondem à análise exibida; estilos vêm
-da carta e precisam estar ativos nessa posição. Sem estilo ativo recebe aviso
-explícito. O enriquecimento compartilhado está em `SQL-BOXES-IDENTIDADE.sql`.
+Prévias e detalhes compartilham o padrão: foto ampla, nome e número destacados;
+posição por extenso e sigla (Volante — VOL), sem etiqueta. Estilo de jogo e
+Especialidade mantêm etiquetas discretas. Estilos correspondem à posição avaliada.
+O contrato de identidade está em SQL-BOXES-IDENTIDADE.sql; ordenação das cadastradas
+em SQL-BOXES-CADASTRADAS-ORDEM-CONTRATACAO.sql. Não altera notas nem categorias.
 
 Boxes em andamento e ordenação por pontuação agregam a fonte materializada para
 evitar varreduras ordenadas caras. O selo é consultado nas linhas necessárias.

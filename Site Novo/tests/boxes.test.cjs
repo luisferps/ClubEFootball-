@@ -5,10 +5,10 @@ const css=fs.readFileSync(path.join(base,'boxes.css'),'utf8');
 assert.match(css,/\.nb-preview\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/,'prévia compartilhada das boxes em três colunas');
 assert.match(css,/\.nb-active \.nb-preview\{min-height:202px/,'altura das molduras menores preservada');
 assert.match(css,/\.nb-active\.nb-firstpage \.nb-box:nth-child\(-n\+2\) \.nb-preview\{min-height:280px\}/,'altura das duas molduras maiores preservada');
-assert.match(css,/\.nb-preview \.nb-rated-player img[^\{]*\{width:90px;height:127px\}/,'artes maiores nas prévias das boxes');
-assert.match(css,/\.nb-active\.nb-firstpage \.nb-box:nth-child\(-n\+2\) \.nb-rated-player img[^\{]*\{width:120px;height:169px\}/,'artes ampliadas nas duas boxes em destaque');
-assert.match(css,/\.nb-card-grid img[^\{]*\{width:110px;height:155px\}/,'artes maiores na grade interna das boxes cadastradas');
-assert.match(css,/\.nb-card-grid \.nb-rated-player img[^\{]*\{width:110px;height:155px\}/,'artes maiores na grade interna das boxes');
+assert.match(css,/\.nb-preview \.nb-rated-player img[^\{]*\{width:150px;height:211px\}/,'artes maiores nas prévias das boxes');
+assert.match(css,/\.nb-active\.nb-firstpage \.nb-box:nth-child\(-n\+2\) \.nb-rated-player img[^\{]*\{width:150px;height:211px\}/,'artes ampliadas nas duas boxes em destaque');
+assert.match(css,/\.nb-card-grid img[^\{]*\{width:130px;height:183px\}/,'artes maiores na grade interna das boxes cadastradas');
+assert.match(css,/\.nb-card-grid \.nb-rated-player img[^\{]*\{width:130px;height:183px\}/,'artes maiores na grade interna das boxes');
 runWithCommon(fs.readFileSync(path.join(base,'boxes-api.js'),'utf8'),{window,fetch,URL,Number,Set});
 (async()=>{
 const req={p_box:null,p_busca:'',p_limite:24,p_offset:0};
