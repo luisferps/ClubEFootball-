@@ -4,8 +4,8 @@ const base=path.resolve(__dirname,'..'),storage=new Map();
 function boot(){const buttons=[1,2,3].map(n=>({dataset:{snDegrau:String(n)},setAttribute(k,v){this[k]=v;},addEventListener(k,fn){this[k]=fn;}}));const handlers={};const window={localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},addEventListener:(k,fn)=>handlers[k]=fn};runWithCommon(fs.readFileSync(path.join(base,'degrau.js'),'utf8'),{window,document:{querySelectorAll:()=>buttons}});return {window,buttons,handlers};}
 const first=boot();assert.equal(first.window.SiteNovoDegrau.get(),3);const events=[];const stop=first.window.SiteNovoDegrau.subscribe(n=>events.push(n));
 first.window.SiteNovoDegrau.set(2);first.window.SiteNovoDegrau.set(2);assert.deepEqual(events,[2]);assert.equal(first.buttons[1]['aria-pressed'],'true');
-first.window.SiteNovoDegrau.sync(1);assert.deepEqual(events,[2]);assert.equal(first.window.SiteNovoDegrau.get(),1);assert.equal(storage.get('clubefootball.degrau-condicional'),'1');
-first.buttons[2].click();assert.deepEqual(events,[2,3]);stop();first.buttons[0].click();assert.deepEqual(events,[2,3]);assert.equal(first.window.SiteNovoDegrau.get(),1);assert.equal(boot().window.SiteNovoDegrau.get(),1);
+first.window.SiteNovoDegrau.set(1);assert.deepEqual(events,[2,1]);assert.equal(first.window.SiteNovoDegrau.get(),1);assert.equal(storage.get('clubefootball.degrau-condicional'),'1');
+first.buttons[2].click();assert.deepEqual(events,[2,1,3]);stop();first.buttons[0].click();assert.deepEqual(events,[2,1,3]);assert.equal(first.window.SiteNovoDegrau.get(),1);assert.equal(boot().window.SiteNovoDegrau.get(),1);
 const fichaHtml=fs.readFileSync(path.join(base,'ficha.html'),'utf8');assert.match(fichaHtml,/src="degrau\.js\?[^" ]+"/);assert.match(fichaHtml,/class="sn-header"/);
 const key='sb_publishable_XTKGboY9RyYiirPiIsWMhw_P8B51cHj';
 async function rpc(name,body){const r=await fetch('https://trqqpsnafpbudtvvicch.supabase.co/rest/v1/rpc/'+name,{method:'POST',headers:{'Content-Type':'application/json',apikey:key},body:JSON.stringify(body)});const d=await r.json();assert.ok(r.ok,JSON.stringify(d));return d;}

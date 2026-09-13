@@ -180,7 +180,7 @@
       if(slot.condicional){
         var maximum=Math.max(1,Number(slot.maximo)||1);
         var selected=Number(session.input.condicoes[slot.slot]);
-        if(!Number.isInteger(selected)||selected<1||selected>maximum)selected=maximum;
+        if(!Number.isInteger(selected)||selected<1||selected>maximum)selected=Math.min(maximum,window.SiteNovoDegrau.get());
         session.input.condicoes[slot.slot]=selected;
         var level=button("+"+selected,function(){
           if(session.saving)return;
@@ -271,6 +271,7 @@
       habilidades:initial?(b.habilidades_adicionadas||[]).map(function(h){return h.id;}):[],impetos:{},condicoes:{}
     };
     if(initial&&!owned)(b.impetos||[]).forEach(function(i){if(i.tipo==="adicional")session.input.impetos[i.slot]=i.codigo;if(i.condicional&&i.condicao_nivel!==null)session.input.condicoes[i.slot]=i.condicao_nivel;});
+    Object.keys(session.input.condicoes).forEach(function(slot){session.input.condicoes[slot]=window.SiteNovoDegrau.get();});
     id("editor-title").textContent=mode==="new"?"Criar Nova Build":"Editar Build";id("editor-context").textContent=data.card.nome;
     id("editor-name").value=owned?owned.nome:initial?"Minha "+(b.funcao&&b.funcao.rotulo||"Build"):"";
     id("editor-origin").textContent=owned?"Esta build é sua. Salve as alterações ou crie uma cópia.":"A build do sistema não será alterada. O salvamento cria uma cópia pessoal.";
@@ -286,6 +287,14 @@
     beginDraft(mode,data,owned);
     id("editor-close").focus();
   }
+  window.SiteNovoDegrau.subscribe(function(degree){
+    if(!session||session.saving)return;
+    Object.keys(session.input.condicoes).forEach(function(slot){session.input.condicoes[slot]=degree;});
+    if(session.catalog)session.catalog.slots.forEach(function(slot){if(slot.condicional)session.input.condicoes[slot.slot]=degree;});
+    session.attributeRows=null;
+    changed();
+    if(session.catalog)renderImpulses();
+  });
   function requestDelete(){
     var s=session;if(!s||!s.owned||s.saving)return;
     var r=s.owned;

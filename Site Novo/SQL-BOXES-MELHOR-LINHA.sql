@@ -6,7 +6,7 @@ with fonte as materialized (
 ), topos as materialized (
  select f.id funcao_id,t.nota_final topo from clube_novo.funcao_sistema f
  cross join lateral (select a.nota_final from clube_novo.build_publicacao_exibivel_v3 a
- where a.funcao_id=f.id and a.nota_final::text not in ('NaN','Infinity','-Infinity')
+ where a.funcao_id=f.id and (a.impeto_condicional_codigo is null or a.impeto_condicional_nivel=p_degrau) and a.nota_final::text not in ('NaN','Infinity','-Infinity')
  order by a.nota_final desc,a.linha_id limit 1) t
 ),
 melhores as materialized (

@@ -319,22 +319,16 @@
     return target ? Number(target.linha_id) : null;
   }
 
-  function synchronizeConditionalDegree(data) {
-    var degree = conditionalDegree(data);
-    if (degree && window.SiteNovoDegrau && typeof window.SiteNovoDegrau.sync === "function") {
-      window.SiteNovoDegrau.sync(degree);
-    }
-  }
-
-  function selectConditionalDegree(degree) {
+  function selectConditionalDegree() {
+    // Toda troca invalida inclusive uma resposta em voo para outro grau.
+    personalState.version++;
+    personalState.records=[];
+    personalState.selected=null;
     var data = viewState.envelope && viewState.envelope.dados;
-    if (!data || conditionalDegree(data) === Number(degree)) return;
-    var lineId = conditionalLine(data, degree);
-    var cardId = data.card ? String(data.card.card_id || "").trim() : "";
-    if (!lineId || !cardId) return;
-    loadFicha({ p_card_id: cardId, p_linha_id: lineId }, {
-      mode: "switch", targetUrl: buildUrl(cardId, String(lineId))
-    });
+    var params = data && data.card
+      ? {p_card_id:String(data.card.card_id),p_linha_id:Number(data.build && data.build.linha_id || data.linha_referencia)||null}
+      : readParams();
+    loadFicha(params, {mode:"switch"});
   }
 
   function selectPublishedBuild(data, group) {
@@ -463,7 +457,7 @@
   }
 
   async function fetchFicha(params, signal) {
-    var payload = await window.SiteNovoCommon.request('/rest/v1/rpc/site_novo_ficha_v2',params,{signal});
+    var payload = await window.SiteNovoCommon.request('/rest/v1/rpc/site_novo_ficha_v2',Object.assign({},params,{p_degrau:window.SiteNovoDegrau.get()}),{signal});
     return validateEnvelope(payload);
   }
 
@@ -818,21 +812,8 @@
       box.setAttribute("aria-label", "Ímpeto " + item.slot + " · " + type + condition);
       var title = create("div", "impulse-title");
       title.appendChild(create("b", "", item.nome || (item.vaga_original ? "Vaga sem preenchimento" : "Não publicado")));
-      var next = data && data.proximo_degrau;
       var conditional = item.condicao_nivel !== null && item.condicao_nivel !== undefined;
-      var boost = create(conditional ? "button" : "span", "boost", conditional ? "+" + item.condicao_nivel : item.delta_uniforme === null ? "—" : formatSigned(item.delta_uniforme, 0));
-      if (conditional) {
-        boost.type = "button";
-        boost.disabled = !next;
-        boost.title = next ? "Mostrar ímpeto condicional +" + next.nivel : "Próximo degrau ainda não publicado";
-        boost.setAttribute("aria-label", boost.title);
-        boost.onclick = function () {
-          if (!next) return;
-          if (window.SiteNovoDegrau && typeof window.SiteNovoDegrau.set === "function") {
-            window.SiteNovoDegrau.set(Number(next.nivel));
-          }
-        };
-      }
+      var boost = create("span", "boost", conditional ? "+" + item.condicao_nivel : item.delta_uniforme === null ? "—" : formatSigned(item.delta_uniforme, 0));
       title.appendChild(boost);
       box.appendChild(title);
       var effects = create("div", "mini-chips");
@@ -1031,7 +1012,7 @@
   function renderSwitchFailure(error) {
     var message = byId("screen-message");
     message.hidden = false;
-    message.textContent = "Não foi possível abrir esta build. A build anterior foi mantida. " +
+    message.textContent = "Não Foi Possível Exibir a Build no Grau Selecionado. " +
       (error && error.message ? error.message : "Falha na consulta pública.");
   }
 
@@ -1090,15 +1071,23 @@
     var requestController = new AbortController();
     viewState.requestController = requestController;
     setLoading(true);
+    byId("ficha-content").hidden = true;
+    personalState.version++;
+    var requestedDegree = window.SiteNovoDegrau.get();
     try {
       var envelope = await fetchFicha(params, requestController.signal);
       if (requestVersion !== viewState.requestVersion) return;
 
-      if (settings.mode === "initial" && params.p_linha_id === null &&
-          window.SiteNovoDegrau && typeof window.SiteNovoDegrau.get === "function") {
-        var initialDegree = window.SiteNovoDegrau.get();
+      if (window.SiteNovoDegrau) {
+        var initialDegree = requestedDegree;
         var initialLine = conditionalLine(envelope.dados, initialDegree);
-        if (initialLine && conditionalDegree(envelope.dados) !== initialDegree) {
+        if (conditionalDegree(envelope.dados) && conditionalDegree(envelope.dados) !== initialDegree) {
+          if (!initialLine) {
+            var missing = new Error("Análise Ainda Não Publicada");
+            missing.envelope = Object.assign({},envelope,{status:"card_sem_build_publicada",mensagem:missing.message,
+              dados:Object.assign({},envelope.dados,{build:null,linha_referencia:params.p_linha_id})});
+            throw missing;
+          }
           params = { p_card_id: params.p_card_id, p_linha_id: initialLine };
           envelope = await fetchFicha(params, requestController.signal);
           if (requestVersion !== viewState.requestVersion) return;
@@ -1143,13 +1132,23 @@
       }
       viewState.envelope = envelope;
       viewState.successfulUrl = settings.targetUrl || window.location.href;
-      synchronizeConditionalDegree(envelope.dados);
+      // O cabeçalho governa a Ficha; uma linha nunca altera a preferência global.
       refreshPersonalBuilds();
       if(requestVersion!==viewState.requestVersion)return;
       revealPopulatedFicha(envelope);
     } catch (error) {
       if (requestVersion !== viewState.requestVersion) return;
-      if (settings.mode === "initial") {
+      if (error.envelope) {
+        personalState.selected=null;
+        personalState.records=[];
+        viewState.envelope=error.envelope;
+        renderEnvelope(error.envelope,false,null);
+        preparePhoto(error.envelope.dados.card,requestController.signal).then(function(photo){
+          if(requestVersion===viewState.requestVersion&&photo)renderPhoto(error.envelope.dados.card,photo);
+        });
+        revealPopulatedFicha(error.envelope);
+        refreshPersonalBuilds();
+      } else if (settings.mode === "initial") {
         renderFailure(error);
       } else {
         if (settings.mode === "popstate" && window.location.href !== viewState.successfulUrl) {
@@ -1204,8 +1203,9 @@
     if(!api||!envelope||!envelope.dados)return;
     var cardId=envelope.dados.card.card_id,version=++personalState.version;
     try{
-      var records=await api.list(cardId);
-      if(version!==personalState.version||!viewState.envelope||viewState.envelope.dados.card.card_id!==cardId)return;
+      var degree=window.SiteNovoDegrau.get();
+      var records=await api.list(cardId,degree);
+      if(degree!==window.SiteNovoDegrau.get()||version!==personalState.version||!viewState.envelope||viewState.envelope.dados.card.card_id!==cardId)return;
       if(!Array.isArray(records)||records.some(function(r){return !r||r.card_id!==cardId||!r.build||!r.build.posicao||!r.resultado;}))throw new Error("Resposta de builds pessoais inválida.");
       var selectedId=personalState.selected&&personalState.selected.id;
       personalState.records=records;personalState.selected=records.find(function(r){return r.id===selectedId;})||null;

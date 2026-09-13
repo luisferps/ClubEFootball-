@@ -75,3 +75,8 @@ O estado de produção fica em ESTADO-ATUAL, com data e limites, sem contagem an
 apresentada como atual. Não declarar rodada encerrada porque a documentação terminou.
 
 Regra visual: blocos equivalentes em cada visualização devem ter as mesmas dimensões. Ausência de nota, análise ou foto não reduz o bloco; reservar o espaço correspondente. Nas boxes, alturas uniformes na grade, avaliação e botão alinhados, inclusive entre fileiras.
+
+Grau global: toda apresentação e todo cálculo derivado de nota obedecem ao grau
+selecionado no cabeçalho. Sem publicação nesse grau, informar a ausência; nunca
+usar outro grau como fallback. Só o editor pessoal permite alterar o grau local
+do rascunho. Fora dele, inclusive listas pessoais, seguir o cabeçalho.

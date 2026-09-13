@@ -61,28 +61,27 @@
       data.receipts[requestId]={identity:identity,record:record};return record;
     });
   }
-  async function listBuilds(card){
+  async function listBuilds(card,degree){
+    degree=Number(degree||window.SiteNovoDegrau.get());
     var local=localData().records.filter(function(r){return r.card_id===card&&!r.excluida;});
-    // Reavaliar escolhas antigas no servidor para apresentar a régua vigente.
-    // O registro salvo e o histórico continuam preservados até o usuário salvar.
-    var next=0;
+    var remote=session?await rpc("site_novo_editor_listar_v1",{p_card_id:card}):[];
+    var records=remote.map(function(r){return Object.assign({},r,{origem:"conta"});}).concat(local),next=0;
+    // Reavaliar a apresentação, sem sobrescrever as escolhas salvas.
     async function worker(){
-      while(next<local.length){
-        var i=next++,record=local[i],cacheKey=record.id+':'+record.revisao;
+      while(next<records.length){
+        var i=next++,record=records[i],input=JSON.parse(JSON.stringify(record.entrada));
+        input.condicoes=input.condicoes||{};
+        Object.keys(input.condicoes).forEach(function(slot){input.condicoes[slot]=degree;});
+        (record.build.impetos||[]).forEach(function(slot){if(slot.condicional||slot.condicao_nivel!=null)input.condicoes[slot.slot]=degree;});
+        var cacheKey=JSON.stringify([record.id,record.revisao,input]);
         var result=refreshedPersonal.get(cacheKey);
-        if(!result){
-          result=calculation("site_novo_editor_avaliar_v1",{p_entrada:record.entrada});
-          refreshedPersonal.set(cacheKey,result);
-          result.catch(function(){});
-        }
+        if(!result){result=calculation("site_novo_editor_avaliar_v1",{p_entrada:input});refreshedPersonal.set(cacheKey,result);}
         try{result=await result;}catch(error){refreshedPersonal.delete(cacheKey);throw error;}
-        local[i]=Object.assign({},record,{resultado:result,build:Object.assign({},result.ficha,{pessoal_id:record.id})});
+        records[i]=Object.assign({},record,{entrada:input,resultado:result,build:Object.assign({},result.ficha,{pessoal_id:record.id})});
       }
     }
-    var remotePromise=session?rpc("site_novo_editor_listar_v1",{p_card_id:card}):Promise.resolve([]);
-    var results=await Promise.all([remotePromise,Promise.all(Array.from({length:Math.min(3,local.length)},worker))]);
-    var remote=results[0];
-    return remote.map(function(r){r.origem="conta";return r;}).concat(local).sort(function(a,b){return a.funcao_base_id-b.funcao_base_id||a.numero-b.numero||a.id.localeCompare(b.id);});
+    await Promise.all(Array.from({length:Math.min(3,records.length)},worker));
+    return records.sort(function(a,b){return a.funcao_base_id-b.funcao_base_id||a.numero-b.numero||a.id.localeCompare(b.id);});
   }
   async function removeBuild(id,revision){
     if(!id.startsWith("local-"))return rpc("site_novo_editor_excluir_v1",{p_id:id,p_revisao:revision});

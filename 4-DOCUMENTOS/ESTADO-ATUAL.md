@@ -5,6 +5,12 @@ A documentação foi consolidada; a rodada de produção continua em andamento.
 
 ## Implementado
 
+- Grau global: notas e estrelas das boxes usam linhas e referências do mesmo grau.
+  Ficha recebe o grau explicitamente, descarta respostas antigas e não mostra nota
+  de outro grau quando falta publicação. Builds pessoais são reavaliadas para
+  consulta sem alterar o registro salvo. Só o editor permite variar o grau local.
+
+
 - Boxes: prazo de 10 segundos configurado nas duas RPCs públicas, além das internas.
   Corrige o cancelamento aos 3 segundos na primeira abertura. Validado no site,
   por navegação sem recarregar, e nas consultas públicas Últimas/Melhores.
