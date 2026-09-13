@@ -1,0 +1,78 @@
+[
+  {
+    "file": "boxes-api.js",
+    "equal": true
+  },
+  {
+    "file": "boxes.css",
+    "equal": true
+  },
+  {
+    "file": "boxes.js",
+    "equal": true
+  },
+  {
+    "file": "degrau.js",
+    "equal": true
+  },
+  {
+    "file": "ficha-editor-api.js",
+    "equal": true
+  },
+  {
+    "file": "ficha-editor.js",
+    "equal": true
+  },
+  {
+    "file": "ficha.css",
+    "equal": true
+  },
+  {
+    "file": "ficha.html",
+    "equal": true
+  },
+  {
+    "file": "ficha.js",
+    "equal": true
+  },
+  {
+    "file": "home.js",
+    "equal": true
+  },
+  {
+    "file": "index.html",
+    "equal": true
+  },
+  {
+    "file": "ranking-api.js",
+    "equal": true
+  },
+  {
+    "file": "ranking.css",
+    "equal": true
+  },
+  {
+    "file": "ranking.js",
+    "equal": true
+  },
+  {
+    "file": "search-api.js",
+    "equal": true
+  },
+  {
+    "file": "search.js",
+    "equal": true
+  },
+  {
+    "file": "site-shell.css",
+    "equal": true
+  },
+  {
+    "file": "site-shell.js",
+    "equal": true
+  },
+  {
+    "file": "site-theme.js",
+    "equal": true
+  }
+]

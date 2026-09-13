@@ -1908,3 +1908,11 @@ aguardando, **zero erro**.
 **Grant indevido revogado.** Ao recriar `bonificador_lote_registrar_v1` eu havia aberto
 execute para `anon` e `authenticated`. Voltou a ser so `bonificador_runtime`, como a funcao
 irma.
+
+
+## Conferência da publicação em 13/09/2026
+
+Site oficial: https://imaginative-granita-ace1ca.netlify.app/. Os 19 arquivos
+publicados coincidem com a pasta oficial. Timeout do Ranking corrigido no banco,
+calculando o selo de régua após a paginação. Ver CONFERENCIA-SITE-1309.md.
+O recálculo em andamento não impede a utilização e conferência do site.

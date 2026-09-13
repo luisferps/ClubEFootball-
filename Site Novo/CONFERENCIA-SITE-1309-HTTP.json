@@ -1,0 +1,104 @@
+[
+  {
+    "degrau": 1,
+    "modo": "card",
+    "seconds": 2.27,
+    "status": "pronto",
+    "total": 4503,
+    "first": {
+      "nome": "Andrea Pirlo",
+      "boxes": [],
+      "setor": "meio",
+      "funcao": "Meia Armador",
+      "card_id": "88039581945312",
+      "estilos": [
+        {
+          "id": 276,
+          "nome": "Orquestrador"
+        },
+        {
+          "id": 256,
+          "nome": "B\u00e1sico"
+        }
+      ],
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88039581945312.png",
+      "linha_id": "36411",
+      "funcao_id": "10",
+      "jogador_id": "134624",
+      "nota_final": 113.39470777459695,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-10T04:01:08.402986+00:00",
+      "classificacao": 1,
+      "regua_vigente": false
+    }
+  },
+  {
+    "degrau": 2,
+    "modo": "jogador",
+    "seconds": 1.37,
+    "status": "pronto",
+    "total": 1786,
+    "first": {
+      "nome": "Andrea Pirlo",
+      "boxes": [],
+      "setor": "meio",
+      "funcao": "Meia Armador",
+      "card_id": "88039581945312",
+      "estilos": [
+        {
+          "id": 276,
+          "nome": "Orquestrador"
+        },
+        {
+          "id": 256,
+          "nome": "B\u00e1sico"
+        }
+      ],
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88039581945312.png",
+      "linha_id": "36411",
+      "funcao_id": "10",
+      "jogador_id": "134624",
+      "nota_final": 113.39470777459695,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-10T04:01:08.402986+00:00",
+      "classificacao": 1,
+      "regua_vigente": false
+    }
+  },
+  {
+    "degrau": 3,
+    "modo": "mix",
+    "seconds": 1.39,
+    "status": "pronto",
+    "total": 29985,
+    "first": {
+      "nome": "Andrea Pirlo",
+      "boxes": [],
+      "setor": "meio",
+      "funcao": "Meia Armador",
+      "card_id": "88039581945312",
+      "estilos": [
+        {
+          "id": 276,
+          "nome": "Orquestrador"
+        },
+        {
+          "id": 256,
+          "nome": "B\u00e1sico"
+        }
+      ],
+      "posicao": "MLG",
+      "foto_url": "https://res.cloudinary.com/demsusjwf/image/upload/88039581945312.png",
+      "linha_id": "36411",
+      "funcao_id": "10",
+      "jogador_id": "134624",
+      "nota_final": 113.39470777459695,
+      "posicao_id": 5,
+      "publicada_em": "2026-09-10T04:01:08.402986+00:00",
+      "classificacao": 1,
+      "regua_vigente": false
+    }
+  }
+]
