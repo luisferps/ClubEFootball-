@@ -9,11 +9,13 @@ class Reader:
         self.put(self.base + b.card_levels_runtime.ROOT_RVA, struct.pack("<Q",0x20000))
         self.put(0x20028,struct.pack("<Q",0x30000))
         self.put(0x30020,struct.pack("<Q",0x40000))
+        self.put(0x40280,struct.pack("<Q",1))
         count = 2 if second else 1
         self.put(0x40000,struct.pack("<QQQ",0x50000,0x50000+count*b.AGENT_STRIDE,0x50000+count*b.AGENT_STRIDE))
         for n in range(count):
             agent=0x50000+n*b.AGENT_STRIDE
             self.put(agent+8,struct.pack("<Q",n+1))
+            self.put(agent+0x128,struct.pack("<I",total))
             title=("Oferta "+str(n)).encode()
             self.put(agent+0x68,title.ljust(16,b"\0")+struct.pack("<QQ",len(title),15))
             data=0x70000+n*0x1000
@@ -41,5 +43,16 @@ class DetailsTests(unittest.TestCase):
     def test_unknown_card_is_rejected(self):
         r=Reader();r.put(0x90000+4*0xF0+8,struct.pack("<Q",999))
         with self.assertRaises(ValueError):self.capture(r)
+    def test_previous_details_are_not_assigned_to_another_selected_agent(self):
+        r=Reader();r.put(0x40280,struct.pack("<Q",2))
+        self.assertEqual(self.capture(r)["boxes"],[])
+    def test_complete_agent_list_does_not_require_opening_details(self):
+        r=Reader(total=3);r.put(0x40280,struct.pack("<Q",99))
+        p=self.capture(r)
+        self.assertEqual(p["boxes"][0]["cartas"],["1","2","3"])
+        self.assertEqual(p["boxes"][0]["total_jogo"],3)
+    def test_detail_total_must_match_agent_total(self):
+        r=Reader();r.put(0x50128,struct.pack("<I",150))
+        self.assertEqual(self.capture(r)["boxes"],[])
 
 if __name__=="__main__":unittest.main()

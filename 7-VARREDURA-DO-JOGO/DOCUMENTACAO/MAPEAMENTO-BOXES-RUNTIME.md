@@ -87,11 +87,27 @@ incompleta impedem publicação; não ligar lista de recrutamento a uma box por 
 A captura comercial completa preserva todos os IDs nas tabelas de prova. A relação
 exibida inclui somente `carta_jogo.codigo_tipo_carta_fisico>0`, mantendo o padrão de especiais.
 A Summer Transfer vol.3 comprovou 150 participantes, dos quais 11 especiais.
-Quatro testes cobrem lista completa, página parcial, agente ambíguo e ID desconhecido.
+O ID consultado em B+0x280 também deve coincidir com o agente identificado e
+permanecer estável. O produtor 0x14467d8d3 copia esse ID para Option+0x228;
+o serializador 0x1452b9eb3 o envia como `agent_id`. Foi validado com o agente
+1365, Worldwide 10 Sep '26, com 11 participantes. Sete testes cobrem lista completa,
+página parcial, agente ambíguo, ID desconhecido, detalhes de outra seleção,
+divergência entre total do agente e detalhes e lista completa sem abrir detalhes.
+O registro do banco foi atualizado por `BOXES-MAPEAMENTO-V2.sql`: V1 permanece
+inativo como histórico; V2 registra também o vetor completo, total, índice e agente consultado.
+
+O total oficial também existe no agente convertido em +0x128 (UInt32): parser
+0x1457ebbff lê `player_list_total` em raw+0x158; conversor 0x1445d87ae copia
+para destino+0x128. Se a união de IDs físicos distintos das listas do próprio
+agente já coincide com esse total positivo, ela é completa sem abrir detalhes.
+Na PFA TOTY, foram conferidos 11 IDs contra total 11. Captura persistida
+f13bbd9d-d0af-47fb-81b6-948aa5d3ab82: PFA e Worldwide, 11 vínculos cada,
+confirmados por leitura independente no banco. O caminho de detalhes também
+exige que seu total coincida com o total oficial do agente.
 
 Os detalhes são carregados sob demanda pelo jogo: ler o binário não fabrica uma
-resposta que o servidor ainda não enviou. A rotina atual captura a box cujos detalhes
-estão carregados; oito outras ofertas da sessão ainda aguardavam detalhes na prova.
+resposta que o servidor ainda não enviou. Na última sessão, duas das nove ofertas
+tinham listas completas disponíveis; a Summer Transfer tem captura completa anterior.
 Não declarar sincronização de todas as ofertas, nem encerrar registros sem fim
 comprovado, com base apenas nessa captura. É pendência automatizar a cobertura das
 demais ofertas. Ver `20260913094000_boxes_detalhes_completos_v2.sql`.

@@ -97,6 +97,8 @@ def read_loaded_boxes(reader: Any, physical_ids: set[str], *, capture_id: str,
         title, title_object = _read_msvc_string(reader, address + TITLE_OFFSET, "titulo_box")
         dates_raw = reader.read(address + START_DATE_OFFSET, 12, "datas_box")
         start_date, _, expiration_date = struct.unpack("<III", dates_raw)
+        total_raw = reader.read(address + 0x128, 4, "total_participantes_agente")
+        agent_total = struct.unpack("<I", total_raw)[0]
         cards_by_id: dict[str, dict[str, Any]] = {}
         lists: list[dict[str, Any]] = []
         for list_name, offset, stride in LISTS:
@@ -135,14 +137,18 @@ def read_loaded_boxes(reader: Any, physical_ids: set[str], *, capture_id: str,
                 "fim_epoch": expiration_date or None,
                 "cartas": sorted(cards_by_id.values(), key=lambda item: int(item["card_id"])),
                 "listas": lists,
+                "total_jogo": agent_total,
             })
         if reader.read(address + AGENT_ID_OFFSET, 8, "releitura_id_agente") != agent_raw:
             raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "A identidade de uma box mudou durante a leitura.")
         if reader.read(address + TITLE_OFFSET, 32, "releitura_titulo_box") != title_object:
             raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "O título de uma box mudou durante a leitura.")
+        if reader.read(address + 0x128, 4, "releitura_total_agente") != total_raw:
+            raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "O total de participantes mudou durante a leitura.")
 
     # O vetor de recrutamento contém a resposta de detalhes, não os banners.
     # Só vinculamos quando a lista inteira contém todos os destaques de um único agente.
+    selected_agent, selected_raw = _read_pointer(reader, owner + 0x280, "agente_consultado")
     detail_header = reader.read(owner + 0x380, 24, "cabecalho_participantes_completos")
     detail_begin, _, _, detail_count = card_levels_runtime.vector_bounds(detail_header, 0xF0, 20000)
     counters = reader.read(owner + 0x398, 0x40, "contadores_participantes_completos")
@@ -160,12 +166,20 @@ def read_loaded_boxes(reader: Any, physical_ids: set[str], *, capture_id: str,
     candidates = [box for box in boxes if complete_ids and
                   {card["card_id"] for card in box["cartas"]}.issubset(set(complete_ids))]
     for box in boxes:
-        box["participantes_completos"] = len(candidates) == 1 and box is candidates[0]
-        if box["participantes_completos"]:
+        complete_detail = (len(candidates) == 1 and box is candidates[0]
+                           and box["agente_id"] == str(selected_agent)
+                           and declared_total == box["total_jogo"])
+        complete_agent = 0 < box["total_jogo"] == len(box["cartas"])
+        box["participantes_completos"] = complete_detail or complete_agent
+        if complete_detail:
             box["destaques"] = box["cartas"]
             box["cartas"] = [{"card_id": cid} for cid in complete_ids]
-            box["total_jogo"] = declared_total
-    if reader.read(owner + 0x380, 24, "releitura_cabecalho_participantes") != detail_header or reader.read(owner + 0x398, 0x40, "releitura_contadores_participantes") != counters:
+            box["origem_participantes"] = "detalhes_do_agente"
+        elif complete_agent:
+            box["origem_participantes"] = "listas_do_agente_conferidas_com_player_list_total"
+    if (reader.read(owner + 0x280, 8, "releitura_agente_consultado") != selected_raw
+            or reader.read(owner + 0x380, 24, "releitura_cabecalho_participantes") != detail_header
+            or reader.read(owner + 0x398, 0x40, "releitura_contadores_participantes") != counters):
         raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "A lista de participantes mudou durante a captura.")
 
     if reader.read(owner, 24, "releitura_lista_agentes") != outer:
