@@ -22,6 +22,32 @@ O filtro de estilo exige vínculo à carta e ativação na posição da linha. N
 posição nativa ou nome semelhante como substituto. Cartas de estilos defensivos
 seguem os contratos específicos de seleção, não uma exclusão inventada na tela.
 
+## Boxes: leitura pronta e atualização automática
+
+As duas abas consultam `clube_novo.boxes_leitura_pronta_v1`, que mantém as ordens
+Melhores/Últimas e os cards ordenados separadamente nos graus 1, 2 e 3. Melhores
+compara quantidades de cinco estrelas, depois quatro, três, duas e uma; empata
+pela maior nota e nome. As referências de estrelas pertencem ao mesmo grau.
+
+Publicação de notas, mudanças de boxes, dados nativos e réguas invalidam a leitura.
+O job `boxes_leitura_pronta_v1` verifica a revisão a cada minuto e atualiza apenas
+quando necessário. Uma nova nota máxima recalcula a classificação inteira, inclusive
+estrelas das demais cartas. A troca é atômica e não bloqueia a consulta da versão
+anterior. A revisão aplicada só avança após sucesso; falhas ficam registradas no cron
+e a revisão pendente é tentada no próximo ciclo. Há uma pequena defasagem até esse ciclo.
+
+A consulta do visitante não recalcula estrelas nem ordena todos os cards. Ela lê a
+ordem pronta, recorta 24 boxes e retorna somente três cards de prévia por box. Ao
+abrir a box, retorna só a página de cards pedida. Fotos usam carregamento sob demanda.
+Depois de exibir a página, o navegador antecipa apenas a próxima, com validade de
+30 segundos; mudança de grau, busca, ordenação ou saída cancela o trabalho anterior.
+Nenhuma página de outro grau serve como substituta. Sem análise: Análise Ainda Não Publicada.
+
+Manutenção: [estrutura, invalidação e job](SQL-BOXES-LEITURA-PRONTA.sql).
+Mudança de código SQL que altere regras de seleção/classificação também deve marcar
+`boxes_leitura_revisao_v1.solicitada` e executar `boxes_leitura_atualizar_v1()` após
+implantar. Essa é uma tarefa de migração, nunca do operador diário.
+
 ## Ficha
 
 Preservar os quatro blocos aprovados, seu chassi e a proporção integral da foto,

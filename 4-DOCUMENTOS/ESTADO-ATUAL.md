@@ -5,6 +5,11 @@ A documentação foi consolidada; a rodada de produção continua em andamento.
 
 ## Implementado
 
+- Boxes com ordem e análises prontas no banco nos três graus. Atualização automática
+  quando a fonte muda, verificada a cada minuto e aplicada sem bloquear a leitura.
+  A página consulta somente sua fatia; a próxima é antecipada em segundo plano.
+
+
 - Grau global: notas e estrelas das boxes usam linhas e referências do mesmo grau.
   Ficha recebe o grau explicitamente, descarta respostas antigas e não mostra nota
   de outro grau quando falta publicação. Builds pessoais são reavaliadas para

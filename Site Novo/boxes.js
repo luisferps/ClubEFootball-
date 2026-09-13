@@ -2,6 +2,20 @@
 (()=>{
 'use strict';
 let root=null,seq=0,controller=null,data=null,busy=false,error='',active=false;
+let prefetchTimer=null,prefetchController=null,prefetched=null;
+function stopPrefetch(){clearTimeout(prefetchTimer);prefetchController?.abort();prefetchController=null;}
+const pageKey=(request,ongoing)=>JSON.stringify([ongoing,request]);
+function preloadNext(ticket,request,ongoing){
+ if(!data?.tem_mais||window.navigator?.connection?.saveData)return;
+ const next={...request,p_offset:request.p_offset+request.p_limite};
+ prefetchTimer=setTimeout(async()=>{
+  if(ticket!==seq||!root)return;
+  const ctrl=new AbortController();prefetchController=ctrl;
+  try{const result=await window.SiteNovoBoxesAPI.read(next,ctrl.signal,ongoing);
+   if(ticket===seq&&root)prefetched={key:pageKey(next,ongoing),data:result,at:Date.now()};
+  }catch{}finally{if(prefetchController===ctrl)prefetchController=null;}
+ },1500);
+}
 const title=()=>active?'Boxes em andamento':'Boxes cadastradas';
 const defaultState=()=>({p_box:null,p_busca:'',p_limite:24,p_offset:0,p_ordem:'recentes'});
 const savedPages=new Map(),storageKey='site-novo:boxes:navegacao:v1:';
@@ -70,11 +84,13 @@ function paint(){
 }
 async function load(){
  saveState();
- const ticket=++seq;controller?.abort();controller=new AbortController();const ctrl=controller;
+ const ticket=++seq;stopPrefetch();controller?.abort();controller=new AbortController();const ctrl=controller;
  const timer=setTimeout(()=>ctrl.abort(),12000);busy=true;error='';data=null;paint();
- try{const result=await window.SiteNovoBoxesAPI.read({...state,p_degrau:window.SiteNovoDegrau?.get()??3},ctrl.signal,active);if(ticket!==seq||!root)return;data=result;}
+ const request={...state,p_degrau:window.SiteNovoDegrau?.get()??3},ongoing=active;
+ const ready=prefetched;prefetched=null;
+ try{const result=ready&&ready.key===pageKey(request,ongoing)&&Date.now()-ready.at<30000?ready.data:await window.SiteNovoBoxesAPI.read(request,ctrl.signal,ongoing);if(ticket!==seq||!root)return;data=result;}
  catch(e){if(ticket!==seq||!root)return;error=e.name==='AbortError'?'A consulta demorou. Tente novamente.':e.message;}
- finally{clearTimeout(timer);if(ticket===seq&&root){busy=false;paint();}}
+ finally{clearTimeout(timer);if(ticket===seq&&root){busy=false;paint();if(data&&!error)preloadNext(ticket,request,ongoing);}}
 }
 function click(e){
  const t=e.target.closest('button');if(!t||!root?.contains(t))return;
@@ -87,7 +103,7 @@ function click(e){
 function submit(e){if(!e.target.matches('[data-nb-search]'))return;e.preventDefault();state.p_busca=e.target.elements.busca.value.trim();state.p_offset=0;load();}
 function imageError(e){if(e.target.matches?.('.nb-rated-player img')){const span=document.createElement('span');span.className='nb-no-photo';span.textContent='Sem imagem';e.target.replaceWith(span);}}
 let unsubscribe=null;
-function degreeChanged(){state.p_offset=0;if(catalogState)catalogState.p_offset=0;load();}
-function unmount(){unsubscribe?.();unsubscribe=null;++seq;controller?.abort();if(root){root.removeEventListener('click',click);root.removeEventListener('submit',submit);root.removeEventListener('change',change);root.removeEventListener('error',imageError,true);}root=null;}
+function degreeChanged(){prefetched=null;state.p_offset=0;if(catalogState)catalogState.p_offset=0;load();}
+function unmount(){stopPrefetch();prefetched=null;unsubscribe?.();unsubscribe=null;++seq;controller?.abort();if(root){root.removeEventListener('click',click);root.removeEventListener('submit',submit);root.removeEventListener('change',change);root.removeEventListener('error',imageError,true);}root=null;}
 window.SiteNovoBoxes=Object.freeze({mount(node,ongoing=false,box=null){unmount();active=ongoing;restoreState();unsubscribe=window.SiteNovoDegrau?.subscribe(degreeChanged);if(typeof box==='string'&&box.trim()&&box.length<=300){catalogState=state.p_box?catalogState:{...state};state={...state,p_box:box,p_busca:'',p_offset:0};}root=node;root.addEventListener('click',click);root.addEventListener('submit',submit);root.addEventListener('change',change);root.addEventListener('error',imageError,true);return load();},unmount});
 })();
