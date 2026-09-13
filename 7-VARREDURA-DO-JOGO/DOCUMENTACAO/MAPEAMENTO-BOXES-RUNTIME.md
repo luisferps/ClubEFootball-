@@ -39,96 +39,41 @@ observada. O leitor rejeita agente duplicado, título vazio, ponteiro fora do
 espaço de usuário, vetor desalinhado, card ausente da referência física e
 qualquer cabeçalho que mude durante a captura.
 
-## Persistência
+## Fluxo Vigente
 
-### Catálogo de Ofertas — Operação Dedicada
+`record_offer_catalog` usa o mesmo parser com `catalog_only=True`: IDs, títulos,
+datas e total, sem consultar vetores de participantes. Após a carga aprovada,
+o worker registra a captura, aplica os contextos e atualiza a leitura do site.
+O botão dedicado repete a operação. Oito testes passam, incluindo a ausência
+de leitura de participantes no modo catálogo.
 
-O comando dedicado lê IDs, títulos, início, fim e total diretamente do vetor de
-agentes. Não consulta listas de participantes nem exige uma referência de cards.
-Usa o mesmo parser com `catalog_only=True`; a cobertura registrada é
-`catalogo_agentes_carregado`. `record_offer_catalog` grava a captura e todos os
-agentes, depois verifica os campos por outra conexão. Não substitui vínculos.
+Banco: `box_captura_jogo_v1` preserva a prova; `box_agente_captura_jogo_v1`
+preserva cada oferta. `box_catalogo_jogo_atual_v1` seleciona a última captura.
+`aplicar_catalogo_boxes_jogo_v1` reconhece por ID ou nome exato, cria contextos
+novos, aplica datas e classifica os contextos fora do catálogo como históricos.
+Os vínculos existentes são preservados. `boxes_leitura_atualizar_v1` atualiza
+a leitura usada pelas RPCs públicas, com o job periódico como recuperação.
 
-Prova de 13/09/2026: captura `f6124088-ec46-41bf-9968-aa45577f7468`, nove agentes e nove
-IDs distintos confirmados no banco. O registro desta prova foi aplicado pelo
-conector Supabase: a conexão direta configurada no ambiente de teste recusou a
-autenticação. O fluxo local de gravação ainda precisa de credencial válida.
-O teste do catálogo impede leituras dos vetores de participantes; oito testes passam.
-Identificação do catálogo e alteração da classificação pública são operações
-distintas: esta prova registra a origem e a lista, sem declarar a reclassificação
-completa do site. Packs de outra coleção não estão cobertos por esse vetor.
+Prova integrada: 97370683-107e-4d47-a420-f6251e07253b, nove agentes/contextos,
+conexão protegida do aplicativo e releitura independente. As RPCs dos três graus
+retornaram nove ofertas. A página renderizada mostrou nove boxes e 88 cards.
+A falha de autenticação inicial era da variável de ambiente da sessão de teste;
+a credencial DPAPI do aplicativo passou na execução real.
 
-`clube_novo.box_leitor_endereco_jogo_v1` é a cópia consultável deste contrato.
-`box_captura_jogo_v1` guarda o payload e a prova de cada captura;
-`box_agente_captura_jogo_v1` guarda título e datas por agente; e
-`box_agente_card_captura_jogo_v1` guarda cada vínculo e sua ordem. A RPC
-`clube_novo.sincronizar_boxes_jogo_v1(jsonb)` só aceita o contrato, leitor,
-fonte e hash acima. Ela reconhece boxes atuais pelo título normalizado e passa a atualizar o contexto
-com o agente, participantes e datas comerciais capturados. Novos títulos são
-incluídos sem IDs especiais por jogador. O encerramento usa o fim comprovado e
-preserva os vínculos para o histórico; ausência numa sessão não comprova o fim de
-uma oferta de outra fonte. O job da leitura de Boxes verifica vencimentos a cada
-minuto, mesmo sem novo resultado do motor.
+A correção pontual autorizada de hoje está documentada em
+BOXES-CORRECAO-PONTUAL-1309.json: 25 vínculos para três ofertas, conferidos com
+IDs físicos, catálogo do jogo e referência eFHUB. As decisões em valor_do_dono
+preservam esses vínculos. A referência não virou fonte diária do extrator.
 
-Após uma carga de cartas aprovada, o executor tenta atualizar as boxes automaticamente.
-A leitura sem aplicação permanece sem gravação. É necessário o jogo com a área de
-Contratos carregada; se faltar a sessão, a pendência fica em `boxes-resultado.json`
-e no progresso. O botão Atualizar Boxes Novas consulta e registra somente o catálogo,
-sem abrir cada box. Seu readback verifica IDs, títulos e datas. A aplicação de
-participantes completos mantém seu próprio readback de vínculos.
+Os SQLs BOXES-CATALOGO-CONSULTA.sql, BOXES-CATALOGO-APLICAR.sql e
+BOXES-MAPEAMENTO-V2.sql registram os contratos. O histórico de participantes
+completos da Summer Transfer permanece na prova de 150 IDs/11 especiais.
 
+## Limites da Fonte
 
-O acervo histórico tem manifesto em `box_acervo_legado_v1`. A relação comercial
-unificada usa `box_contexto_contratacao_v1` e `box_card_em_andamento_v1`; o Site Novo
-lê as RPCs de Boxes sobre `boxes_leitura_pronta_v1`. O campo `carta_jogo.box` não participa e
-não deve ser preenchido pelo leitor de Boxes.
-
-
-## Datas
-
-`visto` do acervo foi separado em `data_observada_legado`. A data comercial legada
-só é derivada quando há dia, mês e ano completos no título validado; sem prova,
-fica nula. Datas impossíveis também ficam nulas. Ofertas do jogo usam o início
-oficial do agente em UTC, que pode representar uma reoferta. Nunca usar a data de
-captura como início. Migrações vigentes: `20260913092000_boxes_datas_corretas.sql`
-e `20260913092500_boxes_ciclo_ofertas.sql` em `Site Novo/supabase/migrations`.
-
-## Leitura completa validada em 13/09
-
-`pickup_list` e banners são somente destaques. O leitor V2 usa também o vetor
-StandardDraft/Procurable já mapeado: B+0x380, stride 0xf0, ID em +8, total em
-B+0x398 e índice inicial em B+0x3d4. Exige índice zero, quantidade igual ao total,
-IDs físicos válidos e únicos, releitura estável dos dados/cabeçalhos e um único
-agente cujos destaques estejam todos na lista completa. Ambiguidade ou paginação
-incompleta impedem publicação; não ligar lista de recrutamento a uma box por suposição.
-
-A captura comercial completa preserva todos os IDs nas tabelas de prova. A relação
-exibida inclui somente `carta_jogo.codigo_tipo_carta_fisico>0`, mantendo o padrão de especiais.
-A Summer Transfer vol.3 comprovou 150 participantes, dos quais 11 especiais.
-O ID consultado em B+0x280 também deve coincidir com o agente identificado e
-permanecer estável. O produtor 0x14467d8d3 copia esse ID para Option+0x228;
-o serializador 0x1452b9eb3 o envia como `agent_id`. Foi validado com o agente
-1365, Worldwide 10 Sep '26, com 11 participantes. Sete testes cobrem lista completa,
-página parcial, agente ambíguo, ID desconhecido, detalhes de outra seleção,
-divergência entre total do agente e detalhes e lista completa sem abrir detalhes.
-O registro do banco foi atualizado por `BOXES-MAPEAMENTO-V2.sql`: V1 permanece
-inativo como histórico; V2 registra também o vetor completo, total, índice e agente consultado.
-
-O total oficial também existe no agente convertido em +0x128 (UInt32): parser
-0x1457ebbff lê `player_list_total` em raw+0x158; conversor 0x1445d87ae copia
-para destino+0x128. Se a união de IDs físicos distintos das listas do próprio
-agente já coincide com esse total positivo, ela é completa sem abrir detalhes.
-Na PFA TOTY, foram conferidos 11 IDs contra total 11. Captura persistida
-f13bbd9d-d0af-47fb-81b6-948aa5d3ab82: PFA e Worldwide, 11 vínculos cada,
-confirmados por leitura independente no banco. O caminho de detalhes também
-exige que seu total coincida com o total oficial do agente.
-
-Os detalhes são carregados sob demanda pelo jogo: ler o binário não fabrica uma
-resposta que o servidor ainda não enviou. Na última sessão, duas das nove ofertas
-tinham listas completas disponíveis; a Summer Transfer tem captura completa anterior.
-Não declarar sincronização de todas as ofertas, nem encerrar registros sem fim
-comprovado, com base apenas nessa captura. É pendência automatizar a cobertura das
-demais ofertas. Ver `20260913094000_boxes_detalhes_completos_v2.sql`.
-
-O botão dedicado não exige IDs físicos das cartas: a identificação das ofertas
-é independente da captura de seus participantes.
+A lista exige jogo aberto em Contratos. O catálogo de agentes não é lista de
+participantes e não representa outras coleções, como packs. Novos vínculos
+precisam de captura própria; prefixo de card_id não comprova box (há um prefixo
+com 23 cartas de ofertas diferentes). Não declarar composição completa a partir
+dos três destaques. Identidade/disponibilidade e composição são dados separados.
+Datas do jogo são oficiais; data de captura não substitui início da oferta.

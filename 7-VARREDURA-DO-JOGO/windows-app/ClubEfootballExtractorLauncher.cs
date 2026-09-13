@@ -1271,14 +1271,14 @@ namespace ClubEfootballWindowsApp
                     viewResult.Enabled = File.Exists(resultPath);
                     if (commandResult.Succeeded)
                     {
-                        stage.Text = "Etapa: boxes novas publicadas; histórico e boxes atuais preservados.";
-                        UpdateFamily("Boxes do jogo", "conferidas", "A captura reconheceu as já cadastradas e publicou apenas títulos novos.");
-                        AppendLog("Atualização concluída. A base histórica veio do legado; a captura física só acrescenta boxes novas e atualiza as que ela própria criou.");
+                        stage.Text = "Etapa: Catálogo de Ofertas Registrado e Conferido.";
+                        UpdateFamily("Boxes do jogo", "conferidas", "IDs, Nomes e Datas Disponíveis no Banco.");
+                        AppendLog("Catálogo Atualizado. Os Vínculos das Cartas Foram Preservados.");
                     }
                     else
                     {
-                        stage.Text = "Etapa: boxes não atualizadas; abra a área de contratos do jogo e consulte o log.";
-                        UpdateFamily("Boxes do jogo", "aguardando jogo", "A captura não foi publicada; nenhuma etiqueta de variação foi usada como box.");
+                        stage.Text = "Etapa: Catálogo Não Atualizado. Consulte o Log.";
+                        UpdateFamily("Boxes do jogo", "aguardando jogo", "A Última Captura Válida Permanece no Banco.");
                         string failure = CommandFailureText(commandResult, "Não foi possível ler as boxes carregadas no eFootball.");
                         AppendLog(failure); MessageBox.Show(failure, "Boxes do jogo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }

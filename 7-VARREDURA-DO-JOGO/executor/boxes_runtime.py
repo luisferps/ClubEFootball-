@@ -273,7 +273,11 @@ def record_offer_catalog(run_dir: Path, runtime: Any, cancel=None) -> dict[str, 
                 "insert into clube_novo.box_agente_captura_jogo_v1 "
                 "(captura_id,agente_jogo_id,titulo,inicio_epoch,fim_epoch) values (%s,%s,%s,%s,%s)",
                 (catalog["captura_id"], box["agente_id"], box["titulo"], box["inicio_epoch"], box["fim_epoch"]))
+        applied = connection.execute(
+            "select clube_novo.aplicar_catalogo_boxes_jogo_v1(%s)",
+            (catalog["captura_id"],)).fetchone()[0]
     with psycopg.connect(dsn, connect_timeout=20) as connection:
+        connection.execute("select clube_novo.boxes_leitura_atualizar_v1()")
         rows = connection.execute(
             "select agente_jogo_id::text,titulo,inicio_epoch,fim_epoch "
             "from clube_novo.box_agente_captura_jogo_v1 where captura_id=%s",
@@ -281,7 +285,7 @@ def record_offer_catalog(run_dir: Path, runtime: Any, cancel=None) -> dict[str, 
     expected = {(b["agente_id"], b["titulo"], b["inicio_epoch"], b["fim_epoch"]) for b in catalog["boxes"]}
     if set(rows) != expected:
         raise RuntimeError("A leitura independente do catálogo divergiu da captura.")
-    return {**result, "independent_readback": True}
+    return {**result, **applied, "independent_readback": True}
 
 
 def collect_and_apply(canonical_cards_path: Path, run_dir: Path, runtime: Any,

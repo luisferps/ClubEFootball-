@@ -30,14 +30,17 @@ A documentação foi consolidada; a rodada de produção continua em andamento.
   independente de seções e remoção dos trechos mortos identificados. Consultas de
   Boxes usam leitura pronta e paginada, substituindo o cálculo integral a cada consulta.
 
-Datas das boxes corrigidas em todo o acervo legado: 727 com data completa no título,
-296 sem data comprovada; as 1.023 datas de observação foram preservadas separadamente.
-Captura de boxes passa a atualizar contextos reconhecidos; vencimentos comprovados
-encerram automaticamente sem apagar participantes. A leitura V2 dos detalhes foi validada na Summer Transfer vol.3: 150 IDs físicos
-persistidos como prova, 11 especiais vinculados para exibição. Página parcial ou
-agente ambíguo não publica. Oito ofertas da sessão ainda precisam ter os detalhes
-capturados; a cobertura automática de todas as ofertas não está concluída.
-
+Datas das boxes: datas de observação do legado foram separadas das datas de oferta.
+O catálogo CmdGetMyclubAgentlist fornece IDs, títulos, início e fim oficiais.
+Fluxo integrado validado em 13/09: captura 97370683-107e-4d47-a420-f6251e07253b,
+nove contextos atualizados pela conexão protegida, releitura independente e
+consulta pública nos graus 1/2/3. Página renderizada: nove boxes, 88 cards.
+As três ofertas sem vínculos receberam a correção pontual autorizada de 25 cards,
+com referência conferida e decisões protegidas em valor_do_dono.
+O extrator aplica o catálogo após uma carga aprovada e atualiza a leitura do site.
+Jogo aberto em Contratos é necessário; não exige abrir cada box. Novos vínculos
+carta–box exigem dados de participantes: o catálogo identifica ofertas e não
+inventa sua composição. Outras coleções do jogo não estão cobertas pelo vetor de agentes.
 
 ## O que continua esperando
 

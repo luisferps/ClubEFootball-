@@ -20,6 +20,20 @@ Se houver interrupção, preserve relatórios, provas e estado local. Lotes já 
 não se tornam pendentes apenas porque a execução seguinte começou. Examine erros
 reais; não declarar conclusão sem releitura independente dos valores persistidos.
 
+## Ofertas do Jogo
+
+Deixe o eFootball aberto em Contratos. Não precisa abrir cada box.
+Após aplicar a extração aprovada, o extrator captura e registra o catálogo,
+atualiza os contextos comerciais e solicita a atualização da leitura do site.
+Não há envio manual adicional dessa etapa. A varredura somente leitura continua
+sem gravação; Atualizar Boxes Novas permite repetir apenas a consulta de ofertas.
+
+A conexão usa a credencial protegida do aplicativo. Se o jogo estiver fechado,
+a sessão não estiver carregada ou a conexão falhar, a captura anterior é preservada.
+Os relatórios ficam na pasta da rodada. `box_catalogo_jogo_atual_v1` fornece a
+última captura, com fonte e horário. Não inventar participantes quando um agente
+novo ainda não tem vínculos extraídos. Ver MAPEAMENTO-BOXES-RUNTIME.md.
+
 ## Como os dados são protegidos
 
 O contrato tipado define arquivo, registro, campo, tipo, bit/largura, versão/hash e

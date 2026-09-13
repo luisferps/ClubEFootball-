@@ -1,0 +1,52 @@
+{
+  "modo": "correcao_pontual_autorizada",
+  "origem": "referencia_efhub_conferida_com_ids_fisicos_e_catalogo_do_jogo",
+  "ofertas": [
+    {
+      "referencia": "https://efhub.com/pt-BR/new-players",
+      "titulo": "National Teams Selection 10 Sep '26",
+      "cards": [
+        "105874165112743",
+        "105874165182687",
+        "105874165183676",
+        "105874165184248",
+        "105874165188527",
+        "105874165191335",
+        "105874165191683",
+        "105874165198697",
+        "105874165198910",
+        "105874165213340",
+        "105874165214108"
+      ],
+      "agente_id": 1366
+    },
+    {
+      "referencia": "https://efhub.com/pt-BR/new-players",
+      "titulo": "Anticipated Standouts 26-27",
+      "cards": [
+        "105880876076204",
+        "105880876084074",
+        "105880876084697",
+        "105880876086992",
+        "105880876091925",
+        "105880876118884",
+        "105880876119249",
+        "105880876137536"
+      ],
+      "agente_id": 1367
+    },
+    {
+      "referencia": "https://efhub.com/packs/potm-brasileir-o-betano-27-aug-26",
+      "titulo": "POTM Brasileirão Betano 27 Aug '26",
+      "cards": [
+        "53990691741940",
+        "53990691759915",
+        "53990691764136",
+        "53990691828711",
+        "53990691853358",
+        "53990691863762"
+      ],
+      "agente_id": 1357
+    }
+  ]
+}

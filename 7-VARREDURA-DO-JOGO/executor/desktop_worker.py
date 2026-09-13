@@ -2559,10 +2559,10 @@ def sync_boxes_after_application(args: argparse.Namespace) -> dict[str, Any]:
                 "reason": "Atualização de boxes desativada nesta execução."}
     run_dir = Path(args.run_dir).resolve()
     try:
-        result = boxes_runtime.collect_and_apply(
-            run_dir / "cartas-fisicas-canonicas.json", run_dir, runtime, emit,
-            lambda: cancelled(Path(args.cancel)),
-        )
+        result = boxes_runtime.record_offer_catalog(run_dir, runtime, lambda: cancelled(Path(args.cancel)))
+        result.update(state="catalog_registered", database_write=True)
+        emit("family", family="Boxes do jogo", state="ready",
+             message=f"{result['agentes']} Ofertas Registradas e Conferidas", database_write=True)
     except Exception:
         result = {"state": "failed", "database_write": False,
                   "reason": "Atualização de boxes pendente; use Atualizar Boxes Novas com Contratos aberto no jogo."}
@@ -3032,7 +3032,7 @@ def main() -> int:
                 Path(args.root).resolve(), Path(args.run_dir).resolve(), runtime, emit,
                 lambda: cancelled(Path(args.cancel)),
             )
-            return 0 if outcome.get("state") == "published" else 2
+            return 0 if outcome.get("state") == "catalog_registered" else 2
         if args.reset_test_approval: return reset_test_approval(args)
         return run(args)
     except Exception as error:
