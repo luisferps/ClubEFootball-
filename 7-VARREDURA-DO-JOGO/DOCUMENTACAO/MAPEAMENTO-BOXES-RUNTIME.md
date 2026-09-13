@@ -41,6 +41,23 @@ qualquer cabeçalho que mude durante a captura.
 
 ## Persistência
 
+### Catálogo de Ofertas — Operação Dedicada
+
+O comando dedicado lê IDs, títulos, início, fim e total diretamente do vetor de
+agentes. Não consulta listas de participantes nem exige uma referência de cards.
+Usa o mesmo parser com `catalog_only=True`; a cobertura registrada é
+`catalogo_agentes_carregado`. `record_offer_catalog` grava a captura e todos os
+agentes, depois verifica os campos por outra conexão. Não substitui vínculos.
+
+Prova de 13/09/2026: captura `f6124088-ec46-41bf-9968-aa45577f7468`, nove agentes e nove
+IDs distintos confirmados no banco. O registro desta prova foi aplicado pelo
+conector Supabase: a conexão direta configurada no ambiente de teste recusou a
+autenticação. O fluxo local de gravação ainda precisa de credencial válida.
+O teste do catálogo impede leituras dos vetores de participantes; oito testes passam.
+Identificação do catálogo e alteração da classificação pública são operações
+distintas: esta prova registra a origem e a lista, sem declarar a reclassificação
+completa do site. Packs de outra coleção não estão cobertos por esse vetor.
+
 `clube_novo.box_leitor_endereco_jogo_v1` é a cópia consultável deste contrato.
 `box_captura_jogo_v1` guarda o payload e a prova de cada captura;
 `box_agente_captura_jogo_v1` guarda título e datas por agente; e
@@ -56,8 +73,9 @@ minuto, mesmo sem novo resultado do motor.
 Após uma carga de cartas aprovada, o executor tenta atualizar as boxes automaticamente.
 A leitura sem aplicação permanece sem gravação. É necessário o jogo com a área de
 Contratos carregada; se faltar a sessão, a pendência fica em `boxes-resultado.json`
-e no progresso. O botão Atualizar Boxes Novas permite repetir apenas essa etapa.
-O readback verifica agentes, vínculos e a classificação de todas as boxes lidas.
+e no progresso. O botão Atualizar Boxes Novas consulta e registra somente o catálogo,
+sem abrir cada box. Seu readback verifica IDs, títulos e datas. A aplicação de
+participantes completos mantém seu próprio readback de vínculos.
 
 
 O acervo histórico tem manifesto em `box_acervo_legado_v1`. A relação comercial
@@ -112,5 +130,5 @@ Não declarar sincronização de todas as ofertas, nem encerrar registros sem fi
 comprovado, com base apenas nessa captura. É pendência automatizar a cobertura das
 demais ofertas. Ver `20260913094000_boxes_detalhes_completos_v2.sql`.
 
-O botão dedicado confere IDs no cadastro físico vigente do banco, em leitura somente,
-para não rejeitar cartas novas por uma referência local anterior à última carga.
+O botão dedicado não exige IDs físicos das cartas: a identificação das ofertas
+é independente da captura de seus participantes.

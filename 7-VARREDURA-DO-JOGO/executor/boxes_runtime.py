@@ -59,7 +59,7 @@ def _read_msvc_string(reader: Any, address: int, purpose: str) -> tuple[str, byt
 
 
 def read_loaded_boxes(reader: Any, physical_ids: set[str], *, capture_id: str,
-                      captured_at: str) -> dict[str, Any]:
+                      captured_at: str, catalog_only: bool = False) -> dict[str, Any]:
     """Parser testável do vetor convertido de CmdGetMyclubAgentlist."""
     base = reader.base
     g, g_raw = _read_pointer(reader, base + card_levels_runtime.ROOT_RVA, "raiz_cartas_boxes")
@@ -99,6 +99,15 @@ def read_loaded_boxes(reader: Any, physical_ids: set[str], *, capture_id: str,
         start_date, _, expiration_date = struct.unpack("<III", dates_raw)
         total_raw = reader.read(address + 0x128, 4, "total_participantes_agente")
         agent_total = struct.unpack("<I", total_raw)[0]
+        if catalog_only:
+            boxes.append({"agente_id": agent_id, "titulo": title,
+                          "inicio_epoch": start_date or None,
+                          "fim_epoch": expiration_date or None, "total_jogo": agent_total})
+            for off, original in ((AGENT_ID_OFFSET, agent_raw), (TITLE_OFFSET, title_object),
+                                  (START_DATE_OFFSET, dates_raw), (0x128, total_raw)):
+                if reader.read(address + off, len(original), "releitura_catalogo") != original:
+                    raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "O catálogo mudou durante a captura.")
+            continue
         cards_by_id: dict[str, dict[str, Any]] = {}
         lists: list[dict[str, Any]] = []
         for list_name, offset, stride in LISTS:
@@ -146,41 +155,42 @@ def read_loaded_boxes(reader: Any, physical_ids: set[str], *, capture_id: str,
         if reader.read(address + 0x128, 4, "releitura_total_agente") != total_raw:
             raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "O total de participantes mudou durante a leitura.")
 
-    # O vetor de recrutamento contém a resposta de detalhes, não os banners.
-    # Só vinculamos quando a lista inteira contém todos os destaques de um único agente.
-    selected_agent, selected_raw = _read_pointer(reader, owner + 0x280, "agente_consultado")
-    detail_header = reader.read(owner + 0x380, 24, "cabecalho_participantes_completos")
-    detail_begin, _, _, detail_count = card_levels_runtime.vector_bounds(detail_header, 0xF0, 20000)
-    counters = reader.read(owner + 0x398, 0x40, "contadores_participantes_completos")
-    declared_total = struct.unpack_from("<I", counters, 0)[0]
-    first_index = struct.unpack_from("<I", counters, 0x3D4 - 0x398)[0]
-    complete_ids = []
-    if detail_count and detail_count == declared_total and first_index == 0:
-        detail_raw = reader.read(detail_begin, detail_count * 0xF0, "participantes_completos")
-        complete_ids = [str(struct.unpack_from("<Q", detail_raw, i * 0xF0 + 8)[0])
-                        for i in range(detail_count)]
-        if len(set(complete_ids)) != detail_count or any(cid not in physical_ids for cid in complete_ids):
-            raise ValueError("Participantes completos duplicados ou ausentes da referência física.")
-        if reader.read(detail_begin, len(detail_raw), "releitura_participantes_completos") != detail_raw:
-            raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "Os participantes mudaram durante a captura.")
-    candidates = [box for box in boxes if complete_ids and
-                  {card["card_id"] for card in box["cartas"]}.issubset(set(complete_ids))]
-    for box in boxes:
-        complete_detail = (len(candidates) == 1 and box is candidates[0]
-                           and box["agente_id"] == str(selected_agent)
-                           and declared_total == box["total_jogo"])
-        complete_agent = 0 < box["total_jogo"] == len(box["cartas"])
-        box["participantes_completos"] = complete_detail or complete_agent
-        if complete_detail:
-            box["destaques"] = box["cartas"]
-            box["cartas"] = [{"card_id": cid} for cid in complete_ids]
-            box["origem_participantes"] = "detalhes_do_agente"
-        elif complete_agent:
-            box["origem_participantes"] = "listas_do_agente_conferidas_com_player_list_total"
-    if (reader.read(owner + 0x280, 8, "releitura_agente_consultado") != selected_raw
-            or reader.read(owner + 0x380, 24, "releitura_cabecalho_participantes") != detail_header
-            or reader.read(owner + 0x398, 0x40, "releitura_contadores_participantes") != counters):
-        raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "A lista de participantes mudou durante a captura.")
+    if not catalog_only:
+        # O vetor de recrutamento contém a resposta de detalhes, não os banners.
+        # Só vinculamos quando a lista inteira contém todos os destaques de um único agente.
+        selected_agent, selected_raw = _read_pointer(reader, owner + 0x280, "agente_consultado")
+        detail_header = reader.read(owner + 0x380, 24, "cabecalho_participantes_completos")
+        detail_begin, _, _, detail_count = card_levels_runtime.vector_bounds(detail_header, 0xF0, 20000)
+        counters = reader.read(owner + 0x398, 0x40, "contadores_participantes_completos")
+        declared_total = struct.unpack_from("<I", counters, 0)[0]
+        first_index = struct.unpack_from("<I", counters, 0x3D4 - 0x398)[0]
+        complete_ids = []
+        if detail_count and detail_count == declared_total and first_index == 0:
+            detail_raw = reader.read(detail_begin, detail_count * 0xF0, "participantes_completos")
+            complete_ids = [str(struct.unpack_from("<Q", detail_raw, i * 0xF0 + 8)[0])
+                            for i in range(detail_count)]
+            if len(set(complete_ids)) != detail_count or any(cid not in physical_ids for cid in complete_ids):
+                raise ValueError("Participantes completos duplicados ou ausentes da referência física.")
+            if reader.read(detail_begin, len(detail_raw), "releitura_participantes_completos") != detail_raw:
+                raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "Os participantes mudaram durante a captura.")
+        candidates = [box for box in boxes if complete_ids and
+                      {card["card_id"] for card in box["cartas"]}.issubset(set(complete_ids))]
+        for box in boxes:
+            complete_detail = (len(candidates) == 1 and box is candidates[0]
+                               and box["agente_id"] == str(selected_agent)
+                               and declared_total == box["total_jogo"])
+            complete_agent = 0 < box["total_jogo"] == len(box["cartas"])
+            box["participantes_completos"] = complete_detail or complete_agent
+            if complete_detail:
+                box["destaques"] = box["cartas"]
+                box["cartas"] = [{"card_id": cid} for cid in complete_ids]
+                box["origem_participantes"] = "detalhes_do_agente"
+            elif complete_agent:
+                box["origem_participantes"] = "listas_do_agente_conferidas_com_player_list_total"
+        if (reader.read(owner + 0x280, 8, "releitura_agente_consultado") != selected_raw
+                or reader.read(owner + 0x380, 24, "releitura_cabecalho_participantes") != detail_header
+                or reader.read(owner + 0x398, 0x40, "releitura_contadores_participantes") != counters):
+            raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "A lista de participantes mudou durante a captura.")
 
     if reader.read(owner, 24, "releitura_lista_agentes") != outer:
         raise card_levels_runtime.LevelsUnavailable("sessao_alterada", "A lista de boxes mudou durante a leitura.")
@@ -197,19 +207,19 @@ def read_loaded_boxes(reader: Any, physical_ids: set[str], *, capture_id: str,
         "fonte": SOURCE,
         "captura_id": capture_id,
         "capturado_em": captured_at,
-        "cobertura": "participantes_completos_do_agente_carregado",
+        "cobertura": "catalogo_agentes_carregado" if catalog_only else "participantes_completos_do_agente_carregado",
         "agentes_retornados": count,
         "boxes": boxes,
         "agentes_ignorados": ignored,
     }
 
 
-def capture(physical_ids: set[str], *, cancel: Callable[[], None] | None = None) -> dict[str, Any]:
+def capture(physical_ids: set[str], *, catalog_only: bool = False, cancel: Callable[[], None] | None = None) -> dict[str, Any]:
     capture_id = str(uuid.uuid4())
     captured_at = datetime.now(timezone.utc).isoformat()
     game = card_levels_runtime.discover_game()
     with card_levels_runtime.WindowsMemoryReader(game, cancel) as reader:
-        result = read_loaded_boxes(reader, physical_ids, capture_id=capture_id, captured_at=captured_at)
+        result = read_loaded_boxes(reader, physical_ids, capture_id=capture_id, captured_at=captured_at, catalog_only=catalog_only)
         result["jogo"] = {
             "pid": game["pid"], "executavel_sha256": game["executable_sha256"],
             "versao": game["executable_version"], "base": hex(game["image_base"]),
@@ -237,10 +247,49 @@ def _public_payload(capture_result: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def record_offer_catalog(run_dir: Path, runtime: Any, cancel=None) -> dict[str, Any]:
+    """Registra IDs, títulos e datas sem consultar ou substituir vínculos carta-box."""
+    catalog = capture(set(), catalog_only=True, cancel=cancel)
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "boxes-catalogo-jogo.json").write_text(
+        json.dumps(catalog, ensure_ascii=False, indent=2), encoding="utf-8")
+    payload = json.dumps(catalog, ensure_ascii=False, sort_keys=True)
+    digest = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    result = {"estado": "catalogo_registrado", "agentes": len(catalog["boxes"]),
+              "captura_id": catalog["captura_id"], "vinculos_alterados": False}
+    psycopg, _, _ = runtime.import_psycopg()
+    dsn = runtime.connection_string()
+    if not dsn:
+        raise RuntimeError("Conexão segura indisponível para registrar o catálogo de ofertas.")
+    with psycopg.connect(dsn, connect_timeout=20) as connection:
+        connection.execute(
+            "insert into clube_novo.box_captura_jogo_v1 "
+            "(captura_id,capturado_em,executavel_sha256,leitor_versao,payload_sha256,payload,estado_anterior,resultado) "
+            "values (%s,%s,%s,%s,%s,%s::jsonb,'[]'::jsonb,%s::jsonb)",
+            (catalog["captura_id"], catalog["capturado_em"], catalog["jogo"]["executavel_sha256"],
+             READER_VERSION, digest, payload, json.dumps(result)))
+        for box in catalog["boxes"]:
+            connection.execute(
+                "insert into clube_novo.box_agente_captura_jogo_v1 "
+                "(captura_id,agente_jogo_id,titulo,inicio_epoch,fim_epoch) values (%s,%s,%s,%s,%s)",
+                (catalog["captura_id"], box["agente_id"], box["titulo"], box["inicio_epoch"], box["fim_epoch"]))
+    with psycopg.connect(dsn, connect_timeout=20) as connection:
+        rows = connection.execute(
+            "select agente_jogo_id::text,titulo,inicio_epoch,fim_epoch "
+            "from clube_novo.box_agente_captura_jogo_v1 where captura_id=%s",
+            (catalog["captura_id"],)).fetchall()
+    expected = {(b["agente_id"], b["titulo"], b["inicio_epoch"], b["fim_epoch"]) for b in catalog["boxes"]}
+    if set(rows) != expected:
+        raise RuntimeError("A leitura independente do catálogo divergiu da captura.")
+    return {**result, "independent_readback": True}
+
+
 def collect_and_apply(canonical_cards_path: Path, run_dir: Path, runtime: Any,
                       emit: Callable[..., None], cancel: Callable[[], None]) -> dict[str, Any]:
     """Captura, grava pela RPC canônica e confirma por uma leitura independente."""
     try:
+        catalog_result = record_offer_catalog(run_dir, runtime, cancel)
+        emit("progress", stage="boxes", message=f"{catalog_result['agentes']} ofertas do jogo registradas e conferidas")
         canonical = json.loads(canonical_cards_path.read_text(encoding="utf-8"))
         records = canonical.get("records") if isinstance(canonical, dict) else canonical
         physical_ids = {str(item["card_id"]) for item in records if isinstance(item, dict) and item.get("card_id")}
@@ -300,33 +349,13 @@ def collect_and_apply(canonical_cards_path: Path, run_dir: Path, runtime: Any,
         return outcome
 
 
-def _physical_ids_from_database(runtime: Any) -> set[str]:
-    """A referência local pode anteceder a última carga; usar IDs físicos persistidos."""
-    psycopg, _, _ = runtime.import_psycopg()
-    dsn = runtime.connection_string()
-    if not dsn:
-        raise RuntimeError("Conexão segura indisponível para conferir identidades físicas das boxes.")
-    with psycopg.connect(dsn, connect_timeout=20) as connection:
-        connection.execute("set transaction read only")
-        rows = connection.execute("select card_id from clube_novo.carta_jogo where codigo_tipo_carta_fisico is not null").fetchall()
-    ids = {str(row[0]) for row in rows if re.fullmatch(r"[1-9][0-9]*",str(row[0]))}
-    if not ids:
-        raise RuntimeError("O cadastro físico vigente não contém cartas para conferir as boxes.")
-    return ids
-
-
 def extract_only(root: Path, run_dir: Path, runtime: Any, emit: Callable[..., None],
                  cancel: Callable[[], None]) -> dict[str, Any]:
-    """Operação dedicada: lê e publica somente as boxes, sem varrer outras famílias."""
-    run_dir.mkdir(parents=True, exist_ok=True)
-    ids = _physical_ids_from_database(runtime)
-    # collect_and_apply recebe o mesmo formato canônico produzido pelo worker.
-    reference = run_dir / "cartas-referencia-boxes.json"
-    reference.write_text(json.dumps({"records": [{"card_id": value} for value in sorted(ids, key=int)]}), encoding="utf-8")
-    result = collect_and_apply(reference, run_dir, runtime, emit, cancel)
+    """Consulta dedicada às ofertas: dispensa cadastro físico e abertura de detalhes."""
+    result = record_offer_catalog(run_dir, runtime, cancel)
+    result = {**result, "state": "catalog_registered", "database_write": True}
     (run_dir / "boxes-resultado.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-    emit("complete", state=result.get("state"), result_path=str(run_dir / "boxes-resultado.json"),
-         database_write=bool(result.get("database_write")))
+    emit("complete", state=result["state"], result_path=str(run_dir / "boxes-resultado.json"), database_write=True)
     return result
 
 

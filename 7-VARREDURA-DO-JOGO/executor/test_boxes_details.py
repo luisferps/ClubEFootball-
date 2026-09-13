@@ -28,6 +28,17 @@ class Reader:
     def read(self,a,n,purpose):return bytes(self.mem.get(a+i,0) for i in range(n))
 
 class DetailsTests(unittest.TestCase):
+    def test_catalog_does_not_read_participants_or_require_physical_cards(self):
+        r=Reader(second=True)
+        original=r.read
+        def read(a,n,purpose):
+            if a in (0x40280,0x40380,0x40398,0x500e8,0x50320):
+                raise AssertionError("Catálogo não deve depender de participantes")
+            return original(a,n,purpose)
+        r.read=read
+        result=b.read_loaded_boxes(r,set(),capture_id="x",captured_at="x",catalog_only=True)
+        self.assertEqual([x["agente_id"] for x in result["boxes"]],["1","2"])
+        self.assertEqual(result["cobertura"],"catalogo_agentes_carregado")
     def capture(self,r):
         result=b.read_loaded_boxes(r,{str(x) for x in range(1,6)},capture_id="x",captured_at="x")
         result["jogo"]={"executavel_sha256":"x"}
